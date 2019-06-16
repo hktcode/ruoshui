@@ -1,0 +1,59 @@
+/*
+ * Copyright (c) 2019, Huang Ketian
+ */
+package com.hktcode.pgjdbc;
+
+import com.hktcode.lang.exception.ArgumentNullException;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.Duration;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.regex.Pattern;
+
+/**
+ * the util class of PostgreSQL.
+ */
+public class PostgreSQL
+{
+    /**
+     * the jdbc url prefix.
+     */
+    public static final String JDBC_URL = "jdbc:postgresql:";
+
+    /**
+     * replication slot name's length must be less than 64. and may only contain
+     * lower case letters, numbers and the underscore character,
+     */
+    public static final Pattern slotNamePattern = Pattern.compile("[0-9a-z_]{1,63}");
+
+    /**
+     * PostgreSQL epoch(2000-01-01).
+     */
+    public static final ZonedDateTime EPOCH = ZonedDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneId.of("GMT"));
+
+    /**
+     * Obtain a ZonedDateTime from a PostgreSQL microsencond.
+     *
+     * @param postgresMicros a PostgreSQL microsencond.
+     * @return a ZonedDateTime object.
+     */
+    public static ZonedDateTime toZonedDatetime(long postgresMicros)
+    {
+        return PostgreSQL.EPOCH.plus(postgresMicros, ChronoUnit.MICROS);
+    }
+
+    /**
+     * constructor function.
+     *
+     * just for closing SonarLint warning.
+     */
+    private PostgreSQL()
+    {
+    }
+}
