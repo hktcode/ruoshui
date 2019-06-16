@@ -74,6 +74,6 @@ public class ArgumentIllegalException extends IllegalArgumentException
     @Override
     public String toString()
     {
-        return this.getMessage();
+        return "ArgumentIllegalException: " + this.getMessage();
     }
 }
