@@ -27,4 +27,13 @@ public class ArgumentNegativeException extends ArgumentIllegalException
         }
         // TODO: 检查Number是否是负数.
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString()
+    {
+        return "ArgumentNegativeException: name=" + super.name + ", value=" + super.value;
+    }
 }
