@@ -67,4 +67,13 @@ public class ArgumentIllegalException extends IllegalArgumentException
         value = (value == null ? "null" : value);
         return String.format("%s: name=%s, value=%s", desc, name, value);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString()
+    {
+        return this.getMessage();
+    }
 }
