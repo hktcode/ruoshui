@@ -25,6 +25,7 @@ public class Application
      *
      * @param homeEnvName {@code HOME}环境变量的名称.
      * @return {@code HOME}环境变量的值.
+     * @throws ArgumentNullException 如果参数为{@code null}时抛出.
      */
     public static String getHome(String homeEnvName)
     {
