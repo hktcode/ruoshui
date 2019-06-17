@@ -22,4 +22,28 @@ import java.util.List;
  */
 public interface LogicalMsg
 {
+    /**
+     * 根据PostgreSQL流复制协议，从{@link ByteBuffer}中读取一个C字符串.
+     *
+     * @param content 要读取的{@link ByteBuffer}
+     *
+     * @return 指定的字符串信息.
+     * @throws ArgumentNullException if the {@code content} argument is {@code null}
+     */
+    static String readCStyleUtf8String(ByteBuffer content)
+    {
+        if (content == null) {
+            throw new ArgumentNullException("content");
+        }
+        int position = content.position();
+        int length = 0;
+        while (content.get(position + length) != 0) {
+            ++length;
+        }
+        byte[] bytes = new byte[length];
+        content.position(position);
+        content.get(bytes);
+        content.get();
+        return new String(bytes, StandardCharsets.UTF_8);
+    }
 }
