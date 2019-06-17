@@ -21,6 +21,7 @@ public class LogicalAttribute
      * @param attypmod Type modifier of the column (atttypmod).
      *
      * @return a LogicalAttribute Object.
+     * @throws ArgumentNullException if {@code attrname} is {@code null}.
      */
     public static LogicalAttribute of //
         /* */( long attflags //
@@ -113,6 +114,7 @@ public class LogicalAttribute
      * put the string representation into a {@code StringBuilder}.
      *
      * @param builder the {@code StringBuilder} to append the string representation.
+     * @throws ArgumentNullException if {@code builder} is {@code null}
      */
     public void toString(StringBuilder builder)
     {
