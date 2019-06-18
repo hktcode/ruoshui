@@ -92,10 +92,12 @@ public class LogicalRelationInfMsg implements LogicalMsg
      * Replica identity setting for the relation(same as relreplident in pg_class).
      *
      * Columns used to form "replica identity" for rows:
-     * - d = default (primary key, if any),
-     * - n = nothing,
-     * - f = all columns
-     * - i = index with indisreplident set, or default
+     * <dl>
+     *   <dt>d</dt><dd>default (primary key, if any),</dd>
+     *   <dt>n</dt><dd>nothing.</dd>
+     *   <dt>f</dt><dd>all columns.</dd>
+     *   <dt>i</dt><dd>index with indisreplident set, or default</dd>
+     * </dl>
      */
     public final long replchar;
 
