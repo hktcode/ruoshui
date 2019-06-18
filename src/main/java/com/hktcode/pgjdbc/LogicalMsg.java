@@ -83,4 +83,29 @@ public interface LogicalMsg
         }
         return ImmutableList.copyOf(tuple);
     }
+
+
+    /**
+     * put the value list string representation into a {@code StringBuilder}.
+     *
+     * @param builder the {@code StringBuilder} to append the string representation.
+     * @param values the tuple value list.
+     * @throws ArgumentNullException if {@code builder} or {@code tupleval} is {@code null}
+     */
+    static void toString(StringBuilder builder, ImmutableList<JsonNode> values)
+    {
+        if (builder == null) {
+            throw new ArgumentNullException("builder");
+        }
+        if (values == null) {
+            throw new ArgumentNullException("values");
+        }
+        char splitter = '[';
+        for (JsonNode c : values) {
+            builder.append(splitter);
+            builder.append(c.toString());
+            splitter = ',';
+        }
+        builder.append(']');
+    }
 }
