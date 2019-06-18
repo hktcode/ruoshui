@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.google.common.collect.ImmutableList;
-import com.google.common.primitives.ImmutableIntArray;
+import com.google.common.primitives.ImmutableLongArray;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.nio.ByteBuffer;
@@ -45,5 +45,42 @@ public interface LogicalMsg
         content.get(bytes);
         content.get();
         return new String(bytes, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * get TupleData from a {@link ByteBuffer}.
+     *
+     * @param content the {@link ByteBuffer} where get the tuple data from
+     * @return the tuple value list.
+     * @throws ArgumentNullException if {@code content} is {@code null}.
+     */
+    static ImmutableList<JsonNode> getTuple(ByteBuffer content)
+    {
+        if (content == null) {
+            throw new ArgumentNullException("content");
+        }
+
+        List<JsonNode> tuple = new ArrayList<>();
+        long columnCount = ((int)content.getShort()) & 0xFFFF;
+        for (int i = 0; i < columnCount; ++i) {
+            byte b = content.get();
+            if (b == 'n') {
+                tuple.add(NullNode.instance);
+            }
+            else if (b == 'u') {
+                tuple.add(new ObjectNode(JsonNodeFactory.instance));
+            }
+            else if (b == 't') {
+                int length = content.getInt();
+                byte[] x = new byte[length];
+                content.get(x);
+                String v = new String(x, StandardCharsets.UTF_8);
+                tuple.add(TextNode.valueOf(v));
+            }
+            else {
+                throw new LogicalMsgFormatException(ImmutableLongArray.of('n', 'u', 't'), b);
+            }
+        }
+        return ImmutableList.copyOf(tuple);
     }
 }
