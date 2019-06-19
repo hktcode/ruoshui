@@ -108,4 +108,53 @@ public interface LogicalMsg
         }
         builder.append(']');
     }
+
+    /**
+     * Obtain a LogicalMsg from a ByteBuffer.
+     *
+     * @param content the ByteBuffer from Logical Replication Message.
+     * @return a LogicalMsg Object.
+     * @throws ArgumentNullException if the {@code content} parameter is null.
+     * @throws LogicalMsgFormatException if read the unexpected data from {@code content}
+     */
+    static LogicalMsg ofLogicalWal(ByteBuffer content)
+    {
+        if (content == null) {
+            throw new ArgumentNullException("content");
+        }
+        byte b = content.get();
+        LogicalMsg result;
+        switch(b) {
+            case 'B':
+                result = LogicalTxactBeginsMsg.ofLogicalWal(content);
+                break;
+            case 'C':
+                result = LogicalTxactCommitMsg.ofLogicalWal(content);
+                break;
+            case 'O':
+                result = LogicalOriginNamesMsg.ofLogicalWal(content);
+                break;
+            case 'R':
+                result = LogicalRelationInfMsg.ofLogicalWal(content);
+                break;
+            case 'Y':
+                result = LogicalDatatypeInfMsg.ofLogicalWal(content);
+                break;
+            case 'I':
+                result = LogicalTupleInsertMsg.ofLogicalWal(content);
+                break;
+            case 'U':
+                result = LogicalTupleUpdateMsg.ofLogicalWal(content);
+                break;
+            case 'D':
+                result = LogicalTupleDeleteMsg.ofLogicalWal(content);
+                break;
+            case 'T':
+                result = LogicalRelTruncateMsg.ofLogicalWal(content);
+                break;
+            default:
+                throw new LogicalMsgFormatException(ImmutableLongArray.of('B', 'C', 'O', 'R', 'Y', 'I', 'U', 'D', 'T'), b);
+        }
+        return result;
+    }
 }
