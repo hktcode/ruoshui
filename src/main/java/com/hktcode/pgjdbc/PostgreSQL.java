@@ -56,4 +56,44 @@ public class PostgreSQL
     private PostgreSQL()
     {
     }
+
+    /**
+     * Create a read only, forward only and close cursors at commit statement.
+     *
+     * @param connection the connection of PostgreSQL.
+     * @param fetchSize default fetch size.
+     * @return a Statement Object.
+     * @throws SQLException if create Statement or set fetch info error.
+     */
+    public static Statement createStatement(Connection connection, int fetchSize)
+        throws SQLException
+    {
+        if (connection == null) {
+            throw new ArgumentNullException("connection");
+        }
+        Statement s = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY //
+            , ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
+        try {
+            setStatement(s, fetchSize);
+            return s;
+        }
+        catch (Exception ex) {
+            s.close();
+            throw ex;
+        }
+    }
+
+    /**
+     * set statement with fetch forward and fetch size.
+     *
+     * @param s statement which will be setted.
+     * @param fetchSize default fetch size.
+     * @throws SQLException if set error.
+     */
+    private static void setStatement(Statement s, int fetchSize)
+        throws SQLException
+    {
+        s.setFetchDirection(ResultSet.FETCH_FORWARD);
+        s.setFetchSize(fetchSize);
+    }
 }
