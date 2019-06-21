@@ -1,0 +1,71 @@
+$schema: http://json-schema.org/draft-04/schema#
+type: object
+properties:
+  consumer:
+    type: object
+    properties:
+      src_property: # TODO:
+        type: object
+        properties:
+          PGDBNAME: { "type":  "string", "default": "postgres"  }
+          PGHOST: { "type":  "string", "default": "localhost" }
+          PGPORT: { "type": "integer", "default": 5432 }
+          user: { "type":  "string", "default": "postgres"  }
+          password: { "type": "string" }
+      logical_slot:
+        type: object
+        properties:
+          slot_name:
+            type: string
+            default: ruoshui
+            pattern: "[0-9a-z_]{1,63}"
+          status_interval:
+            type: integer
+            minimum: 1
+            maximum: 2147483647
+            default: 10000
+          start_position:
+            type: "string"
+            default: "0/0"
+            pattern: "[0-9A-Fa-f]{1,8}/[0-9A-Fa-f]{1,8}"
+          options: { "type": "object" } # TODO:
+      ini_snapshot:
+        type: object
+        properties:
+          select_props: { "type": object } # TODO:
+          tuple_select: { "type": object } # TODO:
+          rs_fetchsize:
+            type: integer
+            default: 128
+            minimum: 0
+            maximum: 2147483647
+          standby_skip: { "type": "boolean", "default": true }
+          program_code:
+            oneOf:
+              - type: string
+              - type: object
+                properties:
+                  engine_name: { type: string } #TODO:
+                  script_text: { type: string }
+      wait_timeout: { "type": "integer", "default": 100 } # TODO:
+      log_duration: { "type": "integer", "default": 30000 } # TODO:
+  junction:
+    type: object
+    properties:
+      comein_count: { type: integer, default: 100, minimum: 1, maximum: 2147483647 }
+      getout_count: { type: integer, default: 100, minimum: 1, maximum: 2147483647 }
+      wait_timeout: { type: integer, default: 100 } # TODO:
+      log_duration: { type: integer, default: 30000 } # TODO:
+  producer:
+    type: object
+    properties:
+      kfk_property: # TODO:
+        type: object
+        properties:
+          bootstrap.servers:
+            type: string
+            default: "localhost:9092"
+      target_topic: { type: string, "default": "ruoshui" } #TODO:
+      partition_no: { type: integer, default: 0, minimum: 0, maximum: 2147483647 }
+      wait_timeout: { type: integer, default: 100 } # TODO:
+      log_duration: { type: integer, default: 30000 } # TODO:
