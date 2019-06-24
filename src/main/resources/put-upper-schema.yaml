@@ -12,7 +12,7 @@ properties:
           PGPORT: { "type": "integer", "default": 5432 }
           user: { "type":  "string", "default": "postgres"  }
           password: { "type": "string" }
-      logical_slot:
+      logical_repl:
         type: object
         properties:
           slot_name:

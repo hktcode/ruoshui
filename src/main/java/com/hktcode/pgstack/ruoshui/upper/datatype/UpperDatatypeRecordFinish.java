@@ -48,7 +48,7 @@ public class UpperDatatypeRecordFinish implements UpperDatatypeRecord
         if (metric == null) {
             throw new ArgumentNullException("metric");
         }
-        UpperTxactionConfig c = UpperTxactionConfig.of(config.logicalSlot);
+        UpperTxactionConfig c = UpperTxactionConfig.of(config.logicalRepl);
         c.waitTimeout = config.waitTimeout;
         c.logDuration = config.logDuration;
         metric.fetchThread = UpperTxactionThreadInit.of(c, pgrepl, status);

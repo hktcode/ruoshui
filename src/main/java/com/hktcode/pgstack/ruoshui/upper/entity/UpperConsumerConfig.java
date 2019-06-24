@@ -87,9 +87,9 @@ public class UpperConsumerConfig extends NaiveConsumerConfig
             throw new ArgumentNullException("json");
         }
         JsonNode srcPropertyNode = json.path("src_property");
-        JsonNode logicalSlotNode = json.path("logical_slot");
+        JsonNode logicalReplNode = json.path("logical_repl");
         PgConnectionProperty srcProperty = PgConnectionProperty.ofJsonObject(srcPropertyNode);
-        String s = logicalSlotNode.path("slot_name").asText(DEFAULT_SLOT_NAME);
+        String s = logicalReplNode.path("slot_name").asText(DEFAULT_SLOT_NAME);
         int i = json.path("status_interval").asInt(DEFAULT_STATUS_INTERVAL);
         long p = json.path("start_position").asLong(DEFAULT_START_POSITION);
         JsonNode optionsNode = json.path("options");
@@ -100,12 +100,12 @@ public class UpperConsumerConfig extends NaiveConsumerConfig
             optionsMap.put(e.getKey(), e.getValue().toString());
         }
         ImmutableMap<String, String> o = ImmutableMap.copyOf(optionsMap);
-        LogicalStreamStarter logicalSlot = LogicalStreamStarter.of(s, i, p, o);
+        LogicalStreamStarter logicalRepl = LogicalStreamStarter.of(s, i, p, o);
         long waitTimeout = json.path("wait_timeout").asLong(DEFALUT_WAIT_TIMEOUT);
         long logDuration = json.path("log_duration").asLong(DEFAULT_LOG_DURATION);
         JsonNode iniSnapshotNode = json.get("ini_snapshot");
         if (iniSnapshotNode == null) {
-            return new UpperConsumerConfig(srcProperty, logicalSlot, waitTimeout, logDuration);
+            return new UpperConsumerConfig(srcProperty, logicalRepl, waitTimeout, logDuration);
         }
         JsonNode tupleSelectNode = iniSnapshotNode.path("tuple_select");
         JsonNode whereScriptNode = iniSnapshotNode.path("where_script");
@@ -131,7 +131,7 @@ public class UpperConsumerConfig extends NaiveConsumerConfig
         iniSnapshot.waitTimeout = waitTimeout;
         iniSnapshot.logDuration = logDuration;
         iniSnapshot.rsFetchsize = r;
-        return UpperSnapshotConfig.of(srcProperty, logicalSlot, iniSnapshot, waitTimeout, logDuration);
+        return UpperSnapshotConfig.of(srcProperty, logicalRepl, iniSnapshot, waitTimeout, logDuration);
     }
 
     /**
@@ -143,18 +143,18 @@ public class UpperConsumerConfig extends NaiveConsumerConfig
 
     public final PgConnectionProperty srcProperty;
 
-    public final LogicalStreamStarter logicalSlot;
+    public final LogicalStreamStarter logicalRepl;
 
     protected UpperConsumerConfig //
-        /* */( PgConnectionProperty srcProperty //
-        /* */, LogicalStreamStarter logicalSlot //
+        /* */(PgConnectionProperty srcProperty //
+        /* */, LogicalStreamStarter logicalRepl //
         /* */, long waitTimeout //
         /* */, long logDuration //
         /* */)
     {
         super(waitTimeout, logDuration);
         this.srcProperty = srcProperty;
-        this.logicalSlot = logicalSlot;
+        this.logicalRepl = logicalRepl;
     }
 
     private static Logger logger = LoggerFactory.getLogger(UpperConsumerConfig.class);

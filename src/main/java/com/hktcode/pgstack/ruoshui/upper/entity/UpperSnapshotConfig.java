@@ -31,7 +31,7 @@ public class UpperSnapshotConfig extends UpperConsumerConfig
             throw new ArgumentNullException("srcProperty");
         }
         if (logicalSlot == null) {
-            throw new ArgumentNullException("logicalSlot");
+            throw new ArgumentNullException("logicalRepl");
         }
         if (iniSnapshot == null) {
             throw new ArgumentNullException("iniSnapshot");

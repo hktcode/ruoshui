@@ -178,7 +178,7 @@ public class UpperConsumer extends NaiveConsumer
             return SimplePstSuccessBgResult.of();
         }
         PgConnectionProperty s = this.config.srcProperty;
-        String p = this.config.logicalSlot.slotName;
+        String p = this.config.logicalRepl.slotName;
         UpperTxactionThread oldAction = (UpperTxactionThread)pollAction;
         JsonNode tupleSelectNode = json.path("tuple_select");
         String m = json.path("metadata_sql").asText(DEFAULT_RELATION_SQL);
