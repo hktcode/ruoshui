@@ -88,26 +88,28 @@ Accept: application/json
       , "publication_names": "ruoshui" // 逗号分隔的publiation名称，默认只为ruoshui.
       }
     }
-  , "ini_snapshot": {} // 如果有此字段，表示流复制开始前会获取快照信息，否则不获取，该字段应当支持相关配置，目前尚不稳定，故暂不留下配置。
+  , "ini_snapshot": {} // 如果此属性存在，流复制开始前会获取快照，否则不获取。该字段支持快照的相关配置，目前尚未文档化
   }
 , "producer": // 写入Kafka者相关配置 
   { "kfk_property":  // Kafka生产者相关配置
-    { "bootstrap.servers": "192.168.119.135:9092" }
+    { "bootstrap.servers": "localhost:9092" }
   , "target_topic": "ruoshui-upper" // 要写入的Kafka的Topic，默认值为ruoshui-upper
   , "partition_no": 0 // 要写入的Kafka分区，默认值为0，目前只支持单个分区写入
   }
 }
 ```
 
-注意：
-* ```consumer.src_property```的含义可以参考[pgjdbc官方文档](https://jdbc.postgresql.org/documentation/head/connect.html#connection-parameters)。
-目前只有```PGHOST```、```PGPORT```、```user```有默认值，其他均没有默认值。
-* ```consuemr.logical_repl.status_interval```的含义可以参考[PostgreSQL官方文档](https://www.postgresql.org/docs/11/runtime-config-replication.html)中关于```wal_receiver_status_interval```的解释。
-* ```consumer.logical_repl.options```目前只支持```proto_verion```和```publication_names```，这两者的含义可以参考[PostgreSQL官方文档](https://www.postgresql.org/docs/11/protocol-logical-replication.html)中相关选项的解释。
-* ```producer.kfk_property```的具体含义可以参考[Kafka官方文档](https://kafka.apache.org/11/documentation.html#producerconfigs)中的定义。
-* 连接到PostgreSQL的用户必须具备复制连接权限，参考PostgreSQL官方文档中关于[pg_hba.conf](https://www.postgresql.org/docs/11/auth-pg-hba-conf.html)的解释。如果需要获取快照功能，则该用户必须有读取数据库的权限和创建逻辑复制槽的权限，参考PostgreSQL官方文档中[复制协议一章](https://www.postgresql.org/docs/11/protocol-replication.html)中相关信息。
-
-在程序中，会将```consumer.src_property```和```producer.kfk_perperty```中的内容变成字符串键值对原封不懂的传递给PostgreSQL的JDBC客户端和Kafka的生产者客户端，因此官方文档中对其的描述可以采用。
+注解：
+- ```consumer.src_property```的含义可以参考[pgjdbc官方文档](https://jdbc.postgresql.org/documentation/head/connect.html#connection-parameters)。
+目前只有```PGHOST```、```PGPORT```、```user```有默认值，其他均没有显式设置（或者说采用Kafka客户端所设置的默认值。
+Ruoshui会将```src_property```中的内容变成字符串键值对传递给PostgreSQL的JDBC客户端，因此pgjdbc官方文档中对其的描述均可采用。
+- ```consuemr.logical_repl.status_interval```的含义可以参考[PostgreSQL官方文档](https://www.postgresql.org/docs/11/runtime-config-replication.html)中关于```wal_receiver_status_interval```的解释。
+- ```consumer.logical_repl.options```目前只支持```proto_verion```和```publication_names```，含义可以参考[PostgreSQL官方文档](https://www.postgresql.org/docs/11/protocol-logical-replication.html)中相关选项的解释。
+- ```producer.kfk_property```的含义可以参考[Kafka官方文档](https://kafka.apache.org/11/documentation.html#producerconfigs)。
+目前只有```bootstrap.servers```有默认值```localhost:9092```，其他选项均没有显式设置（或者说采用Kafka客户端所设置的默认值）。
+Ruoshui会将```kfk_perperty```中的内容变成字符串键值对传递给Kafka生产者，因此Kafka官方文档中对其的描述可以采用。
+- 连接到PostgreSQL的用户必须具备复制连接权限，参考PostgreSQL官方文档中关于[pg_hba.conf](https://www.postgresql.org/docs/11/auth-pg-hba-conf.html)的解释。
+如果需要获取快照功能，则该用户必须有读取数据库的权限和创建逻辑复制槽的权限，参考PostgreSQL官方文档中[复制协议](https://www.postgresql.org/docs/11/protocol-replication.html)的相关信息。
 
 ### ```GET api/upper/ruoshui```
 
@@ -148,7 +150,7 @@ Content-Type: application/json; charset=utf-8
 ```bash
 psql -hlocalhost -Upostgres -c "CREATE PUBLICATION ruoshui FOR ALL TABLES"
 ```
-* 第二步：在PostgreSQL中创建好复制槽（如果你需要初始快照，则不能先创建复制槽）：
+* 第二步：在PostgreSQL中创建好复制槽（如果你需要初始快照，则不能先创建复制槽），此行为有点奇怪，后续可能更改：
 ```bash
 psql -hlocalhost -Upostgres -c "select pg_create_logical_replication_slot('ruoshui', 'pgoutput')"
 ```
