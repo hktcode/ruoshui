@@ -1,11 +1,11 @@
 # Ruoshui
 
-Ruoshui，在PostgreSQL license协议下的开源项目。
-它从PostgreSQL逻辑复制流中接收消息，写入到Kafka中。
+Ruoshui是基于PostgreSQL和Apache Kafka的流式处理框架，在PostgreSQL license协议下开源。
+项目名称“Ruoshui”（弱水）取自中国习语“弱水三千，只取一瓢饮”。
 
-本项目取名“ruoshui”，是从“弱水三千，只取一瓢饮”获得的灵感。
-目前该项目还在非常初期的阶段，很多功能尚不稳定。
-如果你有需要，可以从提交记录中找到我的邮箱和我联系。
+该项目还在非常初期的阶段，只完成了基本功能中的从PostgreSQL逻辑复制流中接收消息写入到Kafka中。
+就算是已经完成的这一基本功能，该功能也并不稳定，文档也不完善，甚至本人对代码质量也不满意。
+因此如果您在使用中需要帮助，可以从提交记录中找到邮箱地址和我联系。
 
 ## 构建
 
@@ -18,7 +18,7 @@ Ruoshui，在PostgreSQL license协议下的开源项目。
 
 ```bash
 export RUOSHUI_SRC_HOME=. # the directory for storge the ruoshui code
-git clone . $RUOSHUI_SRC_HOME
+git clone https://github.com/hktcode/ruoshui.git $RUOSHUI_SRC_HOME
 cd $RUOSHUI_SRC_HOME
 mvn clean package
 ```
@@ -30,7 +30,7 @@ mvn clean package
 ### 运行要求
 
 * JDK 8（当前仅在JDK 8下经过测试）
-* PostgreSQL 10或者更高版本（当前在PostgreSQL 10和11中经过测试）
+* PostgreSQL 10或者更高版本（当前在PostgreSQL 10.4和11.1中经过测试）
 
 ### 命令
 
