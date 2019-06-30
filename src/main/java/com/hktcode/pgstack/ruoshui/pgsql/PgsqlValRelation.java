@@ -6,14 +6,11 @@ package com.hktcode.pgstack.ruoshui.pgsql;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
-import org.postgresql.replication.LogSequenceNumber;
-
-import java.math.BigInteger;
 
 /**
- * 在事务中的tuple信息.
+ * 含有一个关系的快照消息的基类.
  */
-public abstract class PgsqlXidtupleVal extends PgsqlTxactionVal
+public abstract class PgsqlValRelation extends PgsqlVal
 {
     /**
      * 关系的oid.
@@ -46,14 +43,9 @@ public abstract class PgsqlXidtupleVal extends PgsqlTxactionVal
     public final long replchar;
 
     /**
-     * 值列表.
+     * 关系的属性列表.
      */
-    public final ImmutableList<PgsqlComponent> tupleval;
-
-    /**
-     * 该消息在WAL中的起始位置.
-     */
-    public final long lsnofmsg;
+    public final ImmutableList<PgsqlAttribute> attrlist;
 
     /**
      * 构造函数.
@@ -65,50 +57,69 @@ public abstract class PgsqlXidtupleVal extends PgsqlTxactionVal
      * @param dbschema 关系所在的schema名称.
      * @param relation 关系名称.
      * @param replchar 复制标识.
-     * @param tupleval 值列表.
+     * @param attrlist 属性列表.
      */
-    protected PgsqlXidtupleVal //
-        /* */(String dbserver //
-        /* */, long xidofmsg //
-        /* */, long committs //
+    protected PgsqlValRelation //
+        /* */( String dbserver //
         /* */, long relident //
         /* */, String dbschema //
         /* */, String relation //
         /* */, long replchar //
-        /* */, ImmutableList<PgsqlComponent> tupleval //
-        /* */, long lsnofmsg //
+        /* */, ImmutableList<PgsqlAttribute> attrlist //
         /* */)
     {
-        super(dbserver, xidofmsg, committs);
+        super(dbserver);
         this.relident = relident;
         this.dbschema = dbschema;
         this.relation = relation;
         this.replchar = replchar;
-        this.tupleval = tupleval;
-        this.lsnofmsg = lsnofmsg;
+        this.attrlist = attrlist;
+    }
+
+    /**
+     * 将关系的元数据附加到指定的{@code StringBuilder}后面.
+     *
+     * 一般用于生成{@link #toString()}人类可读信息.
+     *
+     * @param builder 指定的{@code StringBuilder}对象.
+     */
+    protected void appendMetadataTo(StringBuilder builder)
+    {
+        builder.append(dbschema);
+        builder.append('|');
+        builder.append(relation);
+        builder.append('|');
+        builder.append(relident);
+        builder.append('|');
+        builder.append((char)replchar);
+    }
+
+    /**
+     * 将关系的属性数据附加到指定的{@code StringBuilder}后面.
+     *
+     * 一般用于生成{@link #toString()}人类可读信息.
+     *
+     * @param builder 指定的{@code StringBuilder}对象.
+     */
+    public void appendAttrlistTo(StringBuilder builder)
+    {
+        for(PgsqlAttribute attr: attrlist) {
+            builder.append("\n    ");
+            attr.appendTo(builder);
+        }
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
         super.appendTo(builder);
         builder.append('|');
-        builder.append(LogSequenceNumber.valueOf(this.lsnofmsg));
-        builder.append('|');
-        builder.append(relident);
-        builder.append('|');
-        builder.append(dbschema);
-        builder.append('|');
-        builder.append(relation);
-        builder.append('|');
-        builder.append((char)replchar);
-        for(PgsqlComponent component : tupleval) {
-            builder.append("\n    ");
-            component.appendTo(builder);
-        }
+        this.appendMetadataTo(builder);
+        this.appendAttrlistTo(builder);
         return builder.toString();
     }
 
@@ -119,16 +130,15 @@ public abstract class PgsqlXidtupleVal extends PgsqlTxactionVal
     public ObjectNode toObjectNode()
     {
         ObjectNode node = super.toObjectNode();
-        node.put("relident", relident);
-        node.put("dbschema", dbschema);
-        node.put("relation", relation);
-        node.put("replchar", replchar);
-        ArrayNode array = node.putArray("tupleval");
-        for (PgsqlComponent component: tupleval) {
+        node.put("relident", this.relident);
+        node.put("dbschema", this.dbschema);
+        node.put("relation", this.relation);
+        node.put("replchar", this.replchar);
+        ArrayNode array = node.putArray("attrlist");
+        for (PgsqlAttribute attribute : attrlist) {
             ObjectNode n = array.addObject();
-            component.putTo(n);
+            attribute.putTo(n);
         }
-        node.put("lsnofmsg", new BigInteger(Long.toUnsignedString(this.lsnofmsg)));
         return node;
     }
 }

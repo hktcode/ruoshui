@@ -7,30 +7,28 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgjdbc.LogicalTupleInsertMsg;
-import com.hktcode.pgjdbc.PgReplAttribute;
-import com.hktcode.pgjdbc.PgReplRelation;
+import com.hktcode.pgjdbc.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@code INSERT}消息.
+ * {@code DELETE}消息.
  */
-public class PgsqlTupleInsertVal extends PgsqlXidtupleVal
+public class PgsqlValTupleDelete extends PgsqlValXidtuple
 {
     /**
-     * 根据提交LSN、逻辑复制流中的{@code INSERT}消息和逻辑复制上下文构建{@link PgsqlTupleInsertVal}对象.
+     * 根据提交LSN、逻辑复制流中的{@code DELETE}消息和逻辑复制上下文构建{@link PgsqlValTupleDelete}对象.
      *
      * @param lsn 该消息在wal中的位置.
-     * @param msg 逻辑复制流中的{@code INSERT}消息.
+     * @param msg 逻辑复制流中的{@code DELETE}消息.
      * @param ctx 逻辑复制上下文.
      *
-     * @return 根据提交LSN、逻辑复制流中的事务消息和逻辑复制上下文构建的{@link PgsqlTupleInsertVal}对象.
+     * @return 根据提交LSN、逻辑复制流中的事务消息和逻辑复制上下文构建的{@link PgsqlValTupleDelete}对象.
      * @throws ArgumentNullException if {@code msg} or {@code ctx} is {@code null}.
      */
     public static ImmutableList<PgsqlVal>
-    of(long lsnofmsg, LogicalTupleInsertMsg msg, LogicalTxactContext ctx)
+    of(long lsnofmsg, LogicalTupleDeleteMsg msg, LogicalTxactContext ctx)
     {
         if (msg == null) {
             throw new ArgumentNullException("lsn");
@@ -46,17 +44,23 @@ public class PgsqlTupleInsertVal extends PgsqlXidtupleVal
         for (int i = 0; i < relation.attrlist.size(); ++i) {
             PgReplAttribute attrinfo = relation.attrlist.get(i);
             JsonNode oldvalue = MissingNode.getInstance();
-            JsonNode newvalue ;
-            if (i < msg.tupleval.size()) {
-                newvalue = msg.tupleval.get(i);
+            if (msg instanceof LogicalKeyTupleDeleteMsg) {
+                LogicalKeyTupleDeleteMsg key = (LogicalKeyTupleDeleteMsg)msg;
+                if (attrinfo.attflags == 1) {
+                    oldvalue = key.keytuple.get(i);
+                }
             }
-            else {
-                newvalue = MissingNode.getInstance();
+            else if (msg instanceof LogicalOldTupleDeleteMsg) {
+                LogicalOldTupleDeleteMsg old = (LogicalOldTupleDeleteMsg)msg;
+                if (i < old.oldtuple.size()) {
+                    oldvalue = old.oldtuple.get(i);
+                }
             }
+            JsonNode newvalue = MissingNode.getInstance();
             tupleval.add(PgsqlComponent.of(attrinfo, oldvalue, newvalue));
         }
 
-        PgsqlTupleInsertVal val = new PgsqlTupleInsertVal//
+        PgsqlValTupleDelete val = new PgsqlValTupleDelete//
             /* */( ctx.dbserver //
             /* */, ctx.xidofmsg //
             /* */, ctx.committs //
@@ -73,12 +77,12 @@ public class PgsqlTupleInsertVal extends PgsqlXidtupleVal
     /**
      * 类型协议号.
      */
-    public static final long PROTOCOL = 5L;
+    public static final long PROTOCOL = 6L;
 
     /**
      * 类型的名称.
      */
-    public static final String TYPENAME = "PgsqlTupleInsert";
+    public static final String TYPENAME = "PgsqlTupleDelete";
 
     /**
      * 构造函数.
@@ -92,8 +96,8 @@ public class PgsqlTupleInsertVal extends PgsqlXidtupleVal
      * @param replchar 复制标识.
      * @param tupleval 值列表.
      */
-    private PgsqlTupleInsertVal //
-    /* */( String dbserver //
+    protected PgsqlValTupleDelete //
+        /* */(String dbserver //
         /* */, long xidofmsg //
         /* */, long committs //
         /* */, long relident //
@@ -124,7 +128,7 @@ public class PgsqlTupleInsertVal extends PgsqlXidtupleVal
     @Override
     public long getProtocol()
     {
-        return PgsqlTupleInsertVal.PROTOCOL;
+        return PgsqlValTupleDelete.PROTOCOL;
     }
 
     /**
@@ -135,6 +139,6 @@ public class PgsqlTupleInsertVal extends PgsqlXidtupleVal
     @Override
     public String getTypename()
     {
-        return PgsqlTupleInsertVal.TYPENAME;
+        return PgsqlValTupleDelete.TYPENAME;
     }
 }

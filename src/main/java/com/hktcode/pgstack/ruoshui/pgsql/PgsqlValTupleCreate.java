@@ -15,17 +15,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 在事务中的tuple信息.
+ * 在快照中的tuple信息.
  */
-public class PgsqlCreateTupleVal extends PgsqlVal
+public class PgsqlValTupleCreate extends PgsqlVal
 {
     /**
-     * 根据快照消息流中的tuple创建消息和复制上下文构建{@link PgsqlCreateTupleVal}对象.
+     * 根据快照消息流中的tuple创建消息和复制上下文构建{@link PgsqlValTupleCreate}对象.
      *
      * @param msg 快照消息流中的快照开始消息.
      * @param ctx 逻辑复制上下文.
      *
-     * @return 根据快照消息流中的tuple创建消息和复制上下文构建的{@link PgsqlCreateTupleVal}对象.
+     * @return 根据快照消息流中的tuple创建消息和复制上下文构建的{@link PgsqlValTupleCreate}对象.
      * @throws ArgumentNullException if {@code ctx} is {@code null}.
      */
     public static ImmutableList<PgsqlVal>
@@ -44,7 +44,7 @@ public class PgsqlCreateTupleVal extends PgsqlVal
             tupleval.add(PgsqlComponent.of(component));
         }
 
-        PgsqlCreateTupleVal val = new PgsqlCreateTupleVal //
+        PgsqlValTupleCreate val = new PgsqlValTupleCreate //
             /* */( ctx.dbserver //
             /* */, relation.relident //
             /* */, relation.dbschema //
@@ -63,7 +63,7 @@ public class PgsqlCreateTupleVal extends PgsqlVal
     /**
      * 类型的名称.
      */
-    public static final String TYPENAME = "PgsqlCreateTuple";
+    public static final String TYPENAME = "PgsqlTupleCreate";
 
     /**
      * 关系的oid.
@@ -110,7 +110,7 @@ public class PgsqlCreateTupleVal extends PgsqlVal
      * @param replchar 复制标识.
      * @param tupleval 值列表.
      */
-    private PgsqlCreateTupleVal //
+    private PgsqlValTupleCreate //
         /* */( String dbserver //
         /* */, long relident //
         /* */, String dbschema //
@@ -154,7 +154,7 @@ public class PgsqlCreateTupleVal extends PgsqlVal
     @Override
     public long getProtocol()
     {
-        return PgsqlCreateTupleVal.PROTOCOL;
+        return PgsqlValTupleCreate.PROTOCOL;
     }
 
     /**
@@ -165,7 +165,7 @@ public class PgsqlCreateTupleVal extends PgsqlVal
     @Override
     public String getTypename()
     {
-        return PgsqlCreateTupleVal.TYPENAME;
+        return PgsqlValTupleCreate.TYPENAME;
     }
 
     /**

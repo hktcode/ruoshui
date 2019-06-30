@@ -10,7 +10,7 @@ import com.google.common.collect.ImmutableList;
 /**
  * 开始快照和结束快照的基类.
  */
-public abstract class PgsqlSnapshotVal extends PgsqlVal
+public abstract class PgsqlValSnapshot extends PgsqlVal
 {
     /**
      * 关系列表.
@@ -27,7 +27,7 @@ public abstract class PgsqlSnapshotVal extends PgsqlVal
      * @param committs 消息提交的PostgreSQL纪元时间戳.
      * @param relalist 快照中关系的列表.
      */
-    protected PgsqlSnapshotVal //
+    protected PgsqlValSnapshot //
         /* */( String dbserver
         /* */, ImmutableList<PgsqlRelation> relalist
         /* */)

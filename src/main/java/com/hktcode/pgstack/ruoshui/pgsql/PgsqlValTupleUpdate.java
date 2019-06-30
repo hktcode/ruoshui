@@ -13,22 +13,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@code DELETE}消息.
+ * {@code UPDATE}消息.
  */
-public class PgsqlTupleDeleteVal extends PgsqlXidtupleVal
+public class PgsqlValTupleUpdate extends PgsqlValXidtuple
 {
     /**
-     * 根据提交LSN、逻辑复制流中的{@code DELETE}消息和逻辑复制上下文构建{@link PgsqlTupleDeleteVal}对象.
+     * 根据提交LSN、逻辑复制流中的{@code UPDATE}消息和逻辑复制上下文构建{@link PgsqlValTupleUpdate}对象.
      *
      * @param lsn 该消息在wal中的位置.
-     * @param msg 逻辑复制流中的{@code DELETE}消息.
+     * @param msg 逻辑复制流中的{@code UPDATE}消息.
      * @param ctx 逻辑复制上下文.
      *
-     * @return 根据提交LSN、逻辑复制流中的事务消息和逻辑复制上下文构建的{@link PgsqlTupleDeleteVal}对象.
+     * @return 根据提交LSN、逻辑复制流中的事务消息和逻辑复制上下文构建的{@link PgsqlValTupleUpdate}对象.
      * @throws ArgumentNullException if {@code msg} or {@code ctx} is {@code null}.
      */
     public static ImmutableList<PgsqlVal>
-    of(long lsnofmsg, LogicalTupleDeleteMsg msg, LogicalTxactContext ctx)
+    of(long lsnofmsg, LogicalTupleUpdateMsg msg, LogicalTxactContext ctx)
     {
         if (msg == null) {
             throw new ArgumentNullException("lsn");
@@ -44,23 +44,26 @@ public class PgsqlTupleDeleteVal extends PgsqlXidtupleVal
         for (int i = 0; i < relation.attrlist.size(); ++i) {
             PgReplAttribute attrinfo = relation.attrlist.get(i);
             JsonNode oldvalue = MissingNode.getInstance();
-            if (msg instanceof LogicalKeyTupleDeleteMsg) {
-                LogicalKeyTupleDeleteMsg key = (LogicalKeyTupleDeleteMsg)msg;
+            if (msg instanceof LogicalKeyTupleUpdateMsg) {
+                LogicalKeyTupleUpdateMsg key = (LogicalKeyTupleUpdateMsg)msg;
                 if (attrinfo.attflags == 1) {
                     oldvalue = key.keytuple.get(i);
                 }
             }
-            else if (msg instanceof LogicalOldTupleDeleteMsg) {
-                LogicalOldTupleDeleteMsg old = (LogicalOldTupleDeleteMsg)msg;
+            else if (msg instanceof LogicalOldTupleUpdateMsg) {
+                LogicalOldTupleUpdateMsg old = (LogicalOldTupleUpdateMsg)msg;
                 if (i < old.oldtuple.size()) {
                     oldvalue = old.oldtuple.get(i);
                 }
             }
             JsonNode newvalue = MissingNode.getInstance();
+            if (i < msg.newtuple.size()) {
+                newvalue = msg.newtuple.get(i);
+            }
             tupleval.add(PgsqlComponent.of(attrinfo, oldvalue, newvalue));
         }
 
-        PgsqlTupleDeleteVal val = new PgsqlTupleDeleteVal//
+        PgsqlValTupleUpdate val = new PgsqlValTupleUpdate//
             /* */( ctx.dbserver //
             /* */, ctx.xidofmsg //
             /* */, ctx.committs //
@@ -77,12 +80,12 @@ public class PgsqlTupleDeleteVal extends PgsqlXidtupleVal
     /**
      * 类型协议号.
      */
-    public static final long PROTOCOL = 6L;
+    public static final long PROTOCOL = 7L;
 
     /**
      * 类型的名称.
      */
-    public static final String TYPENAME = "PgsqlTupleDelete";
+    public static final String TYPENAME = "PgsqlTupleUpdate";
 
     /**
      * 构造函数.
@@ -96,7 +99,7 @@ public class PgsqlTupleDeleteVal extends PgsqlXidtupleVal
      * @param replchar 复制标识.
      * @param tupleval 值列表.
      */
-    protected PgsqlTupleDeleteVal //
+    protected PgsqlValTupleUpdate //
         /* */(String dbserver //
         /* */, long xidofmsg //
         /* */, long committs //
@@ -128,7 +131,7 @@ public class PgsqlTupleDeleteVal extends PgsqlXidtupleVal
     @Override
     public long getProtocol()
     {
-        return PgsqlTupleDeleteVal.PROTOCOL;
+        return PgsqlValTupleUpdate.PROTOCOL;
     }
 
     /**
@@ -139,6 +142,6 @@ public class PgsqlTupleDeleteVal extends PgsqlXidtupleVal
     @Override
     public String getTypename()
     {
-        return PgsqlTupleDeleteVal.TYPENAME;
+        return PgsqlValTupleUpdate.TYPENAME;
     }
 }

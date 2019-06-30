@@ -5,28 +5,28 @@ package com.hktcode.pgstack.ruoshui.pgsql;
 
 import com.google.common.collect.ImmutableList;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgjdbc.LogicalBegRelationMsg;
+import com.hktcode.pgjdbc.LogicalEndRelationMsg;
 import com.hktcode.pgjdbc.PgReplAttribute;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 某个关系快照的开始消息.
+ * 某个关系快照结束消息.
  */
-public class PgsqlBegRelationVal extends PgsqlRelationVal
+public class PgsqlValRelationEnd extends PgsqlValRelation
 {
     /**
-     * 根据快照消息流中的某个关系快照的开始消息和复制上下文构建{@link PgsqlBegRelationVal}对象.
+     * 根据快照消息流中的某个关系快照的结束消息和复制上下文构建{@link PgsqlValRelationEnd}对象.
      *
-     * @param msg 快照消息流中的某个关系快照的开始消息.
+     * @param msg 快照消息流中的某个关系快照的结束消息.
      * @param ctx 逻辑复制上下文.
      *
-     * @return 根据快照消息流中的某个关系快照的开始消息和复制上下文构建的{@link PgsqlBegRelationVal}对象.
+     * @return 根据快照消息流中的某个关系快照结束消息和复制上下文构建的{@link PgsqlValRelationEnd}对象.
      * @throws ArgumentNullException if {@code ctx} is {@code null}.
      */
     public static ImmutableList<PgsqlVal> //
-    of(LogicalBegRelationMsg msg, LogicalTxactContext ctx)
+    of(LogicalEndRelationMsg msg, LogicalTxactContext ctx)
     {
         if (msg == null) {
             throw new ArgumentNullException("msg");
@@ -38,26 +38,26 @@ public class PgsqlBegRelationVal extends PgsqlRelationVal
         for(PgReplAttribute attrinfo : msg.relation.attrlist) {
             attrlist.add(PgsqlAttribute.of(attrinfo));
         }
-        PgsqlBegRelationVal val = new PgsqlBegRelationVal //
+        PgsqlValRelationEnd val = new PgsqlValRelationEnd //
             ( ctx.dbserver //
-            , msg.relation.relident //
-            , msg.relation.dbschema //
-            , msg.relation.relation //
-            , msg.relation.replchar //
-            , ImmutableList.copyOf(attrlist) //
-        );
+                , msg.relation.relident //
+                , msg.relation.dbschema //
+                , msg.relation.relation //
+                , msg.relation.replchar //
+                , ImmutableList.copyOf(attrlist) //
+            );
         return ImmutableList.of(val);
     }
 
     /**
      * 类型协议号.
      */
-    public static final long PROTOCOL = 8L;
+    public static final long PROTOCOL = 9L;
 
     /**
      * 类型的名称.
      */
-    public static final String TYPENAME = "PgsqlBegRelation";
+    public static final String TYPENAME = "PgsqlRelationEnd";
 
     /**
      * 构造函数.
@@ -69,8 +69,8 @@ public class PgsqlBegRelationVal extends PgsqlRelationVal
      * @param replchar 复制标识.
      * @param attrlist 属性列表.
      */
-    private PgsqlBegRelationVal //
-        /* */( String dbserver //
+    private PgsqlValRelationEnd //
+        /* */(String dbserver //
         /* */, long relident //
         /* */, String dbschema //
         /* */, String relation //
@@ -95,7 +95,7 @@ public class PgsqlBegRelationVal extends PgsqlRelationVal
     @Override
     public long getProtocol()
     {
-        return PgsqlBegRelationVal.PROTOCOL;
+        return PgsqlValRelationEnd.PROTOCOL;
     }
 
     /**
@@ -106,6 +106,6 @@ public class PgsqlBegRelationVal extends PgsqlRelationVal
     @Override
     public String getTypename()
     {
-        return PgsqlBegRelationVal.TYPENAME;
+        return PgsqlValRelationEnd.TYPENAME;
     }
 }

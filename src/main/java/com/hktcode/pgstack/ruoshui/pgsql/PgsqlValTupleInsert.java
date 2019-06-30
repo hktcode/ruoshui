@@ -7,28 +7,30 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgjdbc.*;
+import com.hktcode.pgjdbc.LogicalTupleInsertMsg;
+import com.hktcode.pgjdbc.PgReplAttribute;
+import com.hktcode.pgjdbc.PgReplRelation;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@code UPDATE}消息.
+ * {@code INSERT}消息.
  */
-public class PgsqlTupleUpdateVal extends PgsqlXidtupleVal
+public class PgsqlValTupleInsert extends PgsqlValXidtuple
 {
     /**
-     * 根据提交LSN、逻辑复制流中的{@code UPDATE}消息和逻辑复制上下文构建{@link PgsqlTupleUpdateVal}对象.
+     * 根据提交LSN、逻辑复制流中的{@code INSERT}消息和逻辑复制上下文构建{@link PgsqlValTupleInsert}对象.
      *
      * @param lsn 该消息在wal中的位置.
-     * @param msg 逻辑复制流中的{@code UPDATE}消息.
+     * @param msg 逻辑复制流中的{@code INSERT}消息.
      * @param ctx 逻辑复制上下文.
      *
-     * @return 根据提交LSN、逻辑复制流中的事务消息和逻辑复制上下文构建的{@link PgsqlTupleUpdateVal}对象.
+     * @return 根据提交LSN、逻辑复制流中的事务消息和逻辑复制上下文构建的{@link PgsqlValTupleInsert}对象.
      * @throws ArgumentNullException if {@code msg} or {@code ctx} is {@code null}.
      */
     public static ImmutableList<PgsqlVal>
-    of(long lsnofmsg, LogicalTupleUpdateMsg msg, LogicalTxactContext ctx)
+    of(long lsnofmsg, LogicalTupleInsertMsg msg, LogicalTxactContext ctx)
     {
         if (msg == null) {
             throw new ArgumentNullException("lsn");
@@ -44,26 +46,17 @@ public class PgsqlTupleUpdateVal extends PgsqlXidtupleVal
         for (int i = 0; i < relation.attrlist.size(); ++i) {
             PgReplAttribute attrinfo = relation.attrlist.get(i);
             JsonNode oldvalue = MissingNode.getInstance();
-            if (msg instanceof LogicalKeyTupleUpdateMsg) {
-                LogicalKeyTupleUpdateMsg key = (LogicalKeyTupleUpdateMsg)msg;
-                if (attrinfo.attflags == 1) {
-                    oldvalue = key.keytuple.get(i);
-                }
+            JsonNode newvalue ;
+            if (i < msg.tupleval.size()) {
+                newvalue = msg.tupleval.get(i);
             }
-            else if (msg instanceof LogicalOldTupleUpdateMsg) {
-                LogicalOldTupleUpdateMsg old = (LogicalOldTupleUpdateMsg)msg;
-                if (i < old.oldtuple.size()) {
-                    oldvalue = old.oldtuple.get(i);
-                }
-            }
-            JsonNode newvalue = MissingNode.getInstance();
-            if (i < msg.newtuple.size()) {
-                newvalue = msg.newtuple.get(i);
+            else {
+                newvalue = MissingNode.getInstance();
             }
             tupleval.add(PgsqlComponent.of(attrinfo, oldvalue, newvalue));
         }
 
-        PgsqlTupleUpdateVal val = new PgsqlTupleUpdateVal//
+        PgsqlValTupleInsert val = new PgsqlValTupleInsert//
             /* */( ctx.dbserver //
             /* */, ctx.xidofmsg //
             /* */, ctx.committs //
@@ -80,12 +73,12 @@ public class PgsqlTupleUpdateVal extends PgsqlXidtupleVal
     /**
      * 类型协议号.
      */
-    public static final long PROTOCOL = 7L;
+    public static final long PROTOCOL = 5L;
 
     /**
      * 类型的名称.
      */
-    public static final String TYPENAME = "PgsqlTupleUpdate";
+    public static final String TYPENAME = "PgsqlTupleInsert";
 
     /**
      * 构造函数.
@@ -99,8 +92,8 @@ public class PgsqlTupleUpdateVal extends PgsqlXidtupleVal
      * @param replchar 复制标识.
      * @param tupleval 值列表.
      */
-    protected PgsqlTupleUpdateVal //
-        /* */(String dbserver //
+    private PgsqlValTupleInsert //
+    /* */( String dbserver //
         /* */, long xidofmsg //
         /* */, long committs //
         /* */, long relident //
@@ -131,7 +124,7 @@ public class PgsqlTupleUpdateVal extends PgsqlXidtupleVal
     @Override
     public long getProtocol()
     {
-        return PgsqlTupleUpdateVal.PROTOCOL;
+        return PgsqlValTupleInsert.PROTOCOL;
     }
 
     /**
@@ -142,6 +135,6 @@ public class PgsqlTupleUpdateVal extends PgsqlXidtupleVal
     @Override
     public String getTypename()
     {
-        return PgsqlTupleUpdateVal.TYPENAME;
+        return PgsqlValTupleInsert.TYPENAME;
     }
 }

@@ -39,51 +39,51 @@ public abstract class PgsqlVal
         }
         if (msg instanceof LogicalNoOperationMsg) {
             LogicalNoOperationMsg val = (LogicalNoOperationMsg)msg;
-            return PgsqlNoOperationVal.of(val, ctx);
+            return PgsqlValNoOperation.of(val, ctx);
         }
         else if (msg instanceof LogicalBegSnapshotMsg) {
             LogicalBegSnapshotMsg val = (LogicalBegSnapshotMsg)msg;
-            return PgsqlBegSnapshotVal.of(val, ctx);
+            return PgsqlValSnapshotBeg.of(val, ctx);
         }
         else if (msg instanceof LogicalEndSnapshotMsg) {
             LogicalEndSnapshotMsg val = (LogicalEndSnapshotMsg)msg;
-            return PgsqlEndSnapshotVal.of(val, ctx);
+            return PgsqlValSnapshotEnd.of(val, ctx);
         }
         else if (msg instanceof LogicalTxactBeginsMsg) {
             LogicalTxactBeginsMsg val = (LogicalTxactBeginsMsg)msg;
-            return PgsqlTxactBeginsVal.of(lsn, val, ctx);
+            return PgsqlValTxactBegins.of(lsn, val, ctx);
         }
         else if (msg instanceof LogicalTxactCommitMsg) {
             LogicalTxactCommitMsg val = (LogicalTxactCommitMsg) msg;
-            return PgsqlTxactCommitVal.of(lsn, val, ctx);
+            return PgsqlValTxactCommit.of(lsn, val, ctx);
         }
         else if (msg instanceof LogicalBegRelationMsg) {
             LogicalBegRelationMsg val = (LogicalBegRelationMsg) msg;
-            return PgsqlBegRelationVal.of(val, ctx);
+            return PgsqlValRelationBeg.of(val, ctx);
         }
         else if (msg instanceof LogicalEndRelationMsg) {
             LogicalEndRelationMsg val = (LogicalEndRelationMsg)msg;
-            return PgsqlEndRelationVal.of(val, ctx);
+            return PgsqlValRelationEnd.of(val, ctx);
         }
         else if (msg instanceof LogicalRelTruncateMsg) {
             LogicalRelTruncateMsg val = (LogicalRelTruncateMsg)msg;
-            return PgsqlRelTruncateVal.of(lsn, val, ctx);
+            return PgsqlValTruncateRel.of(lsn, val, ctx);
         }
         else if (msg instanceof LogicalTupleInsertMsg) {
             LogicalTupleInsertMsg val = (LogicalTupleInsertMsg)msg;
-            return PgsqlTupleInsertVal.of(lsn, val, ctx);
+            return PgsqlValTupleInsert.of(lsn, val, ctx);
         }
         else if (msg instanceof LogicalTupleUpdateMsg) {
             LogicalTupleUpdateMsg val = (LogicalTupleUpdateMsg)msg;
-            return PgsqlTupleUpdateVal.of(lsn, val, ctx);
+            return PgsqlValTupleUpdate.of(lsn, val, ctx);
         }
         else if (msg instanceof LogicalTupleDeleteMsg) {
             LogicalTupleDeleteMsg val = (LogicalTupleDeleteMsg)msg;
-            return PgsqlTupleDeleteVal.of(lsn, val, ctx);
+            return PgsqlValTupleDelete.of(lsn, val, ctx);
         }
         else if (msg instanceof LogicalCreateTupleMsg) {
             LogicalCreateTupleMsg val = (LogicalCreateTupleMsg)msg;
-            return PgsqlCreateTupleVal.of(val, ctx);
+            return PgsqlValTupleCreate.of(val, ctx);
         }
         else if (msg instanceof LogicalRelationInfMsg) {
             LogicalRelationInfMsg val = (LogicalRelationInfMsg)msg;

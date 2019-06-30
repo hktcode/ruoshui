@@ -14,7 +14,7 @@ import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 /**
  * 表示在事务中的逻辑复制消息.
  */
-public abstract class PgsqlTxactionVal extends PgsqlVal
+public abstract class PgsqlValTxaction extends PgsqlVal
 {
     /**
      * 该消息所在的事务标识.
@@ -42,7 +42,7 @@ public abstract class PgsqlTxactionVal extends PgsqlVal
      * @param xidofmsg 消息所在事务编号.
      * @param committs 消息提交的PostgreSQL纪元时间戳.
      */
-    protected PgsqlTxactionVal(String dbserver, long xidofmsg, long committs)
+    protected PgsqlValTxaction(String dbserver, long xidofmsg, long committs)
     {
         super(dbserver);
         this.xidofmsg = xidofmsg;

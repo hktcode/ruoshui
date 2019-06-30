@@ -12,15 +12,15 @@ import com.hktcode.pgjdbc.LogicalNoOperationMsg;
  *
  * 加入本类只是为了整个体系的完整性考虑.
  */
-public class PgsqlNoOperationVal extends PgsqlVal
+public class PgsqlValNoOperation extends PgsqlVal
 {
     /**
-     * 根据{@link LogicalNoOperationMsg}和复制上下文构建{@link PgsqlNoOperationVal}对象.
+     * 根据{@link LogicalNoOperationMsg}和复制上下文构建{@link PgsqlValNoOperation}对象.
      *
      * @param msg {@link LogicalNoOperationMsg}对象.
      * @param ctx 逻辑复制上下文.
      *
-     * @return 根据快{@link LogicalNoOperationMsg}对象和复制上下文构建的{@link PgsqlEndRelationVal}对象.
+     * @return 根据快{@link LogicalNoOperationMsg}对象和复制上下文构建的{@link PgsqlValRelationEnd}对象.
      * @throws ArgumentNullException if {@code ctx} is {@code null}.
      */
     public static ImmutableList<PgsqlVal>
@@ -32,7 +32,7 @@ public class PgsqlNoOperationVal extends PgsqlVal
         if (ctx == null) {
             throw new ArgumentNullException("ctx");
         }
-        PgsqlNoOperationVal val = new PgsqlNoOperationVal(ctx.dbserver);
+        PgsqlValNoOperation val = new PgsqlValNoOperation(ctx.dbserver);
         return ImmutableList.of(val);
     }
 
@@ -51,7 +51,7 @@ public class PgsqlNoOperationVal extends PgsqlVal
      *
      * @param dbserver 服务器唯一标识.
      */
-    private PgsqlNoOperationVal(String dbserver)
+    private PgsqlValNoOperation(String dbserver)
     {
         super(dbserver);
     }

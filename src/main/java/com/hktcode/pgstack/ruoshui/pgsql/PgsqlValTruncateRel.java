@@ -19,16 +19,16 @@ import java.util.List;
 /**
  * 截断关系的消息.
  */
-public class PgsqlRelTruncateVal extends PgsqlTxactionVal
+public class PgsqlValTruncateRel extends PgsqlValTxaction
 {
     /**
-     * 根据提交LSN、逻辑复制流中的截断关系消息和逻辑复制上下文构建{@link PgsqlRelTruncateVal}对象.
+     * 根据提交LSN、逻辑复制流中的截断关系消息和逻辑复制上下文构建{@link PgsqlValTruncateRel}对象.
      *
      * @param lsn 该消息在wal中的位置.
      * @param msg 逻辑复制流中的截断关系消息.
      * @param ctx 逻辑复制上下文.
      *
-     * @return 根据提交LSN、逻辑复制流中的事务消息和逻辑复制上下文构建的{@link PgsqlRelTruncateVal}对象列表.
+     * @return 根据提交LSN、逻辑复制流中的事务消息和逻辑复制上下文构建的{@link PgsqlValTruncateRel}对象列表.
      * @throws ArgumentNullException if {@code msg} or {@code ctx} is {@code null}.
      */
     public static ImmutableList<PgsqlVal>
@@ -51,7 +51,7 @@ public class PgsqlRelTruncateVal extends PgsqlTxactionVal
             for (PgReplAttribute attrinfo : relation.attrlist) {
                 attrlist.add(PgsqlAttribute.of(attrinfo));
             }
-            PgsqlRelTruncateVal val = new PgsqlRelTruncateVal
+            PgsqlValTruncateRel val = new PgsqlValTruncateRel
                 /* */( ctx.dbserver
                 /* */, ctx.xidofmsg
                 /* */, ctx.committs
@@ -76,7 +76,7 @@ public class PgsqlRelTruncateVal extends PgsqlTxactionVal
     /**
      * 类型的名称.
      */
-    public static final String TYPENAME = "PgsqlRelTruncate";
+    public static final String TYPENAME = "PgsqlTruncateRel";
 
     /**
      * 关系的oid.
@@ -141,7 +141,7 @@ public class PgsqlRelTruncateVal extends PgsqlTxactionVal
      * @param attrlist 属性列表.
      * @param optionbs 语句选项.
      */
-    private PgsqlRelTruncateVal //
+    private PgsqlValTruncateRel //
         /* */( String dbserver //
         /* */, long xidofmsg //
         /* */, long committs //
@@ -172,7 +172,7 @@ public class PgsqlRelTruncateVal extends PgsqlTxactionVal
     @Override
     public long getProtocol()
     {
-        return PgsqlRelTruncateVal.PROTOCOL;
+        return PgsqlValTruncateRel.PROTOCOL;
     }
 
     /**
@@ -183,7 +183,7 @@ public class PgsqlRelTruncateVal extends PgsqlTxactionVal
     @Override
     public String getTypename()
     {
-        return PgsqlRelTruncateVal.TYPENAME;
+        return PgsqlValTruncateRel.TYPENAME;
     }
 
     /**

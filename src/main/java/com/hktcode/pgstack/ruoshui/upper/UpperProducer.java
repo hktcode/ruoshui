@@ -8,7 +8,7 @@ import com.hktcode.bgtriple.status.TripleBasicBgStatus;
 import com.hktcode.bgtriple.status.TripleRunBgStatus;
 import com.hktcode.bgtriple.kafka.KafkaCallbackProducer;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.pgsql.PgsqlTxactCommitVal;
+import com.hktcode.pgstack.ruoshui.pgsql.PgsqlValTxactCommit;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperProducerConfig;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperProducerRecord;
 import org.apache.kafka.clients.producer.Producer;
@@ -82,8 +82,8 @@ public class UpperProducer extends KafkaCallbackProducer
                     ProducerRecord<byte[], byte[]> r //
                         = new ProducerRecord<>(t, p, k, v);
                     LogSequenceNumber lsn = LogSequenceNumber.INVALID_LSN;
-                    if (d.val instanceof PgsqlTxactCommitVal) {
-                        PgsqlTxactCommitVal val = (PgsqlTxactCommitVal)d.val;
+                    if (d.val instanceof PgsqlValTxactCommit) {
+                        PgsqlValTxactCommit val = (PgsqlValTxactCommit)d.val;
                         lsn = LogSequenceNumber.valueOf(val.lsnofmsg);
                     }
                     kfk.send(r, UpperKafkaProducerCallback.of(lsn, super.switcher(), kfk));

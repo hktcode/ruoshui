@@ -14,16 +14,16 @@ import java.math.BigInteger;
 /**
  * 事务开始消息.
  */
-public class PgsqlTxactBeginsVal extends PgsqlTxactionVal
+public class PgsqlValTxactBegins extends PgsqlValTxaction
 {
     /**
-     * 根据提交LSN、逻辑复制流中的事务开始消息和逻辑复制上下文构建{@link PgsqlTxactBeginsVal}对象.
+     * 根据提交LSN、逻辑复制流中的事务开始消息和逻辑复制上下文构建{@link PgsqlValTxactBegins}对象.
      *
      * @param lsn 该消息在wal中的位置.
      * @param msg 逻辑复制流中的事务开始消息.
      * @param ctx 逻辑复制上下文.
      *
-     * @return 根据提交LSN、逻辑复制流中的事务消息和逻辑复制上下文构建的{@link PgsqlTxactBeginsVal}对象.
+     * @return 根据提交LSN、逻辑复制流中的事务消息和逻辑复制上下文构建的{@link PgsqlValTxactBegins}对象.
      * @throws ArgumentNullException if {@code msg} or {@code ctx} is {@code null}.
      */
     public static ImmutableList<PgsqlVal>
@@ -38,7 +38,7 @@ public class PgsqlTxactBeginsVal extends PgsqlTxactionVal
         ctx.committs = msg.committs;
         ctx.xidofmsg = msg.xidofmsg;
         ctx.lsnofcmt = msg.lsnofcmt;
-        PgsqlTxactBeginsVal val = new PgsqlTxactBeginsVal //
+        PgsqlValTxactBegins val = new PgsqlValTxactBegins //
             /* */( ctx.dbserver //
             /* */, msg.xidofmsg //
             /* */, msg.committs //
@@ -70,7 +70,7 @@ public class PgsqlTxactBeginsVal extends PgsqlTxactionVal
      * @param committs 消息提交的PostgreSQL纪元时间戳.
      * @param lsnofmsg 该消息在WAL中的起始位置.
      */
-    private PgsqlTxactBeginsVal //
+    private PgsqlValTxactBegins //
         /* */( String dbserver //
         /* */, long xidofmsg //
         /* */, long committs //
