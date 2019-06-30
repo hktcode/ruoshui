@@ -163,32 +163,32 @@ cd $RUOSHUI_HOME
 ```
 * 第四步：向ruoshui发送一个HTTP的PUT请求：
   * 如果你需要初始快照，请不要进行第二步，命令如下：
-```
-PUT http://localhost:8080/api/upper/ruoshui
-Content-Type: application/json
-Accept: application/json
-
-{ "consumer": { "src_property": {}
-              , "logical_repl": {}
-              , "ini_snapshot": {}
-              }
-, "producer": { "kfk_property": { "bootstrap.servers": "localhost:9092" }
-              }
-}
-```
+    ```
+    PUT http://localhost:8080/api/upper/ruoshui
+    Content-Type: application/json
+    Accept: application/json
+    
+    { "consumer": { "src_property": {}
+                  , "logical_repl": {}
+                  , "ini_snapshot": {}
+                  }
+    , "producer": { "kfk_property": { "bootstrap.servers": "localhost:9092" }
+                  }
+    }
+    ```
   * 如果你不需要初始快照，则必须进行第二步，命令如下：
-```
-PUT http://localhost:8080/api/upper/ruoshui
-Content-Type: application/json
-Accept: application/json
-
-{ "consumer": { "src_property": {}
-              , "logical_repl": {}
-              }
-, "producer": { "kfk_property": { "bootstrap.servers": "localhost:9092" }
-              }
-}
-```
+    ```
+    PUT http://localhost:8080/api/upper/ruoshui
+    Content-Type: application/json
+    Accept: application/json
+    
+    { "consumer": { "src_property": {}
+                  , "logical_repl": {}
+                  }
+    , "producer": { "kfk_property": { "bootstrap.servers": "localhost:9092" }
+                  }
+    }
+    ```
 Ruoshui会向名为```ruoshui-upper```（默认）的Topic写入用Json串表示的复制流消息。
 
 ## 例子
