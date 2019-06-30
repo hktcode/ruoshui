@@ -144,6 +144,13 @@ Content-Type: application/json; charset=utf-8
 ```
 目前该请求的body和响应的body尚未稳定，暂时不做介绍。
 
+注意，发送此POST请求后，必须发生一次事务提交才能将快照写入Kafka中。
+导致这个奇怪行为的原因是，Ruoshui必须知道哪些事务是在快照之后提交的。
+如果不发生一次事务提交，那么Ruoshui获得的事务提交都是在该POST请求之前。
+由于网络延迟等原因，Ruoshui如果不获取在POST请求之后提交的事务，那么Ruoshui无法判断已经接收的事务和快照之间是否还有其他事务。
+只有当Ruoshui接收到一个POST之后的事务提交时，才能确定在该快照之间已经没有事务了。
+Ruoshui会保留该事务提交消息，先将快照写入Kafka，最后再该事务写入Kafka中，不会导致消息的乱序。
+
 ## 使用例子
 
 * 第一步：先在PostgreSQL中创建好```publication```：
