@@ -71,7 +71,7 @@ Accept: application/json
 ```
 以下是JSON串中各个字段的含义：
 
-```
+```json
 { "consumer":                // 消费PostgreSQL逻辑复制流消息和产生快照的相关配置。  
   { "src_property":          // PostgreSQL的JDBC连接配置
     { "PGPORT": 5432         // PostgreSQL Server的端口信息，默认为5432
