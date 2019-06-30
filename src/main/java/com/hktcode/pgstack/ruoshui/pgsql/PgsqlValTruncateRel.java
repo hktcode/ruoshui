@@ -10,9 +10,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalRelTruncateMsg;
 import com.hktcode.pgjdbc.PgReplAttribute;
 import com.hktcode.pgjdbc.PgReplRelation;
-import org.postgresql.replication.LogSequenceNumber;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,11 +122,6 @@ public class PgsqlValTruncateRel extends PgsqlValTxaction
     public final long optionbs;
 
     /**
-     * 该消息在WAL中的起始位置.
-     */
-    public final long lsnofmsg;
-
-    /**
      * 构造函数.
      *
      * @param dbserver 服务器唯一标识.
@@ -154,14 +147,13 @@ public class PgsqlValTruncateRel extends PgsqlValTxaction
         /* */, long lsnofmsg //
         /* */)
     {
-        super(dbserver, xidofmsg, committs);
+        super(dbserver, lsnofmsg, xidofmsg, committs);
         this.relident = relident;
         this.dbschema = dbschema;
         this.relation = relation;
         this.replchar = replchar;
         this.attrlist = attrlist;
         this.optionbs = optionbs;
-        this.lsnofmsg = lsnofmsg;
     }
 
     /**
@@ -195,8 +187,6 @@ public class PgsqlValTruncateRel extends PgsqlValTxaction
         StringBuilder builder = new StringBuilder();
         super.appendTo(builder);
         builder.append('|');
-        builder.append(LogSequenceNumber.valueOf(lsnofmsg));
-        builder.append('|');
         builder.append(dbschema);
         builder.append('|');
         builder.append(relation);
@@ -229,7 +219,6 @@ public class PgsqlValTruncateRel extends PgsqlValTxaction
             ObjectNode n = array.addObject();
             attribute.putTo(n);
         }
-        node.put("lsnofmsg", new BigInteger(Long.toUnsignedString(this.lsnofmsg)));
         node.put("optionbs", this.optionbs);
         return node;
     }

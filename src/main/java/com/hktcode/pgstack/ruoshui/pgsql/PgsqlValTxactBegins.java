@@ -7,9 +7,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalTxactBeginsMsg;
-import org.postgresql.replication.LogSequenceNumber;
-
-import java.math.BigInteger;
 
 /**
  * 事务开始消息.
@@ -58,11 +55,6 @@ public class PgsqlValTxactBegins extends PgsqlValTxaction
     public static final String TYPENAME = "PgsqlTxactBegins";
 
     /**
-     * 该消息在WAL中的起始位置.
-     */
-    public final long lsnofmsg;
-
-    /**
      * 构造函数.
      *
      * @param dbserver 服务器唯一标识.
@@ -77,8 +69,7 @@ public class PgsqlValTxactBegins extends PgsqlValTxaction
         /* */, long lsnofmsg //
         /* */)
     {
-        super(dbserver, xidofmsg, committs);
-        this.lsnofmsg = lsnofmsg;
+        super(dbserver, lsnofmsg, xidofmsg, committs);
     }
 
     /**
@@ -105,9 +96,7 @@ public class PgsqlValTxactBegins extends PgsqlValTxaction
     @Override
     public ObjectNode toObjectNode()
     {
-        ObjectNode result = super.toObjectNode();
-        result.put("lsnofmsg", new BigInteger(Long.toUnsignedString(this.lsnofmsg)));
-        return result;
+        return super.toObjectNode();
     }
 
     /**
@@ -118,8 +107,6 @@ public class PgsqlValTxactBegins extends PgsqlValTxaction
     {
         StringBuilder builder = new StringBuilder();
         super.appendTo(builder);
-        builder.append('|');
-        builder.append(LogSequenceNumber.valueOf(lsnofmsg));
         return builder.toString();
     }
 }

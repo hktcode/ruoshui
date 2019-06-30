@@ -110,7 +110,7 @@ public abstract class PgsqlVal
      * 用于唯一标识一个机器地址，如果是空字符串，表示机器地址丢失。
      * 可考虑用服务名、IP地址、域名和端口来作为此字段的值.
      *
-     * TODO: 像{@code protocol}、{@code typename}一样定义一个成员变量，还是像现在这样定义成函数，还需要考虑
+     * TODO: 像{@code protocol}、{@code typename}一样定义成函数，还是像现在这样定义成成员变量，还需要考虑
      */
     public final String dbserver;
 
@@ -125,7 +125,7 @@ public abstract class PgsqlVal
     /**
      * 类型的名称.
      *
-     * TODO: 像{@link dbserver} 一样定义一个成员变量，还是像现在这样定义成函数，还需要考虑
+     * TODO: 像{@code dbserver} 一样定义一个成员变量，还是像现在这样定义成函数，还需要考虑
      * @return 类型名称.
      */
     public abstract String getTypename();
@@ -166,7 +166,7 @@ public abstract class PgsqlVal
         ObjectNode node = new ObjectNode(JsonNodeFactory.instance);
         node.put("protocol", this.getProtocol());
         node.put("typename", this.getTypename());
-        node.put("dbserver", this.dbserver);
+        // TODO: node.put("dbserver", this.dbserver);
         return node;
     }
 }

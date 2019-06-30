@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalTxactCommitMsg;
-import org.postgresql.replication.LogSequenceNumber;
 
 import java.math.BigInteger;
 
@@ -56,11 +55,6 @@ public class PgsqlValTxactCommit extends PgsqlValTxaction
     public static final String TYPENAME = "PgsqlTxactCommit";
 
     /**
-     * 该消息在WAL中的起始位置.
-     */
-    public final long lsnofmsg;
-
-    /**
      * 提交的标记.
      */
     public final long xidflags;
@@ -82,8 +76,7 @@ public class PgsqlValTxactCommit extends PgsqlValTxaction
         /* */, long xidflags //
         /* */)
     {
-        super(dbserver, xidofmsg, committs);
-        this.lsnofmsg = lsnofmsg;
+        super(dbserver, lsnofmsg, xidofmsg, committs);
         this.xidflags = xidflags;
     }
 
@@ -113,8 +106,6 @@ public class PgsqlValTxactCommit extends PgsqlValTxaction
         StringBuilder builder = new StringBuilder();
         super.appendTo(builder);
         builder.append('|');
-        builder.append(LogSequenceNumber.valueOf(this.lsnofmsg));
-        builder.append('|');
         builder.append(this.xidflags);
         return builder.toString();
     }
@@ -126,8 +117,7 @@ public class PgsqlValTxactCommit extends PgsqlValTxaction
     public ObjectNode toObjectNode()
     {
         ObjectNode result = super.toObjectNode();
-        result.put("lsnofmsg", new BigInteger(Long.toUnsignedString(this.lsnofmsg)));
-        result.put("xidflags", this.xidflags);
+        result.put("xidflags", new BigInteger(Long.toUnsignedString(this.xidflags)));
         return result;
     }
 }

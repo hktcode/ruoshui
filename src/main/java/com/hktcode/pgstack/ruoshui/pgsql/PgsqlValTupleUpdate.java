@@ -28,7 +28,7 @@ public class PgsqlValTupleUpdate extends PgsqlValXidtuple
      * @throws ArgumentNullException if {@code msg} or {@code ctx} is {@code null}.
      */
     public static ImmutableList<PgsqlVal>
-    of(long lsnofmsg, LogicalTupleUpdateMsg msg, LogicalTxactContext ctx)
+    of(long lsn, LogicalTupleUpdateMsg msg, LogicalTxactContext ctx)
     {
         if (msg == null) {
             throw new ArgumentNullException("lsn");
@@ -60,7 +60,7 @@ public class PgsqlValTupleUpdate extends PgsqlValXidtuple
             if (i < msg.newtuple.size()) {
                 newvalue = msg.newtuple.get(i);
             }
-            tupleval.add(PgsqlComponent.of(attrinfo, oldvalue, newvalue));
+            tupleval.add(PgsqlComponentAll.of(attrinfo, oldvalue, newvalue));
         }
 
         PgsqlValTupleUpdate val = new PgsqlValTupleUpdate//
@@ -72,7 +72,7 @@ public class PgsqlValTupleUpdate extends PgsqlValXidtuple
             /* */, relation.relation //
             /* */, relation.replchar //
             /* */, ImmutableList.copyOf(tupleval) //
-            /* */, lsnofmsg //
+            /* */, lsn //
             /* */);
         return ImmutableList.of(val);
     }
@@ -99,8 +99,8 @@ public class PgsqlValTupleUpdate extends PgsqlValXidtuple
      * @param replchar 复制标识.
      * @param tupleval 值列表.
      */
-    protected PgsqlValTupleUpdate //
-        /* */(String dbserver //
+    private PgsqlValTupleUpdate //
+        /* */( String dbserver //
         /* */, long xidofmsg //
         /* */, long committs //
         /* */, long relident //

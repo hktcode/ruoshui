@@ -6,9 +6,6 @@ package com.hktcode.pgstack.ruoshui.pgsql;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
-import org.postgresql.replication.LogSequenceNumber;
-
-import java.math.BigInteger;
 
 /**
  * 在事务中的tuple信息.
@@ -51,11 +48,6 @@ public abstract class PgsqlValXidtuple extends PgsqlValTxaction
     public final ImmutableList<PgsqlComponent> tupleval;
 
     /**
-     * 该消息在WAL中的起始位置.
-     */
-    public final long lsnofmsg;
-
-    /**
      * 构造函数.
      *
      * @param dbserver 服务器唯一标识.
@@ -79,13 +71,12 @@ public abstract class PgsqlValXidtuple extends PgsqlValTxaction
         /* */, long lsnofmsg //
         /* */)
     {
-        super(dbserver, xidofmsg, committs);
+        super(dbserver, lsnofmsg, xidofmsg, committs);
         this.relident = relident;
         this.dbschema = dbschema;
         this.relation = relation;
         this.replchar = replchar;
         this.tupleval = tupleval;
-        this.lsnofmsg = lsnofmsg;
     }
 
     /**
@@ -95,8 +86,6 @@ public abstract class PgsqlValXidtuple extends PgsqlValTxaction
     {
         StringBuilder builder = new StringBuilder();
         super.appendTo(builder);
-        builder.append('|');
-        builder.append(LogSequenceNumber.valueOf(this.lsnofmsg));
         builder.append('|');
         builder.append(relident);
         builder.append('|');
@@ -128,7 +117,6 @@ public abstract class PgsqlValXidtuple extends PgsqlValTxaction
             ObjectNode n = array.addObject();
             component.putTo(n);
         }
-        node.put("lsnofmsg", new BigInteger(Long.toUnsignedString(this.lsnofmsg)));
         return node;
     }
 }

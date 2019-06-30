@@ -38,10 +38,19 @@ public class PgsqlValTupleCreate extends PgsqlVal
             throw new ArgumentNullException("ctx");
         }
         PgReplRelation relation = msg.relation;
-        List<PgsqlComponent> tupleval = new ArrayList<>();
+        List<PgsqlComponentThe> tupleval = new ArrayList<>();
         for (int i = 0; i < msg.tupleval.size(); ++i) {
             PgReplComponent component = msg.tupleval.get(i);
-            tupleval.add(PgsqlComponent.of(component));
+            PgsqlComponentThe thevalue = PgsqlComponentThe.of
+                /* */( component.attrinfo.attrname //
+                /* */, component.attrinfo.tpschema //
+                /* */, component.attrinfo.typename //
+                /* */, component.attrinfo.datatype //
+                /* */, component.attrinfo.attypmod //
+                /* */, component.attrinfo.attflags //
+                /* */, component.newvalue //
+                /* */);
+            tupleval.add(thevalue);
         }
 
         PgsqlValTupleCreate val = new PgsqlValTupleCreate //
@@ -98,7 +107,7 @@ public class PgsqlValTupleCreate extends PgsqlVal
     /**
      * 值列表.
      */
-    public final ImmutableList<PgsqlComponent> tupleval;
+    public final ImmutableList<PgsqlComponentThe> tupleval;
 
     /**
      * 构造函数.
@@ -116,7 +125,7 @@ public class PgsqlValTupleCreate extends PgsqlVal
         /* */, String dbschema //
         /* */, String relation //
         /* */, long replchar //
-        /* */, ImmutableList<PgsqlComponent> tupleval //
+        /* */, ImmutableList<PgsqlComponentThe> tupleval //
         /* */)
     {
         super(dbserver);
@@ -183,7 +192,7 @@ public class PgsqlValTupleCreate extends PgsqlVal
         builder.append(relation);
         builder.append('|');
         builder.append((char)replchar);
-        for(PgsqlComponent component : tupleval) {
+        for(PgsqlComponentThe component : tupleval) {
             builder.append("\n    ");
             component.appendTo(builder);
         }

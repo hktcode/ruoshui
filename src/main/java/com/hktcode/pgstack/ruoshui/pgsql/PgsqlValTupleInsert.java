@@ -53,7 +53,7 @@ public class PgsqlValTupleInsert extends PgsqlValXidtuple
             else {
                 newvalue = MissingNode.getInstance();
             }
-            tupleval.add(PgsqlComponent.of(attrinfo, oldvalue, newvalue));
+            tupleval.add(PgsqlComponentAll.of(attrinfo, oldvalue, newvalue));
         }
 
         PgsqlValTupleInsert val = new PgsqlValTupleInsert//
@@ -93,7 +93,7 @@ public class PgsqlValTupleInsert extends PgsqlValXidtuple
      * @param tupleval 值列表.
      */
     private PgsqlValTupleInsert //
-    /* */( String dbserver //
+        /* */( String dbserver //
         /* */, long xidofmsg //
         /* */, long committs //
         /* */, long relident //

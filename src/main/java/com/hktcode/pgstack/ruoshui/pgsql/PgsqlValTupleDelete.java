@@ -57,7 +57,7 @@ public class PgsqlValTupleDelete extends PgsqlValXidtuple
                 }
             }
             JsonNode newvalue = MissingNode.getInstance();
-            tupleval.add(PgsqlComponent.of(attrinfo, oldvalue, newvalue));
+            tupleval.add(PgsqlComponentAll.of(attrinfo, oldvalue, newvalue));
         }
 
         PgsqlValTupleDelete val = new PgsqlValTupleDelete//
