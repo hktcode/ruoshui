@@ -3,9 +3,11 @@
 Ruoshui是一个基于PostgreSQL和Apache Kafka的流式处理框架，在PostgreSQL license协议下开源。
 项目名称“Ruoshui”（弱水）取自“任凭弱水三千，我只取一瓢饮”。
 
+Ruoshui采用Spring Boot开发，对外提供的接口为RESTful接口。
 该项目还在非常初期的阶段，只完成了从PostgreSQL逻辑复制流中接收消息写入到Kafka中这一基本功能。
-就算是已经完成的这一功能，该功能也并不稳定，文档也不完善，本人对代码质量也不满意。
-因此如果您在使用中需要帮助，可以从提交记录中找到邮箱地址和我联系。
+就算是已经完成的这一功能，该功能也不稳定，文档也不完善，本人对代码质量也不满意。
+
+如果您在使用中需要帮助，可以从提交记录中找到邮箱地址和我联系。
 
 ## 构建
 
@@ -27,7 +29,7 @@ mvn clean package
 
 ## 运行
 
-### 运行要求
+### 要求
 
 * JDK 8（当前仅在JDK 8下经过测试）
 * PostgreSQL 10或者更高版本（当前在PostgreSQL 10.4和11.1中经过测试）
@@ -99,6 +101,7 @@ Accept: application/json
 }
 ```
 
+
 注解：
 1. ```consumer.src_property```的含义可以参考[pgjdbc官方文档](https://jdbc.postgresql.org/documentation/head/connect.html#connection-parameters)。
 目前只有```PGHOST```、```PGPORT```、```user```有默认值，其他均没有显式设置（或者说采用Kafka客户端所设置的默认值。
@@ -110,6 +113,8 @@ Ruoshui会将```src_property```中的内容变成字符串键值对传递给Post
 Ruoshui会将```kfk_perperty```中的内容变成字符串键值对传递给Kafka生产者，因此Kafka官方文档中对其的描述可以采用。
 5. 连接到PostgreSQL的用户必须具备复制连接权限，参考PostgreSQL官方文档中关于[pg_hba.conf](https://www.postgresql.org/docs/11/auth-pg-hba-conf.html)的解释。
 如果需要获取快照功能，则该用户必须有读取数据库的权限和创建逻辑复制槽的权限，参考PostgreSQL官方文档中[复制协议](https://www.postgresql.org/docs/11/protocol-replication.html)的相关信息。
+6. Ruoshui并不会将请求持久化到磁盘上，因此，如果重启，这些请求信息就再也找不到了。
+建议妥善保管这些HTTP请求，以便需要时重新使用。
 
 ### ```GET api/upper/ruoshui```
 
@@ -124,7 +129,8 @@ Accept: application/json; charset=utf-8
 
 ### ```DELETE api/upper/ruoshui```
 
-删除Ruoshui项目。例如：
+删除Ruoshui。这将导致Ruoshui项目停止接受PostgreSQL的逻辑复制流操作，关闭连接，并清除相关记录。
+如果需要再次启动，你需要重新发起```PUT```请求。
 
 ```http request
 DELETE http://localhost:8080/api/upper/ruoshui
