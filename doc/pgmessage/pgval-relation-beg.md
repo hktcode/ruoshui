@@ -37,7 +37,7 @@
                , "attypmod":-1
                , "attflags":0
                }
-             ],
+             ]
 }
 ```
 

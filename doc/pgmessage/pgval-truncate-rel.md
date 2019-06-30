@@ -45,6 +45,6 @@ Truncate消息。
                , "attflags":0
                }
              ]
-, "optionbs":0,
+, "optionbs":0
 }
 ```

@@ -13,6 +13,6 @@
 
 ```json
 { "protocol":10
-, "typename":"PgsqlSnapshotBeg",
+, "typename":"PgsqlSnapshotBeg"
 }
 ```

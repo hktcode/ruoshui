@@ -35,7 +35,7 @@ INSERT消息
                , "datatype":20
                , "attypmod":-1
                , "attflags":1
-               , "newvalue":"3",
+               , "newvalue":"3"
                }
              , { "attrname":"val"
                , "tpschema":"pg_catalog"
