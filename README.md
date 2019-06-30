@@ -59,11 +59,11 @@ PUT http://localhost:8080/api/upper/ruoshui
 Content-Type: application/json
 Accept: application/json
 
-{ "consumer": { "src_property": {"PGPORT": 5435}
+{ "consumer": { "src_property": {}
               , "logical_repl": {}
               , "ini_snapshot": {}
               }
-, "producer": { "kfk_property": { "bootstrap.servers": "192.168.119.135:9092" }
+, "producer": { "kfk_property": { "bootstrap.servers": "localhost:9092" }
               , "target_topic": "ruoshui-upper"
               , "partition_no": 0
               }
@@ -73,7 +73,7 @@ Accept: application/json
 
 ```json
 { "consumer":                // 消费PostgreSQL逻辑复制流消息和产生快照的相关配置。  
-  { "src_property":          // PostgreSQL的JDBC连接配置
+  { "src_property":          // PostgreSQL的JDBC连接配置，参见下面的注解1。
     { "PGPORT": 5432         // PostgreSQL Server的端口信息，默认为5432
     , "PGHOST": "localhost"  // PostgreSQL的主机地址，默认为localhost
     , "user": "postgres"     // 连接到PostgreSQL的用户名，默认为postgres
@@ -81,17 +81,17 @@ Accept: application/json
     }
   , "logical_repl":                    // 逻辑复制流的相关配置 
     { "slot_name": "ruoshui"           // 复制槽名称，默认为ruoshui
-    , "status_interval": 10000         // 向PostgreSQL主服务器报告复制进度的间隔，用毫秒计算，默认为10000，即10秒。
+    , "status_interval": 10000         // 向PostgreSQL主服务器报告复制进度的间隔时间，参考下面的注解2，用毫秒计算，默认为10000，即10秒。
     , "start_position": 0              // 开始的wal位置，0表示由服务器控制，最好不要使用此参数，默认值为0
     , "options":                       // 复制槽选项
       { "proto_verion": "1"            // 目前只支持1，默认值也是1
-      , "publication_names": "ruoshui" // 逗号分隔的publiation名称，默认只为ruoshui.
+      , "publication_names": "ruoshui" // 逗号分隔的publiation名称，参考下面的注解3，默认只为ruoshui.
       }
     }
   , "ini_snapshot": {} // 如果此属性存在，流复制开始前会获取快照，否则不获取。该字段支持快照的相关配置，目前尚未文档化
   }
 , "producer":                                  // 写入Kafka者相关配置 
-  { "kfk_property":                            // Kafka生产者相关配置
+  { "kfk_property":                            // Kafka生产者相关配置，参考下面的注解4
     { "bootstrap.servers": "localhost:9092" }
   , "target_topic": "ruoshui-upper"            // 要写入的Kafka的Topic，默认值为ruoshui-upper
   , "partition_no": 0                          // 要写入的Kafka分区，默认值为0，目前只支持单个分区写入
@@ -100,15 +100,15 @@ Accept: application/json
 ```
 
 注解：
-- ```consumer.src_property```的含义可以参考[pgjdbc官方文档](https://jdbc.postgresql.org/documentation/head/connect.html#connection-parameters)。
+1. ```consumer.src_property```的含义可以参考[pgjdbc官方文档](https://jdbc.postgresql.org/documentation/head/connect.html#connection-parameters)。
 目前只有```PGHOST```、```PGPORT```、```user```有默认值，其他均没有显式设置（或者说采用Kafka客户端所设置的默认值。
 Ruoshui会将```src_property```中的内容变成字符串键值对传递给PostgreSQL的JDBC客户端，因此pgjdbc官方文档中对其的描述均可采用。
-- ```consuemr.logical_repl.status_interval```的含义可以参考[PostgreSQL官方文档](https://www.postgresql.org/docs/11/runtime-config-replication.html)中关于```wal_receiver_status_interval```的解释。
-- ```consumer.logical_repl.options```目前只支持```proto_verion```和```publication_names```，含义可以参考[PostgreSQL官方文档](https://www.postgresql.org/docs/11/protocol-logical-replication.html)中相关选项的解释。
-- ```producer.kfk_property```的含义可以参考[Kafka官方文档](https://kafka.apache.org/11/documentation.html#producerconfigs)。
+2. ```consuemr.logical_repl.status_interval```的含义可以参考[PostgreSQL官方文档](https://www.postgresql.org/docs/11/runtime-config-replication.html)中关于```wal_receiver_status_interval```的解释。
+3. ```consumer.logical_repl.options```目前只支持```proto_verion```和```publication_names```，含义可以参考[PostgreSQL官方文档](https://www.postgresql.org/docs/11/protocol-logical-replication.html)中相关选项的解释。
+4. ```producer.kfk_property```的含义可以参考[Kafka官方文档](https://kafka.apache.org/11/documentation.html#producerconfigs)。
 目前只有```bootstrap.servers```有默认值```localhost:9092```，其他选项均没有显式设置（或者说采用Kafka客户端所设置的默认值）。
 Ruoshui会将```kfk_perperty```中的内容变成字符串键值对传递给Kafka生产者，因此Kafka官方文档中对其的描述可以采用。
-- 连接到PostgreSQL的用户必须具备复制连接权限，参考PostgreSQL官方文档中关于[pg_hba.conf](https://www.postgresql.org/docs/11/auth-pg-hba-conf.html)的解释。
+5. 连接到PostgreSQL的用户必须具备复制连接权限，参考PostgreSQL官方文档中关于[pg_hba.conf](https://www.postgresql.org/docs/11/auth-pg-hba-conf.html)的解释。
 如果需要获取快照功能，则该用户必须有读取数据库的权限和创建逻辑复制槽的权限，参考PostgreSQL官方文档中[复制协议](https://www.postgresql.org/docs/11/protocol-replication.html)的相关信息。
 
 ### ```GET api/upper/ruoshui```
