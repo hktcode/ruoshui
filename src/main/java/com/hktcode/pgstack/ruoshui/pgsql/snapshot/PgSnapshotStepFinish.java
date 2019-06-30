@@ -11,7 +11,7 @@ import java.sql.SQLException;
  *
  * @param <M> 获取快照时的metric类.
  */
-public interface PgSnapshotStepFinish<M> extends PgSnapshotStep
+public interface PgSnapshotStepFinish<M> extends PgSnapshotStep<M>
 {
     /**
      * 获取快照结束时的动作.
