@@ -1,10 +1,10 @@
 # Ruoshui
 
-Ruoshui是基于PostgreSQL和Apache Kafka的流式处理框架，在PostgreSQL license协议下开源。
-项目名称“Ruoshui”（弱水）取自中国习语“弱水三千，只取一瓢饮”。
+Ruoshui是一个基于PostgreSQL和Apache Kafka的流式处理框架，在PostgreSQL license协议下开源。
+项目名称“Ruoshui”（弱水）取自“任凭弱水三千，我只取一瓢饮”。
 
-该项目还在非常初期的阶段，只完成了基本功能中的从PostgreSQL逻辑复制流中接收消息写入到Kafka中。
-就算是已经完成的这一基本功能，该功能也并不稳定，文档也不完善，甚至本人对代码质量也不满意。
+该项目还在非常初期的阶段，只完成了从PostgreSQL逻辑复制流中接收消息写入到Kafka中这一基本功能。
+就算是已经完成的这一功能，该功能也并不稳定，文档也不完善，本人对代码质量也不满意。
 因此如果您在使用中需要帮助，可以从提交记录中找到邮箱地址和我联系。
 
 ## 构建
@@ -39,13 +39,13 @@ unzip ruoshui-0.0.1-SNAPSHOT-bin.zip
 cd ruoshui-0.0.1-SNAPSHOT
 ./ruoshui
 ```
-默认启用的端口为8080，如果你需要使用其他端口，可以使用参数--server-port。
+默认启用的端口为8080，如果你需要使用其他端口，可以使用参数--server.port。
 例如，假如你想使用8090端口
 ```bash
-./ruoshui --server-port=8090
+./ruoshui --server.port=8090
 ```
 
-Ruoshui使用Spring Boot开发，```--server-port```是Spring Boot提供的功能。
+Ruoshui基于Spring Boot开发，```--server.port```是Spring Boot提供的功能。
 你也可以其他的Spring Boot设置。
 
 ## 使用
