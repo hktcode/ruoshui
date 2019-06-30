@@ -20,3 +20,31 @@ Truncate消息。
 
 ## 例子：
 
+```json
+{ "protocol":4
+, "typename":"PgsqlTruncateRel"
+, "lsnofmsg":520103272
+, "xidofmsg":681
+, "committs":1561882567760819
+, "relident":16384
+, "dbschema":"public"
+, "relation":"ruoshui"
+, "replchar":100
+, "attrlist":[ { "attrname":"id"
+               , "tpschema":"pg_catalog"
+               , "typename":"int8"
+               , "datatype":20
+               , "attypmod":-1
+               , "attflags":1
+               }
+             , { "attrname":"val"
+               , "tpschema":"pg_catalog"
+               , "typename":"text"
+               , "datatype":25
+               , "attypmod":-1
+               , "attflags":0
+               }
+             ]
+, "optionbs":0,
+}
+```

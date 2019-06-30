@@ -16,3 +16,28 @@
 
 ## 例子：
 
+```json
+{ "protocol":8
+, "typename":"PgsqlRelationBeg"
+, "relident":16384
+, "dbschema":"public"
+, "relation":"ruoshui"
+, "replchar":100
+, "attrlist":[ { "attrname":"id"
+               , "tpschema":"pg_catalog"
+               , "typename":"int8"
+               , "datatype":20
+               , "attypmod":-1
+               , "attflags":1
+               }
+             , { "attrname":"val"
+               , "tpschema":"pg_catalog"
+               , "typename":"text"
+               , "datatype":25
+               , "attypmod":-1
+               , "attflags":0
+               }
+             ],
+}
+```
+

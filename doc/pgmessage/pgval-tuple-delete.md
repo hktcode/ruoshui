@@ -19,3 +19,66 @@ Delete消息
 
 ## 例子：
 
+```json
+{ "protocol":6
+, "typename":"PgsqlTupleDelete"
+, "lsnofmsg":520094360
+, "xidofmsg":680
+, "committs":1561882549660828
+, "relident":16384
+, "dbschema":"public"
+, "relation":"ruoshui"
+, "replchar":100
+, "tupleval":[ { "attrname":"id"
+               , "tpschema":"pg_catalog"
+               , "typename":"int8"
+               , "datatype":20
+               , "attypmod":-1
+               , "attflags":1
+               , "oldvalue":"3"
+               }
+             , { "attrname":"val"
+               , "tpschema":"pg_catalog"
+               , "typename":"text"
+               , "datatype":25
+               , "attypmod":-1
+               , "attflags":0
+               }
+             ]
+}
+```
+注意，此处属性val中没有出现```oldvalue```属性，因为PostgreSQL允许DELETE消息中只发送键的部分。
+
+
+```json
+{ "protocol":6
+, "typename":"PgsqlTupleDelete"
+, "lsnofmsg":536872176
+, "xidofmsg":686
+, "committs":1561885272633653
+, "relident":16384
+, "dbschema":"public"
+, "relation":"ruoshui"
+, "replchar":102
+, "tupleval":[ { "attrname":"id"
+               , "tpschema":"pg_catalog"
+               , "typename":"int8"
+               , "datatype":20
+               , "attypmod":-1
+               , "attflags":1
+               , "oldvalue":"4"
+               }
+             , { "attrname":"val"
+               , "tpschema":"pg_catalog"
+               , "typename":"text"
+               , "datatype":25
+               , "attypmod":-1
+               , "attflags":1
+               , "oldvalue":"hello"
+               }
+             ]
+}
+```
+以上语句中所有属性的旧值都出现。
+
+这些不同由PostgreSQL服务端配置，具体请参考```ALTER TABLE [TABLE_NAME] REPLICA IDENTITY FULL;```语句的解释。

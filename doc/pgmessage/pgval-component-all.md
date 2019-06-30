@@ -16,6 +16,6 @@
 ```newvalue``` | 属性的新值，如果没有该属性，表示没有新值，如[DELETE消息](./pgval-tuple-delete.md)
 
 注意：因为PostgreSQL流复制协议允许服务端只发送[UPDATE消息](./pgval-tuple-update.md)消息中的新值，
-或者仅发送旧值中的Key部分，所以[UPDATE消息](./pgval-tuple-update.md)中可能会缺失某些旧值，
+或者仅发送旧值中的Key部分（此处[DELETE消息](./pgval-tuple-delete.md)亦同），所以[UPDATE消息](./pgval-tuple-update.md)和[DELETE消息](./pgval-tuple-delete.md)中可能会缺失某些旧值，
 
 ## 例子

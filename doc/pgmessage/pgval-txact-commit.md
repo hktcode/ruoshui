@@ -13,3 +13,14 @@
 ```lsnofmsg``` | 消息在WAL中的位置，无符号长整型。
 ```xidflags``` | 事务提交标记，无符号长整型。
 
+## 例子
+
+```json
+{ "protocol":3
+, "typename":"PgsqlTxactCommit"
+, "lsnofmsg":520094480
+, "xidofmsg":680
+, "committs":1561882549660828
+, "xidflags":0
+}
+```

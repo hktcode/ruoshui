@@ -19,3 +19,32 @@ INSERT消息
 
 ## 例子：
 
+```json
+{ "protocol":5
+, "typename":"PgsqlTupleInsert"
+, "lsnofmsg":520093792
+, "xidofmsg":678
+, "committs":1561882511829161
+, "relident":16384
+, "dbschema":"public"
+, "relation":"ruoshui"
+, "replchar":100
+, "tupleval":[ { "attrname":"id"
+               , "tpschema":"pg_catalog"
+               , "typename":"int8"
+               , "datatype":20
+               , "attypmod":-1
+               , "attflags":1
+               , "newvalue":"3",
+               }
+             , { "attrname":"val"
+               , "tpschema":"pg_catalog"
+               , "typename":"text"
+               , "datatype":25
+               , "attypmod":-1
+               , "attflags":0
+               , "newvalue":"hello"
+               }
+             ]
+}
+```

@@ -28,3 +28,29 @@
 
 ## 例子：
 
+```json
+{ "protocol":1
+, "typename":"PgsqlTupleCreate"
+, "relident":16384
+, "dbschema":"public"
+, "relation":"ruoshui"
+, "replchar":100
+, "tupleval":[ { "attrname":"id"
+               , "tpschema":"pg_catalog"
+               , "typename":"int8"
+               , "datatype":20
+               , "attypmod":-1
+               , "attflags":1
+               , "thevalue":"2"
+               }
+             , { "attrname":"val"
+               , "tpschema":"pg_catalog"
+               , "typename":"text"
+               , "datatype":25
+               , "attypmod":-1
+               , "attflags":0
+               , "thevalue":"34532"
+               }
+             ]
+}
+```

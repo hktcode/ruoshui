@@ -11,3 +11,8 @@
 
 ## 例子：
 
+```json
+{ "protocol":11
+, "typename":"PgsqlSnapshotEnd"
+}
+```
