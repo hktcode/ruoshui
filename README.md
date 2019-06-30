@@ -72,29 +72,29 @@ Accept: application/json
 以下是JSON串中各个字段的含义：
 
 ```
-{ "consumer":  // 消费PostgreSQL逻辑复制流消息和产生快照的相关配置。  
-  { "src_property": // PostgreSQL的JDBC连接配置
-    { "PGPORT": 5432 // PostgreSQL Server的端口信息，默认为5432
-    , "PGHOST": "localhost" // PostgreSQL的主机地址，默认为localhost
-    , "user": "postgres" // 连接到PostgreSQL的用户名，默认为postgres
-    , "password": // 用户名的密码，默认为无
+{ "consumer":                // 消费PostgreSQL逻辑复制流消息和产生快照的相关配置。  
+  { "src_property":          // PostgreSQL的JDBC连接配置
+    { "PGPORT": 5432         // PostgreSQL Server的端口信息，默认为5432
+    , "PGHOST": "localhost"  // PostgreSQL的主机地址，默认为localhost
+    , "user": "postgres"     // 连接到PostgreSQL的用户名，默认为postgres
+    , "password":            // 用户名的密码，默认为无
     }
-  , "logical_repl": // 逻辑复制流的相关配置 
-    { "slot_name": "ruoshui" //  复制槽名称，默认为ruoshui
-    , "status_interval": 10000 // 向PostgreSQL主服务器报告复制进度的间隔，用毫秒计算，默认为10000，即10秒。
-    , "start_position": 0 // 开始的wal位置，0表示由服务器控制，最好不要使用此参数，默认值为0
-    , "options": // 复制槽选项
-      { "proto_verion": "1" // 目前只支持1，默认值也是1
+  , "logical_repl":                    // 逻辑复制流的相关配置 
+    { "slot_name": "ruoshui"           // 复制槽名称，默认为ruoshui
+    , "status_interval": 10000         // 向PostgreSQL主服务器报告复制进度的间隔，用毫秒计算，默认为10000，即10秒。
+    , "start_position": 0              // 开始的wal位置，0表示由服务器控制，最好不要使用此参数，默认值为0
+    , "options":                       // 复制槽选项
+      { "proto_verion": "1"            // 目前只支持1，默认值也是1
       , "publication_names": "ruoshui" // 逗号分隔的publiation名称，默认只为ruoshui.
       }
     }
   , "ini_snapshot": {} // 如果此属性存在，流复制开始前会获取快照，否则不获取。该字段支持快照的相关配置，目前尚未文档化
   }
-, "producer": // 写入Kafka者相关配置 
-  { "kfk_property":  // Kafka生产者相关配置
+, "producer":                                  // 写入Kafka者相关配置 
+  { "kfk_property":                            // Kafka生产者相关配置
     { "bootstrap.servers": "localhost:9092" }
-  , "target_topic": "ruoshui-upper" // 要写入的Kafka的Topic，默认值为ruoshui-upper
-  , "partition_no": 0 // 要写入的Kafka分区，默认值为0，目前只支持单个分区写入
+  , "target_topic": "ruoshui-upper"            // 要写入的Kafka的Topic，默认值为ruoshui-upper
+  , "partition_no": 0                          // 要写入的Kafka分区，默认值为0，目前只支持单个分区写入
   }
 }
 ```
