@@ -54,19 +54,4 @@ public abstract class PgsqlValSnapshot extends PgsqlVal
         builder.append(']');
         return builder.toString();
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ObjectNode toObjectNode()
-    {
-        ObjectNode result = super.toObjectNode();
-        ArrayNode relaNode = result.putArray("relalist");
-        for(PgsqlRelation n : this.relalist) {
-            ObjectNode node = relaNode.addObject();
-            n.putTo(node);
-        }
-        return result;
-    }
 }
