@@ -1,13 +1,13 @@
 # Ruoshui
 
-Ruoshui是一个基于PostgreSQL和Apache Kafka的流式处理框架，在PostgreSQL license协议下开源。
+Ruoshui是一个基于PostgreSQL和Apache Kafka的流式处理框架，在PostgreSQL license协议下开源，
+采用Spring Boot开发，对外提供RESTful风格的接口。
 项目名称“Ruoshui”（弱水）取自“任凭弱水三千，我只取一瓢饮”。
 
-Ruoshui采用Spring Boot开发，对外提供的接口为RESTful接口。
 该项目还在非常初期的阶段，只完成了从PostgreSQL逻辑复制流中接收消息写入到Kafka中这一基本功能。
 就算是已经完成的这一功能，该功能也不稳定，文档也不完善，本人对代码质量也不满意。
 
-如果您在使用中需要帮助，可以从提交记录中找到邮箱地址和我联系。
+如果在使用中需要帮助，可以从提交记录中找到邮箱地址和我联系。
 
 ## 构建
 
@@ -31,7 +31,7 @@ mvn clean package
 
 ### 要求
 
-* JDK 8（当前仅在JDK 8下经过测试）
+* JDK 8（当前在JDK 8下经过测试）
 * PostgreSQL 10或者更高版本（当前在PostgreSQL 10.4和11.1中经过测试）
 
 ### 命令
@@ -41,14 +41,14 @@ unzip ruoshui-0.0.1-SNAPSHOT-bin.zip
 cd ruoshui-0.0.1-SNAPSHOT
 ./ruoshui
 ```
-默认启用的端口为8080，如果你需要使用其他端口，可以使用参数--server.port。
-例如，假如你想使用8090端口
+默认启用的端口为8080，如果你需要使用其他端口，可以使用参数--server.port，
+例如，假如你想使用8090端口：
 ```bash
 ./ruoshui --server.port=8090
 ```
 
-Ruoshui基于Spring Boot开发，```--server.port```是Spring Boot提供的功能。
-你也可以其他的Spring Boot设置。
+Ruoshui基于Spring Boot开发，```--server.port```是Spring Boot提供的选项，
+也可以其他的你所了解Spring Boot知识。
 
 ## 使用
 
@@ -73,7 +73,7 @@ Accept: application/json
 ```
 以下是JSON串中各个字段的含义：
 
-```json
+```
 { "consumer":                // 消费PostgreSQL逻辑复制流消息和产生快照的相关配置。  
   { "src_property":          // PostgreSQL的JDBC连接配置，参见下面的注解1。
     { "PGPORT": 5432         // PostgreSQL Server的端口信息，默认为5432
@@ -157,7 +157,7 @@ Content-Type: application/json; charset=utf-8
 只有当Ruoshui接收到一个POST之后的事务提交时，才能确定在该快照之间已经没有事务了。
 Ruoshui会保留该事务提交消息，先将快照写入Kafka，最后再该事务写入Kafka中，不会导致消息的乱序。
 
-## 使用例子
+### 例子
 
 * 第一步：先在PostgreSQL中创建好```publication```：
 ```bash
@@ -204,7 +204,7 @@ cd $RUOSHUI_HOME
     ```
 Ruoshui会向名为```ruoshui-upper```（默认）的Topic写入用Json串表示的复制流消息。
 
-## 例子
+## 消息
 
 假设我们有一个PostgreSQL，其数据如下：
 ```
@@ -279,3 +279,5 @@ $kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic ruoshui-upp
 符号```^I```表示制表符，HT (horizontal tab)，即C语言中的```\t```字符，ASCII为```9```。
 ```^I```前的JSON串是写入Kafka中的键（PgsqlKey），```^I```后的JSON串是写入Kafka中的值（PgsqlVal），
 JSON串各个字段具体的含义可以参考[Ruoshui的JSON串格式](./doc/pgmessage/index.md)。
+
+## [设计](./doc/design/design.md)
