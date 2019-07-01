@@ -50,6 +50,9 @@ public class LogicalDatatypeInfMsg implements LogicalMsg
         long datatype = content.getInt();
         String tpschema = LogicalMsg.readCStyleUtf8String(content);
         String typename = LogicalMsg.readCStyleUtf8String(content);
+        if ("".equals(tpschema)) {
+            tpschema = "pg_catalog";
+        }
         return new LogicalDatatypeInfMsg(datatype, tpschema, typename);
     }
 
