@@ -85,10 +85,7 @@ Accept: application/json
     { "slot_name": "ruoshui"           // 复制槽名称，默认为ruoshui
     , "status_interval": 10000         // 向PostgreSQL主服务器报告复制进度的间隔时间，参考下面的注解2，用毫秒计算，默认为10000，即10秒。
     , "start_position": 0              // 开始的wal位置，0表示由服务器控制，最好不要使用此参数，默认值为0
-    , "options":                       // 复制槽选项
-      { "proto_verion": "1"            // 目前只支持1，默认值也是1
-      , "publication_names": "ruoshui" // 逗号分隔的publiation名称，参考下面的注解3，默认只为ruoshui.
-      }
+    , "publication_names": "ruoshui" // 逗号分隔的publiation名称，参考下面的注解3，默认为ruoshui.
     }
   , "ini_snapshot": {} // 如果此属性存在，流复制开始前会获取快照，否则不获取。该字段支持快照的相关配置，目前尚未文档化
   }
@@ -107,7 +104,7 @@ Accept: application/json
 目前只有```PGHOST```、```PGPORT```、```user```有默认值，其他均没有显式设置（或者说采用Kafka客户端所设置的默认值。
 Ruoshui会将```src_property```中的内容变成字符串键值对传递给PostgreSQL的JDBC客户端，因此pgjdbc官方文档中对其的描述均可采用。
 2. ```consuemr.logical_repl.status_interval```的含义可以参考[PostgreSQL官方文档](https://www.postgresql.org/docs/11/runtime-config-replication.html)中关于```wal_receiver_status_interval```的解释。
-3. ```consumer.logical_repl.options```目前只支持```proto_verion```和```publication_names```，含义可以参考[PostgreSQL官方文档](https://www.postgresql.org/docs/11/protocol-logical-replication.html)中相关选项的解释。
+3. ```consumer.logical_repl.publication_names```的含义可以参考[PostgreSQL官方文档](https://www.postgresql.org/docs/11/protocol-logical-replication.html)中关于```publications_names```的解释。
 4. ```producer.kfk_property```的含义可以参考[Kafka官方文档](https://kafka.apache.org/11/documentation.html#producerconfigs)。
 目前只有```bootstrap.servers```有默认值```localhost:9092```，其他选项均没有显式设置（或者说采用Kafka客户端所设置的默认值）。
 Ruoshui会将```kfk_perperty```中的内容变成字符串键值对传递给Kafka生产者，因此Kafka官方文档中对其的描述可以采用。
