@@ -5,19 +5,19 @@ package com.hktcode.pgstack.ruoshui.upper.snapshot;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumerThreadBasic;
-import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThreadWork;
 import org.postgresql.replication.LogSequenceNumber;
 
 import java.util.concurrent.TransferQueue;
 
-public abstract class UpperSnapshotPostThread extends UpperConsumerThreadBasic<UpperSnapshotPostRecord>
+public abstract class SnapshotThread extends UpperConsumerThreadBasic<SnapshotRecord>
 {
-    protected final MainlineThread xact;
+    protected final MainlineThreadWork xact;
 
-    protected UpperSnapshotPostThread
+    protected SnapshotThread
         /* */( Thread thread
-        /* */, TransferQueue<UpperSnapshotPostRecord> tqueue
-        /* */, MainlineThread xact
+        /* */, TransferQueue<SnapshotRecord> tqueue
+        /* */, MainlineThreadWork xact
         /* */)
     {
         super(thread, tqueue);

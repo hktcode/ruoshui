@@ -8,17 +8,17 @@ import com.hktcode.pgstack.ruoshui.upper.entity.UpperRunnableMetric;
 
 import java.time.ZonedDateTime;
 
-public class UpperSnapshotMetric extends UpperRunnableMetric
+public class SnapshotMetric extends UpperRunnableMetric
 {
-    public static UpperSnapshotMetric of(ZonedDateTime startMillis)
+    public static SnapshotMetric of(ZonedDateTime startMillis)
     {
         if (startMillis == null) {
             throw new ArgumentNullException("startMillis");
         }
-        return new UpperSnapshotMetric(startMillis);
+        return new SnapshotMetric(startMillis);
     }
 
-    private UpperSnapshotMetric(ZonedDateTime startMillis)
+    private SnapshotMetric(ZonedDateTime startMillis)
     {
         super(startMillis);
     }

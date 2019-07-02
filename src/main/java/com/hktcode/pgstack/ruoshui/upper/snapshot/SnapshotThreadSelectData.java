@@ -6,22 +6,22 @@ package com.hktcode.pgstack.ruoshui.upper.snapshot;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThreadWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TransferQueue;
 
-public class UpperSnapshotPostThreadSelectData extends UpperSnapshotPostThread
+public class SnapshotThreadSelectData extends SnapshotThread
 {
     private static final Logger logger //
-        = LoggerFactory.getLogger(UpperSnapshotPostThreadSelectData.class);
-    public static UpperSnapshotPostThreadSelectData of
+        = LoggerFactory.getLogger(SnapshotThreadSelectData.class);
+    public static SnapshotThreadSelectData of
         /* */( UpperConsumerRecord record
-        /* */, MainlineThread xact
+        /* */, MainlineThreadWork xact
         /* */, Thread thread
-        /* */, TransferQueue<UpperSnapshotPostRecord> tqueue
+        /* */, TransferQueue<SnapshotRecord> tqueue
         /* */)
     {
         if (record == null) {
@@ -36,16 +36,16 @@ public class UpperSnapshotPostThreadSelectData extends UpperSnapshotPostThread
         if (tqueue == null) {
             throw new ArgumentNullException("tqueue");
         }
-        return new UpperSnapshotPostThreadSelectData(record, xact, thread, tqueue);
+        return new SnapshotThreadSelectData(record, xact, thread, tqueue);
     }
 
     private final UpperConsumerRecord record;
 
-    private UpperSnapshotPostThreadSelectData
+    private SnapshotThreadSelectData
         /* */( UpperConsumerRecord record
-        /* */, MainlineThread xact
+        /* */, MainlineThreadWork xact
         /* */, Thread thread
-        /* */, TransferQueue<UpperSnapshotPostRecord> tqueue
+        /* */, TransferQueue<SnapshotRecord> tqueue
         /* */)
     {
         super(thread, tqueue, xact);
@@ -56,11 +56,11 @@ public class UpperSnapshotPostThreadSelectData extends UpperSnapshotPostThread
     public UpperConsumerRecord poll(long timeout, UpperConsumerMutableMetric metric)
         throws InterruptedException
     {
-        UpperSnapshotPostRecord r = this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);
+        SnapshotRecord r = this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);
         if (r != null) {
-            if (!(r instanceof UpperSnapshotPostRecordLogicalMsg)
-                && !(r instanceof UpperSnapshotPostRecordExecFinish)
-                && !(r instanceof UpperSnapshotPostRecordExecThrows)) {
+            if (!(r instanceof SnapshotRecordLogicalMsg)
+                && !(r instanceof SnapshotRecordExecFinish)
+                && !(r instanceof SnapshotRecordExecThrows)) {
                 throw new RuntimeException(); // TODO:
             }
             UpperConsumerRecord result = r.update(metric, thread, tqueue, xact);

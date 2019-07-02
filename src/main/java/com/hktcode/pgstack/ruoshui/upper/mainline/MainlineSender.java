@@ -5,16 +5,17 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumer;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerSender;
 import com.hktcode.pgstack.ruoshui.upper.UpperJunction;
 import com.hktcode.pgstack.ruoshui.upper.UpperProducer;
-import com.hktcode.pgstack.ruoshui.upper.snapshot.UpperSnapshotMetric;
-import com.hktcode.pgstack.ruoshui.upper.snapshot.UpperSnapshotSender;
+import com.hktcode.pgstack.ruoshui.upper.entity.UpperRunnableMetric;
+import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotMetric;
 
 import java.time.ZonedDateTime;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-class MainlineSender extends UpperSnapshotSender<MainlineRecord>
+class MainlineSender extends UpperConsumerSender<MainlineRecord, UpperRunnableMetric>
 {
     static MainlineSender of
         /* */( TransferQueue<MainlineRecord> tqueue
@@ -36,8 +37,7 @@ class MainlineSender extends UpperSnapshotSender<MainlineRecord>
     }
 
     @Override
-    public void sendCreateSlot(PgReplSlotTuple slotTuple, long timeout, UpperSnapshotMetric metric) //
-        throws InterruptedException
+    public void sendCreateSlot(PgReplSlotTuple slotTuple, long timeout, SnapshotMetric metric) //
     {
         if (slotTuple == null) {
             throw new ArgumentNullException("slotTuple");
@@ -48,8 +48,7 @@ class MainlineSender extends UpperSnapshotSender<MainlineRecord>
     }
 
     @Override
-    public void sendExecFinish(long timeout, UpperSnapshotMetric metric) //
-        throws InterruptedException
+    public void sendExecFinish(long timeout, SnapshotMetric metric) //
     {
         if (metric == null) {
             throw new ArgumentNullException("metric");
@@ -57,7 +56,7 @@ class MainlineSender extends UpperSnapshotSender<MainlineRecord>
     }
 
     @Override
-    public void sendExecThrows(Throwable throwable, long timeout, UpperSnapshotMetric metric) //) //
+    public void sendExecThrows(Throwable throwable, long timeout, SnapshotMetric metric) //
         throws InterruptedException
     {
         if (throwable == null) {
@@ -71,7 +70,7 @@ class MainlineSender extends UpperSnapshotSender<MainlineRecord>
     }
 
     @Override
-    public void sendLogicalMsg(long lsn, LogicalMsg msg, long timeout, UpperSnapshotMetric metric) //) //
+    public void sendLogicalMsg(long lsn, LogicalMsg msg, long timeout, SnapshotMetric metric) //
         throws InterruptedException
     {
         if (msg == null) {
@@ -84,8 +83,7 @@ class MainlineSender extends UpperSnapshotSender<MainlineRecord>
     }
 
     @Override
-    public void sendPauseWorld(long timeout, UpperSnapshotMetric metric) //
-        throws InterruptedException
+    public void sendPauseWorld(long timeout, SnapshotMetric metric) //
     {
         if (metric == null) {
             throw new ArgumentNullException("metric");

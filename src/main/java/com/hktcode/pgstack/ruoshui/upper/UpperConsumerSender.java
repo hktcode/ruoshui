@@ -6,15 +6,19 @@ package com.hktcode.pgstack.ruoshui.upper;
 import com.hktcode.bgtriple.status.TripleBasicBgStatus;
 import com.hktcode.bgtriple.status.TripleEndBgStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotSender;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperRunnableMetric;
+import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotMetric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.ZonedDateTime;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class UpperConsumerSender<T, M extends UpperRunnableMetric>
+    implements PgSnapshotSender<SnapshotMetric>
 {
     public final TransferQueue<T> tqueue;
 
@@ -76,5 +80,27 @@ public abstract class UpperConsumerSender<T, M extends UpperRunnableMetric>
     {
         TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer> s = status.get();
         return s == null || s instanceof TripleEndBgStatus;
+    }
+
+    // TODO: remove this
+    @Override
+    public SnapshotMetric snapshotMetric(ZonedDateTime startMillis)
+    {
+        if (startMillis == null) {
+            throw new ArgumentNullException("startMillis");
+        }
+        return SnapshotMetric.of(startMillis);
+    }
+
+    @Override
+    public void sendStatusInfo(String statusInfo, SnapshotMetric metric)
+    {
+        if (statusInfo == null) {
+            throw new ArgumentNullException("statusInfo");
+        }
+        if (metric == null) {
+            throw new ArgumentNullException("metric");
+        }
+        metric.statusInfor = statusInfo;
     }
 }

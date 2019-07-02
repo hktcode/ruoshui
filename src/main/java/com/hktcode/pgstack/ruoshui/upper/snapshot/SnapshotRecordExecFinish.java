@@ -5,30 +5,30 @@ package com.hktcode.pgstack.ruoshui.upper.snapshot;
 
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThreadWork;
 
 import java.util.concurrent.TransferQueue;
 
-public class UpperSnapshotPostRecordExecFinish implements UpperSnapshotPostRecord
+public class SnapshotRecordExecFinish implements SnapshotRecord
 {
-    public static UpperSnapshotPostRecordExecFinish of()
+    public static SnapshotRecordExecFinish of()
     {
-        return new UpperSnapshotPostRecordExecFinish();
+        return new SnapshotRecordExecFinish();
     }
 
     @Override
     public UpperConsumerRecord update //
-        /* */( UpperConsumerMutableMetric metric //
+        /* */(UpperConsumerMutableMetric metric //
         /* */, Thread thread //
-        /* */, TransferQueue<UpperSnapshotPostRecord> tqueue //
-        /* */, MainlineThread xact //
+        /* */, TransferQueue<SnapshotRecord> tqueue //
+        /* */, MainlineThreadWork xact //
         /* */)
     {
         metric.fetchThread = xact;
         return null;
     }
 
-    private UpperSnapshotPostRecordExecFinish()
+    private SnapshotRecordExecFinish()
     {
     }
 }

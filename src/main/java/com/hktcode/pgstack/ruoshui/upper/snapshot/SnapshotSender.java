@@ -8,17 +8,18 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumer;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerSender;
 import com.hktcode.pgstack.ruoshui.upper.UpperJunction;
 import com.hktcode.pgstack.ruoshui.upper.UpperProducer;
+import com.hktcode.pgstack.ruoshui.upper.entity.UpperRunnableMetric;
 
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class UpperSnapshotPostSender //
-    extends UpperSnapshotSender<UpperSnapshotPostRecord>
+public class SnapshotSender extends UpperConsumerSender<SnapshotRecord, UpperRunnableMetric>
 {
-    public static UpperSnapshotPostSender of
-        /* */( TransferQueue<UpperSnapshotPostRecord> tqueue
+    public static SnapshotSender of
+        /* */( TransferQueue<SnapshotRecord> tqueue
         /* */, AtomicReference<TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer>> status
         /* */)
     {
@@ -28,11 +29,11 @@ public class UpperSnapshotPostSender //
         if (status == null) {
             throw new ArgumentNullException("status");
         }
-        return new UpperSnapshotPostSender(tqueue, status);
+        return new SnapshotSender(tqueue, status);
     }
 
-    private UpperSnapshotPostSender
-        /* */( TransferQueue<UpperSnapshotPostRecord> tqueue
+    private SnapshotSender
+        /* */( TransferQueue<SnapshotRecord> tqueue
         /* */, AtomicReference<TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer>> status
         /* */)
     {
@@ -40,7 +41,7 @@ public class UpperSnapshotPostSender //
     }
 
     @Override
-    public void sendCreateSlot(PgReplSlotTuple slotTuple, long timeout, UpperSnapshotMetric metric) //
+    public void sendCreateSlot(PgReplSlotTuple slotTuple, long timeout, SnapshotMetric metric) //
         throws InterruptedException
     {
         if (slotTuple == null) {
@@ -49,20 +50,20 @@ public class UpperSnapshotPostSender //
         if (metric == null) {
             throw new ArgumentNullException("metric");
         }
-        super.send(UpperSnapshotPostRecordCreateSlot.of(slotTuple), timeout, timeout, metric);
+        super.send(SnapshotRecordCreateSlot.of(slotTuple), timeout, timeout, metric);
     }
 
     @Override
-    public void sendExecFinish(long timeout, UpperSnapshotMetric metric) throws InterruptedException
+    public void sendExecFinish(long timeout, SnapshotMetric metric) throws InterruptedException
     {
         if (metric == null) {
             throw new ArgumentNullException("metric");
         }
-        super.send(UpperSnapshotPostRecordExecFinish.of(), timeout, timeout, metric);
+        super.send(SnapshotRecordExecFinish.of(), timeout, timeout, metric);
     }
 
     @Override
-    public void sendExecThrows(Throwable throwable, long timeout, UpperSnapshotMetric metric) //
+    public void sendExecThrows(Throwable throwable, long timeout, SnapshotMetric metric) //
         throws InterruptedException
     {
         if (throwable == null) {
@@ -71,11 +72,11 @@ public class UpperSnapshotPostSender //
         if (metric == null) {
             throw new ArgumentNullException("metric");
         }
-        super.send(UpperSnapshotPostRecordExecThrows.of(throwable), timeout, timeout, metric);
+        super.send(SnapshotRecordExecThrows.of(throwable), timeout, timeout, metric);
     }
 
     @Override
-    public void sendLogicalMsg(long lsn, LogicalMsg msg, long timeout, UpperSnapshotMetric metric) //
+    public void sendLogicalMsg(long lsn, LogicalMsg msg, long timeout, SnapshotMetric metric) //
         throws InterruptedException
     {
         if (msg == null) {
@@ -84,15 +85,15 @@ public class UpperSnapshotPostSender //
         if (metric == null) {
             throw new ArgumentNullException("metric");
         }
-        super.send(UpperSnapshotPostRecordLogicalMsg.of(lsn, msg), timeout, timeout, metric);
+        super.send(SnapshotRecordLogicalMsg.of(lsn, msg), timeout, timeout, metric);
     }
 
     @Override
-    public void sendPauseWorld(long timeout, UpperSnapshotMetric metric) throws InterruptedException
+    public void sendPauseWorld(long timeout, SnapshotMetric metric) throws InterruptedException
     {
         if (metric == null) {
             throw new ArgumentNullException("metric");
         }
-        super.push(UpperSnapshotPostRecordPauseWorld.of(), timeout, timeout, metric);
+        super.push(SnapshotRecordPauseWorld.of(), timeout, timeout, metric);
     }
 }

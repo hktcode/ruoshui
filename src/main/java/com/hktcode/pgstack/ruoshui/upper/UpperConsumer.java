@@ -25,7 +25,8 @@ import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
-import com.hktcode.pgstack.ruoshui.upper.snapshot.UpperSnapshotPostThreadLockingRel;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThreadWork;
+import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotThreadLockingRel;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
 import org.slf4j.Logger;
@@ -173,12 +174,11 @@ public class UpperConsumer extends NaiveConsumer
             throw new ArgumentNullException("json");
         }
         UpperConsumerThread pollAction = this.metric.fetchThread;
-        if (!(pollAction instanceof MainlineThread)) {
+        if (!(pollAction instanceof MainlineThreadWork)) {
             // TODO:
             return SimplePstSuccessBgResult.of();
         }
-        // TODO: 如果处于snapshot的Action不应该进行此计算
-        MainlineThread oldAction = (MainlineThread)pollAction;
+        MainlineThreadWork oldAction = (MainlineThreadWork)pollAction;
         PgConnectionProperty s = this.config.srcProperty;
         String p = this.config.logicalRepl.slotName;
         JsonNode tupleSelectNode = json.path("tuple_select");
@@ -195,7 +195,7 @@ public class UpperConsumer extends NaiveConsumer
         PgSnapshotConfig c = PgSnapshotConfig.of(s, t, whereScript, m, a, true, p);
         c.rsFetchsize = json.path("rs_fetchsize").asInt(128);
         c.waitTimeout = json.path("wait_timeout").asLong(this.config.waitTimeout);
-        this.metric.fetchThread = UpperSnapshotPostThreadLockingRel.of(c, status, oldAction);
+        this.metric.fetchThread = SnapshotThreadLockingRel.of(c, status, oldAction);
         return SimplePstSuccessBgResult.of();
     }
 }

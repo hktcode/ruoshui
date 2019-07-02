@@ -6,27 +6,27 @@ package com.hktcode.pgstack.ruoshui.upper.snapshot;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThreadWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TransferQueue;
 
-public class UpperSnapshotPostRecordExecThrows implements UpperSnapshotPostRecord
+public class SnapshotRecordExecThrows implements SnapshotRecord
 {
-    public static UpperSnapshotPostRecordExecThrows of(Throwable throwable)
+    public static SnapshotRecordExecThrows of(Throwable throwable)
     {
         if (throwable == null) {
             throw new ArgumentNullException("throwable");
         }
-        return new UpperSnapshotPostRecordExecThrows(throwable);
+        return new SnapshotRecordExecThrows(throwable);
     }
 
     public final Throwable throwable;
 
-    private static final Logger logger = LoggerFactory.getLogger(UpperSnapshotPostRecordExecThrows.class);
+    private static final Logger logger = LoggerFactory.getLogger(SnapshotRecordExecThrows.class);
     @Override
-    public UpperConsumerRecord update(UpperConsumerMutableMetric metric, Thread thread, TransferQueue<UpperSnapshotPostRecord> tqueue, MainlineThread xact)
+    public UpperConsumerRecord update(UpperConsumerMutableMetric metric, Thread thread, TransferQueue<SnapshotRecord> tqueue, MainlineThreadWork xact)
     {
         if (metric == null) {
             throw new ArgumentNullException("metric");
@@ -45,7 +45,7 @@ public class UpperSnapshotPostRecordExecThrows implements UpperSnapshotPostRecor
         return null;
     }
 
-    private UpperSnapshotPostRecordExecThrows(Throwable throwable)
+    private SnapshotRecordExecThrows(Throwable throwable)
     {
         this.throwable = throwable;
     }

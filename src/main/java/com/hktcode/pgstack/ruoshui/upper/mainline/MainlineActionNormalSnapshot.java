@@ -3,7 +3,7 @@ package com.hktcode.pgstack.ruoshui.upper.mainline;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshot;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig;
-import com.hktcode.pgstack.ruoshui.upper.snapshot.UpperSnapshotMetric;
+import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotMetric;
 import org.postgresql.jdbc.PgConnection;
 
 import java.sql.Connection;
@@ -45,7 +45,7 @@ class MainlineActionNormalSnapshot extends MainlineActionNormal
         PgSnapshotConfig pgconfig = config.iniSnapshot;
         try (Connection data = config.srcProperty.queriesConnection()) {
             PgConnection pgdata = data.unwrap(PgConnection.class);
-            PgSnapshot<UpperSnapshotMetric> runnable //
+            PgSnapshot<SnapshotMetric> runnable //
                 = PgSnapshot.of(pgconfig, pgrepl, pgdata, sender);
             Thread t = new Thread(runnable);
             t.start();

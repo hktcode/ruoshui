@@ -7,25 +7,25 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThreadWork;
 
 import java.util.concurrent.TransferQueue;
 
-public class UpperSnapshotPostRecordLogicalMsg implements UpperSnapshotPostRecord
+public class SnapshotRecordLogicalMsg implements SnapshotRecord
 {
-    public static UpperSnapshotPostRecordLogicalMsg of(long lsn, LogicalMsg msg)
+    public static SnapshotRecordLogicalMsg of(long lsn, LogicalMsg msg)
     {
         if (msg == null) {
             throw new ArgumentNullException("msg");
         }
-        return new UpperSnapshotPostRecordLogicalMsg(lsn, msg);
+        return new SnapshotRecordLogicalMsg(lsn, msg);
     }
 
     public final long lsn;
 
     public final LogicalMsg msg;
 
-    private UpperSnapshotPostRecordLogicalMsg(long lsn, LogicalMsg msg)
+    private SnapshotRecordLogicalMsg(long lsn, LogicalMsg msg)
     {
         this.lsn = lsn;
         this.msg = msg;
@@ -35,8 +35,8 @@ public class UpperSnapshotPostRecordLogicalMsg implements UpperSnapshotPostRecor
     public UpperConsumerRecord update
         /* */( UpperConsumerMutableMetric metric
         /* */, Thread thread
-        /* */, TransferQueue<UpperSnapshotPostRecord> tqueue
-        /* */, MainlineThread xact
+        /* */, TransferQueue<SnapshotRecord> tqueue
+        /* */, MainlineThreadWork xact
         /* */)
     {
         if (metric == null) {

@@ -6,33 +6,33 @@ package com.hktcode.pgstack.ruoshui.upper.snapshot;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThreadWork;
 
 import java.util.concurrent.TransferQueue;
 
-public class UpperSnapshotPostRecordPauseWorld implements UpperSnapshotPostRecord
+public class SnapshotRecordPauseWorld implements SnapshotRecord
 {
-    public static UpperSnapshotPostRecordPauseWorld of()
+    public static SnapshotRecordPauseWorld of()
     {
-        return new UpperSnapshotPostRecordPauseWorld();
+        return new SnapshotRecordPauseWorld();
     }
 
     @Override
     public UpperConsumerRecord update
         /* */( UpperConsumerMutableMetric metric
         /* */, Thread thread
-        /* */, TransferQueue<UpperSnapshotPostRecord> tqueue
-        /* */, MainlineThread xact
+        /* */, TransferQueue<SnapshotRecord> tqueue
+        /* */, MainlineThreadWork xact
         /* */)
     {
         if (metric == null) {
             throw new ArgumentNullException("metric");
         }
-        metric.fetchThread = UpperSnapshotPostThreadCreateSlot.of(thread, tqueue, xact);
+        metric.fetchThread = SnapshotThreadCreateSlot.of(thread, tqueue, xact);
         return null;
     }
 
-    private UpperSnapshotPostRecordPauseWorld()
+    private SnapshotRecordPauseWorld()
     {
     }
 }

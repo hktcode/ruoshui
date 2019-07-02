@@ -5,7 +5,7 @@ import org.postgresql.replication.LogSequenceNumber;
 
 import java.util.concurrent.TransferQueue;
 
-class MainlineThreadWork extends MainlineThread
+public class MainlineThreadWork extends MainlineThread
 {
     static MainlineThreadWork of
         /* */( Thread thread //

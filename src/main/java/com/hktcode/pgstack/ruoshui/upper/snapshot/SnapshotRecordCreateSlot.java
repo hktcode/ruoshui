@@ -7,18 +7,18 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThreadWork;
 
 import java.util.concurrent.TransferQueue;
 
-public class UpperSnapshotPostRecordCreateSlot implements UpperSnapshotPostRecord
+public class SnapshotRecordCreateSlot implements SnapshotRecord
 {
-    public static UpperSnapshotPostRecordCreateSlot of(PgReplSlotTuple slotTuple)
+    public static SnapshotRecordCreateSlot of(PgReplSlotTuple slotTuple)
     {
         if (slotTuple == null) {
             throw new ArgumentNullException("slotTuple");
         }
-        return new UpperSnapshotPostRecordCreateSlot(slotTuple);
+        return new SnapshotRecordCreateSlot(slotTuple);
     }
 
     public final PgReplSlotTuple slotTuple;
@@ -27,18 +27,18 @@ public class UpperSnapshotPostRecordCreateSlot implements UpperSnapshotPostRecor
     public UpperConsumerRecord update
         /* */( UpperConsumerMutableMetric metric
         /* */, Thread thread
-        /* */, TransferQueue<UpperSnapshotPostRecord> tqueue
-        /* */, MainlineThread xact
+        /* */, TransferQueue<SnapshotRecord> tqueue
+        /* */, MainlineThreadWork xact
         /* */)
     {
         if (metric == null) {
             throw new ArgumentNullException("metric");
         }
-        metric.fetchThread = UpperSnapshotPostThreadUntilPoint.of(slotTuple, xact, thread, tqueue);
+        metric.fetchThread = SnapshotThreadUntilPoint.of(slotTuple, xact, thread, tqueue);
         return null;
     }
 
-    private UpperSnapshotPostRecordCreateSlot(PgReplSlotTuple slotTuple)
+    private SnapshotRecordCreateSlot(PgReplSlotTuple slotTuple)
     {
         this.slotTuple = slotTuple;
     }

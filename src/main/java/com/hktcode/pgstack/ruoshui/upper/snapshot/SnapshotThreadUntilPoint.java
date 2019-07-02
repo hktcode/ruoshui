@@ -8,22 +8,22 @@ import com.hktcode.pgjdbc.LogicalTxactBeginsMsg;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThreadWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TransferQueue;
 
-public class UpperSnapshotPostThreadUntilPoint extends UpperSnapshotPostThread
+public class SnapshotThreadUntilPoint extends SnapshotThread
 {
     private static final Logger logger //
-        = LoggerFactory.getLogger(UpperSnapshotPostThreadUntilPoint.class);
+        = LoggerFactory.getLogger(SnapshotThreadUntilPoint.class);
 
-    public static UpperSnapshotPostThreadUntilPoint of
+    public static SnapshotThreadUntilPoint of
         /* */( PgReplSlotTuple slot
-        /* */, MainlineThread xact
+        /* */, MainlineThreadWork xact
         /* */, Thread thread
-        /* */, TransferQueue<UpperSnapshotPostRecord> tqueue
+        /* */, TransferQueue<SnapshotRecord> tqueue
         /* */)
     {
         if (slot == null) {
@@ -38,16 +38,16 @@ public class UpperSnapshotPostThreadUntilPoint extends UpperSnapshotPostThread
         if (tqueue == null) {
             throw new ArgumentNullException("tqueue");
         }
-        return new UpperSnapshotPostThreadUntilPoint(slot, xact, thread, tqueue);
+        return new SnapshotThreadUntilPoint(slot, xact, thread, tqueue);
     }
 
     private final PgReplSlotTuple slot;
 
-    private UpperSnapshotPostThreadUntilPoint
+    private SnapshotThreadUntilPoint
         /* */( PgReplSlotTuple slot
-        /* */, MainlineThread xact
+        /* */, MainlineThreadWork xact
         /* */, Thread thread
-        /* */, TransferQueue<UpperSnapshotPostRecord> tqueue
+        /* */, TransferQueue<SnapshotRecord> tqueue
         /* */)
     {
         super(thread, tqueue, xact);
@@ -62,7 +62,7 @@ public class UpperSnapshotPostThreadUntilPoint extends UpperSnapshotPostThread
             if (record.msg instanceof LogicalTxactBeginsMsg) {
                 LogicalTxactBeginsMsg beginsMsg = (LogicalTxactBeginsMsg)record.msg;
                 if (Long.compareUnsigned(beginsMsg.lsnofcmt, slot.consistentPoint) > 0) {
-                    metric.fetchThread = UpperSnapshotPostThreadSelectData.of(record, xact, thread, tqueue);
+                    metric.fetchThread = SnapshotThreadSelectData.of(record, xact, thread, tqueue);
                     return null;
                 }
             }
