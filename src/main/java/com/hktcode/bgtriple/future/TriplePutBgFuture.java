@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2019, Huang Ketian.
+ */
+
 package com.hktcode.bgtriple.future;
 
 import com.hktcode.bgsimple.SimpleBasicBgResult;

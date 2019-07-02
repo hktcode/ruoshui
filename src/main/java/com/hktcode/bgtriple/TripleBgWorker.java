@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Huang Ketian
+ * Copyright (c) 2019, Huang Ketian.
  */
 package com.hktcode.bgtriple;
 
