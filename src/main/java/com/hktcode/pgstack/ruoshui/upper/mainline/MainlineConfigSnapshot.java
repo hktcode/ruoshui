@@ -5,7 +5,7 @@
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgjdbc.LogicalStreamStarter;
+import com.hktcode.pgstack.ruoshui.pgsql.LogicalReplConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig;
 
@@ -13,7 +13,7 @@ public class MainlineConfigSnapshot extends MainlineConfig
 {
     public static MainlineConfigSnapshot of //
         /* */( PgConnectionProperty srcProperty //
-        /* */, LogicalStreamStarter logicalRepl //
+        /* */, LogicalReplConfig logicalRepl //
         /* */, PgSnapshotConfig iniSnapshot //
         /* */, long waitTimeout //
         /* */, long logDuration //
@@ -41,7 +41,7 @@ public class MainlineConfigSnapshot extends MainlineConfig
 
     private MainlineConfigSnapshot //
         /* */( PgConnectionProperty srcProperty //
-        /* */, LogicalStreamStarter logicalRepl //
+        /* */, LogicalReplConfig logicalRepl //
         /* */, PgSnapshotConfig iniSnapshot //
         /* */, long waitTimeout //
         /* */, long logDuration //

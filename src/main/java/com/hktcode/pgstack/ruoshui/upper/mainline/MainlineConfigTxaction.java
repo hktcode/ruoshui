@@ -5,14 +5,14 @@
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgjdbc.LogicalStreamStarter;
+import com.hktcode.pgstack.ruoshui.pgsql.LogicalReplConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
 
 public class MainlineConfigTxaction extends MainlineConfig
 {
     public static MainlineConfigTxaction of //
         /* */( PgConnectionProperty srcProperty //
-        /* */, LogicalStreamStarter logicalRepl //
+        /* */, LogicalReplConfig logicalRepl //
         /* */, long waitTimeout //
         /* */, long logDuration //
         /* */)
@@ -28,7 +28,7 @@ public class MainlineConfigTxaction extends MainlineConfig
 
     private MainlineConfigTxaction //
         /* */( PgConnectionProperty srcProperty //
-        /* */, LogicalStreamStarter logicalSlot //
+        /* */, LogicalReplConfig logicalSlot //
         /* */, long waitTimeout //
         /* */, long logDuration //
         /* */)

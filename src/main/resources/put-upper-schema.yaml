@@ -28,7 +28,7 @@ properties:
             type: "string"
             default: "0/0"
             pattern: "[0-9A-Fa-f]{1,8}/[0-9A-Fa-f]{1,8}"
-          options: { "type": "object" } # TODO:
+          publication_names: { "type": "array" } # TODO:
       ini_snapshot:
         type: object
         properties:
