@@ -21,9 +21,10 @@ import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplRelationName;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilter;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerConfig;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
 import com.hktcode.pgstack.ruoshui.upper.snapshot.post.UpperSnapshotPostThreadLockingRel;
 import com.hktcode.pgstack.ruoshui.upper.txaction.UpperTxactionThread;
 import org.postgresql.jdbc.PgConnection;
@@ -47,13 +48,13 @@ public class UpperConsumer extends NaiveConsumer
     /* */< UpperConsumer
     /* */, UpperJunction
     /* */, UpperProducer
-    /* */, UpperConsumerConfig
+    /* */, MainlineConfig
     /* */, UpperConsumerMutableMetric
     /* */, UpperConsumerRecord
     /* */> //
 {
     public static UpperConsumer of //
-        /* */( UpperConsumerConfig config //
+        /* */( MainlineConfig config //
         /* */, AtomicReference<TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer>> status //
         /* */, BlockingQueue<UpperConsumerRecord> comein //
         /* */)
@@ -73,7 +74,7 @@ public class UpperConsumer extends NaiveConsumer
     private static final Logger logger = LoggerFactory.getLogger(UpperConsumer.class);
 
     private UpperConsumer //
-        /* */( UpperConsumerConfig config //
+        /* */( MainlineConfig config //
         /* */, BlockingQueue<UpperConsumerRecord> comein //
         /* */, AtomicReference<TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer>> status //
         /* */)
@@ -88,7 +89,7 @@ public class UpperConsumer extends NaiveConsumer
         try (Connection c = this.config.srcProperty.replicaConnection()) {
             PgConnection pgc = c.unwrap(PgConnection.class);
             metric.pgreplInfor = PgConnectionInfo.of(pgc);
-            metric.fetchThread = this.config.createAction(pgc, this.status);
+            metric.fetchThread = MainlineThread.of(config, status);
             logger.info("upper consumer starts: pgreplInfor={}", metric.pgreplInfor);
             this.metric = metric;
             UpperConsumerRecord r = null;
@@ -101,7 +102,7 @@ public class UpperConsumer extends NaiveConsumer
             ZonedDateTime endtime = ZonedDateTime.now();
             String msg = ex.getMessage();
             metric.statusInfor = "throw exception at " + endtime + ": " + msg;
-            SimpleUnkFailureBgResult<UpperConsumerConfig, NaiveConsumerMetric, UpperConsumer> c //
+            SimpleUnkFailureBgResult<MainlineConfig, NaiveConsumerMetric, UpperConsumer> c //
                 = SimpleUnkFailureBgResult.of(ex, this.config, this.metric.toMetric(), ZonedDateTime.now());
             SimpleDelDefaultBgParams<UpperJunction> j = SimpleDelDefaultBgParams.of();
             SimpleDelDefaultBgParams<UpperProducer> p = SimpleDelDefaultBgParams.of();
