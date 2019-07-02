@@ -25,7 +25,7 @@ import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
-import com.hktcode.pgstack.ruoshui.upper.snapshot.post.UpperSnapshotPostThreadLockingRel;
+import com.hktcode.pgstack.ruoshui.upper.snapshot.UpperSnapshotPostThreadLockingRel;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
 import org.slf4j.Logger;

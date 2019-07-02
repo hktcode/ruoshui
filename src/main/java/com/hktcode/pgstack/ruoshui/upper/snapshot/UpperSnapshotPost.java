@@ -1,11 +1,10 @@
 /*
  * Copyright (c) 2019, Huang Ketian
  */
-package com.hktcode.pgstack.ruoshui.upper.snapshot.post;
+package com.hktcode.pgstack.ruoshui.upper.snapshot;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig;
-import com.hktcode.pgstack.ruoshui.upper.snapshot.UpperSnapshot;
 import org.postgresql.jdbc.PgConnection;
 
 import java.sql.Connection;

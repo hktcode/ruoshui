@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2019, Huang Ketian
  */
-package com.hktcode.pgstack.ruoshui.upper.snapshot.post;
+package com.hktcode.pgstack.ruoshui.upper.snapshot;
 
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
