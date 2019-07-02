@@ -6,7 +6,7 @@ package com.hktcode.pgstack.ruoshui.upper.snapshot.post;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.txaction.UpperTxactionThread;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,9 +16,9 @@ import java.util.concurrent.TransferQueue;
 public class UpperSnapshotPostThreadCreateSlot extends UpperSnapshotPostThread
 {
     public static UpperSnapshotPostThreadCreateSlot of //
-        /* */(Thread thread //
+        /* */( Thread thread //
         /* */, TransferQueue<UpperSnapshotPostRecord> tqueue //
-        /* */, UpperTxactionThread xact //
+        /* */, MainlineThread xact //
         /* */)
     {
         if (thread == null) {
@@ -36,7 +36,7 @@ public class UpperSnapshotPostThreadCreateSlot extends UpperSnapshotPostThread
     private UpperSnapshotPostThreadCreateSlot //
         /* */(Thread thread //
         /* */, TransferQueue<UpperSnapshotPostRecord> tqueue //
-        /* */, UpperTxactionThread xact //
+        /* */, MainlineThread xact //
         /* */) //
     {
         super(thread, tqueue, xact);

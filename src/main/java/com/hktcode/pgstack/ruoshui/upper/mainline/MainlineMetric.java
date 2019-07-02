@@ -5,7 +5,7 @@ import com.hktcode.pgstack.ruoshui.upper.entity.UpperRunnableMetric;
 
 import java.time.ZonedDateTime;
 
-class MainlineMetric extends UpperRunnableMetric
+public class MainlineMetric extends UpperRunnableMetric
 {
     static MainlineMetric of(ZonedDateTime startMillis)
     {

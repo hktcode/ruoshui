@@ -7,7 +7,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.txaction.UpperTxactionThread;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
 
 import java.util.concurrent.TransferQueue;
 
@@ -28,7 +28,7 @@ public class UpperSnapshotPostRecordCreateSlot implements UpperSnapshotPostRecor
         /* */( UpperConsumerMutableMetric metric
         /* */, Thread thread
         /* */, TransferQueue<UpperSnapshotPostRecord> tqueue
-        /* */, UpperTxactionThread xact
+        /* */, MainlineThread xact
         /* */)
     {
         if (metric == null) {

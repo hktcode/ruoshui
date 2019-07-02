@@ -6,7 +6,6 @@ package com.hktcode.pgstack.ruoshui.upper.entity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
 import com.hktcode.bgtriple.naive.NaiveConsumerConfig;
-import com.hktcode.bgtriple.status.TripleBasicBgStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalStreamStarter;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
@@ -16,12 +15,6 @@ import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilter;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilterDefault;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilterScript;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumer;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerThreadBasic;
-import com.hktcode.pgstack.ruoshui.upper.UpperJunction;
-import com.hktcode.pgstack.ruoshui.upper.UpperProducer;
-import com.hktcode.pgstack.ruoshui.upper.datatype.UpperDatatypeThread;
-import org.postgresql.jdbc.PgConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,11 +22,10 @@ import javax.script.ScriptException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
-import static com.hktcode.pgstack.Ruoshui.THE_NAME;
 import static com.hktcode.pgjdbc.LogicalStreamStarter.DEFAULT_START_POSITION;
 import static com.hktcode.pgjdbc.LogicalStreamStarter.DEFAULT_STATUS_INTERVAL;
+import static com.hktcode.pgstack.Ruoshui.THE_NAME;
 import static com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig.DEFAULT_ATTRINFO_SQL;
 import static com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig.DEFAULT_RELATION_SQL;
 
@@ -158,18 +150,4 @@ public class UpperConsumerConfig extends NaiveConsumerConfig
     }
 
     private static Logger logger = LoggerFactory.getLogger(UpperConsumerConfig.class);
-
-    public UpperConsumerThreadBasic createAction //
-        /* */( PgConnection pgrepl //
-        /* */, AtomicReference<TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer>> status //
-        /* */) throws InterruptedException //
-    {
-        if (pgrepl == null) {
-            throw new ArgumentNullException("pgrepl");
-        }
-        if (status == null) {
-            throw new ArgumentNullException("status");
-        }
-        return UpperDatatypeThread.of(this, pgrepl, status);
-    }
 }

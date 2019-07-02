@@ -8,7 +8,7 @@ import com.hktcode.pgjdbc.LogicalTxactBeginsMsg;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.txaction.UpperTxactionThread;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +21,7 @@ public class UpperSnapshotPostThreadUntilPoint extends UpperSnapshotPostThread
 
     public static UpperSnapshotPostThreadUntilPoint of
         /* */( PgReplSlotTuple slot
-        /* */, UpperTxactionThread xact
+        /* */, MainlineThread xact
         /* */, Thread thread
         /* */, TransferQueue<UpperSnapshotPostRecord> tqueue
         /* */)
@@ -45,7 +45,7 @@ public class UpperSnapshotPostThreadUntilPoint extends UpperSnapshotPostThread
 
     private UpperSnapshotPostThreadUntilPoint
         /* */( PgReplSlotTuple slot
-        /* */, UpperTxactionThread xact
+        /* */, MainlineThread xact
         /* */, Thread thread
         /* */, TransferQueue<UpperSnapshotPostRecord> tqueue
         /* */)

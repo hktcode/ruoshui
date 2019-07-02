@@ -6,7 +6,7 @@ package com.hktcode.pgstack.ruoshui.upper.snapshot.post;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.txaction.UpperTxactionThread;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +19,7 @@ public class UpperSnapshotPostThreadSelectData extends UpperSnapshotPostThread
         = LoggerFactory.getLogger(UpperSnapshotPostThreadSelectData.class);
     public static UpperSnapshotPostThreadSelectData of
         /* */( UpperConsumerRecord record
-        /* */, UpperTxactionThread xact
+        /* */, MainlineThread xact
         /* */, Thread thread
         /* */, TransferQueue<UpperSnapshotPostRecord> tqueue
         /* */)
@@ -43,7 +43,7 @@ public class UpperSnapshotPostThreadSelectData extends UpperSnapshotPostThread
 
     private UpperSnapshotPostThreadSelectData
         /* */( UpperConsumerRecord record
-        /* */, UpperTxactionThread xact
+        /* */, MainlineThread xact
         /* */, Thread thread
         /* */, TransferQueue<UpperSnapshotPostRecord> tqueue
         /* */)

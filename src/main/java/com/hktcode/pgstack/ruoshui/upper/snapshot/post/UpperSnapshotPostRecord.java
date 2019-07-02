@@ -5,7 +5,7 @@ package com.hktcode.pgstack.ruoshui.upper.snapshot.post;
 
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.txaction.UpperTxactionThread;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
 
 import java.util.concurrent.TransferQueue;
 
@@ -15,6 +15,6 @@ public interface UpperSnapshotPostRecord
         /* */(UpperConsumerMutableMetric metric //
         /* */, Thread thread //
         /* */, TransferQueue<UpperSnapshotPostRecord> tqueue //
-        /* */, UpperTxactionThread xact //
+        /* */, MainlineThread xact //
         /* */);
 }

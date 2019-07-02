@@ -11,7 +11,7 @@ import com.hktcode.pgstack.ruoshui.upper.UpperJunction;
 import com.hktcode.pgstack.ruoshui.upper.UpperProducer;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.txaction.UpperTxactionThread;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +25,7 @@ public class UpperSnapshotPostThreadLockingRel extends UpperSnapshotPostThread
     public static UpperSnapshotPostThreadLockingRel of //
         /* */(PgSnapshotConfig config //
         /* */, AtomicReference<TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer>> status //
-        /* */, UpperTxactionThread xact //
+        /* */, MainlineThread xact //
         /* */) //
     {
         if (config == null) {
@@ -47,7 +47,7 @@ public class UpperSnapshotPostThreadLockingRel extends UpperSnapshotPostThread
 
     private UpperSnapshotPostThreadLockingRel
         /* */( Thread thread
-        /* */, UpperTxactionThread xact
+        /* */, MainlineThread xact
         /* */, TransferQueue<UpperSnapshotPostRecord> tqueue
         /* */)
     {

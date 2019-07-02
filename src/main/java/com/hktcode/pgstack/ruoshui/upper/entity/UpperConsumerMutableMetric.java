@@ -8,7 +8,7 @@ import com.hktcode.bgtriple.naive.NaiveConsumerMutableMetric;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionInfo;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumerThread;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumerThreadNoop;
-import com.hktcode.pgstack.ruoshui.upper.txaction.UpperTxactionMetric;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineMetric;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -32,5 +32,5 @@ public class UpperConsumerMutableMetric extends NaiveConsumerMutableMetric
     @JsonIgnore
     public UpperConsumerThread fetchThread = UpperConsumerThreadNoop.of(); // TODO:
 
-    public UpperTxactionMetric txactMetric = UpperTxactionMetric.of(ZonedDateTime.ofInstant(Instant.ofEpochMilli(0), ZoneId.systemDefault()));
+    public MainlineMetric txactMetric = null; // TODO:
 }

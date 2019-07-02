@@ -26,7 +26,6 @@ import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
 import com.hktcode.pgstack.ruoshui.upper.snapshot.post.UpperSnapshotPostThreadLockingRel;
-import com.hktcode.pgstack.ruoshui.upper.txaction.UpperTxactionThread;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
 import org.slf4j.Logger;
@@ -174,13 +173,14 @@ public class UpperConsumer extends NaiveConsumer
             throw new ArgumentNullException("json");
         }
         UpperConsumerThread pollAction = this.metric.fetchThread;
-        if (!(pollAction instanceof UpperTxactionThread)) {
+        if (!(pollAction instanceof MainlineThread)) {
             // TODO:
             return SimplePstSuccessBgResult.of();
         }
+        // TODO: 如果处于snapshot的Action不应该进行此计算
+        MainlineThread oldAction = (MainlineThread)pollAction;
         PgConnectionProperty s = this.config.srcProperty;
         String p = this.config.logicalRepl.slotName;
-        UpperTxactionThread oldAction = (UpperTxactionThread)pollAction;
         JsonNode tupleSelectNode = json.path("tuple_select");
         String m = json.path("metadata_sql").asText(DEFAULT_RELATION_SQL);
         String a = json.path("attrinfo_sql").asText(DEFAULT_ATTRINFO_SQL);
