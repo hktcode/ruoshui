@@ -59,7 +59,7 @@ public class LogicalRelationInfMsg implements LogicalMsg
         long relident = content.getInt();
         String dbschema = LogicalMsg.readCStyleUtf8String(content);
         if ("".equals(dbschema)) {
-            dbschema = "pg_catalog";
+            dbschema = "pg_catalog"; // TODO:
         }
         String relation = LogicalMsg.readCStyleUtf8String(content);
         long replchar = Byte.toUnsignedLong(content.get());

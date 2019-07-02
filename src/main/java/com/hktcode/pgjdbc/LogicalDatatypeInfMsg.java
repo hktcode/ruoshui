@@ -51,7 +51,7 @@ public class LogicalDatatypeInfMsg implements LogicalMsg
         String tpschema = LogicalMsg.readCStyleUtf8String(content);
         String typename = LogicalMsg.readCStyleUtf8String(content);
         if ("".equals(tpschema)) {
-            tpschema = "pg_catalog";
+            tpschema = "pg_catalog"; // TODO:
         }
         return new LogicalDatatypeInfMsg(datatype, tpschema, typename);
     }
