@@ -41,4 +41,31 @@ public abstract class SimpleStatusOuter<W extends SimpleWorker<W, M>, M> //
         }
         return this;
     }
+
+    @Override
+    public SimpleStatus<W, M> get(SimpleStatusOuterGet<W, M> get)
+    {
+        if (get == null) {
+            throw new ArgumentNullException("get");
+        }
+        return this;
+    }
+
+    @Override
+    public SimpleStatus<W, M> pst(SimpleStatusOuterPst<W, M> pst)
+    {
+        if (pst == null) {
+            throw new ArgumentNullException("pst");
+        }
+        return this;
+    }
+
+    @Override
+    public SimpleStatus<W, M> del(SimpleStatusOuterDel<W, M> del)
+    {
+        if (del == null) {
+            throw new ArgumentNullException("del");
+        }
+        return this;
+    }
 }
