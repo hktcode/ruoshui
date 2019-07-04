@@ -6,7 +6,7 @@ package com.hktcode.bgtriple;
 import com.hktcode.bgmethod.BgMethod;
 import com.hktcode.bgmethod.BgMethodResult;
 import com.hktcode.bgmethod.SimpleBasicEndBgResult;
-import com.hktcode.bgmethod.SimpleDelDefaultBgParams;
+import com.hktcode.bgmethod.BgMethodParamsDelDefault;
 import com.hktcode.bgtriple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
@@ -118,30 +118,30 @@ public abstract class TripleBasicBgWorker //
                     return TripleEndBgStatus.of(cr, jr, pr);
                 }
                 else {
-                    return TripleDelBgStatus.of(cr, jr, SimpleDelDefaultBgParams.of());
+                    return TripleDelBgStatus.of(cr, jr, BgMethodParamsDelDefault.of());
                 }
             }
             else if (p instanceof SimpleBasicEndBgResult) {
                 SimpleBasicEndBgResult<P> pr = (SimpleBasicEndBgResult<P>) p;
-                return TripleDelBgStatus.of(cr, SimpleDelDefaultBgParams.of(), pr);
+                return TripleDelBgStatus.of(cr, BgMethodParamsDelDefault.of(), pr);
             }
             else {
-                return TripleDelBgStatus.of(cr, SimpleDelDefaultBgParams.of(), SimpleDelDefaultBgParams.of());
+                return TripleDelBgStatus.of(cr, BgMethodParamsDelDefault.of(), BgMethodParamsDelDefault.of());
             }
         }
         else if (j instanceof SimpleBasicEndBgResult) {
             SimpleBasicEndBgResult<J> jr = (SimpleBasicEndBgResult<J>)j;
             if (p instanceof SimpleBasicEndBgResult) {
                 SimpleBasicEndBgResult<P> pr = (SimpleBasicEndBgResult<P>)p;
-                return TripleDelBgStatus.of(SimpleDelDefaultBgParams.of(), jr, pr);
+                return TripleDelBgStatus.of(BgMethodParamsDelDefault.of(), jr, pr);
             }
             else {
-                return TripleDelBgStatus.of(SimpleDelDefaultBgParams.of(), jr, SimpleDelDefaultBgParams.of());
+                return TripleDelBgStatus.of(BgMethodParamsDelDefault.of(), jr, BgMethodParamsDelDefault.of());
             }
         }
         else if (p instanceof SimpleBasicEndBgResult) {
             SimpleBasicEndBgResult<P> pr = (SimpleBasicEndBgResult<P>) p;
-            return TripleDelBgStatus.of(SimpleDelDefaultBgParams.of(), SimpleDelDefaultBgParams.of(), pr);
+            return TripleDelBgStatus.of(BgMethodParamsDelDefault.of(), BgMethodParamsDelDefault.of(), pr);
         } else {
             return TripleRunBgStatus.of();
         }

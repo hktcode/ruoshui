@@ -137,8 +137,8 @@ public abstract class NaiveProducer //
         catch (Exception ex) {
             ZonedDateTime endtime = ZonedDateTime.now();
             logger.error("naive producer throws exception: name={}", Thread.currentThread().getName(), ex);
-            SimpleDelDefaultBgParams<C> c = SimpleDelDefaultBgParams.of();
-            SimpleDelDefaultBgParams<J> j = SimpleDelDefaultBgParams.of();
+            BgMethodParamsDelDefault<C> c = BgMethodParamsDelDefault.of();
+            BgMethodParamsDelDefault<J> j = BgMethodParamsDelDefault.of();
             SimpleUnkFailureBgResult<F, NaiveProducerMetric, P> p //
                 = SimpleUnkFailureBgResult.of(ex, this.config, this.metric.toMetric(), ZonedDateTime.now());
             TripleDelBgStatus<C, J, P> del = TripleDelBgStatus.of(c, j, p);

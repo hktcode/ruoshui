@@ -4,7 +4,7 @@
 package com.hktcode.pgstack.ruoshui.upper.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.hktcode.bgmethod.SimpleBasicPstBgParams;
+import com.hktcode.bgmethod.BgMethodParamsPst;
 import com.hktcode.bgmethod.SimpleBasicPstBgResult;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilter;
@@ -16,7 +16,7 @@ import javax.script.ScriptException;
 import java.time.ZonedDateTime;
 
 public class UpperSnapshotPstParams
-    implements SimpleBasicPstBgParams<UpperConsumer>
+    implements BgMethodParamsPst<UpperConsumer>
 {
     public static UpperSnapshotPstParams of(JsonNode json)
         throws ScriptException

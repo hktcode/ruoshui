@@ -7,11 +7,11 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.time.ZonedDateTime;
 
-public class SimpleDelFailureBgParams<T extends SimpleBasicBgWorker<T>> //
-    implements SimpleBasicDelBgParams<T>
+public class BgMethodParamsDelFailure<T extends SimpleBasicBgWorker<T>> //
+    implements BgMethodParamsDel<T>
 {
     public static <T extends SimpleBasicBgWorker<T>> //
-    SimpleDelFailureBgParams<T> of(Throwable reasons, ZonedDateTime endtime)
+    BgMethodParamsDelFailure<T> of(Throwable reasons, ZonedDateTime endtime)
     {
         if (reasons == null) {
             throw new ArgumentNullException("reasons");
@@ -19,14 +19,14 @@ public class SimpleDelFailureBgParams<T extends SimpleBasicBgWorker<T>> //
         if (endtime == null) {
             throw new ArgumentNullException("endtime");
         }
-        return new SimpleDelFailureBgParams<>(reasons, endtime);
+        return new BgMethodParamsDelFailure<>(reasons, endtime);
     }
 
     public final Throwable reasons;
 
     public final ZonedDateTime endtime;
 
-    private SimpleDelFailureBgParams(Throwable reasons, ZonedDateTime endtime)
+    private BgMethodParamsDelFailure(Throwable reasons, ZonedDateTime endtime)
     {
         this.reasons = reasons;
         this.endtime = endtime;

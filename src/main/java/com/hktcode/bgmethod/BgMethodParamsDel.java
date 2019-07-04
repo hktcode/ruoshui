@@ -5,7 +5,7 @@ package com.hktcode.bgmethod;
 
 import java.time.ZonedDateTime;
 
-public interface SimpleBasicDelBgParams<T extends SimpleBasicBgWorker<T>> //
+public interface BgMethodParamsDel<T extends SimpleBasicBgWorker<T>> //
     extends SimpleBasicDelBgMethod<T>, BgMethodParams<T>
 {
     @Override

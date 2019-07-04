@@ -5,7 +5,7 @@ package com.hktcode.bgmethod;
 
 import java.time.ZonedDateTime;
 
-public interface SimpleBasicPutBgParams<T extends SimpleBasicBgWorker<T>> //
+public interface BgMethodParamsPut<T extends SimpleBasicBgWorker<T>> //
     extends SimpleBasicPutBgMethod<T>, BgMethodParams<T>
 {
     @Override

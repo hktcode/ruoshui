@@ -7,12 +7,12 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.time.ZonedDateTime;
 
-public class SimpleGetDefaultBgParams<T extends SimpleBasicBgWorker<T>> //
-    implements SimpleBasicGetBgParams<T>
+public class BgMethodParamsGetDefault<T extends SimpleBasicBgWorker<T>> //
+    implements BgMethodParamsGet<T>
 {
-    public static <T extends SimpleBasicBgWorker<T>> SimpleGetDefaultBgParams<T> of()
+    public static <T extends SimpleBasicBgWorker<T>> BgMethodParamsGetDefault<T> of()
     {
-        return new SimpleGetDefaultBgParams<>();
+        return new BgMethodParamsGetDefault<>();
     }
 
     @Override

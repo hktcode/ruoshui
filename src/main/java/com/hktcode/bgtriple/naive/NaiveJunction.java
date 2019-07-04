@@ -175,9 +175,9 @@ public abstract class NaiveJunction //
             ZonedDateTime endtime = ZonedDateTime.now();
             logger.error("junction throws exception.", ex);
             NaiveJunctionMetric metrics = NaiveJunctionMetric.of(this.metric);
-            SimpleDelDefaultBgParams<C> c = SimpleDelDefaultBgParams.of();
+            BgMethodParamsDelDefault<C> c = BgMethodParamsDelDefault.of();
             SimpleUnkFailureBgResult<F, NaiveJunctionMetric, J> j = SimpleUnkFailureBgResult.of(ex, this.config, metrics, ZonedDateTime.now());
-            SimpleDelDefaultBgParams<P> p = SimpleDelDefaultBgParams.of();
+            BgMethodParamsDelDefault<P> p = BgMethodParamsDelDefault.of();
             TripleDelBgStatus<C, J, P> del = TripleDelBgStatus.of(c, j, p);
             TripleBasicBgStatus<C, J, P> origin;
             TripleBasicBgStatus<C, J, P> future;

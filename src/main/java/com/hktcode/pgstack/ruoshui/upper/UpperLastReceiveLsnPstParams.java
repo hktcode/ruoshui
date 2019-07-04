@@ -3,14 +3,14 @@
  */
 package com.hktcode.pgstack.ruoshui.upper;
 
-import com.hktcode.bgmethod.SimpleBasicPstBgParams;
+import com.hktcode.bgmethod.BgMethodParamsPst;
 import com.hktcode.bgmethod.SimpleBasicPstBgResult;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.replication.LogSequenceNumber;
 
 import java.time.ZonedDateTime;
 
-public class UpperLastReceiveLsnPstParams implements SimpleBasicPstBgParams<UpperConsumer>
+public class UpperLastReceiveLsnPstParams implements BgMethodParamsPst<UpperConsumer>
 {
     public static UpperLastReceiveLsnPstParams of(LogSequenceNumber lastReceiveLsn)
     {

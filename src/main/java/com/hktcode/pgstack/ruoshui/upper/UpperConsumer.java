@@ -6,7 +6,7 @@ package com.hktcode.pgstack.ruoshui.upper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
 import com.hktcode.bgmethod.SimpleBasicPstBgResult;
-import com.hktcode.bgmethod.SimpleDelDefaultBgParams;
+import com.hktcode.bgmethod.BgMethodParamsDelDefault;
 import com.hktcode.bgmethod.SimplePstSuccessBgResult;
 import com.hktcode.bgmethod.SimpleUnkFailureBgResult;
 import com.hktcode.bgtriple.naive.NaiveConsumer;
@@ -104,8 +104,8 @@ public class UpperConsumer extends NaiveConsumer
             metric.statusInfor = "throw exception at " + endtime + ": " + msg;
             SimpleUnkFailureBgResult<MainlineConfig, NaiveConsumerMetric, UpperConsumer> c //
                 = SimpleUnkFailureBgResult.of(ex, this.config, this.metric.toMetric(), ZonedDateTime.now());
-            SimpleDelDefaultBgParams<UpperJunction> j = SimpleDelDefaultBgParams.of();
-            SimpleDelDefaultBgParams<UpperProducer> p = SimpleDelDefaultBgParams.of();
+            BgMethodParamsDelDefault<UpperJunction> j = BgMethodParamsDelDefault.of();
+            BgMethodParamsDelDefault<UpperProducer> p = BgMethodParamsDelDefault.of();
             TripleDelBgStatus<UpperConsumer, UpperJunction, UpperProducer> del = TripleDelBgStatus.of(c, j, p);
             TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer> origin;
             TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer> future;

@@ -68,8 +68,8 @@ public abstract class NaiveConsumer //
             metric.statusInfor = "throw exception at " + endtime + ": " + msg;
             SimpleUnkFailureBgResult<F, NaiveConsumerMetric, C> c //
                 = SimpleUnkFailureBgResult.of(ex, this.config, this.metric.toMetric(), ZonedDateTime.now());
-            SimpleDelDefaultBgParams<J> j = SimpleDelDefaultBgParams.of();
-            SimpleDelDefaultBgParams<P> p = SimpleDelDefaultBgParams.of();
+            BgMethodParamsDelDefault<J> j = BgMethodParamsDelDefault.of();
+            BgMethodParamsDelDefault<P> p = BgMethodParamsDelDefault.of();
             TripleDelBgStatus<C, J, P> del = TripleDelBgStatus.of(c, j, p);
             TripleBasicBgStatus<C, J, P> origin;
             TripleBasicBgStatus<C, J, P> future;

@@ -7,29 +7,29 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.time.ZonedDateTime;
 
-public class SimplePutDefaultBgParams<T extends SimpleBasicBgWorker<T>> //
-    implements SimpleBasicPutBgParams<T>
+public class BgMethodParamsDelDefault<T extends SimpleBasicBgWorker<T>> //
+    implements BgMethodParamsDel<T>
 {
-    public static <T extends SimpleBasicBgWorker<T>> SimplePutDefaultBgParams<T> of()
+    public static <T extends SimpleBasicBgWorker<T>> BgMethodParamsDelDefault<T> of()
     {
-        return new SimplePutDefaultBgParams<>();
+        return new BgMethodParamsDelDefault<>();
     }
 
-    private SimplePutDefaultBgParams()
+    private BgMethodParamsDelDefault()
     {
     }
 
     @Override
-    public SimpleBasicPutBgResult<T> run(T worker)
+    public SimpleBasicDelBgResult<T> run(T worker)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");
         }
-        return worker.put();
+        return worker.del();
     }
 
     @Override
-    public SimpleBasicPutBgResult<T> run(T worker, Throwable reasons, ZonedDateTime endtime)
+    public SimpleBasicDelBgResult<T> run(T worker, Throwable reasons, ZonedDateTime endtime)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");
@@ -40,6 +40,6 @@ public class SimplePutDefaultBgParams<T extends SimpleBasicBgWorker<T>> //
         if (endtime == null) {
             throw new ArgumentNullException("endtime");
         }
-        return worker.put(reasons, endtime);
+        return worker.del(reasons, endtime);
     }
 }

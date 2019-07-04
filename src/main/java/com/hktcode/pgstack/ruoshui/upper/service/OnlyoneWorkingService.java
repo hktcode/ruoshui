@@ -4,10 +4,10 @@
 package com.hktcode.pgstack.ruoshui.upper.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.hktcode.bgmethod.SimpleDelDefaultBgParams;
-import com.hktcode.bgmethod.SimpleGetDefaultBgParams;
-import com.hktcode.bgmethod.SimplePstDefaultBgParams;
-import com.hktcode.bgmethod.SimplePutDefaultBgParams;
+import com.hktcode.bgmethod.BgMethodParamsDelDefault;
+import com.hktcode.bgmethod.BgMethodParamsGetDefault;
+import com.hktcode.bgmethod.BgMethodParamsPstDefault;
+import com.hktcode.bgmethod.BgMethodParamsPutDefault;
 import com.hktcode.bgtriple.TripleSwitcher;
 import com.hktcode.bgtriple.result.TriplePutBgResult;
 import com.hktcode.bgtriple.status.*;
@@ -39,9 +39,9 @@ public class OnlyoneWorkingService implements WorkingService
 
     private OnlyoneWorkingService()
     {
-        SimplePutDefaultBgParams<UpperConsumer> c = SimplePutDefaultBgParams.of();
-        SimplePutDefaultBgParams<UpperJunction> j = SimplePutDefaultBgParams.of();
-        SimplePutDefaultBgParams<UpperProducer> p = SimplePutDefaultBgParams.of();
+        BgMethodParamsPutDefault<UpperConsumer> c = BgMethodParamsPutDefault.of();
+        BgMethodParamsPutDefault<UpperJunction> j = BgMethodParamsPutDefault.of();
+        BgMethodParamsPutDefault<UpperProducer> p = BgMethodParamsPutDefault.of();
         TriplePutBgStatus<UpperConsumer, UpperJunction, UpperProducer> put = TriplePutBgStatus.of(c, j, p);
         this.status = new AtomicReference<>(put);
     }
@@ -82,9 +82,9 @@ public class OnlyoneWorkingService implements WorkingService
     @Override
     public ResponseEntity del() throws ExecutionException, InterruptedException
     {
-        SimpleDelDefaultBgParams<UpperConsumer> c = SimpleDelDefaultBgParams.of();
-        SimpleDelDefaultBgParams<UpperJunction> j = SimpleDelDefaultBgParams.of();
-        SimpleDelDefaultBgParams<UpperProducer> p = SimpleDelDefaultBgParams.of();
+        BgMethodParamsDelDefault<UpperConsumer> c = BgMethodParamsDelDefault.of();
+        BgMethodParamsDelDefault<UpperJunction> j = BgMethodParamsDelDefault.of();
+        BgMethodParamsDelDefault<UpperProducer> p = BgMethodParamsDelDefault.of();
         TripleDelBgStatus<UpperConsumer, UpperJunction, UpperProducer> del //
             = TripleDelBgStatus.of(c, j, p);
         TripleSwitcher<UpperConsumer, UpperJunction, UpperProducer> switcher //
@@ -95,9 +95,9 @@ public class OnlyoneWorkingService implements WorkingService
     @Override
     public ResponseEntity get() throws ExecutionException, InterruptedException
     {
-        SimpleGetDefaultBgParams<UpperConsumer> c = SimpleGetDefaultBgParams.of();
-        SimpleGetDefaultBgParams<UpperJunction> j = SimpleGetDefaultBgParams.of();
-        SimpleGetDefaultBgParams<UpperProducer> p = SimpleGetDefaultBgParams.of();
+        BgMethodParamsGetDefault<UpperConsumer> c = BgMethodParamsGetDefault.of();
+        BgMethodParamsGetDefault<UpperJunction> j = BgMethodParamsGetDefault.of();
+        BgMethodParamsGetDefault<UpperProducer> p = BgMethodParamsGetDefault.of();
         TripleGetBgStatus<UpperConsumer, UpperJunction, UpperProducer> get //
             = TripleGetBgStatus.of(c, j, p);
         TripleSwitcher<UpperConsumer, UpperJunction, UpperProducer> switcher //
@@ -113,8 +113,8 @@ public class OnlyoneWorkingService implements WorkingService
             throw new ArgumentNullException("json");
         }
         UpperSnapshotPstParams c = UpperSnapshotPstParams.of(json);
-        SimplePstDefaultBgParams<UpperJunction> j = SimplePstDefaultBgParams.of();
-        SimplePstDefaultBgParams<UpperProducer> p = SimplePstDefaultBgParams.of();
+        BgMethodParamsPstDefault<UpperJunction> j = BgMethodParamsPstDefault.of();
+        BgMethodParamsPstDefault<UpperProducer> p = BgMethodParamsPstDefault.of();
         TriplePstBgStatus<UpperConsumer, UpperJunction, UpperProducer> pst //
             = TriplePstBgStatus.of(c, j, p);
         TripleSwitcher<UpperConsumer, UpperJunction, UpperProducer> switcher //
