@@ -4,7 +4,9 @@
 
 package com.hktcode.bgsimple.status;
 
-public interface SimpleStatus<W, M>
+import com.hktcode.bgsimple.SimpleWorker;
+
+public interface SimpleStatus<W extends SimpleWorker<W, M>, M>
 {
     SimpleStatus<W, M> get();
 
