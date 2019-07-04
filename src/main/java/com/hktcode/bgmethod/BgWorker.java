@@ -3,17 +3,17 @@
  */
 package com.hktcode.bgmethod;
 
+import com.hktcode.bgsimple.method.*;
+
 import java.time.ZonedDateTime;
 
 public interface BgWorker<W extends BgWorker<W, M>, M>
 {
-    void pst(M metric);
+    SimpleMethodPstResult<W, M> pst(M metric);
 
-    void put(M metric);
+    SimpleMethodPutResult<W, M> put(M metric);
 
-    void get(M metric);
+    SimpleMethodGetResult<W, M> get(M metric);
 
-    void del(M metric);
-
-    void del(M metric, Throwable reason, ZonedDateTime endtime);
+    SimpleMethodDelResult<W, M> del(M metric);
 }
