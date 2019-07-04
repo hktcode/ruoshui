@@ -6,13 +6,11 @@ package com.hktcode.bgsimple.method;
 import com.hktcode.bgmethod.BgWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-import java.time.ZonedDateTime;
-
-public interface SimpleMethodPstResult<T extends BgWorker<T, M>, M> //
-    extends SimpleMethodPst<T, M>
+public interface SimpleMethodPstResult<W extends BgWorker<W, M>, M> //
+    extends SimpleMethodPst<W, M>
 {
     @Override
-    default SimpleMethodPstResult<T, M> run(T worker, M metric)
+    default SimpleMethodPstResult<W, M> run(W worker, M metric)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");

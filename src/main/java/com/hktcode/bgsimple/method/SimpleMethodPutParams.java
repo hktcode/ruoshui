@@ -5,9 +5,9 @@ package com.hktcode.bgsimple.method;
 
 import com.hktcode.bgmethod.BgWorker;
 
-public interface SimpleMethodPutParams<T extends BgWorker<T, M>, M> //
-    extends SimpleMethodPut<T, M>
+public interface SimpleMethodPutParams<W extends BgWorker<W, M>, M> //
+    extends SimpleMethodPut<W, M>
 {
     @Override
-    SimpleMethodPutResult<T, M> run(T worker, M metric);
+    SimpleMethodPutResult<W, M> run(W worker, M metric);
 }

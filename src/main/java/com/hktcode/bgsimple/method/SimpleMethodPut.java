@@ -5,9 +5,7 @@ package com.hktcode.bgsimple.method;
 
 import com.hktcode.bgmethod.BgWorker;
 
-import java.time.ZonedDateTime;
-
-public interface SimpleMethodPut<T extends BgWorker<T, M>, M>
+public interface SimpleMethodPut<W extends BgWorker<W, M>, M>
 {
-    SimpleMethodPutResult<T, M> run(T worker, M metric);
+    SimpleMethodPutResult<W, M> run(W worker, M metric);
 }
