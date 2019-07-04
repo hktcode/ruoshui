@@ -28,7 +28,7 @@ public abstract class SimpleWorker<W extends SimpleWorker<W, M>, M> //
     {
         SimpleStatus<W, M> origin;
         while (!((origin = this.status.get()) instanceof SimpleStatusInner)) {
-            SimpleStatusOuter<?, W, M> outer = (SimpleStatusOuter<?, W, M>) origin;
+            SimpleStatusOuter<W, M> outer = (SimpleStatusOuter<W, M>) origin;
             outer.newStatus(myown, metric);
         }
         return (SimpleStatusInner<W, M>) origin;
