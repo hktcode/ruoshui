@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import java.time.ZonedDateTime;
 
 public interface SimpleBasicPstBgResult<T extends SimpleBasicBgWorker<T>> //
-    extends SimpleBasicPstBgMethod<T>, SimpleBasicBgResult<T>
+    extends SimpleBasicPstBgMethod<T>, BgMethodResult<T>
 {
     @Override
     default SimpleBasicPstBgResult<T> run(T worker)

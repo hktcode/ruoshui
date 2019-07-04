@@ -4,7 +4,7 @@
 package com.hktcode.bgtriple;
 
 import com.hktcode.bgmethod.BgMethod;
-import com.hktcode.bgmethod.SimpleBasicBgResult;
+import com.hktcode.bgmethod.BgMethodResult;
 import com.hktcode.bgmethod.SimpleBasicBgWorker;
 import com.hktcode.bgtriple.status.TripleBasicBgStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
@@ -46,7 +46,7 @@ public interface TripleProducer
             throw new ArgumentNullException("producer");
         }
         DM origin = producer.get();
-        SimpleBasicBgResult<P> future = origin.run((P)this);
+        BgMethodResult<P> future = origin.run((P)this);
         while (!producer.compareAndSet(origin, (DM)future)) {
             logger.info("compare and set result fail");
             origin = producer.get();
@@ -80,7 +80,7 @@ public interface TripleProducer
             throw new ArgumentNullException("producer");
         }
         DM origin = producer.get();
-        SimpleBasicBgResult<P> future = origin.run((P)this, reasons, endtime);
+        BgMethodResult<P> future = origin.run((P)this, reasons, endtime);
         while (!producer.compareAndSet(origin, (DM)future)) {
             logger.info("compare and set result fail");
             origin = producer.get();

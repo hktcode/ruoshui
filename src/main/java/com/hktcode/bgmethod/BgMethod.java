@@ -7,7 +7,7 @@ import java.time.ZonedDateTime;
 
 public interface BgMethod<T extends SimpleBasicBgWorker<T>>
 {
-    SimpleBasicBgResult<T> run(T worker);
+    BgMethodResult<T> run(T worker);
 
-    SimpleBasicBgResult<T> run(T worker, Throwable reasons, ZonedDateTime endtime);
+    BgMethodResult<T> run(T worker, Throwable reasons, ZonedDateTime endtime);
 }

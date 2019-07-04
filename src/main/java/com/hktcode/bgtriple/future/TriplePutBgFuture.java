@@ -4,7 +4,7 @@
 
 package com.hktcode.bgtriple.future;
 
-import com.hktcode.bgmethod.SimpleBasicBgResult;
+import com.hktcode.bgmethod.BgMethodResult;
 import com.hktcode.bgmethod.SimpleBasicPutBgMethod;
 import com.hktcode.bgmethod.SimpleBasicPutBgResult;
 import com.hktcode.bgtriple.TripleConsumer;
@@ -79,9 +79,9 @@ public class TriplePutBgFuture //
     @Override
     public boolean isDone()
     {
-        return consumer.get() instanceof SimpleBasicBgResult
-            && junction.get() instanceof SimpleBasicBgResult
-            && producer.get() instanceof SimpleBasicBgResult;
+        return consumer.get() instanceof BgMethodResult
+            && junction.get() instanceof BgMethodResult
+            && producer.get() instanceof BgMethodResult;
     }
 
     @Override

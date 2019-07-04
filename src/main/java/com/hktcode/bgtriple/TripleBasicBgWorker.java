@@ -4,7 +4,7 @@
 package com.hktcode.bgtriple;
 
 import com.hktcode.bgmethod.BgMethod;
-import com.hktcode.bgmethod.SimpleBasicBgResult;
+import com.hktcode.bgmethod.BgMethodResult;
 import com.hktcode.bgmethod.SimpleBasicEndBgResult;
 import com.hktcode.bgmethod.SimpleDelDefaultBgParams;
 import com.hktcode.bgtriple.status.*;
@@ -98,15 +98,15 @@ public abstract class TripleBasicBgWorker //
         /* */) throws InterruptedException
     {
         BgMethod<C> c;
-        while (!((c = consumer.get()) instanceof SimpleBasicBgResult)) {
+        while (!((c = consumer.get()) instanceof BgMethodResult)) {
             Thread.sleep(10);
         }
         BgMethod<J> j;
-        while (!((j = junction.get()) instanceof SimpleBasicBgResult)) {
+        while (!((j = junction.get()) instanceof BgMethodResult)) {
             Thread.sleep(10);
         }
         BgMethod<P> p;
-        while (!((p = producer.get()) instanceof SimpleBasicBgResult)) {
+        while (!((p = producer.get()) instanceof BgMethodResult)) {
             Thread.sleep(10);
         }
         if (c instanceof SimpleBasicEndBgResult) {

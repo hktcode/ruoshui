@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import java.time.ZonedDateTime;
 
 public interface SimpleBasicGetBgResult<T extends SimpleBasicBgWorker<T>> //
-    extends SimpleBasicGetBgMethod<T>, SimpleBasicBgResult<T>
+    extends SimpleBasicGetBgMethod<T>, BgMethodResult<T>
 {
     @Override
     default SimpleBasicGetBgResult<T> run(T worker)
