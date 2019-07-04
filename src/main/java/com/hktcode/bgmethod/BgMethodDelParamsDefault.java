@@ -7,10 +7,10 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.time.ZonedDateTime;
 
-public class BgMethodDelParamsDefault<T extends SimpleBasicBgWorker<T>> //
+public class BgMethodDelParamsDefault<T extends SimpleBgWorker<T>> //
     implements BgMethodDelParams<T>
 {
-    public static <T extends SimpleBasicBgWorker<T>> BgMethodDelParamsDefault<T> of()
+    public static <T extends SimpleBgWorker<T>> BgMethodDelParamsDefault<T> of()
     {
         return new BgMethodDelParamsDefault<>();
     }

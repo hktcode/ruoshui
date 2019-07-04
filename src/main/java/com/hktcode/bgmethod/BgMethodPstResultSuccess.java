@@ -3,9 +3,9 @@
  */
 package com.hktcode.bgmethod;
 
-public class BgMethodPstResultSuccess<T extends SimpleBasicBgWorker<T>> implements BgMethodPstResult<T>
+public class BgMethodPstResultSuccess<T extends SimpleBgWorker<T>> implements BgMethodPstResult<T>
 {
-    public static <T extends SimpleBasicBgWorker<T>> BgMethodPstResultSuccess<T> of()
+    public static <T extends SimpleBgWorker<T>> BgMethodPstResultSuccess<T> of()
     {
         return new BgMethodPstResultSuccess<>();
     }

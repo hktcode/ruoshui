@@ -7,7 +7,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.time.ZonedDateTime;
 
-public abstract class BgMethodResultEndAlready<T extends SimpleBasicBgWorker<T>> //
+public abstract class BgMethodResultEndAlready<T extends SimpleBgWorker<T>> //
     implements BgMethodResultEnd<T> //
 {
     public final ZonedDateTime endtime;

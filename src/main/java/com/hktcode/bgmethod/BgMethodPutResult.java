@@ -7,7 +7,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.time.ZonedDateTime;
 
-public interface BgMethodPutResult<T extends SimpleBasicBgWorker<T>> extends BgMethodPut<T>, BgMethodResult<T>
+public interface BgMethodPutResult<T extends SimpleBgWorker<T>> extends BgMethodPut<T>, BgMethodResult<T>
 {
     @Override
     default BgMethodPutResult<T> run(T worker)

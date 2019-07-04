@@ -7,10 +7,10 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.time.ZonedDateTime;
 
-public class BgMethodResultMiscarried<T extends SimpleBasicBgWorker<T>> //
+public class BgMethodResultMiscarried<T extends SimpleBgWorker<T>> //
     extends BgMethodResultEndAlready<T> implements BgMethodPutResult<T>
 {
-    public static <T extends SimpleBasicBgWorker<T>> BgMethodResultMiscarried<T> of (ZonedDateTime endtime)
+    public static <T extends SimpleBgWorker<T>> BgMethodResultMiscarried<T> of (ZonedDateTime endtime)
     {
         if (endtime == null) {
             throw new ArgumentNullException("endtime");

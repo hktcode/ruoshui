@@ -7,10 +7,10 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.time.ZonedDateTime;
 
-public class BgMethodResultEndFailure<C, M, T extends SimpleBasicBgWorker<T>> //
+public class BgMethodResultEndFailure<C, M, T extends SimpleBgWorker<T>> //
     extends BgMethodResultEndReality<C, M, T>
 {
-    public static <C, M, T extends SimpleBasicBgWorker<T>> //
+    public static <C, M, T extends SimpleBgWorker<T>> //
     BgMethodResultEndFailure<C, M, T> of(Throwable reasons, C configs, M metrics, ZonedDateTime endtime)
     {
         if (reasons == null) {

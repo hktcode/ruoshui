@@ -7,10 +7,10 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.time.ZonedDateTime;
 
-public class BgMethodDelParamsFailure<T extends SimpleBasicBgWorker<T>> //
+public class BgMethodDelParamsFailure<T extends SimpleBgWorker<T>> //
     implements BgMethodDelParams<T>
 {
-    public static <T extends SimpleBasicBgWorker<T>> //
+    public static <T extends SimpleBgWorker<T>> //
     BgMethodDelParamsFailure<T> of(Throwable reasons, ZonedDateTime endtime)
     {
         if (reasons == null) {

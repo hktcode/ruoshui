@@ -7,7 +7,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.time.ZonedDateTime;
 
-public interface BgMethodDelResult<T extends SimpleBasicBgWorker<T>> //
+public interface BgMethodDelResult<T extends SimpleBgWorker<T>> //
     extends BgMethodDel<T>, BgMethodResult<T>
 {
     @Override

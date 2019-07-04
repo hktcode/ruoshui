@@ -7,9 +7,9 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.time.ZonedDateTime;
 
-public class BgMethodPutResultSuccess<C, T extends SimpleBasicBgWorker<T>> implements BgMethodPutResult<T>
+public class BgMethodPutResultSuccess<C, T extends SimpleBgWorker<T>> implements BgMethodPutResult<T>
 {
-    public static <C, T extends SimpleBasicBgWorker<T>> BgMethodPutResultSuccess<C, T> of (ZonedDateTime startat, C configs)
+    public static <C, T extends SimpleBgWorker<T>> BgMethodPutResultSuccess<C, T> of (ZonedDateTime startat, C configs)
     {
         if (startat == null) {
             throw new ArgumentNullException("startat");

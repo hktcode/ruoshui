@@ -3,7 +3,7 @@
  */
 package com.hktcode.bgmethod;
 
-public interface BgMethodParams<T extends SimpleBasicBgWorker<T>> //
+public interface BgMethodParams<T extends SimpleBgWorker<T>> //
     extends BgMethod<T>
 {
 }

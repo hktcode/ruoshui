@@ -4,7 +4,7 @@
 package com.hktcode.bgtriple;
 
 import com.hktcode.bgmethod.BgMethod;
-import com.hktcode.bgmethod.SimpleBasicBgWorker;
+import com.hktcode.bgmethod.SimpleBgWorker;
 import com.hktcode.bgtriple.status.TripleBasicBgStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
@@ -18,7 +18,7 @@ public interface TripleConsumer
     /* */, J extends TripleJunction<C, J, P> //
     /* */, P extends TripleProducer<C, J, P> //
     /* */> //
-    extends TripleBgWorker<C, J, P>, SimpleBasicBgWorker<C>
+    extends TripleBgWorker<C, J, P>, SimpleBgWorker<C>
 {
     Logger logger = LoggerFactory.getLogger(TripleConsumer.class);
 

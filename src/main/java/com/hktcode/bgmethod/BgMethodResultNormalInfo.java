@@ -5,10 +5,10 @@ package com.hktcode.bgmethod;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class BgMethodResultNormalInfo<C, M, T extends SimpleBasicBgWorker<T>> //
+public class BgMethodResultNormalInfo<C, M, T extends SimpleBgWorker<T>> //
     implements BgMethodGetResult<T>
 {
-    public static <C, M, T extends SimpleBasicBgWorker<T>> //
+    public static <C, M, T extends SimpleBgWorker<T>> //
     BgMethodResultNormalInfo<C, M, T> of(C configs, M metrics)
     {
         if (configs == null) {

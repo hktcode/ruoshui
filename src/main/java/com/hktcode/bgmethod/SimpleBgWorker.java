@@ -7,7 +7,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.time.ZonedDateTime;
 
-public interface SimpleBasicBgWorker<T extends SimpleBasicBgWorker<T>>
+public interface SimpleBgWorker<T extends SimpleBgWorker<T>>
 {
     default BgMethodPstResult<T> pst()
     {

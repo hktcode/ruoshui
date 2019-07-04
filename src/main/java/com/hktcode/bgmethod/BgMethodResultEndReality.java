@@ -5,7 +5,7 @@ package com.hktcode.bgmethod;
 
 import java.time.ZonedDateTime;
 
-public abstract class BgMethodResultEndReality<C, M, T extends SimpleBasicBgWorker<T>> //
+public abstract class BgMethodResultEndReality<C, M, T extends SimpleBgWorker<T>> //
     extends BgMethodResultEndAlready<T>
 {
     public final C configs;

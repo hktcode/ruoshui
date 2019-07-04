@@ -7,9 +7,9 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.time.ZonedDateTime;
 
-public class BgMethodPstParamsDefault<T extends SimpleBasicBgWorker<T>> implements BgMethodPstParams<T>
+public class BgMethodPstParamsDefault<T extends SimpleBgWorker<T>> implements BgMethodPstParams<T>
 {
-    public static <T extends SimpleBasicBgWorker<T>> BgMethodPstParamsDefault<T> of()
+    public static <T extends SimpleBgWorker<T>> BgMethodPstParamsDefault<T> of()
     {
         return new BgMethodPstParamsDefault<>();
     }
