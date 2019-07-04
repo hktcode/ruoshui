@@ -4,10 +4,10 @@
 package com.hktcode.pgstack.ruoshui.upper.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.hktcode.bgsimple.SimpleDelDefaultBgParams;
-import com.hktcode.bgsimple.SimpleGetDefaultBgParams;
-import com.hktcode.bgsimple.SimplePstDefaultBgParams;
-import com.hktcode.bgsimple.SimplePutDefaultBgParams;
+import com.hktcode.bgmethod.SimpleDelDefaultBgParams;
+import com.hktcode.bgmethod.SimpleGetDefaultBgParams;
+import com.hktcode.bgmethod.SimplePstDefaultBgParams;
+import com.hktcode.bgmethod.SimplePutDefaultBgParams;
 import com.hktcode.bgtriple.TripleSwitcher;
 import com.hktcode.bgtriple.result.TriplePutBgResult;
 import com.hktcode.bgtriple.status.*;

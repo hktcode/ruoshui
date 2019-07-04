@@ -4,8 +4,8 @@
 package com.hktcode.pgstack.ruoshui.upper.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.hktcode.bgsimple.SimpleBasicPstBgParams;
-import com.hktcode.bgsimple.SimpleBasicPstBgResult;
+import com.hktcode.bgmethod.SimpleBasicPstBgParams;
+import com.hktcode.bgmethod.SimpleBasicPstBgResult;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilter;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilterDefault;

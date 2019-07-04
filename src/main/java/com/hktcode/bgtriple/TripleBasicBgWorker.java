@@ -3,10 +3,10 @@
  */
 package com.hktcode.bgtriple;
 
-import com.hktcode.bgsimple.SimpleBasicBgMethod;
-import com.hktcode.bgsimple.SimpleBasicBgResult;
-import com.hktcode.bgsimple.SimpleBasicEndBgResult;
-import com.hktcode.bgsimple.SimpleDelDefaultBgParams;
+import com.hktcode.bgmethod.SimpleBasicBgMethod;
+import com.hktcode.bgmethod.SimpleBasicBgResult;
+import com.hktcode.bgmethod.SimpleBasicEndBgResult;
+import com.hktcode.bgmethod.SimpleDelDefaultBgParams;
 import com.hktcode.bgtriple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;

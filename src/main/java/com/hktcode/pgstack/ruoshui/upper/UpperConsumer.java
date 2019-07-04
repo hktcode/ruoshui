@@ -5,10 +5,10 @@ package com.hktcode.pgstack.ruoshui.upper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
-import com.hktcode.bgsimple.SimpleBasicPstBgResult;
-import com.hktcode.bgsimple.SimpleDelDefaultBgParams;
-import com.hktcode.bgsimple.SimplePstSuccessBgResult;
-import com.hktcode.bgsimple.SimpleUnkFailureBgResult;
+import com.hktcode.bgmethod.SimpleBasicPstBgResult;
+import com.hktcode.bgmethod.SimpleDelDefaultBgParams;
+import com.hktcode.bgmethod.SimplePstSuccessBgResult;
+import com.hktcode.bgmethod.SimpleUnkFailureBgResult;
 import com.hktcode.bgtriple.naive.NaiveConsumer;
 import com.hktcode.bgtriple.naive.NaiveConsumerMetric;
 import com.hktcode.bgtriple.status.TripleBasicBgStatus;

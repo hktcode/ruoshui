@@ -3,8 +3,8 @@
  */
 package com.hktcode.pgstack.ruoshui.upper;
 
-import com.hktcode.bgsimple.SimpleBasicPstBgParams;
-import com.hktcode.bgsimple.SimpleBasicPstBgResult;
+import com.hktcode.bgmethod.SimpleBasicPstBgParams;
+import com.hktcode.bgmethod.SimpleBasicPstBgResult;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.replication.LogSequenceNumber;
 

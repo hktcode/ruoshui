@@ -3,7 +3,7 @@
  */
 package com.hktcode.bgtriple.status;
 
-import com.hktcode.bgsimple.SimpleBasicBgMethod;
+import com.hktcode.bgmethod.SimpleBasicBgMethod;
 import com.hktcode.bgtriple.TripleBgWorker;
 import com.hktcode.bgtriple.TripleConsumer;
 import com.hktcode.bgtriple.TripleJunction;

@@ -3,8 +3,8 @@
  */
 package com.hktcode.bgtriple;
 
-import com.hktcode.bgsimple.SimpleBasicBgMethod;
-import com.hktcode.bgsimple.SimpleBasicBgWorker;
+import com.hktcode.bgmethod.SimpleBasicBgMethod;
+import com.hktcode.bgmethod.SimpleBasicBgWorker;
 import com.hktcode.bgtriple.status.TripleBasicBgStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;

@@ -4,9 +4,9 @@
 
 package com.hktcode.bgtriple.future;
 
-import com.hktcode.bgsimple.SimpleBasicBgResult;
-import com.hktcode.bgsimple.SimpleBasicPutBgMethod;
-import com.hktcode.bgsimple.SimpleBasicPutBgResult;
+import com.hktcode.bgmethod.SimpleBasicBgResult;
+import com.hktcode.bgmethod.SimpleBasicPutBgMethod;
+import com.hktcode.bgmethod.SimpleBasicPutBgResult;
 import com.hktcode.bgtriple.TripleConsumer;
 import com.hktcode.bgtriple.TripleJunction;
 import com.hktcode.bgtriple.TripleProducer;

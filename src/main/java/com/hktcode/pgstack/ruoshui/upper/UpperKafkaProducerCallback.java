@@ -3,9 +3,9 @@
  */
 package com.hktcode.pgstack.ruoshui.upper;
 
-import com.hktcode.bgsimple.SimpleDelDefaultBgParams;
-import com.hktcode.bgsimple.SimpleDelFailureBgParams;
-import com.hktcode.bgsimple.SimplePstDefaultBgParams;
+import com.hktcode.bgmethod.SimpleDelDefaultBgParams;
+import com.hktcode.bgmethod.SimpleDelFailureBgParams;
+import com.hktcode.bgmethod.SimplePstDefaultBgParams;
 import com.hktcode.bgtriple.TripleSwitcher;
 import com.hktcode.bgtriple.status.TripleDelBgStatus;
 import com.hktcode.bgtriple.status.TriplePstBgStatus;

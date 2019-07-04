@@ -4,9 +4,9 @@
 package com.hktcode.bgtriple;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.hktcode.bgsimple.SimpleDelDefaultBgParams;
-import com.hktcode.bgsimple.SimpleGetDefaultBgParams;
-import com.hktcode.bgsimple.SimplePutDefaultBgParams;
+import com.hktcode.bgmethod.SimpleDelDefaultBgParams;
+import com.hktcode.bgmethod.SimpleGetDefaultBgParams;
+import com.hktcode.bgmethod.SimplePutDefaultBgParams;
 import com.hktcode.bgtriple.future.TriplePutBgFuture;
 import com.hktcode.bgtriple.result.TripleDelBgResult;
 import com.hktcode.bgtriple.result.TripleGetBgResult;
