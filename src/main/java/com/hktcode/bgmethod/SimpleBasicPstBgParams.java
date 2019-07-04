@@ -6,7 +6,7 @@ package com.hktcode.bgmethod;
 import java.time.ZonedDateTime;
 
 public interface SimpleBasicPstBgParams<T extends SimpleBasicBgWorker<T>> //
-    extends SimpleBasicPstBgMethod<T>, SimpleBasicBgParams<T>
+    extends SimpleBasicPstBgMethod<T>, BgMethodParams<T>
 {
     @Override
     SimpleBasicPstBgResult<T> run(T worker);
