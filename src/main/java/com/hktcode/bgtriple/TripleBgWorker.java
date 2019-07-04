@@ -3,7 +3,7 @@
  */
 package com.hktcode.bgtriple;
 
-import com.hktcode.bgmethod.SimpleBasicBgMethod;
+import com.hktcode.bgmethod.BgMethod;
 import com.hktcode.bgtriple.status.TripleBasicBgStatus;
 import com.hktcode.bgtriple.status.TripleInnerBgStatus;
 
@@ -24,9 +24,9 @@ public interface TripleBgWorker //
     TripleInnerBgStatus<C, J, P> newStatus(Throwable reasons, ZonedDateTime endtime) throws InterruptedException;
 
     public
-        /* */< SM extends SimpleBasicBgMethod<C> //
-        /* */, PM extends SimpleBasicBgMethod<J> //
-        /* */, DM extends SimpleBasicBgMethod<P> //
+        /* */< SM extends BgMethod<C> //
+        /* */, PM extends BgMethod<J> //
+        /* */, DM extends BgMethod<P> //
         /* */> //
     TripleBasicBgStatus<C, J, P> //
     reference(AtomicReference<SM> consumer //
@@ -35,9 +35,9 @@ public interface TripleBgWorker //
         /* */) throws InterruptedException;
 
     public
-        /* */< SM extends SimpleBasicBgMethod<C> //
-        /* */, PM extends SimpleBasicBgMethod<J> //
-        /* */, DM extends SimpleBasicBgMethod<P> //
+        /* */< SM extends BgMethod<C> //
+        /* */, PM extends BgMethod<J> //
+        /* */, DM extends BgMethod<P> //
         /* */> //
     TripleBasicBgStatus<C, J, P> //
     reference(AtomicReference<SM> consumer //

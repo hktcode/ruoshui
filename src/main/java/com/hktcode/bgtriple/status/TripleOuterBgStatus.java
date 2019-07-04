@@ -3,7 +3,7 @@
  */
 package com.hktcode.bgtriple.status;
 
-import com.hktcode.bgmethod.SimpleBasicBgMethod;
+import com.hktcode.bgmethod.BgMethod;
 import com.hktcode.bgtriple.TripleBgWorker;
 import com.hktcode.bgtriple.TripleConsumer;
 import com.hktcode.bgtriple.TripleJunction;
@@ -16,9 +16,9 @@ import java.time.ZonedDateTime;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class TripleOuterBgStatus //
-    /* */< CM extends SimpleBasicBgMethod<C>
-    /* */, JM extends SimpleBasicBgMethod<J>
-    /* */, PM extends SimpleBasicBgMethod<P>
+    /* */< CM extends BgMethod<C>
+    /* */, JM extends BgMethod<J>
+    /* */, PM extends BgMethod<P>
     /* */, C extends TripleConsumer<C, J, P> //
     /* */, J extends TripleJunction<C, J, P> //
     /* */, P extends TripleProducer<C, J, P> //

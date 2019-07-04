@@ -3,7 +3,7 @@
  */
 package com.hktcode.bgtriple;
 
-import com.hktcode.bgmethod.SimpleBasicBgMethod;
+import com.hktcode.bgmethod.BgMethod;
 import com.hktcode.bgmethod.SimpleBasicBgWorker;
 import com.hktcode.bgtriple.status.TripleBasicBgStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
@@ -25,9 +25,9 @@ public interface TripleJunction //
     @Override
     @SuppressWarnings("unchecked")
     default //
-        /* */< SM extends SimpleBasicBgMethod<C> //
-        /* */, PM extends SimpleBasicBgMethod<J> //
-        /* */, DM extends SimpleBasicBgMethod<P> //
+        /* */< SM extends BgMethod<C> //
+        /* */, PM extends BgMethod<J> //
+        /* */, DM extends BgMethod<P> //
         /* */> //
     TripleBasicBgStatus<C, J, P>  //
     reference(AtomicReference<SM> consumer //
@@ -45,7 +45,7 @@ public interface TripleJunction //
             throw new ArgumentNullException("producer");
         }
         PM origin = junction.get();
-        SimpleBasicBgMethod<J> future = origin.run((J)this);
+        BgMethod<J> future = origin.run((J)this);
         while (!junction.compareAndSet(origin, (PM)future)) {
             logger.info("compare and set result fail");
             origin = junction.get();
@@ -57,9 +57,9 @@ public interface TripleJunction //
     @Override
     @SuppressWarnings("unchecked")
     default //
-        /* */< SM extends SimpleBasicBgMethod<C> //
-        /* */, PM extends SimpleBasicBgMethod<J> //
-        /* */, DM extends SimpleBasicBgMethod<P> //
+        /* */< SM extends BgMethod<C> //
+        /* */, PM extends BgMethod<J> //
+        /* */, DM extends BgMethod<P> //
         /* */> //
     TripleBasicBgStatus<C, J, P>  //
     reference(AtomicReference<SM> consumer //
@@ -79,7 +79,7 @@ public interface TripleJunction //
             throw new ArgumentNullException("producer");
         }
         PM origin = junction.get();
-        SimpleBasicBgMethod<J> future = origin.run((J)this, reasons, endtime);
+        BgMethod<J> future = origin.run((J)this, reasons, endtime);
         while (!junction.compareAndSet(origin, (PM)future)) {
             logger.info("compare and set result fail");
             origin = junction.get();

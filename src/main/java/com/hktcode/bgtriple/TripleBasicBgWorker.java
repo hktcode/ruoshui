@@ -3,7 +3,7 @@
  */
 package com.hktcode.bgtriple;
 
-import com.hktcode.bgmethod.SimpleBasicBgMethod;
+import com.hktcode.bgmethod.BgMethod;
 import com.hktcode.bgmethod.SimpleBasicBgResult;
 import com.hktcode.bgmethod.SimpleBasicEndBgResult;
 import com.hktcode.bgmethod.SimpleDelDefaultBgParams;
@@ -87,9 +87,9 @@ public abstract class TripleBasicBgWorker //
         /* */< C extends TripleConsumer<C, J, P> //
         /* */, J extends TripleJunction<C, J, P> //
         /* */, P extends TripleProducer<C, J, P> //
-        /* */, SM extends SimpleBasicBgMethod<C> //
-        /* */, PM extends SimpleBasicBgMethod<J> //
-        /* */, DM extends SimpleBasicBgMethod<P> //
+        /* */, SM extends BgMethod<C> //
+        /* */, PM extends BgMethod<J> //
+        /* */, DM extends BgMethod<P> //
         /* */> //
     TripleBasicBgStatus<C, J, P> //
     newStatus( AtomicReference<SM> consumer //
@@ -97,15 +97,15 @@ public abstract class TripleBasicBgWorker //
         /* */, AtomicReference<DM> producer //
         /* */) throws InterruptedException
     {
-        SimpleBasicBgMethod<C> c;
+        BgMethod<C> c;
         while (!((c = consumer.get()) instanceof SimpleBasicBgResult)) {
             Thread.sleep(10);
         }
-        SimpleBasicBgMethod<J> j;
+        BgMethod<J> j;
         while (!((j = junction.get()) instanceof SimpleBasicBgResult)) {
             Thread.sleep(10);
         }
-        SimpleBasicBgMethod<P> p;
+        BgMethod<P> p;
         while (!((p = producer.get()) instanceof SimpleBasicBgResult)) {
             Thread.sleep(10);
         }

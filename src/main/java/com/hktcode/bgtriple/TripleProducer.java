@@ -3,7 +3,7 @@
  */
 package com.hktcode.bgtriple;
 
-import com.hktcode.bgmethod.SimpleBasicBgMethod;
+import com.hktcode.bgmethod.BgMethod;
 import com.hktcode.bgmethod.SimpleBasicBgResult;
 import com.hktcode.bgmethod.SimpleBasicBgWorker;
 import com.hktcode.bgtriple.status.TripleBasicBgStatus;
@@ -26,9 +26,9 @@ public interface TripleProducer
     @Override
     @SuppressWarnings("unchecked")
     default //
-        /* */< SM extends SimpleBasicBgMethod<C> //
-        /* */, PM extends SimpleBasicBgMethod<J> //
-        /* */, DM extends SimpleBasicBgMethod<P> //
+        /* */< SM extends BgMethod<C> //
+        /* */, PM extends BgMethod<J> //
+        /* */, DM extends BgMethod<P> //
         /* */> //
     TripleBasicBgStatus<C, J, P>  //
     reference(AtomicReference<SM> consumer //
@@ -58,9 +58,9 @@ public interface TripleProducer
     @Override
     @SuppressWarnings("unchecked")
     default //
-        /* */< SM extends SimpleBasicBgMethod<C> //
-        /* */, PM extends SimpleBasicBgMethod<J> //
-        /* */, DM extends SimpleBasicBgMethod<P> //
+        /* */< SM extends BgMethod<C> //
+        /* */, PM extends BgMethod<J> //
+        /* */, DM extends BgMethod<P> //
         /* */> //
     TripleBasicBgStatus<C, J, P>  //
     reference(AtomicReference<SM> consumer //
