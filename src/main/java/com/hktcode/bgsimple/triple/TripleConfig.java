@@ -18,7 +18,7 @@ public abstract class TripleConfig<M extends TripleMetric> implements TripleEnti
 
     public long logDuration;
 
-    public abstract M buildMutableMetric(ZonedDateTime startMillis);
+    public abstract M buildMetric(ZonedDateTime startMillis);
 
     // TODO: loggerLevel
     protected TripleConfig(long waitTimeout, long logDuration)
