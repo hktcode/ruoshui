@@ -7,20 +7,20 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.time.ZonedDateTime;
 
-public class BgMethodParamsDelDefault<T extends SimpleBasicBgWorker<T>> //
-    implements BgMethodParamsDel<T>
+public class BgMethodDelParamsDefault<T extends SimpleBasicBgWorker<T>> //
+    implements BgMethodDelParams<T>
 {
-    public static <T extends SimpleBasicBgWorker<T>> BgMethodParamsDelDefault<T> of()
+    public static <T extends SimpleBasicBgWorker<T>> BgMethodDelParamsDefault<T> of()
     {
-        return new BgMethodParamsDelDefault<>();
+        return new BgMethodDelParamsDefault<>();
     }
 
-    private BgMethodParamsDelDefault()
+    private BgMethodDelParamsDefault()
     {
     }
 
     @Override
-    public SimpleBasicDelBgResult<T> run(T worker)
+    public BgMethodDelResult<T> run(T worker)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");
@@ -29,7 +29,7 @@ public class BgMethodParamsDelDefault<T extends SimpleBasicBgWorker<T>> //
     }
 
     @Override
-    public SimpleBasicDelBgResult<T> run(T worker, Throwable reasons, ZonedDateTime endtime)
+    public BgMethodDelResult<T> run(T worker, Throwable reasons, ZonedDateTime endtime)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");

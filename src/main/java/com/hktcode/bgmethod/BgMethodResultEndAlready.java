@@ -7,18 +7,18 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.time.ZonedDateTime;
 
-public abstract class SimpleAlreadyEndBgResult<T extends SimpleBasicBgWorker<T>> //
-    implements SimpleBasicEndBgResult<T> //
+public abstract class BgMethodResultEndAlready<T extends SimpleBasicBgWorker<T>> //
+    implements BgMethodResultEnd<T> //
 {
     public final ZonedDateTime endtime;
 
-    protected SimpleAlreadyEndBgResult(ZonedDateTime endtime)
+    protected BgMethodResultEndAlready(ZonedDateTime endtime)
     {
         this.endtime = endtime;
     }
 
     @Override
-    public SimpleAlreadyEndBgResult<T> run(T worker)
+    public BgMethodResultEndAlready<T> run(T worker)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");

@@ -7,25 +7,19 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.time.ZonedDateTime;
 
-public class BgMethodParamsGetDefault<T extends SimpleBasicBgWorker<T>> //
-    implements BgMethodParamsGet<T>
+public interface BgMethodPutResult<T extends SimpleBasicBgWorker<T>> extends BgMethodPut<T>, BgMethodResult<T>
 {
-    public static <T extends SimpleBasicBgWorker<T>> BgMethodParamsGetDefault<T> of()
-    {
-        return new BgMethodParamsGetDefault<>();
-    }
-
     @Override
-    public SimpleBasicGetBgResult<T> run(T worker)
+    default BgMethodPutResult<T> run(T worker)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");
         }
-        return worker.get();
+        return this;
     }
 
     @Override
-    public SimpleBasicGetBgResult<T> run(T worker, Throwable reasons, ZonedDateTime endtime)
+    default BgMethodPutResult<T> run(T worker, Throwable reasons, ZonedDateTime endtime)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");
@@ -36,6 +30,6 @@ public class BgMethodParamsGetDefault<T extends SimpleBasicBgWorker<T>> //
         if (endtime == null) {
             throw new ArgumentNullException("endtime");
         }
-        return worker.get(reasons, endtime);
+        return this;
     }
 }

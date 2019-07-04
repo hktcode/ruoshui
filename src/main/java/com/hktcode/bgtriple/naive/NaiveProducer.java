@@ -58,31 +58,13 @@ public abstract class NaiveProducer //
     }
 
     @Override
-    public SimplePutSuccessBgResult<F, P> put()
+    public BgMethodPutResultSuccess<F, P> put()
     {
-        return SimplePutSuccessBgResult.of(this.metric.startMillis, this.config);
+        return BgMethodPutResultSuccess.of(this.metric.startMillis, this.config);
     }
 
     @Override
-    public SimpleMiscarriedBgResult<P> put(Throwable reasons, ZonedDateTime endtime)
-    {
-        if (reasons == null) {
-            throw new ArgumentNullException("reasons");
-        }
-        if (endtime == null) {
-            throw new ArgumentNullException("endtime");
-        }
-        return SimpleMiscarriedBgResult.of(endtime);
-    }
-
-    @Override
-    public SimpleNormalInfoBgResult<F, ? extends NaiveProducerMetric, P> get()
-    {
-        return SimpleNormalInfoBgResult.of(config, this.metric.toMetric());
-    }
-
-    @Override
-    public SimpleUnkFailureBgResult<F, ? extends NaiveProducerMetric, P> get(Throwable reasons, ZonedDateTime endtime)
+    public BgMethodResultMiscarried<P> put(Throwable reasons, ZonedDateTime endtime)
     {
         if (reasons == null) {
             throw new ArgumentNullException("reasons");
@@ -90,11 +72,17 @@ public abstract class NaiveProducer //
         if (endtime == null) {
             throw new ArgumentNullException("endtime");
         }
-        return SimpleUnkFailureBgResult.of(reasons, config, this.metric.toMetric(), endtime);
+        return BgMethodResultMiscarried.of(endtime);
     }
 
     @Override
-    public SimpleUnkFailureBgResult<F, ? extends NaiveProducerMetric, P> pst(Throwable reasons, ZonedDateTime endtime)
+    public BgMethodResultNormalInfo<F, ? extends NaiveProducerMetric, P> get()
+    {
+        return BgMethodResultNormalInfo.of(config, this.metric.toMetric());
+    }
+
+    @Override
+    public BgMethodResultEndFailure<F, ? extends NaiveProducerMetric, P> get(Throwable reasons, ZonedDateTime endtime)
     {
         if (reasons == null) {
             throw new ArgumentNullException("reasons");
@@ -102,18 +90,30 @@ public abstract class NaiveProducer //
         if (endtime == null) {
             throw new ArgumentNullException("endtime");
         }
-        return SimpleUnkFailureBgResult.of(reasons, config, this.metric.toMetric(), endtime);
+        return BgMethodResultEndFailure.of(reasons, config, this.metric.toMetric(), endtime);
     }
 
     @Override
-    public SimpleEndSuccessBgResult<F, ? extends NaiveProducerMetric, P> del()
+    public BgMethodResultEndFailure<F, ? extends NaiveProducerMetric, P> pst(Throwable reasons, ZonedDateTime endtime)
+    {
+        if (reasons == null) {
+            throw new ArgumentNullException("reasons");
+        }
+        if (endtime == null) {
+            throw new ArgumentNullException("endtime");
+        }
+        return BgMethodResultEndFailure.of(reasons, config, this.metric.toMetric(), endtime);
+    }
+
+    @Override
+    public BgMethodResultEndSuccess<F, ? extends NaiveProducerMetric, P> del()
     {
         ZonedDateTime endtime = ZonedDateTime.now();
-        return SimpleEndSuccessBgResult.of(config, this.metric.toMetric(), endtime);
+        return BgMethodResultEndSuccess.of(config, this.metric.toMetric(), endtime);
     }
 
     @Override
-    public SimpleUnkFailureBgResult<F, ? extends NaiveProducerMetric, P>
+    public BgMethodResultEndFailure<F, ? extends NaiveProducerMetric, P>
     del(Throwable reasons, ZonedDateTime endtime)
     {
         if (reasons == null) {
@@ -122,7 +122,7 @@ public abstract class NaiveProducer //
         if (endtime == null) {
             throw new ArgumentNullException("endtime");
         }
-        return SimpleUnkFailureBgResult.of(reasons, config, metric.toMetric(), endtime);
+        return BgMethodResultEndFailure.of(reasons, config, metric.toMetric(), endtime);
     }
 
     protected abstract void runInternal() throws Exception;
@@ -137,10 +137,10 @@ public abstract class NaiveProducer //
         catch (Exception ex) {
             ZonedDateTime endtime = ZonedDateTime.now();
             logger.error("naive producer throws exception: name={}", Thread.currentThread().getName(), ex);
-            BgMethodParamsDelDefault<C> c = BgMethodParamsDelDefault.of();
-            BgMethodParamsDelDefault<J> j = BgMethodParamsDelDefault.of();
-            SimpleUnkFailureBgResult<F, NaiveProducerMetric, P> p //
-                = SimpleUnkFailureBgResult.of(ex, this.config, this.metric.toMetric(), ZonedDateTime.now());
+            BgMethodDelParamsDefault<C> c = BgMethodDelParamsDefault.of();
+            BgMethodDelParamsDefault<J> j = BgMethodDelParamsDefault.of();
+            BgMethodResultEndFailure<F, NaiveProducerMetric, P> p //
+                = BgMethodResultEndFailure.of(ex, this.config, this.metric.toMetric(), ZonedDateTime.now());
             TripleDelBgStatus<C, J, P> del = TripleDelBgStatus.of(c, j, p);
             TripleBasicBgStatus<C, J, P> origin;
             TripleBasicBgStatus<C, J, P> future;

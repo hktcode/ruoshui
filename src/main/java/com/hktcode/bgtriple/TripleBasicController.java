@@ -4,9 +4,9 @@
 package com.hktcode.bgtriple;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.hktcode.bgmethod.BgMethodParamsDelDefault;
-import com.hktcode.bgmethod.BgMethodParamsGetDefault;
-import com.hktcode.bgmethod.BgMethodParamsPutDefault;
+import com.hktcode.bgmethod.BgMethodDelParamsDefault;
+import com.hktcode.bgmethod.BgMethodGetParamsDefault;
+import com.hktcode.bgmethod.BgMethodPutParamsDefault;
 import com.hktcode.bgtriple.future.TriplePutBgFuture;
 import com.hktcode.bgtriple.result.TripleDelBgResult;
 import com.hktcode.bgtriple.result.TripleGetBgResult;
@@ -65,9 +65,9 @@ public abstract class TripleBasicController //
             logger.info("can not put to /{name} with empty name.");
             return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
         }
-        BgMethodParamsPutDefault<S> c = BgMethodParamsPutDefault.of();
-        BgMethodParamsPutDefault<P> j = BgMethodParamsPutDefault.of();
-        BgMethodParamsPutDefault<D> p = BgMethodParamsPutDefault.of();
+        BgMethodPutParamsDefault<S> c = BgMethodPutParamsDefault.of();
+        BgMethodPutParamsDefault<P> j = BgMethodPutParamsDefault.of();
+        BgMethodPutParamsDefault<D> p = BgMethodPutParamsDefault.of();
         TriplePutBgStatus<S, P, D> put = TriplePutBgStatus.of(c, j, p);
         AtomicReference<TripleBasicBgStatus<S, P, D>> ref = new AtomicReference<>(put);
         F conf = this.createConfig(body);
@@ -110,9 +110,9 @@ public abstract class TripleBasicController //
             logger.info("the worker does not exists: name={}", name);
             return ResponseEntity.notFound().build();
         }
-        BgMethodParamsDelDefault<S> c = BgMethodParamsDelDefault.of();
-        BgMethodParamsDelDefault<P> j = BgMethodParamsDelDefault.of();
-        BgMethodParamsDelDefault<D> p = BgMethodParamsDelDefault.of();
+        BgMethodDelParamsDefault<S> c = BgMethodDelParamsDefault.of();
+        BgMethodDelParamsDefault<P> j = BgMethodDelParamsDefault.of();
+        BgMethodDelParamsDefault<D> p = BgMethodDelParamsDefault.of();
         TripleDelBgStatus<S, P, D> del = TripleDelBgStatus.of(c, j, p);
         TripleDelBgResult<S, P, D> r = worker.del(del).newFuture().get();
         return ResponseEntity.ok(r);
@@ -139,9 +139,9 @@ public abstract class TripleBasicController //
             logger.info("the worker does not exists: name={}", name);
             return ResponseEntity.notFound().build();
         }
-        BgMethodParamsGetDefault<S> c = BgMethodParamsGetDefault.of();
-        BgMethodParamsGetDefault<P> j = BgMethodParamsGetDefault.of();
-        BgMethodParamsGetDefault<D> p = BgMethodParamsGetDefault.of();
+        BgMethodGetParamsDefault<S> c = BgMethodGetParamsDefault.of();
+        BgMethodGetParamsDefault<P> j = BgMethodGetParamsDefault.of();
+        BgMethodGetParamsDefault<D> p = BgMethodGetParamsDefault.of();
         TripleGetBgStatus<S, P, D> get = TripleGetBgStatus.of(c, j, p);
         TripleGetBgResult<S, P, D> r = worker.get(get).newFuture().get();
         return ResponseEntity.ok(r);

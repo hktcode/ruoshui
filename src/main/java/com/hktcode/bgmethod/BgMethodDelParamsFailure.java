@@ -7,11 +7,11 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.time.ZonedDateTime;
 
-public class BgMethodParamsDelFailure<T extends SimpleBasicBgWorker<T>> //
-    implements BgMethodParamsDel<T>
+public class BgMethodDelParamsFailure<T extends SimpleBasicBgWorker<T>> //
+    implements BgMethodDelParams<T>
 {
     public static <T extends SimpleBasicBgWorker<T>> //
-    BgMethodParamsDelFailure<T> of(Throwable reasons, ZonedDateTime endtime)
+    BgMethodDelParamsFailure<T> of(Throwable reasons, ZonedDateTime endtime)
     {
         if (reasons == null) {
             throw new ArgumentNullException("reasons");
@@ -19,21 +19,21 @@ public class BgMethodParamsDelFailure<T extends SimpleBasicBgWorker<T>> //
         if (endtime == null) {
             throw new ArgumentNullException("endtime");
         }
-        return new BgMethodParamsDelFailure<>(reasons, endtime);
+        return new BgMethodDelParamsFailure<>(reasons, endtime);
     }
 
     public final Throwable reasons;
 
     public final ZonedDateTime endtime;
 
-    private BgMethodParamsDelFailure(Throwable reasons, ZonedDateTime endtime)
+    private BgMethodDelParamsFailure(Throwable reasons, ZonedDateTime endtime)
     {
         this.reasons = reasons;
         this.endtime = endtime;
     }
 
     @Override
-    public SimpleBasicDelBgResult<T> run(T worker)
+    public BgMethodDelResult<T> run(T worker)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");
@@ -42,7 +42,7 @@ public class BgMethodParamsDelFailure<T extends SimpleBasicBgWorker<T>> //
     }
 
     @Override
-    public SimpleBasicDelBgResult<T> //
+    public BgMethodDelResult<T> //
     run(T worker, Throwable reasons, ZonedDateTime endtime)
     {
         if (worker == null) {

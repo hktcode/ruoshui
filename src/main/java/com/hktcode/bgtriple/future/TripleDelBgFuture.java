@@ -4,8 +4,8 @@
 package com.hktcode.bgtriple.future;
 
 import com.hktcode.bgmethod.BgMethodResult;
-import com.hktcode.bgmethod.SimpleBasicDelBgMethod;
-import com.hktcode.bgmethod.SimpleBasicDelBgResult;
+import com.hktcode.bgmethod.BgMethodDel;
+import com.hktcode.bgmethod.BgMethodDelResult;
 import com.hktcode.bgtriple.TripleConsumer;
 import com.hktcode.bgtriple.TripleJunction;
 import com.hktcode.bgtriple.TripleProducer;
@@ -29,9 +29,9 @@ public class TripleDelBgFuture //
         /*      */, D extends TripleProducer<S, P, D> //
         /*      */>
     TripleDelBgFuture<S, P, D> of //
-        /* */( AtomicReference<SimpleBasicDelBgMethod<S>> consumer
-        /* */, AtomicReference<SimpleBasicDelBgMethod<P>> junction
-        /* */, AtomicReference<SimpleBasicDelBgMethod<D>> producer
+        /* */( AtomicReference<BgMethodDel<S>> consumer
+        /* */, AtomicReference<BgMethodDel<P>> junction
+        /* */, AtomicReference<BgMethodDel<D>> producer
         /* */)
     {
         if (consumer == null) {
@@ -46,16 +46,16 @@ public class TripleDelBgFuture //
         return new TripleDelBgFuture<>(consumer, junction, producer);
     }
 
-    private final AtomicReference<SimpleBasicDelBgMethod<C>> consumer;
+    private final AtomicReference<BgMethodDel<C>> consumer;
 
-    private final AtomicReference<SimpleBasicDelBgMethod<J>> junction;
+    private final AtomicReference<BgMethodDel<J>> junction;
 
-    private final AtomicReference<SimpleBasicDelBgMethod<P>> producer;
+    private final AtomicReference<BgMethodDel<P>> producer;
 
     private TripleDelBgFuture
-        /* */( AtomicReference<SimpleBasicDelBgMethod<C>> consumer
-        /* */, AtomicReference<SimpleBasicDelBgMethod<J>> junction
-        /* */, AtomicReference<SimpleBasicDelBgMethod<P>> producer
+        /* */( AtomicReference<BgMethodDel<C>> consumer
+        /* */, AtomicReference<BgMethodDel<J>> junction
+        /* */, AtomicReference<BgMethodDel<P>> producer
         /* */)
     {
         this.consumer = consumer;
@@ -86,22 +86,22 @@ public class TripleDelBgFuture //
     @Override
     public TripleDelBgResult<C, J, P> get() throws InterruptedException, ExecutionException
     {
-        SimpleBasicDelBgMethod<C> c;
-        while (!((c = this.consumer.get()) instanceof SimpleBasicDelBgResult)) {
+        BgMethodDel<C> c;
+        while (!((c = this.consumer.get()) instanceof BgMethodDelResult)) {
             Thread.sleep(10);
         }
-        SimpleBasicDelBgMethod<J> j;
-        while (!((j = this.junction.get()) instanceof SimpleBasicDelBgResult)) {
+        BgMethodDel<J> j;
+        while (!((j = this.junction.get()) instanceof BgMethodDelResult)) {
             Thread.sleep(10);
         }
-        SimpleBasicDelBgMethod<P> p;
-        while (!((p = this.producer.get()) instanceof SimpleBasicDelBgResult)) {
+        BgMethodDel<P> p;
+        while (!((p = this.producer.get()) instanceof BgMethodDelResult)) {
             Thread.sleep(10);
         }
         return TripleDelBgResult.of
-            /*     */( (SimpleBasicDelBgResult<C>) c //
-                /* */, (SimpleBasicDelBgResult<J>) j //
-                /* */, (SimpleBasicDelBgResult<P>) p //
+            /*     */( (BgMethodDelResult<C>) c //
+                /* */, (BgMethodDelResult<J>) j //
+                /* */, (BgMethodDelResult<P>) p //
                 /* */);
     }
 
@@ -114,24 +114,24 @@ public class TripleDelBgFuture //
         }
         long duration = unit.toMillis(timeout);
         long start = System.currentTimeMillis();
-        SimpleBasicDelBgMethod<C> c;
-        while (!((c = this.consumer.get()) instanceof SimpleBasicDelBgResult)) {
+        BgMethodDel<C> c;
+        while (!((c = this.consumer.get()) instanceof BgMethodDelResult)) {
             Thread.sleep(10);
             long current = System.currentTimeMillis();
             if (current - start >= duration) {
                 throw new TimeoutException();
             }
         }
-        SimpleBasicDelBgMethod<J> j;
-        while (!((j = this.junction.get()) instanceof SimpleBasicDelBgResult)) {
+        BgMethodDel<J> j;
+        while (!((j = this.junction.get()) instanceof BgMethodDelResult)) {
             Thread.sleep(10);
             long current = System.currentTimeMillis();
             if (current - start >= duration) {
                 throw new TimeoutException();
             }
         }
-        SimpleBasicDelBgMethod<P> p;
-        while (!((p = this.producer.get()) instanceof SimpleBasicDelBgResult)) {
+        BgMethodDel<P> p;
+        while (!((p = this.producer.get()) instanceof BgMethodDelResult)) {
             Thread.sleep(10);
             long current = System.currentTimeMillis();
             if (current - start >= duration) {
@@ -139,9 +139,9 @@ public class TripleDelBgFuture //
             }
         }
         return TripleDelBgResult.of //
-            /*     */( (SimpleBasicDelBgResult<C>) c //
-                /* */, (SimpleBasicDelBgResult<J>) j //
-                /* */, (SimpleBasicDelBgResult<P>) p //
+            /*     */( (BgMethodDelResult<C>) c //
+                /* */, (BgMethodDelResult<J>) j //
+                /* */, (BgMethodDelResult<P>) p //
                 /* */);
     }
 }

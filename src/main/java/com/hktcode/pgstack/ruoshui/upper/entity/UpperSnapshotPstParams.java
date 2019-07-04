@@ -4,8 +4,8 @@
 package com.hktcode.pgstack.ruoshui.upper.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.hktcode.bgmethod.BgMethodParamsPst;
-import com.hktcode.bgmethod.SimpleBasicPstBgResult;
+import com.hktcode.bgmethod.BgMethodPstParams;
+import com.hktcode.bgmethod.BgMethodPstResult;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilter;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilterDefault;
@@ -16,7 +16,7 @@ import javax.script.ScriptException;
 import java.time.ZonedDateTime;
 
 public class UpperSnapshotPstParams
-    implements BgMethodParamsPst<UpperConsumer>
+    implements BgMethodPstParams<UpperConsumer>
 {
     public static UpperSnapshotPstParams of(JsonNode json)
         throws ScriptException
@@ -36,7 +36,7 @@ public class UpperSnapshotPstParams
         return new UpperSnapshotPstParams(json, w);
     }
 
-    public SimpleBasicPstBgResult<UpperConsumer> run(UpperConsumer worker)
+    public BgMethodPstResult<UpperConsumer> run(UpperConsumer worker)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");
@@ -49,7 +49,7 @@ public class UpperSnapshotPstParams
     private final PgSnapshotFilter whereScript;
 
     @Override
-    public SimpleBasicPstBgResult<UpperConsumer> //
+    public BgMethodPstResult<UpperConsumer> //
     run(UpperConsumer worker, Throwable reasons, ZonedDateTime endtime)
     {
         if (worker == null) {

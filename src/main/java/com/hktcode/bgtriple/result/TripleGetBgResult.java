@@ -3,7 +3,7 @@
  */
 package com.hktcode.bgtriple.result;
 
-import com.hktcode.bgmethod.SimpleBasicGetBgResult;
+import com.hktcode.bgmethod.BgMethodGetResult;
 import com.hktcode.bgtriple.TripleConsumer;
 import com.hktcode.bgtriple.TripleJunction;
 import com.hktcode.bgtriple.TripleProducer;
@@ -21,9 +21,9 @@ public class TripleGetBgResult //
         /*      */, P extends TripleProducer<C, J, P> //
         /*      */>
     TripleGetBgResult<C, J, P> of
-        /* */( SimpleBasicGetBgResult<C> consumer //
-        /* */, SimpleBasicGetBgResult<J> junction //
-        /* */, SimpleBasicGetBgResult<P> producer //
+        /* */(BgMethodGetResult<C> consumer //
+        /* */, BgMethodGetResult<J> junction //
+        /* */, BgMethodGetResult<P> producer //
         /* */)
     {
         if (consumer == null) {
@@ -38,16 +38,16 @@ public class TripleGetBgResult //
         return new TripleGetBgResult<>(consumer, junction, producer);
     }
 
-    public final SimpleBasicGetBgResult<C> consumer;
+    public final BgMethodGetResult<C> consumer;
 
-    public final SimpleBasicGetBgResult<J> junction;
+    public final BgMethodGetResult<J> junction;
 
-    public final SimpleBasicGetBgResult<P> producer;
+    public final BgMethodGetResult<P> producer;
 
     private TripleGetBgResult //
-        /* */( SimpleBasicGetBgResult<C> consumer //
-        /* */, SimpleBasicGetBgResult<J> junction //
-        /* */, SimpleBasicGetBgResult<P> producer //
+        /* */(BgMethodGetResult<C> consumer //
+        /* */, BgMethodGetResult<J> junction //
+        /* */, BgMethodGetResult<P> producer //
         /* */)
     {
         this.consumer = consumer;

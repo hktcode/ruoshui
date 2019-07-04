@@ -3,7 +3,7 @@
  */
 package com.hktcode.bgtriple.status;
 
-import com.hktcode.bgmethod.SimpleBasicPstBgMethod;
+import com.hktcode.bgmethod.BgMethodPst;
 import com.hktcode.bgtriple.TripleConsumer;
 import com.hktcode.bgtriple.TripleJunction;
 import com.hktcode.bgtriple.TripleProducer;
@@ -17,9 +17,9 @@ public class TriplePstBgStatus
     /* */, P extends TripleProducer<C, J, P> //
     /* */> //
     extends TripleOuterBgStatus //
-    /* */< SimpleBasicPstBgMethod<C>
-    /* */, SimpleBasicPstBgMethod<J>
-    /* */, SimpleBasicPstBgMethod<P>
+    /* */<BgMethodPst<C>
+    /* */, BgMethodPst<J>
+    /* */, BgMethodPst<P>
     /* */, C
     /* */, J
     /* */, P
@@ -31,9 +31,9 @@ public class TriplePstBgStatus
         /*      */, P extends TripleProducer<C, J, P> //
         /*      */>
     TriplePstBgStatus<C, J, P> of //
-        /* */(SimpleBasicPstBgMethod<C> consumer //
-        /* */, SimpleBasicPstBgMethod<J> junction //
-        /* */, SimpleBasicPstBgMethod<P> producer //
+        /* */(BgMethodPst<C> consumer //
+        /* */, BgMethodPst<J> junction //
+        /* */, BgMethodPst<P> producer //
         /* */)
     {
         if (consumer == null) {
@@ -49,9 +49,9 @@ public class TriplePstBgStatus
     }
 
     private TriplePstBgStatus //
-        /* */( SimpleBasicPstBgMethod<C> consumer //
-        /* */, SimpleBasicPstBgMethod<J> junction //
-        /* */, SimpleBasicPstBgMethod<P> producer //
+        /* */(BgMethodPst<C> consumer //
+        /* */, BgMethodPst<J> junction //
+        /* */, BgMethodPst<P> producer //
         /* */)
     {
         super(consumer, junction, producer);

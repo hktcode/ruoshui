@@ -66,10 +66,10 @@ public abstract class NaiveConsumer //
             ZonedDateTime endtime = ZonedDateTime.now();
             String msg = ex.getMessage();
             metric.statusInfor = "throw exception at " + endtime + ": " + msg;
-            SimpleUnkFailureBgResult<F, NaiveConsumerMetric, C> c //
-                = SimpleUnkFailureBgResult.of(ex, this.config, this.metric.toMetric(), ZonedDateTime.now());
-            BgMethodParamsDelDefault<J> j = BgMethodParamsDelDefault.of();
-            BgMethodParamsDelDefault<P> p = BgMethodParamsDelDefault.of();
+            BgMethodResultEndFailure<F, NaiveConsumerMetric, C> c //
+                = BgMethodResultEndFailure.of(ex, this.config, this.metric.toMetric(), ZonedDateTime.now());
+            BgMethodDelParamsDefault<J> j = BgMethodDelParamsDefault.of();
+            BgMethodDelParamsDefault<P> p = BgMethodDelParamsDefault.of();
             TripleDelBgStatus<C, J, P> del = TripleDelBgStatus.of(c, j, p);
             TripleBasicBgStatus<C, J, P> origin;
             TripleBasicBgStatus<C, J, P> future;
@@ -84,7 +84,7 @@ public abstract class NaiveConsumer //
     }
 
     @Override
-    public SimpleUnkFailureBgResult<F, NaiveConsumerMetric, C> //
+    public BgMethodResultEndFailure<F, NaiveConsumerMetric, C> //
     pst(Throwable reasons, ZonedDateTime endtime)
     {
         if (endtime == null) {
@@ -93,17 +93,17 @@ public abstract class NaiveConsumer //
         if (reasons == null) {
             throw new ArgumentNullException("reasons");
         }
-        return SimpleUnkFailureBgResult.of(reasons, config, metric.toMetric(), endtime);
+        return BgMethodResultEndFailure.of(reasons, config, metric.toMetric(), endtime);
     }
 
     @Override
-    public SimplePutSuccessBgResult<F, C> put()
+    public BgMethodPutResultSuccess<F, C> put()
     {
-        return SimplePutSuccessBgResult.of(metric.startMillis, config);
+        return BgMethodPutResultSuccess.of(metric.startMillis, config);
     }
 
     @Override
-    public SimpleUnkFailureBgResult<F, NaiveConsumerMetric, C> //
+    public BgMethodResultEndFailure<F, NaiveConsumerMetric, C> //
     put(Throwable reasons, ZonedDateTime endtime)
     {
         if (endtime == null) {
@@ -112,17 +112,17 @@ public abstract class NaiveConsumer //
         if (reasons == null) {
             throw new ArgumentNullException("reasons");
         }
-        return SimpleUnkFailureBgResult.of(reasons, config, metric.toMetric(), endtime);
+        return BgMethodResultEndFailure.of(reasons, config, metric.toMetric(), endtime);
     }
 
     @Override
-    public SimpleNormalInfoBgResult<F, NaiveConsumerMetric, C> get()
+    public BgMethodResultNormalInfo<F, NaiveConsumerMetric, C> get()
     {
-        return SimpleNormalInfoBgResult.of(config, metric.toMetric());
+        return BgMethodResultNormalInfo.of(config, metric.toMetric());
     }
 
     @Override
-    public SimpleUnkFailureBgResult<F, NaiveConsumerMetric, C> //
+    public BgMethodResultEndFailure<F, NaiveConsumerMetric, C> //
     get(Throwable reasons, ZonedDateTime endtime)
     {
         if (endtime == null) {
@@ -131,18 +131,18 @@ public abstract class NaiveConsumer //
         if (reasons == null) {
             throw new ArgumentNullException("reasons");
         }
-        return SimpleUnkFailureBgResult.of(reasons, config, metric.toMetric(), endtime);
+        return BgMethodResultEndFailure.of(reasons, config, metric.toMetric(), endtime);
     }
 
     @Override
-    public SimpleEndSuccessBgResult<F, NaiveConsumerMetric, C> del()
+    public BgMethodResultEndSuccess<F, NaiveConsumerMetric, C> del()
     {
         ZonedDateTime endtime = ZonedDateTime.now();
-        return SimpleEndSuccessBgResult.of(config, metric.toMetric(), endtime);
+        return BgMethodResultEndSuccess.of(config, metric.toMetric(), endtime);
     }
 
     @Override
-    public SimpleUnkFailureBgResult<F, NaiveConsumerMetric, C> //
+    public BgMethodResultEndFailure<F, NaiveConsumerMetric, C> //
     del(Throwable reasons, ZonedDateTime endtime)
     {
         if (endtime == null) {
@@ -151,7 +151,7 @@ public abstract class NaiveConsumer //
         if (reasons == null) {
             throw new ArgumentNullException("reasons");
         }
-        return SimpleUnkFailureBgResult.of(reasons, config, metric.toMetric(), endtime);
+        return BgMethodResultEndFailure.of(reasons, config, metric.toMetric(), endtime);
     }
 
     public I push(I record) throws InterruptedException

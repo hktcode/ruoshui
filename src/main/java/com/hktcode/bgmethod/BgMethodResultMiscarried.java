@@ -7,24 +7,24 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.time.ZonedDateTime;
 
-public class SimpleMiscarriedBgResult<T extends SimpleBasicBgWorker<T>> //
-    extends SimpleAlreadyEndBgResult<T> implements SimpleBasicPutBgResult<T>
+public class BgMethodResultMiscarried<T extends SimpleBasicBgWorker<T>> //
+    extends BgMethodResultEndAlready<T> implements BgMethodPutResult<T>
 {
-    public static <T extends SimpleBasicBgWorker<T>> SimpleMiscarriedBgResult<T> of (ZonedDateTime endtime)
+    public static <T extends SimpleBasicBgWorker<T>> BgMethodResultMiscarried<T> of (ZonedDateTime endtime)
     {
         if (endtime == null) {
             throw new ArgumentNullException("endtime");
         }
-        return new SimpleMiscarriedBgResult<>(endtime);
+        return new BgMethodResultMiscarried<>(endtime);
     }
 
-    private SimpleMiscarriedBgResult(ZonedDateTime endtime)
+    private BgMethodResultMiscarried(ZonedDateTime endtime)
     {
         super(endtime);
     }
 
     @Override
-    public SimpleMiscarriedBgResult<T> run(T worker)
+    public BgMethodResultMiscarried<T> run(T worker)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");
@@ -33,7 +33,7 @@ public class SimpleMiscarriedBgResult<T extends SimpleBasicBgWorker<T>> //
     }
 
     @Override
-    public SimpleMiscarriedBgResult<T> run(T worker, Throwable reasons, ZonedDateTime endtime)
+    public BgMethodResultMiscarried<T> run(T worker, Throwable reasons, ZonedDateTime endtime)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");

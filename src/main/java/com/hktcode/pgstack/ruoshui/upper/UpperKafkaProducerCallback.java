@@ -3,9 +3,9 @@
  */
 package com.hktcode.pgstack.ruoshui.upper;
 
-import com.hktcode.bgmethod.BgMethodParamsDelDefault;
-import com.hktcode.bgmethod.BgMethodParamsDelFailure;
-import com.hktcode.bgmethod.BgMethodParamsPstDefault;
+import com.hktcode.bgmethod.BgMethodDelParamsDefault;
+import com.hktcode.bgmethod.BgMethodDelParamsFailure;
+import com.hktcode.bgmethod.BgMethodPstParamsDefault;
 import com.hktcode.bgtriple.TripleSwitcher;
 import com.hktcode.bgtriple.status.TripleDelBgStatus;
 import com.hktcode.bgtriple.status.TriplePstBgStatus;
@@ -76,17 +76,17 @@ public class UpperKafkaProducerCallback implements Callback
 
             this.producer.close(0, TimeUnit.MILLISECONDS);
             ZonedDateTime endtime = ZonedDateTime.now();
-            BgMethodParamsDelDefault<UpperConsumer> s = BgMethodParamsDelDefault.of();
-            BgMethodParamsDelDefault<UpperJunction> p = BgMethodParamsDelDefault.of();
-            BgMethodParamsDelFailure<UpperProducer> d = BgMethodParamsDelFailure.of(ex, endtime);
+            BgMethodDelParamsDefault<UpperConsumer> s = BgMethodDelParamsDefault.of();
+            BgMethodDelParamsDefault<UpperJunction> p = BgMethodDelParamsDefault.of();
+            BgMethodDelParamsFailure<UpperProducer> d = BgMethodDelParamsFailure.of(ex, endtime);
             TripleDelBgStatus<UpperConsumer, UpperJunction, UpperProducer> status = TripleDelBgStatus.of(s, p, d);
             this.switcher.del(status);
         }
         else if (this.lsn.asLong() != LogSequenceNumber.INVALID_LSN.asLong()) {
             logger.info("kafka producer send record success: lsn={}", this.lsn);
             UpperLastReceiveLsnPstParams s = UpperLastReceiveLsnPstParams.of(this.lsn);
-            BgMethodParamsPstDefault<UpperJunction> p = BgMethodParamsPstDefault.of();
-            BgMethodParamsPstDefault<UpperProducer> d = BgMethodParamsPstDefault.of();
+            BgMethodPstParamsDefault<UpperJunction> p = BgMethodPstParamsDefault.of();
+            BgMethodPstParamsDefault<UpperProducer> d = BgMethodPstParamsDefault.of();
             TriplePstBgStatus<UpperConsumer, UpperJunction, UpperProducer> status = TriplePstBgStatus.of(s, p, d);
             this.switcher.pst(status);
         }

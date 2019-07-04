@@ -3,14 +3,14 @@
  */
 package com.hktcode.pgstack.ruoshui.upper;
 
-import com.hktcode.bgmethod.BgMethodParamsPst;
-import com.hktcode.bgmethod.SimpleBasicPstBgResult;
+import com.hktcode.bgmethod.BgMethodPstParams;
+import com.hktcode.bgmethod.BgMethodPstResult;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.replication.LogSequenceNumber;
 
 import java.time.ZonedDateTime;
 
-public class UpperLastReceiveLsnPstParams implements BgMethodParamsPst<UpperConsumer>
+public class UpperLastReceiveLsnPstParams implements BgMethodPstParams<UpperConsumer>
 {
     public static UpperLastReceiveLsnPstParams of(LogSequenceNumber lastReceiveLsn)
     {
@@ -28,7 +28,7 @@ public class UpperLastReceiveLsnPstParams implements BgMethodParamsPst<UpperCons
     }
 
     @Override
-    public SimpleBasicPstBgResult<UpperConsumer> run(UpperConsumer worker)
+    public BgMethodPstResult<UpperConsumer> run(UpperConsumer worker)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");
@@ -37,7 +37,7 @@ public class UpperLastReceiveLsnPstParams implements BgMethodParamsPst<UpperCons
     }
 
     @Override
-    public SimpleBasicPstBgResult<UpperConsumer> run(UpperConsumer worker, Throwable reasons, ZonedDateTime endtime)
+    public BgMethodPstResult<UpperConsumer> run(UpperConsumer worker, Throwable reasons, ZonedDateTime endtime)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");

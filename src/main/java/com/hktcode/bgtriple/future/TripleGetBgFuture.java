@@ -4,8 +4,8 @@
 package com.hktcode.bgtriple.future;
 
 import com.hktcode.bgmethod.BgMethodResult;
-import com.hktcode.bgmethod.SimpleBasicGetBgMethod;
-import com.hktcode.bgmethod.SimpleBasicGetBgResult;
+import com.hktcode.bgmethod.BgMethodGet;
+import com.hktcode.bgmethod.BgMethodGetResult;
 import com.hktcode.bgtriple.TripleConsumer;
 import com.hktcode.bgtriple.TripleJunction;
 import com.hktcode.bgtriple.TripleProducer;
@@ -29,9 +29,9 @@ public class TripleGetBgFuture //
         /*      */, P extends TripleProducer<C, J, P>
         /*      */>
     TripleGetBgFuture<C, J, P> of //
-        /* */( AtomicReference<SimpleBasicGetBgMethod<C>> consumer //
-        /* */, AtomicReference<SimpleBasicGetBgMethod<J>> junction //
-        /* */, AtomicReference<SimpleBasicGetBgMethod<P>> producer //
+        /* */(AtomicReference<BgMethodGet<C>> consumer //
+        /* */, AtomicReference<BgMethodGet<J>> junction //
+        /* */, AtomicReference<BgMethodGet<P>> producer //
         /* */)
     {
         if (consumer == null) {
@@ -46,16 +46,16 @@ public class TripleGetBgFuture //
         return new TripleGetBgFuture<>(consumer, junction, producer);
     }
 
-    private final AtomicReference<SimpleBasicGetBgMethod<C>> consumer;
+    private final AtomicReference<BgMethodGet<C>> consumer;
 
-    private final AtomicReference<SimpleBasicGetBgMethod<J>> junction;
+    private final AtomicReference<BgMethodGet<J>> junction;
 
-    private final AtomicReference<SimpleBasicGetBgMethod<P>> producer;
+    private final AtomicReference<BgMethodGet<P>> producer;
 
     private TripleGetBgFuture //
-        /* */( AtomicReference<SimpleBasicGetBgMethod<C>> consumer //
-        /* */, AtomicReference<SimpleBasicGetBgMethod<J>> junction //
-        /* */, AtomicReference<SimpleBasicGetBgMethod<P>> producer //
+        /* */(AtomicReference<BgMethodGet<C>> consumer //
+        /* */, AtomicReference<BgMethodGet<J>> junction //
+        /* */, AtomicReference<BgMethodGet<P>> producer //
         /* */)
     {
         this.consumer = consumer;
@@ -86,22 +86,22 @@ public class TripleGetBgFuture //
     @Override
     public TripleGetBgResult<C, J, P> get() throws InterruptedException, ExecutionException
     {
-        SimpleBasicGetBgMethod<C> c;
-        while (!((c = this.consumer.get()) instanceof SimpleBasicGetBgResult)) {
+        BgMethodGet<C> c;
+        while (!((c = this.consumer.get()) instanceof BgMethodGetResult)) {
             Thread.sleep(10);
         }
-        SimpleBasicGetBgMethod<J> j;
-        while (!((j = this.junction.get()) instanceof SimpleBasicGetBgResult)) {
+        BgMethodGet<J> j;
+        while (!((j = this.junction.get()) instanceof BgMethodGetResult)) {
             Thread.sleep(10);
         }
-        SimpleBasicGetBgMethod<P> p;
-        while (!((p = this.producer.get()) instanceof SimpleBasicGetBgResult)) {
+        BgMethodGet<P> p;
+        while (!((p = this.producer.get()) instanceof BgMethodGetResult)) {
             Thread.sleep(10);
         }
         return TripleGetBgResult.of //
-            /*     */( (SimpleBasicGetBgResult<C>) c //
-                /* */, (SimpleBasicGetBgResult<J>) j //
-                /* */, (SimpleBasicGetBgResult<P>) p //
+            /*     */( (BgMethodGetResult<C>) c //
+                /* */, (BgMethodGetResult<J>) j //
+                /* */, (BgMethodGetResult<P>) p //
                 /* */);
     }
 
@@ -114,24 +114,24 @@ public class TripleGetBgFuture //
         }
         long duration = unit.toMillis(timeout);
         long start = System.currentTimeMillis();
-        SimpleBasicGetBgMethod<C> c;
-        while (!((c = this.consumer.get()) instanceof SimpleBasicGetBgResult)) {
+        BgMethodGet<C> c;
+        while (!((c = this.consumer.get()) instanceof BgMethodGetResult)) {
             Thread.sleep(10);
             long current = System.currentTimeMillis();
             if (current - start >= duration) {
                 throw new TimeoutException();
             }
         }
-        SimpleBasicGetBgMethod<J> j;
-        while (!((j = this.junction.get()) instanceof SimpleBasicGetBgResult)) {
+        BgMethodGet<J> j;
+        while (!((j = this.junction.get()) instanceof BgMethodGetResult)) {
             Thread.sleep(10);
             long current = System.currentTimeMillis();
             if (current - start >= duration) {
                 throw new TimeoutException();
             }
         }
-        SimpleBasicGetBgMethod<P> p;
-        while (!((p = this.producer.get()) instanceof SimpleBasicGetBgResult)) {
+        BgMethodGet<P> p;
+        while (!((p = this.producer.get()) instanceof BgMethodGetResult)) {
             Thread.sleep(10);
             long current = System.currentTimeMillis();
             if (current - start >= duration) {
@@ -139,9 +139,9 @@ public class TripleGetBgFuture //
             }
         }
         return TripleGetBgResult.of //
-            /*     */( (SimpleBasicGetBgResult<C>) c //
-                /* */, (SimpleBasicGetBgResult<J>) j //
-                /* */, (SimpleBasicGetBgResult<P>) p //
+            /*     */( (BgMethodGetResult<C>) c //
+                /* */, (BgMethodGetResult<J>) j //
+                /* */, (BgMethodGetResult<P>) p //
                 /* */);
     }
 }

@@ -7,11 +7,11 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.time.ZonedDateTime;
 
-public class SimpleUnkFailureBgResult<C, M, T extends SimpleBasicBgWorker<T>> //
-    extends SimpleRealityEndBgResult<C, M, T>
+public class BgMethodResultEndFailure<C, M, T extends SimpleBasicBgWorker<T>> //
+    extends BgMethodResultEndReality<C, M, T>
 {
     public static <C, M, T extends SimpleBasicBgWorker<T>> //
-    SimpleUnkFailureBgResult<C, M, T> of(Throwable reasons, C configs, M metrics, ZonedDateTime endtime)
+    BgMethodResultEndFailure<C, M, T> of(Throwable reasons, C configs, M metrics, ZonedDateTime endtime)
     {
         if (reasons == null) {
             throw new ArgumentNullException("reasons");
@@ -25,12 +25,12 @@ public class SimpleUnkFailureBgResult<C, M, T extends SimpleBasicBgWorker<T>> //
         if (endtime == null) {
             throw new ArgumentNullException("endtime");
         }
-        return new SimpleUnkFailureBgResult<>(reasons, configs, metrics, endtime);
+        return new BgMethodResultEndFailure<>(reasons, configs, metrics, endtime);
     }
 
     public final Throwable reasons;
 
-    private SimpleUnkFailureBgResult(Throwable reasons, C configs, M metrics, ZonedDateTime endtime)
+    private BgMethodResultEndFailure(Throwable reasons, C configs, M metrics, ZonedDateTime endtime)
     {
         super(configs, metrics, endtime);
         this.reasons = reasons;

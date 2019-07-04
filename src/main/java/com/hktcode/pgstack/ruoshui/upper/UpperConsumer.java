@@ -5,10 +5,10 @@ package com.hktcode.pgstack.ruoshui.upper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
-import com.hktcode.bgmethod.SimpleBasicPstBgResult;
-import com.hktcode.bgmethod.BgMethodParamsDelDefault;
-import com.hktcode.bgmethod.SimplePstSuccessBgResult;
-import com.hktcode.bgmethod.SimpleUnkFailureBgResult;
+import com.hktcode.bgmethod.BgMethodPstResult;
+import com.hktcode.bgmethod.BgMethodDelParamsDefault;
+import com.hktcode.bgmethod.BgMethodPstResultSuccess;
+import com.hktcode.bgmethod.BgMethodResultEndFailure;
 import com.hktcode.bgtriple.naive.NaiveConsumer;
 import com.hktcode.bgtriple.naive.NaiveConsumerMetric;
 import com.hktcode.bgtriple.status.TripleBasicBgStatus;
@@ -102,10 +102,10 @@ public class UpperConsumer extends NaiveConsumer
             ZonedDateTime endtime = ZonedDateTime.now();
             String msg = ex.getMessage();
             metric.statusInfor = "throw exception at " + endtime + ": " + msg;
-            SimpleUnkFailureBgResult<MainlineConfig, NaiveConsumerMetric, UpperConsumer> c //
-                = SimpleUnkFailureBgResult.of(ex, this.config, this.metric.toMetric(), ZonedDateTime.now());
-            BgMethodParamsDelDefault<UpperJunction> j = BgMethodParamsDelDefault.of();
-            BgMethodParamsDelDefault<UpperProducer> p = BgMethodParamsDelDefault.of();
+            BgMethodResultEndFailure<MainlineConfig, NaiveConsumerMetric, UpperConsumer> c //
+                = BgMethodResultEndFailure.of(ex, this.config, this.metric.toMetric(), ZonedDateTime.now());
+            BgMethodDelParamsDefault<UpperJunction> j = BgMethodDelParamsDefault.of();
+            BgMethodDelParamsDefault<UpperProducer> p = BgMethodDelParamsDefault.of();
             TripleDelBgStatus<UpperConsumer, UpperJunction, UpperProducer> del = TripleDelBgStatus.of(c, j, p);
             TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer> origin;
             TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer> future;
@@ -157,17 +157,17 @@ public class UpperConsumer extends NaiveConsumer
         return r;
     }
 
-    public SimpleBasicPstBgResult<UpperConsumer> pst(LogSequenceNumber lastReceiveLsn)
+    public BgMethodPstResult<UpperConsumer> pst(LogSequenceNumber lastReceiveLsn)
     {
         if (lastReceiveLsn == null) {
             throw new ArgumentNullException("lastReceiveLsn");
         }
         this.metric.fetchThread.setTxactionLsn(lastReceiveLsn);
         ++this.metric.recordCount;
-        return SimplePstSuccessBgResult.of();
+        return BgMethodPstResultSuccess.of();
     }
 
-    public SimpleBasicPstBgResult<UpperConsumer> //
+    public BgMethodPstResult<UpperConsumer> //
     pstWithSnapshot(JsonNode json, PgSnapshotFilter whereScript)
     {
         if (json == null) {
@@ -176,7 +176,7 @@ public class UpperConsumer extends NaiveConsumer
         UpperConsumerThread pollAction = this.metric.fetchThread;
         if (!(pollAction instanceof MainlineThreadWork)) {
             // TODO:
-            return SimplePstSuccessBgResult.of();
+            return BgMethodPstResultSuccess.of();
         }
         MainlineThreadWork oldAction = (MainlineThreadWork)pollAction;
         PgConnectionProperty s = this.config.srcProperty;
@@ -196,6 +196,6 @@ public class UpperConsumer extends NaiveConsumer
         c.rsFetchsize = json.path("rs_fetchsize").asInt(128);
         c.waitTimeout = json.path("wait_timeout").asLong(this.config.waitTimeout);
         this.metric.fetchThread = SnapshotThreadLockingRel.of(c, status, oldAction);
-        return SimplePstSuccessBgResult.of();
+        return BgMethodPstResultSuccess.of();
     }
 }

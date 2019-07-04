@@ -72,13 +72,13 @@ public abstract class NaiveJunction //
     }
 
     @Override
-    public SimplePutSuccessBgResult<F, J> put()
+    public BgMethodPutResultSuccess<F, J> put()
     {
-        return SimplePutSuccessBgResult.of(this.metric.startMillis, this.config);
+        return BgMethodPutResultSuccess.of(this.metric.startMillis, this.config);
     }
 
     @Override
-    public SimpleMiscarriedBgResult<J> put(Throwable reasons, ZonedDateTime endtime)
+    public BgMethodResultMiscarried<J> put(Throwable reasons, ZonedDateTime endtime)
     {
         if (reasons == null) {
             throw new ArgumentNullException("reasons");
@@ -86,11 +86,11 @@ public abstract class NaiveJunction //
         if (endtime == null) {
             throw new ArgumentNullException("endtime");
         }
-        return SimpleMiscarriedBgResult.of(endtime);
+        return BgMethodResultMiscarried.of(endtime);
     }
 
     @Override
-    public SimpleUnkFailureBgResult<F, NaiveJunctionMetric, J> //
+    public BgMethodResultEndFailure<F, NaiveJunctionMetric, J> //
     pst(Throwable reasons, ZonedDateTime endtime)
     {
         if (reasons == null) {
@@ -100,18 +100,18 @@ public abstract class NaiveJunction //
             throw new ArgumentNullException("endtime");
         }
         NaiveJunctionMetric metrics = NaiveJunctionMetric.of(this.metric);
-        return SimpleUnkFailureBgResult.of(reasons, config, metrics, endtime);
+        return BgMethodResultEndFailure.of(reasons, config, metrics, endtime);
     }
 
     @Override
-    public SimpleNormalInfoBgResult<F, NaiveJunctionMetric, J> get()
+    public BgMethodResultNormalInfo<F, NaiveJunctionMetric, J> get()
     {
         NaiveJunctionMetric metrics = NaiveJunctionMetric.of(this.metric);
-        return SimpleNormalInfoBgResult.of(config, metrics);
+        return BgMethodResultNormalInfo.of(config, metrics);
     }
 
     @Override
-    public SimpleUnkFailureBgResult<F, NaiveJunctionMetric, J> //
+    public BgMethodResultEndFailure<F, NaiveJunctionMetric, J> //
     get(Throwable reasons, ZonedDateTime endtime)
     {
         if (reasons == null) {
@@ -121,20 +121,20 @@ public abstract class NaiveJunction //
             throw new ArgumentNullException("endtime");
         }
         NaiveJunctionMetric metrics = NaiveJunctionMetric.of(this.metric);
-        return SimpleUnkFailureBgResult.of(reasons, config, metrics, endtime);
+        return BgMethodResultEndFailure.of(reasons, config, metrics, endtime);
     }
 
 
     @Override
-    public SimpleEndSuccessBgResult<F, NaiveJunctionMetric, J> del()
+    public BgMethodResultEndSuccess<F, NaiveJunctionMetric, J> del()
     {
         ZonedDateTime endtime = ZonedDateTime.now();
         NaiveJunctionMetric metrics = NaiveJunctionMetric.of(this.metric);
-        return SimpleEndSuccessBgResult.of(config, metrics, endtime);
+        return BgMethodResultEndSuccess.of(config, metrics, endtime);
     }
 
     @Override
-    public SimpleUnkFailureBgResult<F, NaiveJunctionMetric, J> //
+    public BgMethodResultEndFailure<F, NaiveJunctionMetric, J> //
     del(Throwable reasons, ZonedDateTime endtime)
     {
         if (reasons == null) {
@@ -144,7 +144,7 @@ public abstract class NaiveJunction //
             throw new ArgumentNullException("endtime");
         }
         NaiveJunctionMetric metrics = NaiveJunctionMetric.of(this.metric);
-        return SimpleUnkFailureBgResult.of(reasons, config, metrics, endtime);
+        return BgMethodResultEndFailure.of(reasons, config, metrics, endtime);
     }
 
     @Override
@@ -175,9 +175,9 @@ public abstract class NaiveJunction //
             ZonedDateTime endtime = ZonedDateTime.now();
             logger.error("junction throws exception.", ex);
             NaiveJunctionMetric metrics = NaiveJunctionMetric.of(this.metric);
-            BgMethodParamsDelDefault<C> c = BgMethodParamsDelDefault.of();
-            SimpleUnkFailureBgResult<F, NaiveJunctionMetric, J> j = SimpleUnkFailureBgResult.of(ex, this.config, metrics, ZonedDateTime.now());
-            BgMethodParamsDelDefault<P> p = BgMethodParamsDelDefault.of();
+            BgMethodDelParamsDefault<C> c = BgMethodDelParamsDefault.of();
+            BgMethodResultEndFailure<F, NaiveJunctionMetric, J> j = BgMethodResultEndFailure.of(ex, this.config, metrics, ZonedDateTime.now());
+            BgMethodDelParamsDefault<P> p = BgMethodDelParamsDefault.of();
             TripleDelBgStatus<C, J, P> del = TripleDelBgStatus.of(c, j, p);
             TripleBasicBgStatus<C, J, P> origin;
             TripleBasicBgStatus<C, J, P> future;

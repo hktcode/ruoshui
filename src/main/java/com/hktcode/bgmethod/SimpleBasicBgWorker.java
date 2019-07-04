@@ -9,16 +9,16 @@ import java.time.ZonedDateTime;
 
 public interface SimpleBasicBgWorker<T extends SimpleBasicBgWorker<T>>
 {
-    default SimpleBasicPstBgResult<T> pst()
+    default BgMethodPstResult<T> pst()
     {
-        return SimplePstSuccessBgResult.of();
+        return BgMethodPstResultSuccess.of();
     }
 
-    SimpleBasicPstBgResult<T> pst(Throwable reasons, ZonedDateTime endtime);
+    BgMethodPstResult<T> pst(Throwable reasons, ZonedDateTime endtime);
 
-    SimpleBasicPutBgResult<T> put();
+    BgMethodPutResult<T> put();
 
-    default SimpleBasicPutBgResult<T> put(Throwable reasons, ZonedDateTime endtime)
+    default BgMethodPutResult<T> put(Throwable reasons, ZonedDateTime endtime)
     {
         if (reasons == null) {
             throw new ArgumentNullException("reasons");
@@ -26,14 +26,14 @@ public interface SimpleBasicBgWorker<T extends SimpleBasicBgWorker<T>>
         if (endtime == null) {
             throw new ArgumentNullException("endtime");
         }
-        return SimpleMiscarriedBgResult.of(endtime);
+        return BgMethodResultMiscarried.of(endtime);
     }
 
-    SimpleBasicGetBgResult<T> get();
+    BgMethodGetResult<T> get();
 
-    SimpleBasicGetBgResult<T> get(Throwable reasons, ZonedDateTime endtime);
+    BgMethodGetResult<T> get(Throwable reasons, ZonedDateTime endtime);
 
-    SimpleBasicDelBgResult<T> del();
+    BgMethodDelResult<T> del();
 
-    SimpleBasicDelBgResult<T> del(Throwable reasons, ZonedDateTime endtime);
+    BgMethodDelResult<T> del(Throwable reasons, ZonedDateTime endtime);
 }

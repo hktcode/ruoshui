@@ -4,8 +4,8 @@
 package com.hktcode.bgtriple.future;
 
 import com.hktcode.bgmethod.BgMethodResult;
-import com.hktcode.bgmethod.SimpleBasicPstBgMethod;
-import com.hktcode.bgmethod.SimpleBasicPstBgResult;
+import com.hktcode.bgmethod.BgMethodPst;
+import com.hktcode.bgmethod.BgMethodPstResult;
 import com.hktcode.bgtriple.TripleConsumer;
 import com.hktcode.bgtriple.TripleJunction;
 import com.hktcode.bgtriple.TripleProducer;
@@ -29,9 +29,9 @@ public class TriplePstBgFuture //
         /*      */, P extends TripleProducer<C, J, P> //
         /*      */>
     TriplePstBgFuture<C, J, P> of //
-        /* */( AtomicReference<SimpleBasicPstBgMethod<C>> consumer //
-        /* */, AtomicReference<SimpleBasicPstBgMethod<J>> junction //
-        /* */, AtomicReference<SimpleBasicPstBgMethod<P>> producer //
+        /* */(AtomicReference<BgMethodPst<C>> consumer //
+        /* */, AtomicReference<BgMethodPst<J>> junction //
+        /* */, AtomicReference<BgMethodPst<P>> producer //
         /* */)
     {
         if (consumer == null) {
@@ -46,16 +46,16 @@ public class TriplePstBgFuture //
         return new TriplePstBgFuture<>(consumer, junction, producer);
     }
 
-    private final AtomicReference<SimpleBasicPstBgMethod<C>> consumer;
+    private final AtomicReference<BgMethodPst<C>> consumer;
 
-    private final AtomicReference<SimpleBasicPstBgMethod<J>> junction;
+    private final AtomicReference<BgMethodPst<J>> junction;
 
-    private final AtomicReference<SimpleBasicPstBgMethod<P>> producer;
+    private final AtomicReference<BgMethodPst<P>> producer;
 
     private TriplePstBgFuture //
-        /* */( AtomicReference<SimpleBasicPstBgMethod<C>> consumer //
-        /* */, AtomicReference<SimpleBasicPstBgMethod<J>> junction //
-        /* */, AtomicReference<SimpleBasicPstBgMethod<P>> producer //
+        /* */(AtomicReference<BgMethodPst<C>> consumer //
+        /* */, AtomicReference<BgMethodPst<J>> junction //
+        /* */, AtomicReference<BgMethodPst<P>> producer //
         /* */)
     {
         this.consumer = consumer;
@@ -87,22 +87,22 @@ public class TriplePstBgFuture //
     public TriplePstBgResult<C, J, P> get() //
         throws InterruptedException, ExecutionException
     {
-        SimpleBasicPstBgMethod<C> c;
-        while (!((c = this.consumer.get()) instanceof SimpleBasicPstBgResult)) {
+        BgMethodPst<C> c;
+        while (!((c = this.consumer.get()) instanceof BgMethodPstResult)) {
             Thread.sleep(10);
         }
-        SimpleBasicPstBgMethod<J> j;
-        while (!((j = this.junction.get()) instanceof SimpleBasicPstBgResult)) {
+        BgMethodPst<J> j;
+        while (!((j = this.junction.get()) instanceof BgMethodPstResult)) {
             Thread.sleep(10);
         }
-        SimpleBasicPstBgMethod<P> p;
-        while (!((p = this.producer.get()) instanceof SimpleBasicPstBgResult)) {
+        BgMethodPst<P> p;
+        while (!((p = this.producer.get()) instanceof BgMethodPstResult)) {
             Thread.sleep(10);
         }
         return TriplePstBgResult.of //
-            /*     */( (SimpleBasicPstBgResult<C>) c //
-                /* */, (SimpleBasicPstBgResult<J>) j //
-                /* */, (SimpleBasicPstBgResult<P>) p //
+            /*     */( (BgMethodPstResult<C>) c //
+                /* */, (BgMethodPstResult<J>) j //
+                /* */, (BgMethodPstResult<P>) p //
                 /* */);
     }
 
@@ -115,24 +115,24 @@ public class TriplePstBgFuture //
         }
         long duration = unit.toMillis(timeout);
         long start = System.currentTimeMillis();
-        SimpleBasicPstBgMethod<C> c;
-        while (!((c = this.consumer.get()) instanceof SimpleBasicPstBgResult)) {
+        BgMethodPst<C> c;
+        while (!((c = this.consumer.get()) instanceof BgMethodPstResult)) {
             Thread.sleep(10);
             long current = System.currentTimeMillis();
             if (current - start >= duration) {
                 throw new TimeoutException();
             }
         }
-        SimpleBasicPstBgMethod<J> j;
-        while (!((j = this.junction.get()) instanceof SimpleBasicPstBgResult)) {
+        BgMethodPst<J> j;
+        while (!((j = this.junction.get()) instanceof BgMethodPstResult)) {
             Thread.sleep(10);
             long current = System.currentTimeMillis();
             if (current - start >= duration) {
                 throw new TimeoutException();
             }
         }
-        SimpleBasicPstBgMethod<P> p;
-        while (!((p = this.producer.get()) instanceof SimpleBasicPstBgResult)) {
+        BgMethodPst<P> p;
+        while (!((p = this.producer.get()) instanceof BgMethodPstResult)) {
             Thread.sleep(10);
             long current = System.currentTimeMillis();
             if (current - start >= duration) {
@@ -140,9 +140,9 @@ public class TriplePstBgFuture //
             }
         }
         return TriplePstBgResult.of //
-            /*     */( (SimpleBasicPstBgResult<C>) c //
-                /* */, (SimpleBasicPstBgResult<J>) j //
-                /* */, (SimpleBasicPstBgResult<P>) p //
+            /*     */( (BgMethodPstResult<C>) c //
+                /* */, (BgMethodPstResult<J>) j //
+                /* */, (BgMethodPstResult<P>) p //
                 /* */);
     }
 }
