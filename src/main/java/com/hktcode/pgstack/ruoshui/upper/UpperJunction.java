@@ -4,9 +4,10 @@
 package com.hktcode.pgstack.ruoshui.upper;
 
 import com.google.common.collect.ImmutableList;
-import com.hktcode.bgtriple.naive.NaiveJunction;
-import com.hktcode.bgtriple.naive.NaiveJunctionConfig;
-import com.hktcode.bgtriple.status.TripleBasicBgStatus;
+import com.hktcode.bgsimple.status.SimpleStatus;
+import com.hktcode.bgsimple.triple.TripleJunction;
+import com.hktcode.bgsimple.triple.TripleJunctionConfig;
+import com.hktcode.lang.RunnableWithInterrupted;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalBegSnapshotMsg;
 import com.hktcode.pgjdbc.LogicalMsg;
@@ -15,29 +16,27 @@ import com.hktcode.pgstack.ruoshui.pgsql.LogicalTxactContext;
 import com.hktcode.pgstack.ruoshui.pgsql.PgsqlKey;
 import com.hktcode.pgstack.ruoshui.pgsql.PgsqlVal;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperJunctionMutableMetric;
+import com.hktcode.pgstack.ruoshui.upper.entity.UpperJunctionMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperProducerRecord;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class UpperJunction extends NaiveJunction
-    /* */< UpperConsumer //
-    /* */, UpperJunction //
-    /* */, UpperProducer //
-    /* */, NaiveJunctionConfig //
-    /* */, UpperJunctionMutableMetric //
+public class UpperJunction extends TripleJunction
+    /* */< UpperJunction //
+    /* */, TripleJunctionConfig //
+    /* */, UpperJunctionMetric //
     /* */, UpperConsumerRecord //
     /* */, UpperProducerRecord //
     /* */>
+    implements RunnableWithInterrupted
 {
     public static UpperJunction of //
-        /* */( NaiveJunctionConfig config
-        /* */, AtomicReference<TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer>> status //
+        /* */( TripleJunctionConfig config
+        /* */, AtomicReference<SimpleStatus> status //
         /* */, BlockingQueue<UpperConsumerRecord> comein //
         /* */, BlockingQueue<UpperProducerRecord> getout //
         /* */)
@@ -57,23 +56,31 @@ public class UpperJunction extends NaiveJunction
         return new UpperJunction(comein, getout, status, config);
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(UpperJunction.class);
-
     private UpperJunction //
         /* */( BlockingQueue<UpperConsumerRecord> comein //
         /* */, BlockingQueue<UpperProducerRecord> getout //
-        /* */, AtomicReference<TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer>> bgstatus //
-        /* */, NaiveJunctionConfig config //
+        /* */, AtomicReference<SimpleStatus> status //
+        /* */, TripleJunctionConfig config //
         /* */)
     {
-        super(config, UpperJunctionMutableMetric.of(), comein, getout, bgstatus);
+        super(config, comein, getout, status);
     }
 
     @Override
-    protected List<UpperProducerRecord> convert(UpperConsumerRecord record)
+    protected List<UpperProducerRecord> convert //
+        /* */( UpperConsumerRecord record //
+        /* */, UpperJunction worker //
+        /* */, UpperJunctionMetric metric //
+        /* */)
     {
         if (record == null) {
             throw new ArgumentNullException("record");
+        }
+        if (worker == null) {
+            throw new ArgumentNullException("worker");
+        }
+        if (metric == null) {
+            throw new ArgumentNullException("metric");
         }
         long lsn = record.lsn;
         LogicalMsg msg = record.msg;
@@ -98,7 +105,7 @@ public class UpperJunction extends NaiveJunction
             metric.curSequence = 1;
         }
 
-        LogicalTxactContext ctx = this.metric.txidContext;
+        LogicalTxactContext ctx = metric.txidContext;
         ImmutableList<PgsqlVal> vallist = PgsqlVal.of(lsn, msg, ctx);
         List<UpperProducerRecord> result = new ArrayList<>();
         for (PgsqlVal val : vallist) {
@@ -106,7 +113,14 @@ public class UpperJunction extends NaiveJunction
             UpperProducerRecord d = UpperProducerRecord.of(key, val);
             result.add(d);
         }
-        //logger.info("key={}, val={}", key, val);
         return ImmutableList.copyOf(result);
+    }
+
+    @Override
+    public void runWithInterrupted() throws InterruptedException
+    {
+        ZonedDateTime startMillis = ZonedDateTime.now();
+        UpperJunctionMetric metric = UpperJunctionMetric.of(startMillis);
+        super.run("upper-junction", this, metric);
     }
 }

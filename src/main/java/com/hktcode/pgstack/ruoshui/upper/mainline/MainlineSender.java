@@ -4,6 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
+import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgtriple.status.TripleBasicBgStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
@@ -23,7 +24,7 @@ class MainlineSender extends UpperConsumerSender<MainlineRecord, UpperRunnableMe
 {
     static MainlineSender of
         /* */( TransferQueue<MainlineRecord> tqueue
-        /* */, AtomicReference<TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer>> status
+        /* */, AtomicReference<SimpleStatus> status
         /* */)
     {
         if (status == null) {
@@ -34,7 +35,7 @@ class MainlineSender extends UpperConsumerSender<MainlineRecord, UpperRunnableMe
 
     private MainlineSender
         /* */( TransferQueue<MainlineRecord> tqueue
-        /* */, AtomicReference<TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer>> status
+        /* */, AtomicReference<SimpleStatus> status
         /* */)
     {
         super(tqueue, status);

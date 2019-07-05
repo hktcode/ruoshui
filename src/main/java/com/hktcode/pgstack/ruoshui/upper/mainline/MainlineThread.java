@@ -4,13 +4,14 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
+import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgtriple.status.TripleBasicBgStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumer;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumerThreadBasic;
 import com.hktcode.pgstack.ruoshui.upper.UpperJunction;
 import com.hktcode.pgstack.ruoshui.upper.UpperProducer;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
+import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
 
 import java.util.concurrent.LinkedTransferQueue;
@@ -22,7 +23,7 @@ public class MainlineThread extends UpperConsumerThreadBasic<MainlineRecord>
 {
     public static MainlineThread of
         /* */( MainlineConfig config //
-        /* */, AtomicReference<TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer>> status //
+        /* */, AtomicReference<SimpleStatus> status //
         /* */)
     {
         if (config == null) {
@@ -40,7 +41,7 @@ public class MainlineThread extends UpperConsumerThreadBasic<MainlineRecord>
 
     @Override
     public UpperConsumerRecord //
-    poll(long timeout, UpperConsumerMutableMetric metric)
+    poll(long timeout, UpperConsumerMetric metric)
         throws InterruptedException
     {
         if (metric == null) {

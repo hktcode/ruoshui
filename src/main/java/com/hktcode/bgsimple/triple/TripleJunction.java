@@ -86,12 +86,12 @@ public abstract class TripleJunction //
                 r = this.poll(this.comein, metric);
             }
             else {
-                t = this.convert(r).iterator();
+                t = this.convert(r, worker, metric).iterator();
                 r = null;
             }
         }
         logger.info("junction finish.");
     }
 
-    protected abstract List<O> convert(I record);
+    protected abstract List<O> convert(I record, W worker, M metric);
 }

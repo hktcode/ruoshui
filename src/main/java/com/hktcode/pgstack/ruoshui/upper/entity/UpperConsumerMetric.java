@@ -4,27 +4,28 @@
 package com.hktcode.pgstack.ruoshui.upper.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.hktcode.bgtriple.naive.NaiveConsumerMutableMetric;
+import com.hktcode.bgsimple.triple.TripleConsumerMetric;
+import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionInfo;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumerThread;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumerThreadNoop;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineMetric;
 
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-public class UpperConsumerMutableMetric extends NaiveConsumerMutableMetric
+public class UpperConsumerMetric extends TripleConsumerMetric
 {
-    public static UpperConsumerMutableMetric of()
+    public static UpperConsumerMetric of(ZonedDateTime startMillis)
     {
-        ZonedDateTime createTime = ZonedDateTime.now();
-        return new UpperConsumerMutableMetric(createTime);
+        if (startMillis == null) {
+            throw new ArgumentNullException("startMillis");
+        }
+        return new UpperConsumerMetric(startMillis);
     }
 
-    private UpperConsumerMutableMetric(ZonedDateTime createTime)
+    private UpperConsumerMetric(ZonedDateTime startMillis)
     {
-        super(createTime);
+        super(startMillis);
     }
 
     public PgConnectionInfo pgreplInfor;

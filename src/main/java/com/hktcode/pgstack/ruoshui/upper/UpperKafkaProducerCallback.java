@@ -3,12 +3,13 @@
  */
 package com.hktcode.pgstack.ruoshui.upper;
 
-import com.hktcode.bgmethod.BgMethodDelParamsDefault;
-import com.hktcode.bgmethod.BgMethodDelParamsFailure;
-import com.hktcode.bgmethod.BgMethodPstParamsDefault;
-import com.hktcode.bgtriple.TripleSwitcher;
-import com.hktcode.bgtriple.status.TripleDelBgStatus;
-import com.hktcode.bgtriple.status.TriplePstBgStatus;
+import com.hktcode.bgsimple.SimpleHolder;
+import com.hktcode.bgsimple.method.SimpleMethodDel;
+import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
+import com.hktcode.bgsimple.method.SimpleMethodPst;
+import com.hktcode.bgsimple.method.SimpleMethodPstParamsDefault;
+import com.hktcode.bgsimple.status.SimpleStatusOuterDel;
+import com.hktcode.bgsimple.status.SimpleStatusOuterPst;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.Producer;
@@ -18,26 +19,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.ZonedDateTime;
+import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
 
 public class UpperKafkaProducerCallback implements Callback
 {
     public static UpperKafkaProducerCallback of //
         /* */( LogSequenceNumber lsn //
-        /* */, TripleSwitcher<UpperConsumer, UpperJunction, UpperProducer> switcher //
+        /* */, SimpleHolder holder //
         /* */, Producer<byte[], byte[]> producer //
         /* */)
     {
         if (lsn == null) {
             throw new ArgumentNullException("lsn");
         }
-        if (switcher == null) {
-            throw new ArgumentNullException("switcher");
+        if (holder == null) {
+            throw new ArgumentNullException("holder");
         }
         if (producer == null) {
             throw new ArgumentNullException("producer");
         }
-        return new UpperKafkaProducerCallback(lsn, switcher, producer);
+        return new UpperKafkaProducerCallback(lsn, holder, producer);
     }
 
     private static final Logger logger //
@@ -47,16 +49,16 @@ public class UpperKafkaProducerCallback implements Callback
 
     private final Producer<byte[], byte[]> producer;
 
-    private final TripleSwitcher<UpperConsumer, UpperJunction, UpperProducer> switcher;
+    private final SimpleHolder holder;
 
     private UpperKafkaProducerCallback //
         /* */( LogSequenceNumber lsn //
-        /* */, TripleSwitcher<UpperConsumer, UpperJunction, UpperProducer> switcher //
+        /* */, SimpleHolder holder //
         /* */, Producer<byte[], byte[]> producer //
         /* */)
     {
         this.lsn = lsn;
-        this.switcher = switcher;
+        this.holder = holder;
         this.producer = producer;
     }
 
@@ -76,19 +78,23 @@ public class UpperKafkaProducerCallback implements Callback
 
             this.producer.close(0, TimeUnit.MILLISECONDS);
             ZonedDateTime endtime = ZonedDateTime.now();
-            BgMethodDelParamsDefault<UpperConsumer> s = BgMethodDelParamsDefault.of();
-            BgMethodDelParamsDefault<UpperJunction> p = BgMethodDelParamsDefault.of();
-            BgMethodDelParamsFailure<UpperProducer> d = BgMethodDelParamsFailure.of(ex, endtime);
-            TripleDelBgStatus<UpperConsumer, UpperJunction, UpperProducer> status = TripleDelBgStatus.of(s, p, d);
-            this.switcher.del(status);
+            SimpleMethodDel[] method = new SimpleMethodDel[3];
+            method[0] = SimpleMethodDelParamsDefault.of(); // TODO:
+            method[1] = SimpleMethodDelParamsDefault.of();
+            method[2] = SimpleMethodDelParamsDefault.of();
+            Phaser phaser = new Phaser(3);
+            SimpleStatusOuterDel del = SimpleStatusOuterDel.of(method, phaser);
+            this.holder.del(del);
         }
         else if (this.lsn.asLong() != LogSequenceNumber.INVALID_LSN.asLong()) {
             logger.info("kafka producer send record success: lsn={}", this.lsn);
-            UpperLastReceiveLsnPstParams s = UpperLastReceiveLsnPstParams.of(this.lsn);
-            BgMethodPstParamsDefault<UpperJunction> p = BgMethodPstParamsDefault.of();
-            BgMethodPstParamsDefault<UpperProducer> d = BgMethodPstParamsDefault.of();
-            TriplePstBgStatus<UpperConsumer, UpperJunction, UpperProducer> status = TriplePstBgStatus.of(s, p, d);
-            this.switcher.pst(status);
+            SimpleMethodPst[] method = new SimpleMethodPst[3];
+            method[0] = UpperMethodPstParamsRecvLsn.of(this.lsn);
+            method[1] = SimpleMethodPstParamsDefault.of();
+            method[2] = SimpleMethodPstParamsDefault.of();
+            Phaser phaser = new Phaser(3);
+            SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(method, phaser);
+            this.holder.pst(pst);
         }
     }
 }

@@ -32,7 +32,7 @@ public abstract class KafkaTripleProducer //
     protected KafkaTripleProducer //
         /* */( F config //
         /* */, BlockingQueue<O> getout //
-        /* */, AtomicReference<SimpleStatus<W, M>> status //
+        /* */, AtomicReference<SimpleStatus> status //
         /* */)
     {
         super(config, getout, status);

@@ -3,6 +3,7 @@
  */
 package com.hktcode.pgstack.ruoshui.upper.snapshot;
 
+import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgtriple.status.TripleBasicBgStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
@@ -19,8 +20,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class SnapshotSender extends UpperConsumerSender<SnapshotRecord, UpperRunnableMetric>
 {
     public static SnapshotSender of
-        /* */( TransferQueue<SnapshotRecord> tqueue
-        /* */, AtomicReference<TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer>> status
+        /* */(TransferQueue<SnapshotRecord> tqueue
+        /* */, AtomicReference<SimpleStatus> status
         /* */)
     {
         if (tqueue == null) {
@@ -34,7 +35,7 @@ public class SnapshotSender extends UpperConsumerSender<SnapshotRecord, UpperRun
 
     private SnapshotSender
         /* */( TransferQueue<SnapshotRecord> tqueue
-        /* */, AtomicReference<TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer>> status
+        /* */, AtomicReference<SimpleStatus> status
         /* */)
     {
         super(tqueue, status);

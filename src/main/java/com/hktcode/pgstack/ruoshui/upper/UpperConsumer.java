@@ -6,22 +6,20 @@ package com.hktcode.pgstack.ruoshui.upper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
 import com.hktcode.bgmethod.BgMethodPstResult;
-import com.hktcode.bgmethod.BgMethodDelParamsDefault;
 import com.hktcode.bgmethod.BgMethodPstResultSuccess;
-import com.hktcode.bgmethod.BgMethodResultEndFailure;
-import com.hktcode.bgtriple.naive.NaiveConsumer;
-import com.hktcode.bgtriple.naive.NaiveConsumerMetric;
-import com.hktcode.bgtriple.status.TripleBasicBgStatus;
-import com.hktcode.bgtriple.status.TripleDelBgStatus;
-import com.hktcode.bgtriple.status.TripleEndBgStatus;
+import com.hktcode.bgsimple.status.SimpleStatus;
+import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
+import com.hktcode.bgsimple.triple.TripleConsumer;
+import com.hktcode.bgsimple.triple.TripleMethodResult;
 import com.hktcode.bgtriple.status.TripleRunBgStatus;
+import com.hktcode.lang.RunnableWithInterrupted;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionInfo;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplRelationName;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilter;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
+import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
@@ -33,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -44,18 +41,17 @@ import java.util.concurrent.atomic.AtomicReference;
 import static com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig.DEFAULT_ATTRINFO_SQL;
 import static com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig.DEFAULT_RELATION_SQL;
 
-public class UpperConsumer extends NaiveConsumer
+public class UpperConsumer extends TripleConsumer
     /* */< UpperConsumer
-    /* */, UpperJunction
-    /* */, UpperProducer
     /* */, MainlineConfig
-    /* */, UpperConsumerMutableMetric
+    /* */, UpperConsumerMetric
     /* */, UpperConsumerRecord
     /* */> //
+    implements RunnableWithInterrupted
 {
     public static UpperConsumer of //
         /* */( MainlineConfig config //
-        /* */, AtomicReference<TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer>> status //
+        /* */, AtomicReference<SimpleStatus> status //
         /* */, BlockingQueue<UpperConsumerRecord> comein //
         /* */)
     {
@@ -76,58 +72,30 @@ public class UpperConsumer extends NaiveConsumer
     private UpperConsumer //
         /* */( MainlineConfig config //
         /* */, BlockingQueue<UpperConsumerRecord> comein //
-        /* */, AtomicReference<TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer>> status //
+        /* */, AtomicReference<SimpleStatus> status //
         /* */)
     {
-        super(config, UpperConsumerMutableMetric.of(), comein, status);
+        super(config, comein, status);
     }
 
     @Override
-    public void runInternal() throws SQLException, InterruptedException
+    public void runWithInterrupted() throws InterruptedException
     {
-        UpperConsumerMutableMetric metric = UpperConsumerMutableMetric.of();
-        try (Connection c = this.config.srcProperty.replicaConnection()) {
-            PgConnection pgc = c.unwrap(PgConnection.class);
-            metric.pgreplInfor = PgConnectionInfo.of(pgc);
-            metric.fetchThread = MainlineThread.of(config, status);
-            logger.info("upper consumer starts: pgreplInfor={}", metric.pgreplInfor);
-            this.metric = metric;
-            UpperConsumerRecord r = null;
-            while (super.newStatus() instanceof TripleRunBgStatus) {
-                r = (r == null ? this.poll(metric) : this.push(r));
-            }
-        }
-        catch (Exception ex) {
-            logger.error("consumer throws exception: ", ex);
-            ZonedDateTime endtime = ZonedDateTime.now();
-            String msg = ex.getMessage();
-            metric.statusInfor = "throw exception at " + endtime + ": " + msg;
-            BgMethodResultEndFailure<MainlineConfig, NaiveConsumerMetric, UpperConsumer> c //
-                = BgMethodResultEndFailure.of(ex, this.config, this.metric.toMetric(), ZonedDateTime.now());
-            BgMethodDelParamsDefault<UpperJunction> j = BgMethodDelParamsDefault.of();
-            BgMethodDelParamsDefault<UpperProducer> p = BgMethodDelParamsDefault.of();
-            TripleDelBgStatus<UpperConsumer, UpperJunction, UpperProducer> del = TripleDelBgStatus.of(c, j, p);
-            TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer> origin;
-            TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer> future;
-            while (!((origin = super.newStatus(ex, endtime)) instanceof TripleEndBgStatus)) {
-                future = origin.del(del);
-                this.status.compareAndSet(origin, future);
-                metric.statusInfor = "waiting status set to end";
-            }
-            metric.statusInfor = "consumer finish end";
-            logger.info("consumer finish by exception.");
-            throw ex;
+        ZonedDateTime startMillis = ZonedDateTime.now();
+        UpperConsumerMetric metric = UpperConsumerMetric.of(startMillis);
+        try {
+            super.run("upper-consumer", this, metric);
         }
         finally {
             metric.statusInfor = "waiting fetch action stop";
             logger.info("{}", metric.statusInfor);
             long logDuration = this.config.logDuration;
-            while (super.newStatus() instanceof TripleRunBgStatus
+            while (super.newStatus(this, metric) instanceof TripleRunBgStatus
                 && !metric.fetchThread.stop(config.logDuration)) {
                 long currMillis = System.currentTimeMillis();
-                if (currMillis - this.metric.logDatetime >= logDuration) {
+                if (currMillis - metric.logDatetime >= logDuration) {
                     logger.info("poll action do not stop, I will retry.");
-                    this.metric.logDatetime = currMillis;
+                    metric.logDatetime = currMillis;
                 }
             }
             metric.statusInfor = "upper consumer stopped";
@@ -135,7 +103,28 @@ public class UpperConsumer extends NaiveConsumer
         }
     }
 
-    private UpperConsumerRecord poll(UpperConsumerMutableMetric metric)
+    @Override
+    protected void runInternal(UpperConsumer worker, UpperConsumerMetric metric) throws Exception
+    {
+        if (worker == null) {
+            throw new ArgumentNullException("worker");
+        }
+        if (metric == null) {
+            throw new ArgumentNullException("metric");
+        }
+        try (Connection c = this.config.srcProperty.replicaConnection()) {
+            PgConnection pgc = c.unwrap(PgConnection.class);
+            metric.pgreplInfor = PgConnectionInfo.of(pgc);
+            metric.fetchThread = MainlineThread.of(config, status);
+            logger.info("upper consumer starts: pgreplInfor={}", metric.pgreplInfor);
+            UpperConsumerRecord r = null;
+            while (super.newStatus(worker, metric) instanceof SimpleStatusInnerRun) {
+                r = (r == null ? this.poll(metric) : this.push(r, metric));
+            }
+        }
+    }
+
+    private UpperConsumerRecord poll(UpperConsumerMetric metric)
         throws InterruptedException
     {
         long waitTimeout = this.config.waitTimeout;
@@ -144,39 +133,47 @@ public class UpperConsumer extends NaiveConsumer
         long startMillis = System.currentTimeMillis();
         UpperConsumerRecord r = metric.fetchThread.poll(waitTimeout, metric);
         long finishMillis = System.currentTimeMillis();
-        this.metric.fetchMillis += (startMillis - finishMillis);
+        metric.fetchMillis += (startMillis - finishMillis);
         metric.statusInfor = "fetch record end";
-        ++this.metric.fetchCounts;
+        ++metric.fetchCounts;
         if (r != null) {
-            this.metric.logDatetime = finishMillis;
+            metric.logDatetime = finishMillis;
         }
-        else if (finishMillis - this.metric.logDatetime >= logDuration) {
+        else if (finishMillis - metric.logDatetime >= logDuration) {
             logger.info("readPending() returns null: waitTimeout={}, logDuration={}", waitTimeout, logDuration);
-            this.metric.logDatetime = finishMillis;
+            metric.logDatetime = finishMillis;
         }
         return r;
     }
 
-    public BgMethodPstResult<UpperConsumer> pst(LogSequenceNumber lastReceiveLsn)
+    public TripleMethodResult<UpperConsumer, MainlineConfig, UpperConsumerMetric>
+    pst(LogSequenceNumber lastReceiveLsn, UpperConsumerMetric metric)
     {
         if (lastReceiveLsn == null) {
             throw new ArgumentNullException("lastReceiveLsn");
         }
-        this.metric.fetchThread.setTxactionLsn(lastReceiveLsn);
-        ++this.metric.recordCount;
-        return BgMethodPstResultSuccess.of();
+        if (metric == null) {
+            throw new ArgumentNullException("metric");
+        }
+        metric.fetchThread.setTxactionLsn(lastReceiveLsn);
+        ++metric.recordCount;
+        JsonNode c = this.config.toJsonObject();
+        JsonNode m = metric.toJsonObject();
+        return TripleMethodResult.of(c, m);
     }
 
-    public BgMethodPstResult<UpperConsumer> //
-    pstWithSnapshot(JsonNode json, PgSnapshotFilter whereScript)
+    public TripleMethodResult<UpperConsumer, MainlineConfig, UpperConsumerMetric>
+    pstWithSnapshot(JsonNode json, PgSnapshotFilter whereScript, UpperConsumerMetric metric)
     {
         if (json == null) {
             throw new ArgumentNullException("json");
         }
-        UpperConsumerThread pollAction = this.metric.fetchThread;
+        JsonNode configNode = this.config.toJsonObject();
+        JsonNode metricNode = metric.toJsonObject();
+        UpperConsumerThread pollAction = metric.fetchThread;
         if (!(pollAction instanceof MainlineThreadWork)) {
             // TODO:
-            return BgMethodPstResultSuccess.of();
+            return TripleMethodResult.of(configNode, metricNode);
         }
         MainlineThreadWork oldAction = (MainlineThreadWork)pollAction;
         PgConnectionProperty s = this.config.srcProperty;
@@ -195,7 +192,7 @@ public class UpperConsumer extends NaiveConsumer
         PgSnapshotConfig c = PgSnapshotConfig.of(s, t, whereScript, m, a, true, p);
         c.rsFetchsize = json.path("rs_fetchsize").asInt(128);
         c.waitTimeout = json.path("wait_timeout").asLong(this.config.waitTimeout);
-        this.metric.fetchThread = SnapshotThreadLockingRel.of(c, status, oldAction);
-        return BgMethodPstResultSuccess.of();
+        metric.fetchThread = SnapshotThreadLockingRel.of(c, status, oldAction);
+        return TripleMethodResult.of(configNode, metricNode);
     }
 }

@@ -6,7 +6,7 @@ package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
-import com.hktcode.bgtriple.naive.NaiveConsumerConfig;
+import com.hktcode.bgsimple.triple.TripleConsumerConfig;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.LogicalReplConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
@@ -24,7 +24,7 @@ import java.util.Map;
 import static com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig.DEFAULT_ATTRINFO_SQL;
 import static com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig.DEFAULT_RELATION_SQL;
 
-public abstract class MainlineConfig extends NaiveConsumerConfig
+public abstract class MainlineConfig extends TripleConsumerConfig
 {
     public static final String DEFAULT_METADATA_FORMAT = "" //
         + "\n WITH \"names\" as (select json_array_elements_text(?::json) as \"pubname\") " //

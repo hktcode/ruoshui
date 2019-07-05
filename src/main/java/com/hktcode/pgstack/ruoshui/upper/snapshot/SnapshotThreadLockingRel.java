@@ -3,13 +3,14 @@
  */
 package com.hktcode.pgstack.ruoshui.upper.snapshot;
 
+import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgtriple.status.TripleBasicBgStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumer;
 import com.hktcode.pgstack.ruoshui.upper.UpperJunction;
 import com.hktcode.pgstack.ruoshui.upper.UpperProducer;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
+import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThreadWork;
 import org.slf4j.Logger;
@@ -23,8 +24,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class SnapshotThreadLockingRel extends SnapshotThread
 {
     public static SnapshotThreadLockingRel of //
-        /* */( PgSnapshotConfig config //
-        /* */, AtomicReference<TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer>> status //
+        /* */(PgSnapshotConfig config //
+        /* */, AtomicReference<SimpleStatus> status //
         /* */, MainlineThreadWork xact //
         /* */) //
     {
@@ -57,7 +58,7 @@ public class SnapshotThreadLockingRel extends SnapshotThread
     private static final Logger logger = LoggerFactory.getLogger(SnapshotThreadLockingRel.class);
 
     @Override
-    public UpperConsumerRecord poll(long timeout, UpperConsumerMutableMetric metric) //
+    public UpperConsumerRecord poll(long timeout, UpperConsumerMetric metric) //
         throws InterruptedException
     {
         SnapshotRecord record = this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);

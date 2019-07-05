@@ -6,8 +6,8 @@ package com.hktcode.pgstack.ruoshui.upper.entity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.hktcode.bgsimple.triple.kafka.KafkaTripleProducerConfig;
 import com.hktcode.kafka.Kafka;
-import com.hktcode.bgtriple.kafka.KafkaProducerConfig;
 import com.hktcode.lang.exception.ArgumentIllegalException;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 import static com.hktcode.pgstack.Ruoshui.THE_NAME;
 
-public class UpperProducerConfig extends KafkaProducerConfig
+public class UpperProducerConfig extends KafkaTripleProducerConfig
 {
     public static UpperProducerConfig ofJsonObject(JsonNode json)
     {

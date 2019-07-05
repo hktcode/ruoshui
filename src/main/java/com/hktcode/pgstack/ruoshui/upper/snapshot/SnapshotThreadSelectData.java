@@ -4,7 +4,7 @@
 package com.hktcode.pgstack.ruoshui.upper.snapshot;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
+import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThreadWork;
 import org.slf4j.Logger;
@@ -53,7 +53,7 @@ public class SnapshotThreadSelectData extends SnapshotThread
     }
 
     @Override
-    public UpperConsumerRecord poll(long timeout, UpperConsumerMutableMetric metric)
+    public UpperConsumerRecord poll(long timeout, UpperConsumerMetric metric)
         throws InterruptedException
     {
         SnapshotRecord r = this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);

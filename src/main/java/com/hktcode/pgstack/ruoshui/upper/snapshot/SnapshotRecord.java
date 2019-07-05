@@ -3,7 +3,7 @@
  */
 package com.hktcode.pgstack.ruoshui.upper.snapshot;
 
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
+import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThreadWork;
 
@@ -12,7 +12,7 @@ import java.util.concurrent.TransferQueue;
 public interface SnapshotRecord
 {
     UpperConsumerRecord update //
-        /* */( UpperConsumerMutableMetric metric //
+        /* */(UpperConsumerMetric metric //
         /* */, Thread thread //
         /* */, TransferQueue<SnapshotRecord> tqueue //
         /* */, MainlineThreadWork xact //

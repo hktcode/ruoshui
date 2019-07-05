@@ -4,7 +4,7 @@
 package com.hktcode.pgstack.ruoshui.upper.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.hktcode.bgtriple.naive.NaiveJunctionConfig;
+import com.hktcode.bgsimple.triple.TripleJunctionConfig;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
 
@@ -20,7 +20,7 @@ public class UpperConfig
             throw new ArgumentNullException("jsonNode");
         }
         MainlineConfig consumer = MainlineConfig.ofJsonObject(jsonNode.path("consumer"));
-        NaiveJunctionConfig junction = NaiveJunctionConfig.ofJsonObject(jsonNode.path("junction"));
+        TripleJunctionConfig junction = TripleJunctionConfig.ofJsonObject(jsonNode.path("junction"));
         UpperProducerConfig producer = UpperProducerConfig.ofJsonObject(jsonNode.path("producer"));
 
         return new UpperConfig(consumer, junction, producer);
@@ -37,13 +37,13 @@ public class UpperConfig
 
     public final MainlineConfig consumer;
 
-    public final NaiveJunctionConfig junction;
+    public final TripleJunctionConfig junction;
 
     public final UpperProducerConfig producer;
 
     private UpperConfig //
         /* */( MainlineConfig consumer //
-        /* */, NaiveJunctionConfig junction //
+        /* */, TripleJunctionConfig junction //
         /* */, UpperProducerConfig producer //
         /* */)
     {

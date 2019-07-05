@@ -4,13 +4,10 @@
 package com.hktcode.pgstack.ruoshui.upper.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.hktcode.bgmethod.BgMethodDelParamsDefault;
-import com.hktcode.bgmethod.BgMethodGetParamsDefault;
-import com.hktcode.bgmethod.BgMethodPstParamsDefault;
-import com.hktcode.bgmethod.BgMethodPutParamsDefault;
-import com.hktcode.bgtriple.TripleSwitcher;
-import com.hktcode.bgtriple.result.TriplePutBgResult;
-import com.hktcode.bgtriple.status.*;
+import com.hktcode.bgsimple.SimpleHolder;
+import com.hktcode.bgsimple.method.*;
+import com.hktcode.bgsimple.status.*;
+import com.hktcode.bgtriple.status.TriplePutBgStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumer;
 import com.hktcode.pgstack.ruoshui.upper.UpperJunction;
@@ -26,6 +23,7 @@ import javax.script.ScriptException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Phaser;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class OnlyoneWorkingService implements WorkingService
@@ -35,14 +33,16 @@ public class OnlyoneWorkingService implements WorkingService
         return new OnlyoneWorkingService();
     }
 
-    private final AtomicReference<TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer>> status;
+    private final AtomicReference<SimpleStatus> status;
 
     private OnlyoneWorkingService()
     {
-        BgMethodPutParamsDefault<UpperConsumer> c = BgMethodPutParamsDefault.of();
-        BgMethodPutParamsDefault<UpperJunction> j = BgMethodPutParamsDefault.of();
-        BgMethodPutParamsDefault<UpperProducer> p = BgMethodPutParamsDefault.of();
-        TriplePutBgStatus<UpperConsumer, UpperJunction, UpperProducer> put = TriplePutBgStatus.of(c, j, p);
+        SimpleMethodPut[] method = new SimpleMethodPut[] {
+            SimpleMethodPutParamsDefault.of(),
+            SimpleMethodPutParamsDefault.of(),
+            SimpleMethodPutParamsDefault.of()
+        };
+        SimpleStatus put = SimpleStatusOuterPut.of(method, new Phaser(3));
         this.status = new AtomicReference<>(put);
     }
 
@@ -53,13 +53,14 @@ public class OnlyoneWorkingService implements WorkingService
         if (config == null) {
             throw new ArgumentNullException("config");
         }
-        TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer> s = this.status.get();
+        SimpleStatus s = this.status.get();
         if (!(s instanceof TriplePutBgStatus)) {
             // TODO: 抛出异常可能会好点.
             // TODO: 如何确保start只会被调用一次呢？
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        TriplePutBgStatus<UpperConsumer, UpperJunction, UpperProducer> put = (TriplePutBgStatus<UpperConsumer, UpperJunction, UpperProducer>) s;
+        SimpleStatus put = s;
+        SimpleHolder holder = SimpleHolder.of(status);
         BlockingQueue<UpperConsumerRecord> comein = new ArrayBlockingQueue<>(config.junction.comeinCount);
         BlockingQueue<UpperProducerRecord> getout = new ArrayBlockingQueue<>(config.junction.getoutCount);
 
@@ -75,34 +76,35 @@ public class OnlyoneWorkingService implements WorkingService
         thread = new Thread(consumer);
         thread.setName("ruoshui-upper-consumer");
         thread.start();
-        TriplePutBgResult<UpperConsumer, UpperJunction, UpperProducer> result = put.newFuture().get();
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok().build(); // TODO:
     }
 
     @Override
     public ResponseEntity del() throws ExecutionException, InterruptedException
     {
-        BgMethodDelParamsDefault<UpperConsumer> c = BgMethodDelParamsDefault.of();
-        BgMethodDelParamsDefault<UpperJunction> j = BgMethodDelParamsDefault.of();
-        BgMethodDelParamsDefault<UpperProducer> p = BgMethodDelParamsDefault.of();
-        TripleDelBgStatus<UpperConsumer, UpperJunction, UpperProducer> del //
-            = TripleDelBgStatus.of(c, j, p);
-        TripleSwitcher<UpperConsumer, UpperJunction, UpperProducer> switcher //
-            = TripleSwitcher.of(this.status);
-        return ResponseEntity.ok(switcher.del(del).newFuture().get());
+        SimpleMethodDel[] method = new SimpleMethodDel[] {
+            SimpleMethodDelParamsDefault.of(),
+            SimpleMethodDelParamsDefault.of(),
+            SimpleMethodDelParamsDefault.of()
+        };
+        SimpleStatusOuterDel del = SimpleStatusOuterDel.of(method, new Phaser(3));
+        SimpleHolder holder = SimpleHolder.of(this.status);
+        holder.del(del);
+        return ResponseEntity.ok().build(); // TODO:
     }
 
     @Override
     public ResponseEntity get() throws ExecutionException, InterruptedException
     {
-        BgMethodGetParamsDefault<UpperConsumer> c = BgMethodGetParamsDefault.of();
-        BgMethodGetParamsDefault<UpperJunction> j = BgMethodGetParamsDefault.of();
-        BgMethodGetParamsDefault<UpperProducer> p = BgMethodGetParamsDefault.of();
-        TripleGetBgStatus<UpperConsumer, UpperJunction, UpperProducer> get //
-            = TripleGetBgStatus.of(c, j, p);
-        TripleSwitcher<UpperConsumer, UpperJunction, UpperProducer> switcher //
-            = TripleSwitcher.of(this.status);
-        return ResponseEntity.ok(switcher.get(get).newFuture().get());
+        SimpleMethodGet[] method = new SimpleMethodGet[] {
+            SimpleMethodGetParamsDefault.of(),
+            SimpleMethodGetParamsDefault.of(),
+            SimpleMethodGetParamsDefault.of()
+        };
+        SimpleStatusOuterGet get = SimpleStatusOuterGet.of(method, new Phaser(3));
+        SimpleHolder holder = SimpleHolder.of(this.status);
+        holder.get(get);
+        return ResponseEntity.ok().build(); // TODO:
     }
 
     @Override
@@ -112,14 +114,15 @@ public class OnlyoneWorkingService implements WorkingService
         if (json == null) {
             throw new ArgumentNullException("json");
         }
-        UpperSnapshotPstParams c = UpperSnapshotPstParams.of(json);
-        BgMethodPstParamsDefault<UpperJunction> j = BgMethodPstParamsDefault.of();
-        BgMethodPstParamsDefault<UpperProducer> p = BgMethodPstParamsDefault.of();
-        TriplePstBgStatus<UpperConsumer, UpperJunction, UpperProducer> pst //
-            = TriplePstBgStatus.of(c, j, p);
-        TripleSwitcher<UpperConsumer, UpperJunction, UpperProducer> switcher //
-            = TripleSwitcher.of(this.status);
-        return ResponseEntity.ok(switcher.pst(pst).newFuture().get());
+        SimpleMethodPst[] method = new SimpleMethodPst[] {
+            UpperSnapshotPstParams.of(json),
+            SimpleMethodPstParamsDefault.of(),
+            SimpleMethodPstParamsDefault.of()
+        };
+        SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(method, new Phaser(3));
+        SimpleHolder holder = SimpleHolder.of(this.status);
+        holder.pst(pst);
+        return ResponseEntity.ok().build(); // TODO:
     }
 
     @Override

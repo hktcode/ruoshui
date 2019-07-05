@@ -6,6 +6,8 @@ package com.hktcode.pgstack.ruoshui.upper.entity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.hktcode.bgmethod.BgMethodPstParams;
 import com.hktcode.bgmethod.BgMethodPstResult;
+import com.hktcode.bgsimple.method.SimpleMethodPstParams;
+import com.hktcode.bgsimple.method.SimpleMethodPstResult;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilter;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilterDefault;
@@ -16,7 +18,7 @@ import javax.script.ScriptException;
 import java.time.ZonedDateTime;
 
 public class UpperSnapshotPstParams
-    implements BgMethodPstParams<UpperConsumer>
+    implements SimpleMethodPstParams<UpperConsumer, UpperConsumerMetric>
 {
     public static UpperSnapshotPstParams of(JsonNode json)
         throws ScriptException
@@ -36,33 +38,18 @@ public class UpperSnapshotPstParams
         return new UpperSnapshotPstParams(json, w);
     }
 
-    public BgMethodPstResult<UpperConsumer> run(UpperConsumer worker)
+    @Override
+    public SimpleMethodPstResult<UpperConsumer, UpperConsumerMetric> run(UpperConsumer worker, UpperConsumerMetric metric)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");
         }
-        return worker.pstWithSnapshot(this.json, this.whereScript);
+        return worker.pstWithSnapshot(this.json, this.whereScript, metric);
     }
 
     private final JsonNode json;
 
     private final PgSnapshotFilter whereScript;
-
-    @Override
-    public BgMethodPstResult<UpperConsumer> //
-    run(UpperConsumer worker, Throwable reasons, ZonedDateTime endtime)
-    {
-        if (worker == null) {
-            throw new ArgumentNullException("worker");
-        }
-        if (reasons == null) {
-            throw new ArgumentNullException("reasons");
-        }
-        if (endtime == null) {
-            throw new ArgumentNullException("endtime");
-        }
-        return worker.pst(reasons, endtime);
-    }
 
     private UpperSnapshotPstParams(JsonNode json, PgSnapshotFilter whereScript)
     {

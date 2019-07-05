@@ -5,7 +5,7 @@
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
+import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
 
 import java.util.concurrent.TransferQueue;
@@ -37,7 +37,7 @@ class MainlineRecordMetric implements MainlineRecord
     private final TransferQueue<MainlineRecord> tqueue;
 
     @Override
-    public UpperConsumerRecord update(UpperConsumerMutableMetric metric)
+    public UpperConsumerRecord update(UpperConsumerMetric metric)
     {
         if (metric == null) {
             throw new ArgumentNullException("metric");

@@ -4,7 +4,7 @@
 package com.hktcode.pgstack.ruoshui.upper.snapshot;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
+import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThreadWork;
 import org.slf4j.Logger;
@@ -45,7 +45,7 @@ public class SnapshotThreadCreateSlot extends SnapshotThread
     private static final Logger logger = LoggerFactory.getLogger(SnapshotThreadCreateSlot.class);
 
     @Override
-    public UpperConsumerRecord poll(long timeout, UpperConsumerMutableMetric metric) throws InterruptedException
+    public UpperConsumerRecord poll(long timeout, UpperConsumerMetric metric) throws InterruptedException
     {
         SnapshotRecord record = this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);
         if (record != null) {

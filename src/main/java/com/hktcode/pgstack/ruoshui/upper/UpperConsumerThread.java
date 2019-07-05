@@ -4,7 +4,7 @@
 package com.hktcode.pgstack.ruoshui.upper;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
+import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
 import org.postgresql.replication.LogSequenceNumber;
 
@@ -17,7 +17,7 @@ public interface UpperConsumerThread
         }
     }
 
-    UpperConsumerRecord poll(long timeout, UpperConsumerMutableMetric metric)
+    UpperConsumerRecord poll(long timeout, UpperConsumerMetric metric)
         throws InterruptedException;
 
     public boolean stop(long timeout) throws InterruptedException;

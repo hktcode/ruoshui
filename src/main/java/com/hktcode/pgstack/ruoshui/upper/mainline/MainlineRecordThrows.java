@@ -6,7 +6,7 @@ package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperThreadThrowsException;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
+import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
 
 import java.time.ZonedDateTime;
@@ -26,7 +26,7 @@ class MainlineRecordThrows implements MainlineRecord
     private final Throwable throwable;
 
     @Override
-    public UpperConsumerRecord update(UpperConsumerMutableMetric metric)
+    public UpperConsumerRecord update(UpperConsumerMetric metric)
     {
         if (metric == null) {
             throw new ArgumentNullException("metric");

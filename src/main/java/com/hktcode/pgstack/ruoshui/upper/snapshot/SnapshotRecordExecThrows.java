@@ -4,7 +4,7 @@
 package com.hktcode.pgstack.ruoshui.upper.snapshot;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMutableMetric;
+import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMetric;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThreadWork;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ public class SnapshotRecordExecThrows implements SnapshotRecord
 
     private static final Logger logger = LoggerFactory.getLogger(SnapshotRecordExecThrows.class);
     @Override
-    public UpperConsumerRecord update(UpperConsumerMutableMetric metric, Thread thread, TransferQueue<SnapshotRecord> tqueue, MainlineThreadWork xact)
+    public UpperConsumerRecord update(UpperConsumerMetric metric, Thread thread, TransferQueue<SnapshotRecord> tqueue, MainlineThreadWork xact)
     {
         if (metric == null) {
             throw new ArgumentNullException("metric");

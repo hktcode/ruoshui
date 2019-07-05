@@ -3,10 +3,12 @@
  */
 package com.hktcode.pgstack.ruoshui.upper;
 
-import com.hktcode.bgtriple.naive.NaiveProducerMutableMetric;
-import com.hktcode.bgtriple.status.TripleBasicBgStatus;
-import com.hktcode.bgtriple.status.TripleRunBgStatus;
-import com.hktcode.bgtriple.kafka.KafkaCallbackProducer;
+import com.hktcode.bgsimple.SimpleHolder;
+import com.hktcode.bgsimple.status.SimpleStatus;
+import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
+import com.hktcode.bgsimple.triple.TripleProducerMetric;
+import com.hktcode.bgsimple.triple.kafka.KafkaTripleProducer;
+import com.hktcode.lang.RunnableWithInterrupted;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.PgsqlValTxactCommit;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperProducerConfig;
@@ -14,29 +16,27 @@ import com.hktcode.pgstack.ruoshui.upper.entity.UpperProducerRecord;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.postgresql.replication.LogSequenceNumber;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.hktcode.kafka.Kafka.Serializers.BYTES;
 
-public class UpperProducer extends KafkaCallbackProducer
-    /* */< UpperConsumer
-    /* */, UpperJunction
-    /* */, UpperProducer
+public class UpperProducer extends KafkaTripleProducer
+    /* */< UpperProducer
     /* */, UpperProducerConfig
-    /* */, NaiveProducerMutableMetric
+    /* */, TripleProducerMetric
     /* */, UpperProducerRecord
     /* */, byte[]
     /* */, byte[]
-    /* */>
+    /* */> //
+    implements RunnableWithInterrupted
 {
     public static UpperProducer of//
         /* */( UpperProducerConfig config
-        /* */, AtomicReference<TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer>> status
+        /* */, AtomicReference<SimpleStatus> status
         /* */, BlockingQueue<UpperProducerRecord> getout
         /* */)
     {
@@ -52,25 +52,24 @@ public class UpperProducer extends KafkaCallbackProducer
         return new UpperProducer(config, getout, status);
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(UpperProducer.class);
-
     private UpperProducer //
         /* */( UpperProducerConfig config
         /* */, BlockingQueue<UpperProducerRecord> getout
-        /* */, AtomicReference<TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer>> status
+        /* */, AtomicReference<SimpleStatus> status
         /* */)
     {
-        super(config, NaiveProducerMutableMetric.of(), getout, status);
+        super(config, getout, status);
     }
 
     @Override
-    public void runInternal() throws InterruptedException
+    protected void runInternal(UpperProducer worker, TripleProducerMetric metric) //
+        throws Exception
     {
         try (Producer<byte[], byte[]> kfk = this.producer(BYTES, BYTES)) {
             UpperProducerRecord d = null;
-            while (super.newStatus() instanceof TripleRunBgStatus) {
+            while (super.newStatus(worker, metric) instanceof SimpleStatusInnerRun) {
                 if (d == null) {
-                    d = this.poll();
+                    d = this.poll(metric);
                 }
                 else {
                     String keyText = d.key.toObjectNode().toString();
@@ -86,10 +85,19 @@ public class UpperProducer extends KafkaCallbackProducer
                         PgsqlValTxactCommit val = (PgsqlValTxactCommit)d.val;
                         lsn = LogSequenceNumber.valueOf(val.lsnofmsg);
                     }
-                    kfk.send(r, UpperKafkaProducerCallback.of(lsn, super.switcher(), kfk));
+                    SimpleHolder holder = SimpleHolder.of(this.status);
+                    kfk.send(r, UpperKafkaProducerCallback.of(lsn, holder, kfk));
                     d = null;
                 }
             }
         }
+    }
+
+    @Override
+    public void runWithInterrupted() throws InterruptedException
+    {
+        ZonedDateTime startMillis = ZonedDateTime.now();
+        TripleProducerMetric metric = TripleProducerMetric.of(startMillis);
+        super.run("upper-producer", this, metric);
     }
 }

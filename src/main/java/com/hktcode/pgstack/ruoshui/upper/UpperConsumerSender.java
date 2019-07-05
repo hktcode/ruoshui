@@ -3,7 +3,7 @@
  */
 package com.hktcode.pgstack.ruoshui.upper;
 
-import com.hktcode.bgtriple.status.TripleBasicBgStatus;
+import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgtriple.status.TripleEndBgStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotSender;
@@ -22,11 +22,11 @@ public abstract class UpperConsumerSender<T, M extends UpperRunnableMetric>
 {
     public final TransferQueue<T> tqueue;
 
-    public final AtomicReference<TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer>> status;
+    public final AtomicReference<SimpleStatus> status;
 
     protected UpperConsumerSender
         /* */( TransferQueue<T> tqueue
-        /* */, AtomicReference<TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer>> status
+        /* */, AtomicReference<SimpleStatus> status
         /* */)
     {
         this.tqueue = tqueue;
@@ -78,7 +78,7 @@ public abstract class UpperConsumerSender<T, M extends UpperRunnableMetric>
 
     public boolean isDone()
     {
-        TripleBasicBgStatus<UpperConsumer, UpperJunction, UpperProducer> s = status.get();
+        SimpleStatus s = status.get();
         return s == null || s instanceof TripleEndBgStatus;
     }
 
