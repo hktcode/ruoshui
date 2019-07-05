@@ -13,4 +13,4 @@
  *
  * 因此目前当前代码中并没有注释信息。
  */
-package com.hktcode.bgsimple.method;
+package com.hktcode.bgsimple;

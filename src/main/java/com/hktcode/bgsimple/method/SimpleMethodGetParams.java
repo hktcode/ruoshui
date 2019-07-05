@@ -3,7 +3,7 @@
  */
 package com.hktcode.bgsimple.method;
 
-import com.hktcode.bgmethod.BgWorker;
+import com.hktcode.bgsimple.BgWorker;
 
 public interface SimpleMethodGetParams<W extends BgWorker<W, M>, M> //
     extends SimpleMethodGet<W, M>

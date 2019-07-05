@@ -1,11 +1,9 @@
 /*
  * Copyright (c) 2019, Huang Ketian.
  */
-package com.hktcode.bgmethod;
+package com.hktcode.bgsimple;
 
 import com.hktcode.bgsimple.method.*;
-
-import java.time.ZonedDateTime;
 
 public interface BgWorker<W extends BgWorker<W, M>, M>
 {

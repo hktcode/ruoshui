@@ -3,7 +3,6 @@
  */
 package com.hktcode.bgsimple;
 
-import com.hktcode.bgmethod.*;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.bgsimple.status.SimpleStatusOuter;

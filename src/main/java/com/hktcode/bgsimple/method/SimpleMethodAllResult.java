@@ -3,7 +3,7 @@
  */
 package com.hktcode.bgsimple.method;
 
-import com.hktcode.bgmethod.BgWorker;
+import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public interface SimpleMethodAllResult<W extends BgWorker<W, M>, M>
