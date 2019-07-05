@@ -30,7 +30,7 @@ public abstract class TripleWorker //
 
     protected TripleWorker //
         /* */( F config //
-        /* */, AtomicReference<SimpleStatus<W, M>> status //
+        /* */, AtomicReference<SimpleStatus> status //
         /* */, int number //
         /* */)
     {
@@ -63,9 +63,9 @@ public abstract class TripleWorker //
                     method[i] = SimpleMethodDelParamsDefault.of();
                 }
             }
-            SimpleStatusOuterDel<W, M> del = SimpleStatusOuterDel.of(method, new Phaser(3));
-            SimpleStatus<W, M> origin;
-            SimpleStatus<W, M> future;
+            SimpleStatusOuterDel del = SimpleStatusOuterDel.of(method, new Phaser(3));
+            SimpleStatus origin;
+            SimpleStatus future;
             while (!((origin = super.newStatus(worker, metric)) instanceof SimpleStatusInnerEnd)) {
                 future = origin.del(del);
                 this.status.compareAndSet(origin, future);

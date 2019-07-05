@@ -10,11 +10,9 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.util.concurrent.Phaser;
 
-public class SimpleStatusOuterPut<W extends SimpleWorker<W, M>, M> //
-    extends SimpleStatusOuter<W, M>
+public class SimpleStatusOuterPut extends SimpleStatusOuter
 {
-    public static <T extends SimpleWorker<T, M>, M> //
-    SimpleStatusOuterPut<T, M> of(SimpleMethodPut<T, M>[] method, Phaser phaser)
+    public static SimpleStatusOuterPut of(SimpleMethodPut[] method, Phaser phaser)
     {
         if (method == null) {
             throw new ArgumentNullException("method");
@@ -22,19 +20,19 @@ public class SimpleStatusOuterPut<W extends SimpleWorker<W, M>, M> //
         if (phaser == null) {
             throw new ArgumentNullException("phaser");
         }
-        return new SimpleStatusOuterPut<>(method, phaser);
+        return new SimpleStatusOuterPut(method, phaser);
     }
 
-    private final SimpleMethodPut<W, M>[] method;
+    private final SimpleMethodPut[] method;
 
-    private SimpleStatusOuterPut(SimpleMethodPut<W, M>[] method, Phaser phaser)
+    private SimpleStatusOuterPut(SimpleMethodPut[] method, Phaser phaser)
     {
         super(phaser);
         this.method = method;
     }
 
     @Override
-    public void setResult(W worker, M metric)
+    public <W extends SimpleWorker<W, M>, M> void setResult(W worker, M metric)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");
@@ -43,7 +41,9 @@ public class SimpleStatusOuterPut<W extends SimpleWorker<W, M>, M> //
             throw new ArgumentNullException("metric");
         }
         int index = worker.number;
-        this.method[index] = this.method[index].run(worker, metric);
+        @SuppressWarnings("unchecked")
+        SimpleMethodPut<W, M> w = (SimpleMethodPut<W, M>)worker;
+        this.method[index] = w.run(worker, metric);
     }
 }
 

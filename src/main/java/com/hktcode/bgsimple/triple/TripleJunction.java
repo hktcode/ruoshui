@@ -34,7 +34,7 @@ public abstract class TripleJunction //
         /* */( F config
         /* */, BlockingQueue<I> comein
         /* */, BlockingQueue<O> getout
-        /* */, AtomicReference<SimpleStatus<W, M>> status
+        /* */, AtomicReference<SimpleStatus> status
         /* */)
     {
         super(config, status, 1);

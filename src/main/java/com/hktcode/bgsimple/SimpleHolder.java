@@ -12,32 +12,31 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class SimpleHolder<W extends SimpleWorker<W, M>, M>
+public class SimpleHolder
 {
-    public static <W extends SimpleWorker<W, M>, M> //
-    SimpleHolder<W, M> of(AtomicReference<SimpleStatus<W, M>> status) //
+    public static SimpleHolder of(AtomicReference<SimpleStatus> status) //
     {
         if (status == null) {
             throw new ArgumentNullException("status");
         }
-        return new SimpleHolder<>(status);
+        return new SimpleHolder(status);
     }
 
-    private final AtomicReference<SimpleStatus<W, M>> status;
+    private final AtomicReference<SimpleStatus> status;
 
-    private SimpleHolder(AtomicReference<SimpleStatus<W, M>> status)
+    private SimpleHolder(AtomicReference<SimpleStatus> status)
     {
         this.status = status;
     }
 
-    public SimpleStatusOuterPst<W, M> pst(SimpleStatusOuterPst<W, M> pst)
+    public SimpleStatusOuterPst pst(SimpleStatusOuterPst pst)
     {
         if (pst == null) {
             throw new ArgumentNullException("pst");
         }
         // TODO: 判断pst中的bgMethod不是bgResult.
-        SimpleStatus<W, M> origin;
-        SimpleStatus<W, M> future;
+        SimpleStatus origin;
+        SimpleStatus future;
         do {
             origin = this.status.get();
             future = origin.pst(pst);
@@ -47,17 +46,17 @@ public class SimpleHolder<W extends SimpleWorker<W, M>, M>
                 /*     */&& !this.status.compareAndSet(origin, future) //
                 /*   */)
             /**/);
-        return (SimpleStatusOuterPst<W, M>) future;
+        return (SimpleStatusOuterPst) future;
     }
 
-    public SimpleStatusOuterGet<W, M> get(SimpleStatusOuterGet<W, M> get)
+    public SimpleStatusOuterGet get(SimpleStatusOuterGet get)
     {
         if (get == null) {
             throw new ArgumentNullException("get");
         }
         // TODO: 判断get中的bgMethod不是bgResult.
-        SimpleStatus<W, M> origin;
-        SimpleStatus<W, M> future;
+        SimpleStatus origin;
+        SimpleStatus future;
         do {
             origin = this.status.get();
             future = origin.get(get);
@@ -67,17 +66,17 @@ public class SimpleHolder<W extends SimpleWorker<W, M>, M>
                 /*     */&& !this.status.compareAndSet(origin, future) //
                 /*   */)
             /**/);
-        return (SimpleStatusOuterGet<W, M>)future;
+        return (SimpleStatusOuterGet)future;
     }
 
-    public SimpleStatusOuterDel<W, M> del(SimpleStatusOuterDel<W, M> del)
+    public SimpleStatusOuterDel del(SimpleStatusOuterDel del)
     {
         if (del == null) {
             throw new ArgumentNullException("del");
         }
         // TODO: 判断del中的bgMethod不是bgResult.
-        SimpleStatus<W, M> origin;
-        SimpleStatus<W, M> future;
+        SimpleStatus origin;
+        SimpleStatus future;
         do {
             origin = this.status.get();
             future = origin.del(del);
@@ -87,6 +86,6 @@ public class SimpleHolder<W extends SimpleWorker<W, M>, M>
                 /*     */&& !this.status.compareAndSet(origin, future) //
                 /*   */) //
             /**/);
-        return (SimpleStatusOuterDel<W, M>)future;
+        return (SimpleStatusOuterDel)future;
     }
 }

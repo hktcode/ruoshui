@@ -9,8 +9,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.util.concurrent.Phaser;
 
-public abstract class SimpleStatusOuter<W extends SimpleWorker<W, M>, M> //
-    implements SimpleStatus<W, M>
+public abstract class SimpleStatusOuter implements SimpleStatus
 {
     public final Phaser phaser;
 
@@ -19,7 +18,8 @@ public abstract class SimpleStatusOuter<W extends SimpleWorker<W, M>, M> //
         this.phaser = phaser;
     }
 
-    public void newStatus(W worker, M metric) throws InterruptedException
+    public <W extends SimpleWorker<W, M>, M> //
+    void newStatus(W worker, M metric) throws InterruptedException
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");
@@ -32,9 +32,9 @@ public abstract class SimpleStatusOuter<W extends SimpleWorker<W, M>, M> //
         this.phaser.awaitAdvanceInterruptibly(phase);
     }
 
-    public abstract void setResult(W worker, M metric);
+    public abstract <W extends SimpleWorker<W, M>, M> void setResult(W worker, M metric);
 
-    public SimpleStatus<W, M> outer(SimpleStatus<W, M> outer)
+    public SimpleStatus outer(SimpleStatus outer)
     {
         if (outer == null) {
             throw new ArgumentNullException("outer");
@@ -43,7 +43,7 @@ public abstract class SimpleStatusOuter<W extends SimpleWorker<W, M>, M> //
     }
 
     @Override
-    public SimpleStatus<W, M> get(SimpleStatusOuterGet<W, M> get)
+    public SimpleStatus get(SimpleStatusOuterGet get)
     {
         if (get == null) {
             throw new ArgumentNullException("get");
@@ -52,7 +52,7 @@ public abstract class SimpleStatusOuter<W extends SimpleWorker<W, M>, M> //
     }
 
     @Override
-    public SimpleStatus<W, M> pst(SimpleStatusOuterPst<W, M> pst)
+    public SimpleStatus pst(SimpleStatusOuterPst pst)
     {
         if (pst == null) {
             throw new ArgumentNullException("pst");
@@ -61,7 +61,7 @@ public abstract class SimpleStatusOuter<W extends SimpleWorker<W, M>, M> //
     }
 
     @Override
-    public SimpleStatus<W, M> del(SimpleStatusOuterDel<W, M> del)
+    public SimpleStatus del(SimpleStatusOuterDel del)
     {
         if (del == null) {
             throw new ArgumentNullException("del");

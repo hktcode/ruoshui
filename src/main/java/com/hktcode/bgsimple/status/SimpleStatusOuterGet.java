@@ -4,17 +4,15 @@
 
 package com.hktcode.bgsimple.status;
 
-import com.hktcode.bgsimple.method.SimpleMethodGet;
 import com.hktcode.bgsimple.SimpleWorker;
+import com.hktcode.bgsimple.method.SimpleMethodGet;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.util.concurrent.Phaser;
 
-public class SimpleStatusOuterGet<W extends SimpleWorker<W, M>, M> //
-    extends SimpleStatusOuter<W, M>
+public class SimpleStatusOuterGet extends SimpleStatusOuter
 {
-    public static <W extends SimpleWorker<W, M>, M> //
-    SimpleStatusOuterGet<W, M> of(SimpleMethodGet<W, M>[] method, Phaser phaser)
+    public static SimpleStatusOuterGet of(SimpleMethodGet[] method, Phaser phaser)
     {
         if (method == null) {
             throw new ArgumentNullException("method");
@@ -22,19 +20,19 @@ public class SimpleStatusOuterGet<W extends SimpleWorker<W, M>, M> //
         if (phaser == null) {
             throw new ArgumentNullException("phaser");
         }
-        return new SimpleStatusOuterGet<>(method, phaser);
+        return new SimpleStatusOuterGet(method, phaser);
     }
 
-    private final SimpleMethodGet<W, M>[] method;
+    private final SimpleMethodGet[] method;
 
-    private SimpleStatusOuterGet(SimpleMethodGet<W, M>[] method, Phaser phaser)
+    private SimpleStatusOuterGet(SimpleMethodGet[] method, Phaser phaser)
     {
         super(phaser);
         this.method = method;
     }
 
     @Override
-    public void setResult(W worker, M metric)
+    public <W extends SimpleWorker<W, M>, M> void setResult(W worker, M metric)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");
@@ -43,6 +41,8 @@ public class SimpleStatusOuterGet<W extends SimpleWorker<W, M>, M> //
             throw new ArgumentNullException("metric");
         }
         int index = worker.number;
-        this.method[index] = this.method[index].run(worker, metric);
+        @SuppressWarnings("unchecked")
+        SimpleMethodGet<W, M> w = (SimpleMethodGet<W, M>) this.method[index];
+        this.method[index] = w.run(worker, metric);
     }
 }

@@ -7,16 +7,14 @@ package com.hktcode.bgsimple.status;
 import com.hktcode.bgsimple.SimpleWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class SimpleStatusInnerRun<W extends SimpleWorker<W, M>, M> //
-    extends SimpleStatusInner<W, M>
+public class SimpleStatusInnerRun extends SimpleStatusInner
 {
-    public static <W extends SimpleWorker<W, M>, M>
-    SimpleStatusInnerRun<W, M> of()
+    public static SimpleStatusInnerRun of()
     {
-        return new SimpleStatusInnerRun<>();
+        return new SimpleStatusInnerRun();
     }
 
-    public SimpleStatus<W, M> outer(SimpleStatus<W, M> outer)
+    public SimpleStatus outer(SimpleStatus outer)
     {
         if (outer == null) {
             throw new ArgumentNullException("outer");
@@ -25,7 +23,7 @@ public class SimpleStatusInnerRun<W extends SimpleWorker<W, M>, M> //
     }
 
     @Override
-    public SimpleStatus<W, M> get(SimpleStatusOuterGet<W, M> get)
+    public SimpleStatus get(SimpleStatusOuterGet get)
     {
         if (get == null) {
             throw new ArgumentNullException("get");
@@ -35,7 +33,7 @@ public class SimpleStatusInnerRun<W extends SimpleWorker<W, M>, M> //
     }
 
     @Override
-    public SimpleStatus<W, M> pst(SimpleStatusOuterPst<W, M> pst)
+    public SimpleStatus pst(SimpleStatusOuterPst pst)
     {
         if (pst == null) {
             throw new ArgumentNullException("pst");
@@ -45,7 +43,7 @@ public class SimpleStatusInnerRun<W extends SimpleWorker<W, M>, M> //
     }
 
     @Override
-    public SimpleStatus<W, M> del(SimpleStatusOuterDel<W, M> del)
+    public SimpleStatus del(SimpleStatusOuterDel del)
     {
         if (del == null) {
             throw new ArgumentNullException("del");

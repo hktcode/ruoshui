@@ -6,11 +6,11 @@ package com.hktcode.bgsimple.status;
 
 import com.hktcode.bgsimple.SimpleWorker;
 
-public interface SimpleStatus<W extends SimpleWorker<W, M>, M>
+public interface SimpleStatus
 {
-    SimpleStatus<W, M> get(SimpleStatusOuterGet<W, M> get);
+    SimpleStatus get(SimpleStatusOuterGet get);
 
-    SimpleStatus<W, M> pst(SimpleStatusOuterPst<W, M> pst);
+    SimpleStatus pst(SimpleStatusOuterPst pst);
 
-    SimpleStatus<W, M> del(SimpleStatusOuterDel<W, M> del);
+    SimpleStatus del(SimpleStatusOuterDel del);
 }

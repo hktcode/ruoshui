@@ -11,60 +11,55 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.util.concurrent.Phaser;
 
-public class SimpleStatusInnerEnd<W extends SimpleWorker<W, M>, M> //
-    extends SimpleStatusInner<W, M>
+public class SimpleStatusInnerEnd extends SimpleStatusInner
 {
-    public static <T extends SimpleWorker<T, M>, M> //
-    SimpleStatusInnerEnd<T, M> of(ImmutableList<SimpleMethodAllResultEnd<T, M>> result)
+    public static SimpleStatusInnerEnd of(ImmutableList<SimpleMethodAllResultEnd> result)
     {
         if (result == null) {
             throw new ArgumentNullException("result");
         }
-        return new SimpleStatusInnerEnd<>(result);
+        return new SimpleStatusInnerEnd(result);
     }
 
-    private final ImmutableList<SimpleMethodAllResultEnd<W, M>> result;
+    private final ImmutableList<SimpleMethodAllResultEnd> result;
 
-    private SimpleStatusInnerEnd(ImmutableList<SimpleMethodAllResultEnd<W, M>> result)
+    private SimpleStatusInnerEnd(ImmutableList<SimpleMethodAllResultEnd> result)
     {
         this.result = result;
     }
 
     @Override
-    public SimpleStatus<W, M> get(SimpleStatusOuterGet<W, M> get)
+    public SimpleStatus get(SimpleStatusOuterGet get)
     {
         if (get == null) {
             throw new ArgumentNullException("get");
         }
         // TODO: 检查pst中的Phaser是否已经终止.
-        @SuppressWarnings("unchecked")
-        SimpleMethodAllResultEnd<W, M>[] method = new SimpleMethodAllResultEnd[result.size()];
+        SimpleMethodAllResultEnd[] method = new SimpleMethodAllResultEnd[result.size()];
         result.toArray(method);
         return SimpleStatusOuterGet.of(method, new Phaser(0));
     }
 
     @Override
-    public SimpleStatus<W, M> pst(SimpleStatusOuterPst<W, M> pst)
+    public SimpleStatus pst(SimpleStatusOuterPst pst)
     {
         if (pst == null) {
             throw new ArgumentNullException("pst");
         }
         // TODO: 检查pst中的Phaser是否已经终止.
-        @SuppressWarnings("unchecked")
-        SimpleMethodAllResultEnd<W, M>[] method = new SimpleMethodAllResultEnd[result.size()];
+        SimpleMethodAllResultEnd[] method = new SimpleMethodAllResultEnd[result.size()];
         result.toArray(method);
         return SimpleStatusOuterPst.of(method, new Phaser(0));
     }
 
     @Override
-    public SimpleStatus<W, M> del(SimpleStatusOuterDel<W, M> del)
+    public SimpleStatus del(SimpleStatusOuterDel del)
     {
         if (del == null) {
             throw new ArgumentNullException("del");
         }
         // TODO: 检查del中的Phaser是否已经终止
-        @SuppressWarnings("unchecked")
-        SimpleMethodAllResultEnd<W, M>[] method = new SimpleMethodAllResultEnd[result.size()];
+        SimpleMethodAllResultEnd[] method = new SimpleMethodAllResultEnd[result.size()];
         result.toArray(method);
         return SimpleStatusOuterDel.of(method, new Phaser(0));
     }

@@ -21,7 +21,7 @@ public abstract class TripleConsumer //
     protected TripleConsumer //
         /* */( F config //
         /* */, BlockingQueue<I> comein //
-        /* */, AtomicReference<SimpleStatus<W, M>> status //
+        /* */, AtomicReference<SimpleStatus> status //
         /* */)
     {
         super(config, status,0);

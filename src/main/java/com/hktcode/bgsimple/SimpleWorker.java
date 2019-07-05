@@ -15,22 +15,22 @@ public abstract class SimpleWorker<W extends SimpleWorker<W, M>, M> //
 {
     public final int number;
 
-    protected final AtomicReference<SimpleStatus<W, M>> status;
+    protected final AtomicReference<SimpleStatus> status;
 
-    protected SimpleWorker(AtomicReference<SimpleStatus<W, M>> status, int number)
+    protected SimpleWorker(AtomicReference<SimpleStatus> status, int number)
     {
         this.number = number;
         this.status = status;
     }
 
-    public SimpleStatusInner<W, M> newStatus(W myown, M metric) //
+    public SimpleStatusInner newStatus(W myown, M metric) //
         throws InterruptedException
     {
-        SimpleStatus<W, M> origin;
+        SimpleStatus origin;
         while (!((origin = this.status.get()) instanceof SimpleStatusInner)) {
-            SimpleStatusOuter<W, M> outer = (SimpleStatusOuter<W, M>) origin;
+            SimpleStatusOuter outer = (SimpleStatusOuter) origin;
             outer.newStatus(myown, metric);
         }
-        return (SimpleStatusInner<W, M>) origin;
+        return (SimpleStatusInner) origin;
     }
 }

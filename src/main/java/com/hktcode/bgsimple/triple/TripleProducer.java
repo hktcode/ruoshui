@@ -22,7 +22,7 @@ public abstract class TripleProducer //
     protected TripleProducer //
         /* */( F config //
         /* */, BlockingQueue<O> getout //
-        /* */, AtomicReference<SimpleStatus<W, M>> status //
+        /* */, AtomicReference<SimpleStatus> status //
         /* */)
     {
         super(config, status, 2);
