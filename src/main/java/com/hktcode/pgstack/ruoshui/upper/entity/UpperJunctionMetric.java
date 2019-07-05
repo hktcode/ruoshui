@@ -4,7 +4,6 @@
 package com.hktcode.pgstack.ruoshui.upper.entity;
 
 import com.hktcode.bgsimple.triple.TripleJunctionMetric;
-import com.hktcode.bgtriple.naive.NaiveJunctionMutableMetric;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.LogicalTxactContext;
 

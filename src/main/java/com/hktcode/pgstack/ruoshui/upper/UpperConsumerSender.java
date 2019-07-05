@@ -4,7 +4,7 @@
 package com.hktcode.pgstack.ruoshui.upper;
 
 import com.hktcode.bgsimple.status.SimpleStatus;
-import com.hktcode.bgtriple.status.TripleEndBgStatus;
+import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotSender;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperRunnableMetric;
@@ -79,7 +79,7 @@ public abstract class UpperConsumerSender<T, M extends UpperRunnableMetric>
     public boolean isDone()
     {
         SimpleStatus s = status.get();
-        return s == null || s instanceof TripleEndBgStatus;
+        return s == null || s instanceof SimpleStatusInnerEnd;
     }
 
     // TODO: remove this

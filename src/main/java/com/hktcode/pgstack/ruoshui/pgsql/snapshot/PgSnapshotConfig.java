@@ -5,8 +5,10 @@ package com.hktcode.pgstack.ruoshui.pgsql.snapshot;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.hktcode.bgtriple.naive.NaiveConfig;
-import com.hktcode.pgjdbc.*;
+import com.hktcode.bgsimple.triple.TripleConfig;
+import com.hktcode.pgjdbc.PgReplAttribute;
+import com.hktcode.pgjdbc.PgReplRelation;
+import com.hktcode.pgjdbc.PgReplRelationMetadata;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplRelationName;
 
@@ -152,12 +154,12 @@ public class PgSnapshotConfig
     /**
      * 等待时间.
      */
-    public long waitTimeout = NaiveConfig.DEFALUT_WAIT_TIMEOUT;
+    public long waitTimeout = TripleConfig.DEFALUT_WAIT_TIMEOUT;
 
     /**
      * 写入日志的间隔.
      */
-    public long logDuration = NaiveConfig.DEFAULT_LOG_DURATION;
+    public long logDuration = TripleConfig.DEFAULT_LOG_DURATION;
 
     /**
      * 构造函数.

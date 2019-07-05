@@ -5,7 +5,7 @@ package com.hktcode.bgsimple.triple;
 
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.status.SimpleStatus;
-import com.hktcode.bgtriple.status.TripleRunBgStatus;
+import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +75,7 @@ public abstract class TripleJunction //
         I r = null;
         O o = null;
         Iterator<O> t = ImmutableList.<O>of().iterator();
-        while (super.newStatus(worker, metric) instanceof TripleRunBgStatus) {
+        while (super.newStatus(worker, metric) instanceof SimpleStatusInnerRun) {
             if (o != null) {
                 o = this.push(o, metric);
             }

@@ -5,13 +5,11 @@ package com.hktcode.pgstack.ruoshui.upper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
-import com.hktcode.bgmethod.BgMethodPstResult;
-import com.hktcode.bgmethod.BgMethodPstResultSuccess;
 import com.hktcode.bgsimple.status.SimpleStatus;
+import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.bgsimple.triple.TripleConsumer;
 import com.hktcode.bgsimple.triple.TripleMethodResult;
-import com.hktcode.bgtriple.status.TripleRunBgStatus;
 import com.hktcode.lang.RunnableWithInterrupted;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionInfo;
@@ -90,7 +88,7 @@ public class UpperConsumer extends TripleConsumer
             metric.statusInfor = "waiting fetch action stop";
             logger.info("{}", metric.statusInfor);
             long logDuration = this.config.logDuration;
-            while (super.newStatus(this, metric) instanceof TripleRunBgStatus
+            while (super.newStatus(this, metric) instanceof SimpleStatusInnerEnd
                 && !metric.fetchThread.stop(config.logDuration)) {
                 long currMillis = System.currentTimeMillis();
                 if (currMillis - metric.logDatetime >= logDuration) {

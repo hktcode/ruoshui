@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.method.*;
 import com.hktcode.bgsimple.status.*;
-import com.hktcode.bgtriple.status.TriplePutBgStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumer;
 import com.hktcode.pgstack.ruoshui.upper.UpperJunction;
@@ -54,7 +53,7 @@ public class OnlyoneWorkingService implements WorkingService
             throw new ArgumentNullException("config");
         }
         SimpleStatus s = this.status.get();
-        if (!(s instanceof TriplePutBgStatus)) {
+        if (!(s instanceof SimpleStatusOuterPut)) {
             // TODO: 抛出异常可能会好点.
             // TODO: 如何确保start只会被调用一次呢？
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
