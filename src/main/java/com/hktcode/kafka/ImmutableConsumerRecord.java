@@ -96,7 +96,7 @@ public class ImmutableConsumerRecord<K, V>
             throw new ArgumentNullException("value");
         }
         // TODO: topic format
-        return new ImmutableConsumerRecord //
+        return new ImmutableConsumerRecord<> //
             /* */( topic //
             /* */, partition //
             /* */, offset //
