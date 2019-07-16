@@ -42,56 +42,49 @@ public abstract class TripleJunction //
         this.getout = getout;
     }
 
-    protected I poll(BlockingQueue<I> queue, M metric) throws InterruptedException
+    protected I poll(BlockingQueue<I> queue) throws InterruptedException
     {
         if (queue == null) {
             throw new ArgumentNullException("queue");
         }
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
-        return Triple.poll(this.config, metric, queue);
+        // TODO:
+        return Triple.poll(this.config, null, queue);
     }
 
-    protected O push(O record, M metric) throws InterruptedException
+    protected O push(O record) throws InterruptedException
     {
         if (record == null) {
             throw new ArgumentNullException("record");
         }
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
-        return Triple.push(record, this.config, metric, this.getout);
+        // TODO:
+        return Triple.push(record, this.config, null, this.getout);
     }
 
-    public void runInternal(W worker, M metric) throws InterruptedException
+    public void runInternal(W worker) throws InterruptedException
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");
         }
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
         I r = null;
         O o = null;
         Iterator<O> t = ImmutableList.<O>of().iterator();
-        while (super.newStatus(worker, metric) instanceof SimpleStatusInnerRun) {
+        while (super.newStatus(worker) instanceof SimpleStatusInnerRun) {
             if (o != null) {
-                o = this.push(o, metric);
+                o = this.push(o);
             }
             else if (t.hasNext()) {
                 o = t.next();
             }
             else if (r == null) {
-                r = this.poll(this.comein, metric);
+                r = this.poll(this.comein);
             }
             else {
-                t = this.convert(r, worker, metric).iterator();
+                t = this.convert(r, worker).iterator();
                 r = null;
             }
         }
         logger.info("junction finish.");
     }
 
-    protected abstract List<O> convert(I record, W worker, M metric);
+    protected abstract List<O> convert(I record, W worker);
 }

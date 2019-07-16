@@ -60,7 +60,7 @@ public interface PgsqlSnapshotMetricProcess extends PgsqlSnapshotMetric
     //     this.statusInfor = metric.statusInfor;
     // }
 
-    <W extends SimpleWorker<W, PgsqlSnapshotMetric> & PgsqlSnapshot<W>>
+    <W extends PgsqlSnapshot<W>>
     PgsqlSnapshotMetric next //
         /* */( ExecutorService exesvc //
         /* */, W worker //

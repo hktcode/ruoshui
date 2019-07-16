@@ -29,11 +29,9 @@ public abstract class TripleProducer //
         this.getout = getout;
     }
 
-    public O poll(M metric) throws InterruptedException
+    public O poll() throws InterruptedException
     {
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
-        return Triple.poll(this.config, metric, this.getout);
+        // TODO: return Triple.poll(this.config, metric, this.getout);
+        return Triple.poll(this.config, null, this.getout);
     }
 }

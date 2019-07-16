@@ -44,7 +44,7 @@ class PgsqlTxactionMetricDatatype extends PgsqlTxactionMetric
             rs.setFetchDirection(ResultSet.FETCH_FORWARD);
             rs.setFetchSize(fetchSize);
             // TODO: s.executeQuery 和 rs.next 可能导致长时间无响应.
-            while (!(worker.newStatus(worker, this) instanceof SimpleStatusInnerEnd)) {
+            while (!(worker.newStatus(worker) instanceof SimpleStatusInnerEnd)) {
                 long timeout = config.logDuration;
                 if (r != null) {
                     r = worker.push(r, timeout, timeout, this);

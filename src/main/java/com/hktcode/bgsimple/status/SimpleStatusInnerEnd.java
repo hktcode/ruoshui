@@ -11,7 +11,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.util.concurrent.Phaser;
 
-public class SimpleStatusInnerEnd extends SimpleStatusInner
+public class SimpleStatusInnerEnd implements SimpleStatusInner
 {
     public static SimpleStatusInnerEnd of(ImmutableList<SimpleMethodAllResultEnd> result)
     {

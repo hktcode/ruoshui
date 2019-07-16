@@ -14,8 +14,8 @@ import com.hktcode.pgstack.ruoshui.upper.UpperConsumer;
 
 import javax.script.ScriptException;
 
-public class UpperSnapshotPstParams
-    implements SimpleMethodPstParams<UpperConsumer, UpperConsumerMetric>
+public class UpperSnapshotPstParams //
+    implements SimpleMethodPstParams<UpperConsumer>
 {
     public static UpperSnapshotPstParams of(JsonNode json)
         throws ScriptException
@@ -36,12 +36,13 @@ public class UpperSnapshotPstParams
     }
 
     @Override
-    public SimpleMethodPstResult<UpperConsumer, UpperConsumerMetric> run(UpperConsumer worker, UpperConsumerMetric metric)
+    public SimpleMethodPstResult<UpperConsumer> run(UpperConsumer worker)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");
         }
-        return worker.pstWithSnapshot(this.json, this.whereScript, metric);
+        // TODO:
+        return worker.pstWithSnapshot(this.json, this.whereScript);
     }
 
     private final JsonNode json;

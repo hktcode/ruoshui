@@ -60,7 +60,7 @@ class PgsqlTxactionMetricNormalTxaction extends PgsqlTxactionMetricNormal
         PgsqlTxactionRecord r = null;
         this.statusInfor = "start logical replication stream";
         try (PGReplicationStream slt = this.config.logicalRepl.start(pgrepl)) {
-            while (!(worker.newStatus(worker, this) instanceof SimpleStatusInnerEnd)) {
+            while (!(worker.newStatus(worker) instanceof SimpleStatusInnerEnd)) {
                 long timeout = this.config.waitTimeout;
                 long logDuration = this.config.logDuration;
                 LogSequenceNumber txactionlsn = this.txactionLsn;

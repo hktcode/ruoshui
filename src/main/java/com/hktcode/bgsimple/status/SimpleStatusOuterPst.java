@@ -32,17 +32,14 @@ public class SimpleStatusOuterPst extends SimpleStatusOuter
     }
 
     @Override
-    public <W extends SimpleWorker<W, M>, M> void setResult(W worker, M metric)
+    public <W extends SimpleWorker<W>> void setResult(W wkstep)
     {
-        if (worker == null) {
-            throw new ArgumentNullException("worker");
+        if (wkstep == null) {
+            throw new ArgumentNullException("wkstep");
         }
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
-        int index = worker.number;
+        int index = wkstep.number;
         @SuppressWarnings("unchecked")
-        SimpleMethodPst<W, M> w = (SimpleMethodPst<W, M>) this.method[index];
-        this.method[index] = w.run(worker, metric);
+        SimpleMethodPst<W> w = (SimpleMethodPst<W>) this.method[index];
+        this.method[index] = w.run(wkstep);
     }
 }

@@ -4,14 +4,17 @@
 package com.hktcode.bgsimple;
 
 import com.hktcode.bgsimple.method.*;
+import com.hktcode.bgsimple.status.SimpleStatusInner;
 
-public interface BgWorker<W extends BgWorker<W, M>, M>
+public interface BgWorker<W extends BgWorker<W>>
 {
-    SimpleMethodPstResult<W, M> pst(M metric);
+    SimpleMethodPstResult<W> pst();
 
-    SimpleMethodPutResult<W, M> put(M metric);
+    SimpleMethodPutResult<W> put();
 
-    SimpleMethodGetResult<W, M> get(M metric);
+    SimpleMethodGetResult<W> get();
 
-    SimpleMethodDelResult<W, M> del(M metric);
+    SimpleMethodDelResult<W> del();
+
+    SimpleStatusInner newStatus(W wkstep) throws InterruptedException;
 }

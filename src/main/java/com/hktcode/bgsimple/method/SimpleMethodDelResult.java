@@ -6,17 +6,14 @@ package com.hktcode.bgsimple.method;
 import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public interface SimpleMethodDelResult<W extends BgWorker<W, M>, M> //
-    extends SimpleMethodDel<W, M>
+public interface SimpleMethodDelResult<W extends BgWorker<W>> //
+    extends SimpleMethodDel<W>
 {
     @Override
-    default SimpleMethodDelResult<W, M> run(W worker, M metric)
+    default SimpleMethodDelResult<W> run(W wkstep)
     {
-        if (worker == null) {
-            throw new ArgumentNullException("worker");
-        }
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
+        if (wkstep == null) {
+            throw new ArgumentNullException("wkstep");
         }
         // TODO: logger this should not be happened
         return this;

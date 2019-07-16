@@ -5,17 +5,16 @@
 package com.hktcode.pgstack.ruoshui.pgsql.snapshot;
 
 import com.google.common.collect.ImmutableList;
-import com.hktcode.bgsimple.SimpleWorker;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.PgReplRelation;
 import org.postgresql.jdbc.PgConnection;
 
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 public interface PgsqlSnapshotMetricSelectRelalist extends PgsqlSnapshotMetric
 {
@@ -43,7 +42,7 @@ public interface PgsqlSnapshotMetricSelectRelalist extends PgsqlSnapshotMetric
     //     this.retryCounts = retryCounts;
     // }
 
-    static <W extends SimpleWorker<W, PgsqlSnapshotMetric> & PgsqlSnapshot<W>>
+    static <W extends PgsqlSnapshot<W>>
     PgsqlSnapshotMetric next //
         /* */( ExecutorService exesvc //
         /* */, W worker //
@@ -66,7 +65,7 @@ public interface PgsqlSnapshotMetricSelectRelalist extends PgsqlSnapshotMetric
         List<PgsqlRelationMetric> relalist = new ArrayList<>();
         Future<Iterator<PgReplRelation>> future //
             = exesvc.submit(() -> worker.selectRelalist(pgdata).iterator());
-        while (worker.newStatus(worker, metric) instanceof SimpleStatusInnerRun) {
+        while (worker.newStatus(worker) instanceof SimpleStatusInnerRun) {
             if (iter == null) {
                 iter = worker.pollFromFuture(future);
             }
@@ -90,7 +89,7 @@ public interface PgsqlSnapshotMetricSelectRelalist extends PgsqlSnapshotMetric
 
     PgsqlSnapshotMetricCommit newCommit();
 
-    <W extends SimpleWorker<W, PgsqlSnapshotMetric> & PgsqlSnapshot<W>>
+    <W extends PgsqlSnapshot<W>>
     PgsqlSnapshotMetric next //
         /* */( ExecutorService exesvc //
         /* */, W worker //

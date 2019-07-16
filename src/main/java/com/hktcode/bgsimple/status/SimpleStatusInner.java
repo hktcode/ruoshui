@@ -6,6 +6,6 @@ package com.hktcode.bgsimple.status;
 
 import com.hktcode.bgsimple.SimpleWorker;
 
-public abstract class SimpleStatusInner implements SimpleStatus
+public interface SimpleStatusInner extends SimpleStatus
 {
 }

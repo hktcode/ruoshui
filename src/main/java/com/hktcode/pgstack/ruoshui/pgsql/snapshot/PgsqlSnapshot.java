@@ -4,6 +4,7 @@
 package com.hktcode.pgstack.ruoshui.pgsql.snapshot;
 
 import com.google.common.collect.ImmutableList;
+import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.bgsimple.SimpleWorker;
 import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.pgjdbc.LogicalMsg;
@@ -19,12 +20,11 @@ import java.sql.Statement;
 import java.time.ZonedDateTime;
 import java.util.concurrent.*;
 
-public interface PgsqlSnapshot<W extends SimpleWorker<W, PgsqlSnapshotMetric> & PgsqlSnapshot<W>>
+public interface PgsqlSnapshot<W extends PgsqlSnapshot<W>> extends BgWorker<W>
 {
     Logger logger = LoggerFactory.getLogger(PgsqlSnapshot.class);
 
-    static <W extends SimpleWorker<W, PgsqlSnapshotMetric> & PgsqlSnapshot<W>>
-    void run(W worker) throws Exception
+    static <W extends PgsqlSnapshot<W>> void run(W worker) throws Exception
     {
         ZonedDateTime startMillis = ZonedDateTime.now();
         ExecutorService exesvc = Executors.newSingleThreadExecutor();
@@ -85,8 +85,6 @@ public interface PgsqlSnapshot<W extends SimpleWorker<W, PgsqlSnapshotMetric> & 
     long getWaitTimeout();
 
     long getLogDuration();
-
-    SimpleStatusInner newStatus(W myown, PgsqlSnapshotMetric metric) throws InterruptedException;
 
     static <T> T pollFromFuture(Future<T> future, long waitTimeout) //
         throws Exception

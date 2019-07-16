@@ -3,6 +3,7 @@
  */
 package com.hktcode.pgstack.ruoshui.upper;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
@@ -62,14 +63,14 @@ public class UpperProducer extends KafkaTripleProducer
     }
 
     @Override
-    protected void runInternal(UpperProducer worker, TripleProducerMetric metric) //
+    protected void runInternal(UpperProducer worker) //
         throws Exception
     {
         try (Producer<byte[], byte[]> kfk = this.producer(BYTES, BYTES)) {
             UpperProducerRecord d = null;
-            while (super.newStatus(worker, metric) instanceof SimpleStatusInnerRun) {
+            while (super.newStatus(worker) instanceof SimpleStatusInnerRun) {
                 if (d == null) {
-                    d = this.poll(metric);
+                    d = this.poll();
                 }
                 else {
                     String keyText = d.key.toObjectNode().toString();
@@ -97,7 +98,14 @@ public class UpperProducer extends KafkaTripleProducer
     public void runWithInterrupted() throws InterruptedException
     {
         ZonedDateTime startMillis = ZonedDateTime.now();
-        TripleProducerMetric metric = TripleProducerMetric.of(startMillis);
-        super.run("upper-producer", this, metric);
+        // TripleProducerMetric metric = TripleProducerMetric.of(startMillis);
+        super.run("upper-producer", this);
+    }
+
+    @Override
+    public JsonNode toJsonObject()
+    {
+        // TODO:
+        return null;
     }
 }

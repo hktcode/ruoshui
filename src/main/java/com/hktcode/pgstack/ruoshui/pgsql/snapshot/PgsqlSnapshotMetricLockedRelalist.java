@@ -3,7 +3,6 @@
  */
 package com.hktcode.pgstack.ruoshui.pgsql.snapshot;
 
-import com.hktcode.bgsimple.SimpleWorker;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.PgReplRelation;
@@ -41,7 +40,7 @@ public interface PgsqlSnapshotMetricLockedRelalist extends PgsqlSnapshotMetricPr
     //     super(metric, oldDuration, relationLst);
     // }
 
-    static <W extends SimpleWorker<W, PgsqlSnapshotMetric> & PgsqlSnapshot<W>>
+    static <W extends PgsqlSnapshot<W>>
     PgsqlSnapshotMetric next
         /* */( ExecutorService exesvc
         /* */, W worker
@@ -70,7 +69,7 @@ public interface PgsqlSnapshotMetricLockedRelalist extends PgsqlSnapshotMetricPr
             PgsqlRelationMetric r = null;
             Future<Boolean> future = null;
             Boolean success = null;
-            while (worker.newStatus(worker, metric) instanceof SimpleStatusInnerRun) {
+            while (worker.newStatus(worker) instanceof SimpleStatusInnerRun) {
                 if (Boolean.FALSE.equals(success)) {
                     return metric.newAbortsLockFail(r);
                 }

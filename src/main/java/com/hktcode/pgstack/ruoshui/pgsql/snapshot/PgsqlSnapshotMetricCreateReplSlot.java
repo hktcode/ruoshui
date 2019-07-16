@@ -28,7 +28,7 @@ public interface PgsqlSnapshotMetricCreateReplSlot extends PgsqlSnapshotMetricPr
     //     super(metric);
     // }
 
-    static <W extends SimpleWorker<W, PgsqlSnapshotMetric> & PgsqlSnapshot<W>>
+    static <W extends PgsqlSnapshot<W>>
     PgsqlSnapshotMetric next
         /* */( ExecutorService exesvc
         /* */, W worker
@@ -55,7 +55,7 @@ public interface PgsqlSnapshotMetricCreateReplSlot extends PgsqlSnapshotMetricPr
         worker.sendPauseWorld(metric);
         Future<PgReplSlotTuple> future = exesvc.submit(()-> worker.createReplSlot(pgrepl));
         PgReplSlotTuple tuple = null;
-        while (worker.newStatus(worker, metric) instanceof SimpleStatusInnerRun) {
+        while (worker.newStatus(worker) instanceof SimpleStatusInnerRun) {
             if (tuple != null) {
                 long finish = System.currentTimeMillis();
                 long sltDuration = finish - starts;

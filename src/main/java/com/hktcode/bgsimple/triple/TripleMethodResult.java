@@ -13,7 +13,7 @@ public class TripleMethodResult
     /* */, F extends TripleConfig //
     /* */, M extends TripleMetric //
     /* */>
-    implements SimpleMethodAllResult<W, M>
+    implements SimpleMethodAllResult<W>
 {
     public static <W extends TripleWorker<W, F, M>, F extends TripleConfig, M extends TripleMetric>
     TripleMethodResult<W, F, M> of(JsonNode config, JsonNode metric)

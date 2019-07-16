@@ -28,8 +28,9 @@ public abstract class TripleConsumer //
         this.comein = comein;
     }
 
-    public I push(I record, M metric) throws InterruptedException
+    public I push(I record) throws InterruptedException
     {
-        return Triple.push(record, this.config, metric, this.comein);
+        // TODO: return Triple.push(record, this.config, metric, this.comein);
+        return Triple.push(record, this.config, null, this.comein);
     }
 }

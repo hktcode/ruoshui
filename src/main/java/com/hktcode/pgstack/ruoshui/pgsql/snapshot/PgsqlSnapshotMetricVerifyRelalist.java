@@ -4,7 +4,6 @@
 package com.hktcode.pgstack.ruoshui.pgsql.snapshot;
 
 import com.google.common.collect.ImmutableList;
-import com.hktcode.bgsimple.SimpleWorker;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.PgReplRelation;
@@ -56,7 +55,7 @@ public interface PgsqlSnapshotMetricVerifyRelalist extends PgsqlSnapshotMetricPr
 
     static final Logger logger = LoggerFactory.getLogger(PgsqlSnapshotMetricVerifyRelalist.class);
 
-    static <W extends SimpleWorker<W, PgsqlSnapshotMetric> & PgsqlSnapshot<W>>
+    static <W extends PgsqlSnapshot<W>>
     PgsqlSnapshotMetric next
         /* */( ExecutorService exesvc
         /* */, W worker
@@ -93,7 +92,7 @@ public interface PgsqlSnapshotMetricVerifyRelalist extends PgsqlSnapshotMetricPr
         long starts = System.currentTimeMillis();
         Future<ImmutableList<PgReplRelation>> future = exesvc.submit(()->worker.selectRelalist(pgdata));
         ImmutableList<PgReplRelation> list = null;
-        while (worker.newStatus(worker, metric) instanceof SimpleStatusInnerRun) {
+        while (worker.newStatus(worker) instanceof SimpleStatusInnerRun) {
             if (list == null) {
                 list = worker.pollFromFuture(future);
             }

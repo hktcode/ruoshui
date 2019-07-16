@@ -5,7 +5,7 @@ package com.hktcode.bgsimple.method;
 
 import com.hktcode.bgsimple.BgWorker;
 
-public interface SimpleMethodPut<W extends BgWorker<W, M>, M>
+public interface SimpleMethodPut<W extends BgWorker<W>>
 {
-    SimpleMethodPutResult<W, M> run(W worker, M metric);
+    SimpleMethodPutResult<W> run(W worker);
 }

@@ -3,6 +3,7 @@
  */
 package com.hktcode.pgstack.ruoshui.upper;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.triple.TripleJunction;
@@ -70,7 +71,6 @@ public class UpperJunction extends TripleJunction
     protected List<UpperProducerRecord> convert //
         /* */( UpperConsumerRecord record //
         /* */, UpperJunction worker //
-        /* */, UpperJunctionMetric metric //
         /* */)
     {
         if (record == null) {
@@ -78,9 +78,6 @@ public class UpperJunction extends TripleJunction
         }
         if (worker == null) {
             throw new ArgumentNullException("worker");
-        }
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
         }
         long lsn = record.lsn;
         LogicalMsg msg = record.msg;
@@ -97,19 +94,21 @@ public class UpperJunction extends TripleJunction
         // 此时LSN不是严格自增长.
 
         if (msg instanceof LogicalTxactBeginsMsg) {
-            metric.curLsnofcmt = ((LogicalTxactBeginsMsg) msg).lsnofcmt;
-            metric.curSequence = 1;
+            // metric.curLsnofcmt = ((LogicalTxactBeginsMsg) msg).lsnofcmt;
+            // metric.curSequence = 1;
         }
         else if (msg instanceof LogicalBegSnapshotMsg) {
-            metric.curLsnofcmt = lsn;
-            metric.curSequence = 1;
+            // metric.curLsnofcmt = lsn;
+            // metric.curSequence = 1;
         }
 
-        LogicalTxactContext ctx = metric.txidContext;
+        // TODO: LogicalTxactContext ctx = metric.txidContext;
+        LogicalTxactContext ctx = null;
         ImmutableList<PgsqlVal> vallist = PgsqlVal.of(lsn, msg, ctx);
         List<UpperProducerRecord> result = new ArrayList<>();
         for (PgsqlVal val : vallist) {
-            PgsqlKey key = PgsqlKey.of(metric.curLsnofcmt, metric.curSequence++);
+            // TODO: PgsqlKey key = PgsqlKey.of(metric.curLsnofcmt, metric.curSequence++);
+            PgsqlKey key = null;
             UpperProducerRecord d = UpperProducerRecord.of(key, val);
             result.add(d);
         }
@@ -121,6 +120,13 @@ public class UpperJunction extends TripleJunction
     {
         ZonedDateTime startMillis = ZonedDateTime.now();
         UpperJunctionMetric metric = UpperJunctionMetric.of(startMillis);
-        super.run("upper-junction", this, metric);
+        super.run("upper-junction", this);
+    }
+
+    @Override
+    public JsonNode toJsonObject()
+    {
+        // TODO:
+        return null;
     }
 }

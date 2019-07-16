@@ -49,7 +49,7 @@ public interface PgsqlSnapshotMetricSelectTupleval extends PgsqlSnapshotMetricPr
     //     this.newDuration = newDuration ;
     // }
 
-    static <W extends SimpleWorker<W, PgsqlSnapshotMetric> & PgsqlSnapshot<W>>
+    static <W extends PgsqlSnapshot<W>>
     PgsqlSnapshotMetric next
         /* */( ExecutorService exesvc
         /* */, W worker
@@ -86,7 +86,7 @@ public interface PgsqlSnapshotMetricSelectTupleval extends PgsqlSnapshotMetricPr
             long starts = System.currentTimeMillis();
             PgsqlRelationMetric relation = null;
             Long tuplevalSize = null;
-            while (worker.newStatus(worker, metric) instanceof SimpleStatusInnerRun) {
+            while (worker.newStatus(worker) instanceof SimpleStatusInnerRun) {
                 if (tuplevalSize != null) {
                     relation.tuplevalSize = tuplevalSize;
                     long finish = System.currentTimeMillis();

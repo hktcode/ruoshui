@@ -82,13 +82,13 @@ public class UpperConsumer extends TripleConsumer
         ZonedDateTime startMillis = ZonedDateTime.now();
         UpperConsumerMetric metric = UpperConsumerMetric.of(startMillis);
         try {
-            super.run("upper-consumer", this, metric);
+            super.run("upper-consumer", this);
         }
         finally {
             metric.statusInfor = "waiting fetch action stop";
             logger.info("{}", metric.statusInfor);
             long logDuration = this.config.logDuration;
-            while (super.newStatus(this, metric) instanceof SimpleStatusInnerEnd
+            while (super.newStatus(this) instanceof SimpleStatusInnerEnd
                 && !metric.fetchThread.stop(config.logDuration)) {
                 long currMillis = System.currentTimeMillis();
                 if (currMillis - metric.logDatetime >= logDuration) {
@@ -102,73 +102,76 @@ public class UpperConsumer extends TripleConsumer
     }
 
     @Override
-    protected void runInternal(UpperConsumer worker, UpperConsumerMetric metric) throws Exception
+    protected void runInternal(UpperConsumer worker) throws Exception
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");
         }
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
         try (Connection c = this.config.srcProperty.replicaConnection()) {
             PgConnection pgc = c.unwrap(PgConnection.class);
-            metric.pgreplInfor = PgConnectionInfo.of(pgc);
-            metric.fetchThread = MainlineThread.of(config, status);
-            logger.info("upper consumer starts: pgreplInfor={}", metric.pgreplInfor);
+            // metric.pgreplInfor = PgConnectionInfo.of(pgc);
+            // metric.fetchThread = MainlineThread.of(config, status);
+            // logger.info("upper consumer starts: pgreplInfor={}", metric.pgreplInfor);
             UpperConsumerRecord r = null;
-            while (super.newStatus(worker, metric) instanceof SimpleStatusInnerRun) {
-                r = (r == null ? this.poll(metric) : this.push(r, metric));
+            while (super.newStatus(worker) instanceof SimpleStatusInnerRun) {
+                r = (r == null ? this.poll() : this.push(r));
             }
         }
     }
 
-    private UpperConsumerRecord poll(UpperConsumerMetric metric)
+    @Override
+    public JsonNode toJsonObject()
+    {
+        // TODO:
+        return null;
+    }
+
+    private UpperConsumerRecord poll()
         throws InterruptedException
     {
         long waitTimeout = this.config.waitTimeout;
         long logDuration = this.config.logDuration;
-        metric.statusInfor = "fetch record wait";
+        // metric.statusInfor = "fetch record wait";
         long startMillis = System.currentTimeMillis();
-        UpperConsumerRecord r = metric.fetchThread.poll(waitTimeout, metric);
+        // UpperConsumerRecord r = metric.fetchThread.poll(waitTimeout, metric);
+        UpperConsumerRecord r = null;
         long finishMillis = System.currentTimeMillis();
-        metric.fetchMillis += (startMillis - finishMillis);
-        metric.statusInfor = "fetch record end";
-        ++metric.fetchCounts;
-        if (r != null) {
-            metric.logDatetime = finishMillis;
-        }
-        else if (finishMillis - metric.logDatetime >= logDuration) {
-            logger.info("readPending() returns null: waitTimeout={}, logDuration={}", waitTimeout, logDuration);
-            metric.logDatetime = finishMillis;
-        }
+        // metric.fetchMillis += (startMillis - finishMillis);
+        // metric.statusInfor = "fetch record end";
+        // ++metric.fetchCounts;
+        // if (r != null) {
+        //     // metric.logDatetime = finishMillis;
+        // }
+        // else if (finishMillis - metric.logDatetime >= logDuration) {
+        //     logger.info("readPending() returns null: waitTimeout={}, logDuration={}", waitTimeout, logDuration);
+        //     // metric.logDatetime = finishMillis;
+        // }
         return r;
     }
 
     public TripleMethodResult<UpperConsumer, MainlineConfig, UpperConsumerMetric>
-    pst(LogSequenceNumber lastReceiveLsn, UpperConsumerMetric metric)
+    pst(LogSequenceNumber lastReceiveLsn)
     {
         if (lastReceiveLsn == null) {
             throw new ArgumentNullException("lastReceiveLsn");
         }
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
-        metric.fetchThread.setTxactionLsn(lastReceiveLsn);
-        ++metric.recordCount;
+        // metric.fetchThread.setTxactionLsn(lastReceiveLsn);
+        // ++metric.recordCount;
         JsonNode c = this.config.toJsonObject();
-        JsonNode m = metric.toJsonObject();
+        JsonNode m = this.toJsonObject();
         return TripleMethodResult.of(c, m);
     }
 
     public TripleMethodResult<UpperConsumer, MainlineConfig, UpperConsumerMetric>
-    pstWithSnapshot(JsonNode json, PgSnapshotFilter whereScript, UpperConsumerMetric metric)
+    pstWithSnapshot(JsonNode json, PgSnapshotFilter whereScript)
     {
         if (json == null) {
             throw new ArgumentNullException("json");
         }
         JsonNode configNode = this.config.toJsonObject();
-        JsonNode metricNode = metric.toJsonObject();
-        UpperConsumerThread pollAction = metric.fetchThread;
+        JsonNode metricNode = this.toJsonObject();
+        // TODO: UpperConsumerThread pollAction = this.fetchThread;
+        UpperConsumerThread pollAction = null;
         if (!(pollAction instanceof MainlineThreadWork)) {
             // TODO:
             return TripleMethodResult.of(configNode, metricNode);
@@ -190,7 +193,7 @@ public class UpperConsumer extends TripleConsumer
         PgSnapshotConfig c = PgSnapshotConfig.of(s, t, whereScript, m, a, true, p);
         c.rsFetchsize = json.path("rs_fetchsize").asInt(128);
         c.waitTimeout = json.path("wait_timeout").asLong(this.config.waitTimeout);
-        metric.fetchThread = SnapshotThreadLockingRel.of(c, status, oldAction);
+        // metric.fetchThread = SnapshotThreadLockingRel.of(c, status, oldAction);
         return TripleMethodResult.of(configNode, metricNode);
     }
 }

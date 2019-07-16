@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class PgsqlTxaction extends SimpleWorker<PgsqlTxaction, PgsqlTxactionMetric>
+public class PgsqlTxaction extends SimpleWorker<PgsqlTxaction>
     implements RunnableWithInterrupted
 {
     private static final Logger logger = LoggerFactory.getLogger(PgsqlTxaction.class);
@@ -83,29 +83,25 @@ public class PgsqlTxaction extends SimpleWorker<PgsqlTxaction, PgsqlTxactionMetr
     }
 
     @Override
-    public SimpleMethodPstResult<PgsqlTxaction, PgsqlTxactionMetric> //
-    pst(PgsqlTxactionMetric metric)
+    public SimpleMethodPstResult<PgsqlTxaction> pst()
     {
         return null;
     }
 
     @Override
-    public SimpleMethodPutResult<PgsqlTxaction, PgsqlTxactionMetric>
-    put(PgsqlTxactionMetric metric)
+    public SimpleMethodPutResult<PgsqlTxaction> put()
     {
         return null;
     }
 
     @Override
-    public SimpleMethodGetResult<PgsqlTxaction, PgsqlTxactionMetric>
-    get(PgsqlTxactionMetric metric)
+    public SimpleMethodGetResult<PgsqlTxaction> get()
     {
         return null;
     }
 
     @Override
-    public SimpleMethodDelResult<PgsqlTxaction, PgsqlTxactionMetric>
-    del(PgsqlTxactionMetric metric)
+    public SimpleMethodDelResult<PgsqlTxaction> del()
     {
         return null;
     }

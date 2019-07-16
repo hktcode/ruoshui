@@ -32,18 +32,15 @@ public class SimpleStatusOuterPut extends SimpleStatusOuter
     }
 
     @Override
-    public <W extends SimpleWorker<W, M>, M> void setResult(W worker, M metric)
+    public <W extends SimpleWorker<W>> void setResult(W wkstep)
     {
-        if (worker == null) {
-            throw new ArgumentNullException("worker");
+        if (wkstep == null) {
+            throw new ArgumentNullException("wkstep");
         }
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
-        int index = worker.number;
+        int index = wkstep.number;
         @SuppressWarnings("unchecked")
-        SimpleMethodPut<W, M> w = (SimpleMethodPut<W, M>)worker;
-        this.method[index] = w.run(worker, metric);
+        SimpleMethodPut<W> w = (SimpleMethodPut<W>)wkstep;
+        this.method[index] = w.run(wkstep);
     }
 }
 

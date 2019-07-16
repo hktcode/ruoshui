@@ -22,7 +22,7 @@ public abstract class TripleWorker //
     /* */, F extends TripleConfig //
     /* */, M extends TripleMetric //
     /* */>
-    extends SimpleWorker<W, M>
+    extends SimpleWorker<W>
 {
     private static final Logger logger = LoggerFactory.getLogger(TripleWorker.class);
 
@@ -38,25 +38,25 @@ public abstract class TripleWorker //
         this.config = config;
     }
 
-    protected abstract void runInternal(W worker, M metric) throws Exception;
+    protected abstract void runInternal(W worker) throws Exception;
 
-    public void run(String name, W worker, M metric) throws InterruptedException
+    public void run(String name, W worker) throws InterruptedException
     {
         try {
-            this.runInternal(worker, metric);
+            this.runInternal(worker);
             logger.info("triple finish.");
         }
         catch (Exception ex) {
             logger.error("triple throws exception: ", ex);
             ZonedDateTime endtime = ZonedDateTime.now();
             String msg = ex.getMessage();
-            metric.statusInfor = "throw exception at " + endtime + ": " + msg;
+            // TODO: worker.statusInfor = "throw exception at " + endtime + ": " + msg;
             @SuppressWarnings("unchecked")
-            SimpleMethodDel<W, M>[] method = new SimpleMethodDel[3];
+            SimpleMethodDel<W>[] method = new SimpleMethodDel[3];
             for (int i = 0; i < method.length; ++i) {
                 if (i == super.number) {
                     JsonNode c = this.config.toJsonObject();
-                    JsonNode m = metric.toJsonObject();
+                    JsonNode m = worker.toJsonObject();
                     method[i] = TripleMethodResult.of(c, m);
                 }
                 else {
@@ -66,61 +66,49 @@ public abstract class TripleWorker //
             SimpleStatusOuterDel del = SimpleStatusOuterDel.of(method, new Phaser(3));
             SimpleStatus origin;
             SimpleStatus future;
-            while (!((origin = super.newStatus(worker, metric)) instanceof SimpleStatusInnerEnd)) {
+            while (!((origin = super.newStatus(worker)) instanceof SimpleStatusInnerEnd)) {
                 future = origin.del(del);
                 this.status.compareAndSet(origin, future);
-                // TODO:
-                metric.statusInfor = "waiting status set to end";
+                // TODO: worker.statusInfor = "waiting status set to end";
             }
-            // TODO:
-            metric.statusInfor = "consumer finish end";
+            // TODO: worker.statusInfor = "consumer finish end";
             logger.info("triple finish by exception.");
         }
     }
 
     @Override
-    public TripleMethodResult<W, F, M> put(M metric)
+    public TripleMethodResult<W, F, M> put()
     {
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
         JsonNode c = config.toJsonObject();
-        JsonNode m = metric.toJsonObject();
+        JsonNode m = this.toJsonObject();
         return TripleMethodResult.of(c, m);
     }
 
 
     @Override
-    public TripleMethodResult<W, F, M> pst(M metric)
+    public TripleMethodResult<W, F, M> pst()
     {
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
         JsonNode c = config.toJsonObject();
-        JsonNode m = metric.toJsonObject();
+        JsonNode m = this.toJsonObject();
         return TripleMethodResult.of(c, m);
     }
 
     @Override
-    public TripleMethodResult<W, F, M> get(M metric)
+    public TripleMethodResult<W, F, M> get()
     {
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
         JsonNode c = config.toJsonObject();
-        JsonNode m = metric.toJsonObject();
+        JsonNode m = this.toJsonObject();
         return TripleMethodResult.of(c, m);
     }
 
     @Override
-    public TripleMethodResult<W, F, M> del(M metric)
+    public TripleMethodResult<W, F, M> del()
     {
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
         ZonedDateTime endtime = ZonedDateTime.now(); // TODO:
         JsonNode c = config.toJsonObject();
-        JsonNode m = metric.toJsonObject();
+        JsonNode m = this.toJsonObject();
         return TripleMethodResult.of(c, m);
     }
+
+    public abstract JsonNode toJsonObject();
 }

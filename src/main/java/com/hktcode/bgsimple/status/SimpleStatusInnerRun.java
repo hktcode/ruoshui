@@ -7,7 +7,7 @@ package com.hktcode.bgsimple.status;
 import com.hktcode.bgsimple.SimpleWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class SimpleStatusInnerRun extends SimpleStatusInner
+public class SimpleStatusInnerRun implements SimpleStatusInner
 {
     public static SimpleStatusInnerRun of()
     {

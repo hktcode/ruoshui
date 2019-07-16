@@ -15,7 +15,7 @@ import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
 import org.postgresql.replication.LogSequenceNumber;
 
 public class UpperMethodPstParamsRecvLsn
-    implements SimpleMethodPst<UpperConsumer, UpperConsumerMetric>
+    implements SimpleMethodPst<UpperConsumer>
 {
     public static UpperMethodPstParamsRecvLsn of(LogSequenceNumber receiveLsn)
     {
@@ -33,14 +33,12 @@ public class UpperMethodPstParamsRecvLsn
     }
 
     @Override
-    public SimpleMethodPstResult<UpperConsumer, UpperConsumerMetric> run(UpperConsumer worker, UpperConsumerMetric metric)
+    public SimpleMethodPstResult<UpperConsumer> run(UpperConsumer worker)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");
         }
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
-        return worker.pst(this.receiveLsn, metric);
+        // TODO:
+        return worker.pst(this.receiveLsn);
     }
 }

@@ -6,11 +6,10 @@ package com.hktcode.bgsimple.method;
 import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class SimpleMethodPstParamsDefault<W extends BgWorker<W, M>, M> //
-    implements SimpleMethodPstParams<W, M>
+public class SimpleMethodPstParamsDefault<W extends BgWorker<W>> //
+    implements SimpleMethodPstParams<W>
 {
-    public static <W extends BgWorker<W, M>, M> //
-    SimpleMethodPstParamsDefault<W, M> of()
+    public static <W extends BgWorker<W>> SimpleMethodPstParamsDefault<W> of()
     {
         return new SimpleMethodPstParamsDefault<>();
     }
@@ -20,14 +19,11 @@ public class SimpleMethodPstParamsDefault<W extends BgWorker<W, M>, M> //
     }
 
     @Override
-    public SimpleMethodPstResult<W, M> run(W worker, M metric)
+    public SimpleMethodPstResult<W> run(W wkstep)
     {
-        if (worker == null) {
+        if (wkstep == null) {
             throw new ArgumentNullException("worker");
         }
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
-        return worker.pst(metric);
+        return wkstep.pst();
     }
 }

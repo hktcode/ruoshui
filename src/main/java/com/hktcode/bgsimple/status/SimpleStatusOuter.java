@@ -18,21 +18,18 @@ public abstract class SimpleStatusOuter implements SimpleStatus
         this.phaser = phaser;
     }
 
-    public <W extends SimpleWorker<W, M>, M> //
-    void newStatus(W worker, M metric) throws InterruptedException
+    public <W extends SimpleWorker<W>> //
+    void newStatus(W wkstep) throws InterruptedException
     {
-        if (worker == null) {
-            throw new ArgumentNullException("worker");
+        if (wkstep == null) {
+            throw new ArgumentNullException("wkstep");
         }
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
-        this.setResult(worker, metric);
+        this.setResult(wkstep);
         int phase = this.phaser.arriveAndDeregister();
         this.phaser.awaitAdvanceInterruptibly(phase);
     }
 
-    public abstract <W extends SimpleWorker<W, M>, M> void setResult(W worker, M metric);
+    public abstract <W extends SimpleWorker<W>> void setResult(W worker);
 
     public SimpleStatus outer(SimpleStatus outer)
     {

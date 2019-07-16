@@ -46,7 +46,7 @@ class PgsqlTxactionMetricNormalSnapshot extends PgsqlTxactionMetricNormal
             PgSnapshot<SnapshotMetric> runnable = PgSnapshot.of(pgconfig, pgrepl, pgdata, null);
             Thread t = new Thread(runnable);
             t.start();
-            while (!(worker.newStatus(worker, this) instanceof SimpleStatusInnerEnd)) {
+            while (!(worker.newStatus(worker) instanceof SimpleStatusInnerEnd)) {
                 if (!t.isAlive()) {
                     return PgsqlTxactionMetricNormalTxaction.of(config, this);
                 }

@@ -5,9 +5,9 @@ package com.hktcode.bgsimple.method;
 
 import com.hktcode.bgsimple.BgWorker;
 
-public interface SimpleMethodDelParams<W extends BgWorker<W, M>, M> //
-    extends SimpleMethodDel<W, M>
+public interface SimpleMethodDelParams<W extends BgWorker<W>> //
+    extends SimpleMethodDel<W>
 {
     @Override
-    SimpleMethodDelResult<W, M> run(W worker, M metric);
+    SimpleMethodDelResult<W> run(W wkstep);
 }
