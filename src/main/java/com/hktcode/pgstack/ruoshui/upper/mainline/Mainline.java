@@ -52,17 +52,17 @@ public class Mainline implements Runnable
     private void runWithInterrupted() throws InterruptedException
     {
         ZonedDateTime startMillis = ZonedDateTime.now();
-        MainlineAction action = MainlineActionStarts.of(config, sender, startMillis);
+        MainlineStep action = MainlineStepStarts.of(config, sender, startMillis);
         try {
-            action = ((MainlineActionStarts)action).next();
-            if (!(action instanceof MainlineActionNormal)) {
+            action = ((MainlineStepStarts)action).next();
+            if (!(action instanceof MainlineStepNormal)) {
                 return;
             }
             try (Connection repl = config.srcProperty.replicaConnection()) {
                 PgConnection pgrepl = repl.unwrap(PgConnection.class);
                 do {
-                    action = ((MainlineActionNormal) action).next(pgrepl);
-                } while (action instanceof MainlineActionNormal);
+                    action = ((MainlineStepNormal) action).next(pgrepl);
+                } while (action instanceof MainlineStepNormal);
             }
         }
         catch (Exception ex) {

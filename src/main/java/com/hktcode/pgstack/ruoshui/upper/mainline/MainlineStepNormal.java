@@ -8,13 +8,13 @@ import org.postgresql.jdbc.PgConnection;
 
 import java.sql.SQLException;
 
-abstract class MainlineActionNormal extends MainlineAction
+abstract class MainlineStepNormal extends MainlineStep
 {
-    MainlineActionNormal(MainlineSender sender)
+    MainlineStepNormal(MainlineSender sender)
     {
         super(sender);
     }
 
-    abstract MainlineAction next(PgConnection pgrepl) //
+    abstract MainlineStep next(PgConnection pgrepl) //
         throws SQLException, InterruptedException;
 }

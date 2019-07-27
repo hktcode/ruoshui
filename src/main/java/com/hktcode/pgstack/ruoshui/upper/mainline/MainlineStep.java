@@ -4,13 +4,13 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
-abstract class MainlineAction
+abstract class MainlineStep
 {
     final MainlineSender sender;
 
     abstract MainlineMetric getMetric();
 
-    MainlineAction(MainlineSender sender)
+    MainlineStep(MainlineSender sender)
     {
         this.sender = sender;
     }

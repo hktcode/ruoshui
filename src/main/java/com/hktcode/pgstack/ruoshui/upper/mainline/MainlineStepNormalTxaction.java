@@ -15,11 +15,11 @@ import org.slf4j.LoggerFactory;
 import java.nio.ByteBuffer;
 import java.sql.SQLException;
 
-class MainlineActionNormalTxaction extends MainlineActionNormal
+class MainlineStepNormalTxaction extends MainlineStepNormal
 {
-    private static final Logger logger = LoggerFactory.getLogger(MainlineActionNormalTxaction.class);
+    private static final Logger logger = LoggerFactory.getLogger(MainlineStepNormalTxaction.class);
 
-    static MainlineActionNormalTxaction of
+    static MainlineStepNormalTxaction of
         (MainlineConfigTxaction config, MainlineSender sender, MainlineMetricTxaction metric)
     {
         if (config == null) {
@@ -32,14 +32,14 @@ class MainlineActionNormalTxaction extends MainlineActionNormal
             throw new ArgumentNullException("metric");
         }
 
-        return new MainlineActionNormalTxaction(config, sender, metric);
+        return new MainlineStepNormalTxaction(config, sender, metric);
     }
 
     private final MainlineConfigTxaction config;
 
     private final MainlineMetricTxaction metric;
 
-    private MainlineActionNormalTxaction //
+    private MainlineStepNormalTxaction //
     (MainlineConfigTxaction config, MainlineSender sender, MainlineMetricTxaction metric)
     {
         super(sender);
@@ -48,7 +48,7 @@ class MainlineActionNormalTxaction extends MainlineActionNormal
     }
 
     @Override
-    MainlineAction next(PgConnection pgrepl) //
+    MainlineStep next(PgConnection pgrepl) //
         throws SQLException, InterruptedException
     {
         Thread thread = Thread.currentThread();
@@ -74,7 +74,7 @@ class MainlineActionNormalTxaction extends MainlineActionNormal
             }
         }
         metric.statusInfor = "send txation finish record.";
-        return MainlineActionFinish.of(config, sender, metric);
+        return MainlineStepFinish.of(config, sender, metric);
     }
 
     private MainlineRecord poll(PGReplicationStream s)

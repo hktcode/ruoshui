@@ -6,9 +6,9 @@ package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-class MainlineActionFinish extends MainlineAction
+class MainlineStepFinish extends MainlineStep
 {
-    static MainlineActionFinish //
+    static MainlineStepFinish //
     of(MainlineConfig config, MainlineSender sender, MainlineMetric metric)
     {
         if (config == null) {
@@ -20,10 +20,10 @@ class MainlineActionFinish extends MainlineAction
         if (metric == null) {
             throw new ArgumentNullException("metric");
         }
-        return new MainlineActionFinish(config, sender, metric);
+        return new MainlineStepFinish(config, sender, metric);
     }
 
-    private MainlineActionFinish(MainlineConfig config, MainlineSender sender, MainlineMetric metric)
+    private MainlineStepFinish(MainlineConfig config, MainlineSender sender, MainlineMetric metric)
     {
         super(sender);
         this.config = config;

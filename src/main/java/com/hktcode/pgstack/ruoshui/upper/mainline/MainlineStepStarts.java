@@ -14,9 +14,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.ZonedDateTime;
 
-class MainlineActionStarts extends MainlineAction
+class MainlineStepStarts extends MainlineStep
 {
-    static MainlineActionStarts
+    static MainlineStepStarts
     of(MainlineConfig config, MainlineSender sender, ZonedDateTime starts)
     {
         if (config == null) {
@@ -29,10 +29,10 @@ class MainlineActionStarts extends MainlineAction
             throw new ArgumentNullException("starts");
         }
         MainlineMetricDatatype metric = MainlineMetricDatatype.of(starts);
-        return new MainlineActionStarts(config, sender, metric);
+        return new MainlineStepStarts(config, sender, metric);
     }
 
-    private MainlineActionStarts //
+    private MainlineStepStarts //
         (MainlineConfig config, MainlineSender sender, MainlineMetricDatatype metric)
     {
         super(sender);
@@ -44,7 +44,7 @@ class MainlineActionStarts extends MainlineAction
 
     private final MainlineMetricDatatype metric;
 
-    MainlineAction next() throws SQLException, InterruptedException
+    MainlineStep next() throws SQLException, InterruptedException
     {
         MainlineRecord r = null;
         metric.statusInfor = "query data types";
@@ -75,7 +75,7 @@ class MainlineActionStarts extends MainlineAction
                     ssmetric.offerMillis = this.metric.offerMillis;
                     ssmetric.logDatetime = this.metric.logDatetime;
                     ssmetric.statusInfor = this.metric.statusInfor;
-                    return MainlineActionNormalSnapshot.of((MainlineConfigSnapshot) config, sender, ssmetric);
+                    return MainlineStepNormalSnapshot.of((MainlineConfigSnapshot) config, sender, ssmetric);
                 }
                 else {
                     metric.statusInfor = "send txation finish record, txaction starts.";
@@ -88,11 +88,11 @@ class MainlineActionStarts extends MainlineAction
                     txmetric.offerMillis = this.metric.offerMillis;
                     txmetric.logDatetime = this.metric.logDatetime;
                     txmetric.statusInfor = this.metric.statusInfor;
-                    return MainlineActionNormalTxaction.of((MainlineConfigTxaction)config, sender, txmetric);
+                    return MainlineStepNormalTxaction.of((MainlineConfigTxaction)config, sender, txmetric);
                 }
             }
             metric.statusInfor = "upper consumer end when query data types";
-            return MainlineActionFinish.of(config, sender, metric);
+            return MainlineStepFinish.of(config, sender, metric);
         }
     }
 

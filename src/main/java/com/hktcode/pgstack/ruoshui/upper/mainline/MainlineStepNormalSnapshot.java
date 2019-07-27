@@ -13,9 +13,9 @@ import org.postgresql.jdbc.PgConnection;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-class MainlineActionNormalSnapshot extends MainlineActionNormal
+class MainlineStepNormalSnapshot extends MainlineStepNormal
 {
-    static MainlineActionNormalSnapshot of //
+    static MainlineStepNormalSnapshot of //
     (MainlineConfigSnapshot config, MainlineSender sender, MainlineMetricSnapshot metric)
     {
         if (config == null) {
@@ -27,14 +27,14 @@ class MainlineActionNormalSnapshot extends MainlineActionNormal
         if (metric == null) {
             throw new ArgumentNullException("metric");
         }
-        return new MainlineActionNormalSnapshot(config, sender, metric);
+        return new MainlineStepNormalSnapshot(config, sender, metric);
     }
 
     private final MainlineConfigSnapshot config;
 
     private final MainlineMetricSnapshot metric;
 
-    private MainlineActionNormalSnapshot //
+    private MainlineStepNormalSnapshot //
     (MainlineConfigSnapshot config, MainlineSender sender, MainlineMetricSnapshot metric)
     {
         super(sender);
@@ -43,7 +43,7 @@ class MainlineActionNormalSnapshot extends MainlineActionNormal
     }
 
     @Override
-    MainlineAction next(PgConnection pgrepl) //
+    MainlineStep next(PgConnection pgrepl) //
         throws SQLException, InterruptedException
     {
         PgSnapshotConfig pgconfig = config.iniSnapshot;
@@ -70,7 +70,7 @@ class MainlineActionNormalSnapshot extends MainlineActionNormal
                             /* */, this.config.waitTimeout //
                             /* */, this.config.logDuration //
                             /* */);
-                    return MainlineActionNormalTxaction.of(txconfig, sender, txmetric);
+                    return MainlineStepNormalTxaction.of(txconfig, sender, txmetric);
                 }
                 t.join(this.config.waitTimeout);
             }
@@ -78,7 +78,7 @@ class MainlineActionNormalSnapshot extends MainlineActionNormal
             pgdata.cancelQuery();
             pgrepl.cancelQuery();
         }
-        return MainlineActionFinish.of(config, sender, metric);
+        return MainlineStepFinish.of(config, sender, metric);
     }
 
     @Override
