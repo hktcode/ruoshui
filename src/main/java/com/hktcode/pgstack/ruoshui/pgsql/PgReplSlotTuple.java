@@ -17,6 +17,25 @@ import java.util.Objects;
  */
 public class PgReplSlotTuple
 {
+    public static PgReplSlotTuple of //
+        /* */( String slotName //
+        /* */, long consistentPoint //
+        /* */, String snapshotName //
+        /* */, String outputPlugin //
+        /* */) //
+    {
+        if (slotName == null) {
+            throw new ArgumentNullException("slotName");
+        }
+        if (snapshotName == null) {
+            throw new ArgumentNullException("snapshotName");
+        }
+        if (outputPlugin == null) {
+            throw new ArgumentNullException("outputPlugin");
+        }
+        return new PgReplSlotTuple(slotName, consistentPoint, snapshotName, outputPlugin);
+    }
+
     /**
      * Obtain a PgReplSlotTuple from a connection and sql.
      *

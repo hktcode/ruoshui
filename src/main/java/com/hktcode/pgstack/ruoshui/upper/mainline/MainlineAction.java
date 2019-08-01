@@ -10,19 +10,6 @@ import com.hktcode.bgsimple.status.SimpleStatus;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class MainlineAction<W extends MainlineAction<W>> //
-    implements BgWorker<W>
+public interface MainlineAction<W extends MainlineAction<W>> extends BgWorker<W>
 {
-    public final AtomicReference<SimpleStatus> status;
-
-    public final TransferQueue<MainlineRecord> tqueue;
-
-    protected MainlineAction //
-        /* */( AtomicReference<SimpleStatus> status //
-        /* */, TransferQueue<MainlineRecord> tqueue //
-        /* */) //
-    {
-        this.status = status;
-        this.tqueue = tqueue;
-    }
 }

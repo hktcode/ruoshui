@@ -87,7 +87,7 @@ public interface PgsqlSnapshot<W extends PgsqlSnapshot<W>> extends BgWorker<W>
     long getLogDuration();
 
     static <T> T pollFromFuture(Future<T> future, long waitTimeout) //
-        throws Exception
+        throws SQLException, InterruptedException
     {
         try {
             return future.get(waitTimeout, TimeUnit.MILLISECONDS);
@@ -96,7 +96,17 @@ public interface PgsqlSnapshot<W extends PgsqlSnapshot<W>> extends BgWorker<W>
             return null;
         }
         catch (ExecutionException ex) {
-            throw (Exception)ex.getCause();
+            Throwable cause = ex.getCause();
+            if (cause instanceof RuntimeException) {
+                throw (RuntimeException)cause;
+            }
+            else if (cause instanceof SQLException) {
+                throw (SQLException)cause;
+            }
+            else {
+                // TODO:
+                throw new RuntimeException(cause);
+            }
         }
     }
 
