@@ -4,19 +4,17 @@
 package com.hktcode.bgsimple.triple;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.hktcode.bgsimple.tqueue.TqueueConfig;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.time.ZonedDateTime;
 
-public abstract class TripleConfig<M extends TripleMetric> implements TripleEntity
+public abstract class TripleConfig<M extends TripleMetric> //
+    extends TqueueConfig implements TripleEntity
 {
     public static final long DEFALUT_WAIT_TIMEOUT = 100;
 
     public static final long DEFAULT_LOG_DURATION = 10 * 1000L;
-
-    public long waitTimeout;
-
-    public long logDuration;
 
     // TODO: loggerLevel
     protected TripleConfig(long waitTimeout, long logDuration)
