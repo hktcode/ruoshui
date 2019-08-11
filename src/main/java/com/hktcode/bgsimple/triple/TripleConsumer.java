@@ -18,19 +18,22 @@ public abstract class TripleConsumer //
 {
     protected final BlockingQueue<I> comein;
 
+    protected final M metric;
+
     protected TripleConsumer //
         /* */( F config //
+        /* */, M metric //
         /* */, BlockingQueue<I> comein //
         /* */, AtomicReference<SimpleStatus> status //
         /* */)
     {
         super(config, status,0);
         this.comein = comein;
+        this.metric = metric;
     }
 
     public I push(I record) throws InterruptedException
     {
-        // TODO: return Triple.push(record, this.config, metric, this.comein);
-        return Triple.push(record, this.config, null, this.comein);
+        return Triple.push(record, this.config, this.metric, this.comein);
     }
 }
