@@ -37,7 +37,9 @@ public class TripleJunctionConfig extends TripleConfig<TripleJunctionMetric>
         /* */, long logDuration //
         /* */) //
     {
-        super(waitTimeout, logDuration);
+        super();
+        this.waitTimeout = waitTimeout;
+        this.logDuration = logDuration;
         this.comeinCount = comeinCount;
         this.getoutCount = getoutCount;
     }

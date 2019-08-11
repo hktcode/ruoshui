@@ -123,7 +123,9 @@ public abstract class MainlineConfig extends TripleConsumerConfig
         /* */, long logDuration //
         /* */)
     {
-        super(waitTimeout, logDuration);
+        super();
+        this.waitTimeout = waitTimeout;
+        this.logDuration = logDuration;
         this.srcProperty = srcProperty;
         this.logicalRepl = logicalRepl;
     }

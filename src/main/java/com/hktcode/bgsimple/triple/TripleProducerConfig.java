@@ -7,6 +7,8 @@ public class TripleProducerConfig extends TripleConfig
 {
     protected TripleProducerConfig(long waitTimeout, long logDuration)
     {
-        super(waitTimeout, logDuration);
+        super();
+        this.waitTimeout = waitTimeout;
+        this.logDuration = logDuration;
     }
 }

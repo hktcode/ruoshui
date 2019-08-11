@@ -73,7 +73,7 @@ public class UpperConsumer extends TripleConsumer
         /* */, AtomicReference<SimpleStatus> status //
         /* */)
     {
-        super(config, comein, status);
+        super(config, UpperConsumerMetric.of(ZonedDateTime.now()), comein, status);
     }
 
     @Override
