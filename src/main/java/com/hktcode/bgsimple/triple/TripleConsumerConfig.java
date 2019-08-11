@@ -9,8 +9,8 @@ import java.time.ZonedDateTime;
 
 public class TripleConsumerConfig extends TripleConfig
 {
-    protected TripleConsumerConfig(long waitTimeout, long logDuration)
+    protected TripleConsumerConfig()
     {
-        super(waitTimeout, logDuration);
+        super();
     }
 }

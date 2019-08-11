@@ -17,10 +17,8 @@ public abstract class TripleConfig<M extends TripleMetric> //
     public static final long DEFAULT_LOG_DURATION = 10 * 1000L;
 
     // TODO: loggerLevel
-    protected TripleConfig(long waitTimeout, long logDuration)
+    protected TripleConfig()
     {
-        this.waitTimeout = waitTimeout;
-        this.logDuration = logDuration;
     }
 
     @Override
