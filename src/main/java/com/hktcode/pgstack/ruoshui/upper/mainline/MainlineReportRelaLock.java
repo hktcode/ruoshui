@@ -4,17 +4,31 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
-class MainlineReportRelaLock
+import com.hktcode.lang.exception.ArgumentNullException;
+
+public class MainlineReportRelaLock implements MainlineReport
 {
-    static MainlineReportRelaLock of(long totalPeriod)
+    static MainlineReportRelaLock of(MainlineActionDataRelaLock action, long finish)
     {
-        return new MainlineReportRelaLock(totalPeriod);
+        if (action == null) {
+            throw new ArgumentNullException("action");
+        }
+        return new MainlineReportRelaLock(action, finish);
     }
 
-    public final long totalPeriod;
+    public final long totalMillis;
 
-    private MainlineReportRelaLock(long totalPeriod)
+    public final long rsgetCounts;
+
+    public final long rsgetMillis;
+
+    public final long rsnextCount;
+
+    private MainlineReportRelaLock(MainlineActionDataRelaLock action, long finish)
     {
-        this.totalPeriod = totalPeriod;
+        this.totalMillis = finish - action.actionStart;
+        this.rsgetCounts = action.rsgetCounts;
+        this.rsgetMillis = action.rsgetMillis;
+        this.rsnextCount = action.rsnextCount;
     }
 }

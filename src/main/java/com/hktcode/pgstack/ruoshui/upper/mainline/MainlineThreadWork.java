@@ -12,8 +12,8 @@ import java.util.concurrent.TransferQueue;
 public class MainlineThreadWork extends MainlineThread
 {
     static MainlineThreadWork of
-        /* */( Thread thread //
-        /* */, MainlineMetricTxaction metric //
+        /* */(Thread thread //
+        /* */, MainlineMetric metric //
         /* */, TransferQueue<MainlineRecord> tqueue //
         /* */)
     {
@@ -29,7 +29,7 @@ public class MainlineThreadWork extends MainlineThread
         return new MainlineThreadWork(thread, metric, tqueue);
     }
 
-    private final MainlineMetricTxaction metric;
+    private final MainlineMetric metric;
 
     @Override
     public void setTxactionLsn(LogSequenceNumber lsn)
@@ -37,12 +37,12 @@ public class MainlineThreadWork extends MainlineThread
         if (lsn == null) {
             throw new ArgumentNullException("lsn");
         }
-        metric.txactionLsn = lsn;
+        // metric.txactionLsn = lsn;
     }
 
     private MainlineThreadWork
         /* */( Thread thread //
-        /* */, MainlineMetricTxaction metric //
+        /* */, MainlineMetric metric //
         /* */, TransferQueue<MainlineRecord> tqueue //
         /* */)
     {

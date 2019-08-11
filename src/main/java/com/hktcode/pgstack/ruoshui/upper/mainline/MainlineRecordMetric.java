@@ -14,7 +14,7 @@ class MainlineRecordMetric implements MainlineRecord
 {
     static MainlineRecordMetric of //
         /* */( Thread thread //
-        /* */, MainlineMetricTxaction metric //
+        /* */, MainlineMetric metric //
         /* */, TransferQueue<MainlineRecord> tqueue //
         /* */) //
     {
@@ -32,7 +32,7 @@ class MainlineRecordMetric implements MainlineRecord
 
     private final Thread thread;
 
-    private final MainlineMetricTxaction metric;
+    private final MainlineMetric metric;
 
     private final TransferQueue<MainlineRecord> tqueue;
 
@@ -43,13 +43,13 @@ class MainlineRecordMetric implements MainlineRecord
             throw new ArgumentNullException("metric");
         }
         // metric.txactMetric = this.metric; TODO:
-        metric.fetchThread = MainlineThreadWork.of(thread, this.metric, tqueue);
+        // metric.fetchThread = MainlineThreadWork.of(thread, this.metric, tqueue);
         return null;
     }
 
     private MainlineRecordMetric //
-        /* */( Thread thread //
-        /* */, MainlineMetricTxaction metric //
+        /* */(Thread thread //
+        /* */, MainlineMetric metric //
         /* */, TransferQueue<MainlineRecord> tqueue //
         /* */) //
     {

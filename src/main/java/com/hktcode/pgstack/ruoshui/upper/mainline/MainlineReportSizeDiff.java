@@ -4,17 +4,34 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
-class MainlineReportSizeDiff
+import com.hktcode.lang.exception.ArgumentNullException;
+
+public class MainlineReportSizeDiff implements MainlineReport
 {
-    static MainlineReportSizeDiff of(long totalPeriod)
+    static MainlineReportSizeDiff of(MainlineActionDataSizeDiff action, long finish)
     {
-        return new MainlineReportSizeDiff(totalPeriod);
+        if (action == null) {
+            throw new ArgumentNullException("action");
+        }
+        return new MainlineReportSizeDiff(action, finish);
     }
 
-    public final long totalPeriod;
+    public final long totalMillis;
 
-    private MainlineReportSizeDiff(long totalPeriod)
+    public final long rsgetCounts;
+
+    public final long rsgetMillis;
+
+    public final long rsnextCount;
+
+    public final long newRelalist;
+
+    private MainlineReportSizeDiff(MainlineActionDataSizeDiff action, long finish)
     {
-        this.totalPeriod = totalPeriod;
+        this.totalMillis = finish - action.actionStart;
+        this.rsgetCounts = action.rsgetCounts;
+        this.rsgetMillis = action.rsgetMillis;
+        this.rsnextCount = action.rsnextCount;
+        this.newRelalist = action.rsnextCount;
     }
 }

@@ -7,13 +7,14 @@ package com.hktcode.pgstack.ruoshui.upper.mainline;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class MainlineReportRelaList
+public class MainlineReportRelaList implements MainlineReport
 {
     public static MainlineReportRelaList of //
-        /* */( long totalPeriod //
-        /* */, long fetchCounts //
-        /* */, long fetchMillis //
-        /* */, long recordCount //
+        /* */( long totalMillis //
+        /* */, long rsgetCounts //
+        /* */, long rsgetMillis //
+        /* */, long rsnextCount //
+        /* */, long relationLst //
         /* */, ImmutableList<String> retryReason //
         /* */) //
     {
@@ -21,36 +22,59 @@ public class MainlineReportRelaList
             throw new ArgumentNullException("retryReason");
         }
         return new MainlineReportRelaList //
-            /* */( totalPeriod //
-            /* */, fetchCounts //
-            /* */, fetchMillis //
-            /* */, recordCount //
+            /* */( totalMillis //
+            /* */, rsgetCounts //
+            /* */, rsgetMillis //
+            /* */, rsnextCount //
+            /* */, relationLst //
             /* */, retryReason //
             /* */);
     }
 
-    public final long totalPeriod;
+    static MainlineReportRelaList of(MainlineActionDataRelaList action, long finish)
+    {
+        if (action == null) {
+            throw new ArgumentNullException("action");
+        }
+        return new MainlineReportRelaList(action, finish);
+    }
 
-    public final long fetchCounts;
+    public final long totalMillis;
 
-    public final long fetchMillis;
+    public final long rsgetCounts;
 
-    public final long recordCount;
+    public final long rsgetMillis;
+
+    public final long rsnextCount;
+
+    public final long relationLst;
 
     public final ImmutableList<String> retryReason;
 
+    private MainlineReportRelaList(MainlineActionDataRelaList action, long finish)
+    {
+        this.totalMillis = finish - action.actionStart;
+        this.rsgetCounts = action.rsgetCounts;
+        this.rsgetMillis = action.rsgetMillis;
+        this.rsnextCount = action.rsnextCount;
+        this.retryReason = action.retryReason;
+        this.relationLst = action.relationLst.size();
+    }
+
     private MainlineReportRelaList //
-        /* */( long totalPeriod //
-        /* */, long fetchCounts //
-        /* */, long fetchMillis //
-        /* */, long recordCount //
+        /* */( long totalMillis //
+        /* */, long rsgetCounts //
+        /* */, long rsgetMillis //
+        /* */, long rsnextCount //
+        /* */, long relationLst //
         /* */, ImmutableList<String> retryReason //
         /* */) //
     {
-        this.totalPeriod = totalPeriod;
-        this.fetchCounts = fetchCounts;
-        this.fetchMillis = fetchMillis;
-        this.recordCount = recordCount;
+        this.totalMillis = totalMillis;
+        this.rsgetCounts = rsgetCounts;
+        this.rsgetMillis = rsgetMillis;
+        this.rsnextCount = rsnextCount;
         this.retryReason = retryReason;
+        this.relationLst = relationLst;
     }
 }

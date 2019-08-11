@@ -6,6 +6,8 @@ package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
+import com.hktcode.bgsimple.status.SimpleStatus;
+import com.hktcode.bgsimple.tqueue.TqueueConfig;
 import com.hktcode.bgsimple.triple.TripleConsumerConfig;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.LogicalReplConfig;
@@ -15,57 +17,32 @@ import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilter;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilterDefault;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilterScript;
+import org.postgresql.jdbc.PgConnection;
 
 import javax.script.ScriptException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.TransferQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
-import static com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig.DEFAULT_ATTRINFO_SQL;
-import static com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig.DEFAULT_RELATION_SQL;
+import static com.hktcode.bgsimple.triple.TripleConfig.DEFALUT_WAIT_TIMEOUT;
+import static com.hktcode.bgsimple.triple.TripleConfig.DEFAULT_LOG_DURATION;
+import static com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfigSnapshot.DEFAULT_RELATION_SQL;
 
 public abstract class MainlineConfig extends TripleConsumerConfig
 {
-    public static final String DEFAULT_METADATA_FORMAT = "" //
-        + "\n WITH \"names\" as (select json_array_elements_text(?::json) as \"pubname\") " //
-        + "\n SELECT                     \"t\".\"oid\"::int8 as \"relident\" " //
-        + "\n      ,                       \"n\".\"nspname\" as \"dbschema\" " //
-        + "\n      ,                       \"t\".\"relname\" as \"relation\" " //
-        + "\n      ,   \"ascii\"(\"t\".\"relreplident\")::int8 as \"replchar\" " //
-        + "\n FROM            \"names\"                       \"a\" " //
-        + "\n      INNER JOIN \"pg_catalog\".\"pg_publication\" \"p\" " //
-        + "\n              ON \"p\".\"pubname\" = \"a\".\"pubname\" " //
-        + "\n      INNER JOIN \"pg_catalog\".\"pg_class\"       \"t\" " //
-        + "\n              ON 1 = 1 " //
-        + "\n      INNER JOIN \"pg_catalog\".\"pg_namespace\"   \"n\" " //
-        + "\n              ON \"t\".\"relnamespace\" = \"n\".\"oid\" " //
-        + "\n WHERE     \"t\".\"relpersistence\" = 'p'  " //
-        + "\n       and \"t\".\"relkind\" in ('r', 'p')  " //
-        + "\n       and \"n\".\"nspname\" not in ('information_schema', 'pg_catalog')  " //
-        + "\n       and \"n\".\"nspname\" not like 'pg_temp%'  " //
-        + "\n       and \"n\".\"nspname\" not like 'pg_toast%'  " //
-        + "\n       and \"p\".\"puballtables\" " //
-        + "\n UNION " //
-        + "\n SELECT                     \"t\".\"oid\"::int8 as \"relident\" " //
-        + "\n      ,                       \"n\".\"nspname\" as \"dbschema\" " //
-        + "\n      ,                       \"t\".\"relname\" as \"relation\" " //
-        + "\n      ,   \"ascii\"(\"t\".\"relreplident\")::int8 as \"replchar\" " //
-        + "\n FROM            \"names\" \"a\" " //
-        + "\n      INNER JOIN \"pg_catalog\".\"pg_publication\" \"p\" " //
-        + "\n              ON \"p\".\"pubname\" = \"a\".\"pubname\" " //
-        + "\n      INNER JOIN \"pg_catalog\".\"pg_publication_rel\" \"r\" " //
-        + "\n              ON \"p\".\"oid\" = \"r\".\"prpubid\" " //
-        + "\n      INNER JOIN \"pg_catalog\".\"pg_class\"       \"t\" " //
-        + "\n              ON \"r\".\"prrelid\" = \"t\".\"oid\" " //
-        + "\n      INNER JOIN \"pg_catalog\".\"pg_namespace\"   \"n\" " //
-        + "\n              ON \"t\".\"relnamespace\" = \"n\".\"oid\" " //
-        + "\n WHERE     \"t\".\"relpersistence\" = 'p'  " //
-        + "\n       and \"t\".\"relkind\" in ('r', 'p')  " //
-        + "\n       and \"n\".\"nspname\" not in ('information_schema', 'pg_catalog')  " //
-        + "\n       and \"n\".\"nspname\" not like 'pg_temp%'  " //
-        + "\n       and \"n\".\"nspname\" not like 'pg_toast%'  " //
-        + "\n       and not \"p\".\"puballtables\" " //
-        ;
+    private static final String TYPELIST_SQL = "" //
+        + "\n select \"t\".    \"oid\"::int8 as \"datatype\" " //
+        + "\n      , \"n\".\"nspname\"::text as \"tpschema\" " //
+        + "\n      , \"t\".\"typname\"::text as \"typename\" " //
+        + "\n  from            \"pg_catalog\".\"pg_type\"      \"t\" " //
+        + "\n       inner join \"pg_catalog\".\"pg_namespace\" \"n\" " //
+        + "\n               on \"t\".\"typnamespace\" = \"n\".\"oid\" " //
+        + "\n ";
 
     public static MainlineConfig ofJsonObject(JsonNode json) //
         throws ScriptException
@@ -76,57 +53,102 @@ public abstract class MainlineConfig extends TripleConsumerConfig
         JsonNode srcPropertyNode = json.path("src_property");
         PgConnectionProperty srcProperty = PgConnectionProperty.ofJsonObject(srcPropertyNode);
 
+        String typelistSql = json.path("typelist_sql").asText(TYPELIST_SQL);
         JsonNode logicalReplNode = json.path("logical_repl");
         LogicalReplConfig logicalRepl = LogicalReplConfig.of(logicalReplNode);
-        long waitTimeout = json.path("wait_timeout").asLong(DEFALUT_WAIT_TIMEOUT);
-        long logDuration = json.path("log_duration").asLong(DEFAULT_LOG_DURATION);
 
-        JsonNode iniSnapshotNode = json.get("ini_snapshot");
-        if (iniSnapshotNode == null) {
-            return MainlineConfigTxaction.of(srcProperty, logicalRepl, waitTimeout, logDuration);
-        }
-        JsonNode tupleSelectNode = iniSnapshotNode.path("tuple_select");
-        JsonNode whereScriptNode = iniSnapshotNode.path("where_script");
-        int r = iniSnapshotNode.path("rs_fetchsize").asInt(PgSnapshotConfig.DEFAULT_RS_FETCHISIZE);
-        String m = iniSnapshotNode.path("metadata_sql").asText(DEFAULT_RELATION_SQL);
-        String a = iniSnapshotNode.path("attrinfo_sql").asText(DEFAULT_ATTRINFO_SQL);
-        Map<PgReplRelationName, String> map = new HashMap<>();
-        Iterator<Map.Entry<String, JsonNode>> it = tupleSelectNode.fields();
-        while (it.hasNext()) {
-            Map.Entry<String, JsonNode> e = it.next();
-            PgReplRelationName relationName = PgReplRelationName.ofTextString(e.getKey());
-            map.put(relationName, e.getValue().asText());
-        }
-        ImmutableMap<PgReplRelationName, String> t = ImmutableMap.copyOf(map);
-        PgSnapshotFilter w;
-        if (whereScriptNode.isMissingNode()) {
-            w = PgSnapshotFilterDefault.of();
+        // String initialStep = json.path("initial_step").asText("snapshot");
+        // snapshot
+        // create_slot_and_publication
+        // create_slot
+        // create_publication
+
+        boolean iniSnapshot = json.path("ini_snapshot").asBoolean(true);
+        MainlineConfig result;
+        if (!iniSnapshot) {
+            result = MainlineConfigStraight.of(srcProperty, logicalRepl, typelistSql);
         }
         else {
-            w = PgSnapshotFilterScript.of(whereScriptNode);
+            JsonNode tupleSelectNode = json.path("tuple_select");
+            JsonNode whereScriptNode = json.path("where_script");
+            String relationSql = json.path("relation_sql").asText(DEFAULT_RELATION_SQL);
+            Map<PgReplRelationName, String> map = new HashMap<>();
+            Iterator<Map.Entry<String, JsonNode>> it = tupleSelectNode.fields();
+            while (it.hasNext()) {
+                Map.Entry<String, JsonNode> e = it.next();
+                PgReplRelationName relationName = PgReplRelationName.ofTextString(e.getKey());
+                map.put(relationName, e.getValue().asText());
+            }
+            ImmutableMap<PgReplRelationName, String> tupleSelect = ImmutableMap.copyOf(map);
+            PgSnapshotFilter whereScript;
+            if (whereScriptNode.isMissingNode()) {
+                whereScript = PgSnapshotFilterDefault.of();
+            } else {
+                whereScript = PgSnapshotFilterScript.of(whereScriptNode);
+            }
+            PgLockMode lockingMode = PgLockMode.valueOf(json.path("locking_mode").asText("SHARE UPDATE EXCLUSIVE MODE"));
+        result = MainlineConfigSnapshot.of
+            /* */( srcProperty //
+            /* */, typelistSql //
+            /* */, relationSql //
+            /* */, whereScript //
+            /* */, lockingMode //
+            /* */, logicalRepl //
+            /* */, tupleSelect //
+            /* */);
         }
-        PgSnapshotConfig iniSnapshot = PgSnapshotConfig.of(srcProperty, t, w, m, a, false, logicalRepl.slotName);
-        iniSnapshot.waitTimeout = waitTimeout;
-        iniSnapshot.logDuration = logDuration;
-        iniSnapshot.rsFetchsize = r;
-        return MainlineConfigSnapshot.of(srcProperty, logicalRepl, iniSnapshot, waitTimeout, logDuration);
+        long waitTimeout = json.path("wait_timeout").asLong(DEFALUT_WAIT_TIMEOUT);
+        long logDuration = json.path("log_duration").asLong(DEFAULT_LOG_DURATION);
+        int rsFetchsize = json.path("rs_fetchsize").asInt(PgSnapshotConfig.DEFAULT_RS_FETCHISIZE);
+        result.waitTimeout = waitTimeout;
+        result.logDuration = logDuration;
+        result.rsFetchsize = rsFetchsize;
+        return result;
     }
+
+    public static final int DEFAULT_RS_FETCHSIZE = 10240;
+
+    public final String typelistSql;
 
     public final PgConnectionProperty srcProperty;
 
     public final LogicalReplConfig logicalRepl;
 
+    public int rsFetchsize = DEFAULT_RS_FETCHSIZE;
+
     MainlineConfig //
         /* */( PgConnectionProperty srcProperty //
         /* */, LogicalReplConfig logicalRepl //
-        /* */, long waitTimeout //
-        /* */, long logDuration //
+        /* */, String typelistSql //
         /* */)
     {
-        super();
-        this.waitTimeout = waitTimeout;
-        this.logDuration = logDuration;
         this.srcProperty = srcProperty;
         this.logicalRepl = logicalRepl;
+        this.typelistSql = typelistSql;
     }
+
+    public PreparedStatement queryTypelist(PgConnection pgdata)
+        throws SQLException
+    {
+        PreparedStatement ps = pgdata.prepareStatement
+            /* */(TYPELIST_SQL //
+                /* */, ResultSet.TYPE_FORWARD_ONLY //
+                /* */, ResultSet.CONCUR_READ_ONLY //
+                /* */, ResultSet.CLOSE_CURSORS_AT_COMMIT //
+                /* */);
+        try {
+            ps.setFetchDirection(ResultSet.FETCH_FORWARD);
+            ps.setFetchSize(this.rsFetchsize);
+            return ps;
+        }
+        catch (Exception ex) {
+            ps.close();
+            throw ex;
+        }
+    }
+
+    public abstract MainlineActionDataBegin1st createsAction //
+        /* */( AtomicReference<SimpleStatus> status //
+        /* */, TransferQueue<MainlineRecord> tqueue //
+        /* */);
 }

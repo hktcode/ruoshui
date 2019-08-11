@@ -4,8 +4,14 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
+import com.hktcode.lang.exception.ArgumentNullException;
+
+import java.util.Objects;
+
 public enum PgLockMode
 {
+    NO_LOCK(""),
+
     ACCESS_SHARE("ACCESS SHARE"),
 
     ROW_SHARE("ROW SHARE"),
@@ -21,6 +27,20 @@ public enum PgLockMode
     EXCLUSIVE("EXCLUSIVE"),
 
     ACCESS_EXCLUSIVE("ACCESS EXCLUSIVE");
+
+    public static PgLockMode of(String textFormat)
+    {
+        if (textFormat == null) {
+            throw new ArgumentNullException("textFormat");
+        }
+        PgLockMode[] values = PgLockMode.values();
+        for (int i = 0; i < values.length; ++i) {
+            if (Objects.equals(values[i].textFormat, textFormat)) {
+                return values[i];
+            }
+        }
+        return NO_LOCK;
+    }
 
     public final String textFormat;
 

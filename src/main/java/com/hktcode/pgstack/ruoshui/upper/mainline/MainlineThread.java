@@ -29,8 +29,7 @@ public class MainlineThread extends UpperConsumerThreadBasic<MainlineRecord>
             throw new ArgumentNullException("tqueue");
         }
         TransferQueue<MainlineRecord> tqueue = new LinkedTransferQueue<>();
-        MainlineSender sender = MainlineSender.of(tqueue, status);
-        Thread thread = new Thread(Mainline.of(config, sender));
+        Thread thread = new Thread(Mainline.of(config, status, tqueue));
         thread.start();
         return new MainlineThread(thread, tqueue);
     }
