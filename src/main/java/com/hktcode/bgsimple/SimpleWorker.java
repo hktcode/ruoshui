@@ -14,7 +14,7 @@ public abstract class SimpleWorker<W extends SimpleWorker<W>> //
 {
     public final int number;
 
-    protected final AtomicReference<SimpleStatus> status;
+    public final AtomicReference<SimpleStatus> status;
 
     protected SimpleWorker(AtomicReference<SimpleStatus> status, int number)
     {

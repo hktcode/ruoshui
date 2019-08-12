@@ -21,7 +21,7 @@ public class SimpleStatusInnerEnd implements SimpleStatusInner
         return new SimpleStatusInnerEnd(result);
     }
 
-    private final ImmutableList<SimpleMethodAllResultEnd> result;
+    public final ImmutableList<SimpleMethodAllResultEnd> result;
 
     private SimpleStatusInnerEnd(ImmutableList<SimpleMethodAllResultEnd> result)
     {
