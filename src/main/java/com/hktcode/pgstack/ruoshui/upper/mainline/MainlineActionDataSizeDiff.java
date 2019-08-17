@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 public class MainlineActionDataSizeDiff //
-    extends MainlineActionData<MainlineActionDataSizeDiff, MainlineConfigSnapshot>
+    extends MainlineActionData<MainlineConfigSnapshot>
 {
     static MainlineActionDataSizeDiff of(MainlineActionDataReplSlot action)
     {

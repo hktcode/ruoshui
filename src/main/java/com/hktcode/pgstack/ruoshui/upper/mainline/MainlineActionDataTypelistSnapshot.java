@@ -7,7 +7,7 @@ package com.hktcode.pgstack.ruoshui.upper.mainline;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 class MainlineActionDataTypelistSnapshot //
-    extends MainlineActionDataTypelist<MainlineActionDataTypelistSnapshot>
+    extends MainlineActionDataTypelist
 {
     static MainlineActionDataTypelistSnapshot of(MainlineActionDataSsFinish action)
     {

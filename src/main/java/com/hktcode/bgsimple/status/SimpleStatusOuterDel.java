@@ -23,7 +23,7 @@ public class SimpleStatusOuterDel extends SimpleStatusOuter
         return new SimpleStatusOuterDel(method, phaser);
     }
 
-    private final SimpleMethodDel[] method;
+    public final SimpleMethodDel[] method;
 
     private SimpleStatusOuterDel(SimpleMethodDel[] method, Phaser phaser)
     {

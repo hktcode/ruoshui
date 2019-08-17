@@ -5,6 +5,7 @@
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;
+import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
@@ -15,8 +16,8 @@ import org.slf4j.LoggerFactory;
 import java.nio.ByteBuffer;
 import java.sql.SQLException;
 
-abstract class MainlineActionReplTxaction<A extends MainlineActionReplTxaction<A>>
-    extends MainlineActionRepl<A, MainlineConfig>
+abstract class MainlineActionReplTxaction
+    extends MainlineActionRepl<MainlineConfig>
 {
     private static final Logger logger = LoggerFactory.getLogger(MainlineActionReplTxaction.class);
 
@@ -26,7 +27,7 @@ abstract class MainlineActionReplTxaction<A extends MainlineActionReplTxaction<A
 
     public LogSequenceNumber txactionLsn = LogSequenceNumber.INVALID_LSN;
 
-    protected <T extends MainlineActionDataTypelist<T>, F extends MainlineConfig>
+    protected <T extends MainlineActionDataTypelist>
     MainlineActionReplTxaction(T action)
     {
         super(action, System.currentTimeMillis());
@@ -42,7 +43,7 @@ abstract class MainlineActionReplTxaction<A extends MainlineActionReplTxaction<A
         MainlineRecord r = null;
         this.statusInfor = "start logical replication stream";
         try (PGReplicationStream slt = this.config.logicalRepl.start(pgrepl)) {
-            while (!(this.newStatus((A)this) instanceof SimpleStatusInnerEnd)) {
+            while (!(this.newStatus(this) instanceof SimpleStatusInnerEnd)) {
                 LogSequenceNumber txactionlsn = this.txactionLsn;
                 this.statusInfor = "receive logical replication stream message";
                 if (r == null) {
@@ -86,4 +87,16 @@ abstract class MainlineActionReplTxaction<A extends MainlineActionReplTxaction<A
     }
 
     public abstract MainlineMetricRunTxaction complete();
+
+    @Override
+    public MainlineResultRun pst(LogSequenceNumber lsn)
+    {
+        if (lsn == null) {
+            throw new ArgumentNullException("lsn");
+        }
+        this.txactionLsn = lsn;
+        MainlineConfig config = this.config;
+        MainlineMetric metric = this.toRunMetrics();
+        return MainlineResultRun.of(config, metric);
+    }
 }

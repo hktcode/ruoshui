@@ -5,19 +5,11 @@
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.bgsimple.SimpleWorker;
-import com.hktcode.bgsimple.method.SimpleMethodDelResult;
-import com.hktcode.bgsimple.method.SimpleMethodGetResult;
-import com.hktcode.bgsimple.method.SimpleMethodPstResult;
-import com.hktcode.bgsimple.method.SimpleMethodPutResult;
-import com.hktcode.bgsimple.status.SimpleStatus;
-import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
-import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineMetricEnd;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class UpperConsumerActionEnd //
     extends SimpleWorker<UpperConsumerActionEnd> //
@@ -50,32 +42,36 @@ public class UpperConsumerActionEnd //
     }
 
     @Override
-    public UpperConsumerAction next(Throwable throwable) throws InterruptedException
+    public UpperConsumerActionErr next(Throwable throwable) //
+        throws InterruptedException
     {
-        return null;
+        if (throwable == null) {
+            throw new ArgumentNullException("throwable");
+        }
+        return UpperConsumerActionErr.of(this, throwable);
     }
 
     @Override
-    public SimpleMethodPstResult<UpperConsumerActionEnd> pst()
+    public UpperConsumerResultEnd pst()
     {
-        return null;
+        return UpperConsumerResultEnd.of(config, metric);
     }
 
     @Override
-    public SimpleMethodPutResult<UpperConsumerActionEnd> put()
+    public UpperConsumerResultEnd put()
     {
-        return null;
+        return UpperConsumerResultEnd.of(config, metric);
     }
 
     @Override
-    public SimpleMethodGetResult<UpperConsumerActionEnd> get()
+    public UpperConsumerResultEnd get()
     {
-        return null;
+        return UpperConsumerResultEnd.of(config, metric);
     }
 
     @Override
-    public SimpleMethodDelResult<UpperConsumerActionEnd> del()
+    public UpperConsumerResultEnd del()
     {
-        return null;
+        return UpperConsumerResultEnd.of(config, metric);
     }
 }

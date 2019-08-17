@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 class MainlineActionDataSsBegins //
-    extends MainlineActionData<MainlineActionDataSsBegins, MainlineConfigSnapshot>
+    extends MainlineActionData<MainlineConfigSnapshot>
 {
     static MainlineActionDataSsBegins of(MainlineActionDataSizeDiff action)
     {

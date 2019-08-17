@@ -15,7 +15,7 @@ import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 
 public class MainlineActionDataSrFinish //
-    extends MainlineActionData<MainlineActionDataSrFinish, MainlineConfigSnapshot>
+    extends MainlineActionData<MainlineConfigSnapshot>
 {
     static MainlineActionDataSrFinish of(MainlineActionDataTupleval action)
     {

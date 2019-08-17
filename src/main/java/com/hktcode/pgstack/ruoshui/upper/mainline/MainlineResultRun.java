@@ -7,11 +7,11 @@ package com.hktcode.pgstack.ruoshui.upper.mainline;
 import com.hktcode.bgsimple.method.SimpleMethodAllResultRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class MainlineResultRun<W extends MainlineAction<W>> //
-    implements SimpleMethodAllResultRun<W>
+public class MainlineResultRun //
+    extends MainlineResult<MainlineMetric>
+    implements SimpleMethodAllResultRun<MainlineAction>
 {
-    public static <W extends MainlineAction<W>> //
-    MainlineResultRun<W> of(MainlineConfig config, MainlineMetric metric)
+    public static MainlineResultRun of(MainlineConfig config, MainlineMetric metric)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -19,16 +19,11 @@ public class MainlineResultRun<W extends MainlineAction<W>> //
         if (metric == null) {
             throw new ArgumentNullException("metrci");
         }
-        return new MainlineResultRun<W>(config, metric);
+        return new MainlineResultRun(config, metric);
     }
-
-    public final MainlineConfig config;
-
-    public final MainlineMetric metric;
 
     private MainlineResultRun(MainlineConfig config, MainlineMetric metric)
     {
-        this.config = config;
-        this.metric = metric;
+        super(config, metric);
     }
 }

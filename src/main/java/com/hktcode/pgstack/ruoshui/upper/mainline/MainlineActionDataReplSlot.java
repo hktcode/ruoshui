@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 class MainlineActionDataReplSlot //
-    extends MainlineActionData<MainlineActionDataReplSlot, MainlineConfigSnapshot>
+    extends MainlineActionData<MainlineConfigSnapshot>
 {
     static MainlineActionDataReplSlot of(MainlineActionDataRelaLock action)
     {

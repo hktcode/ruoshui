@@ -15,12 +15,12 @@ import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-abstract class MainlineActionDataTypelist<W extends MainlineActionDataTypelist<W>>
-    extends MainlineActionData<W, MainlineConfig>
+abstract class MainlineActionDataTypelist
+    extends MainlineActionData<MainlineConfig>
 {
     public final MainlineReportBegin1st begin1st;
 
-    protected <T extends MainlineActionDataBegin1st<T, F>, F extends MainlineConfig>
+    protected <T extends MainlineActionDataBegin1st<F>, F extends MainlineConfig>
     MainlineActionDataTypelist(T action)
     {
         super(action, System.currentTimeMillis());
@@ -59,7 +59,7 @@ abstract class MainlineActionDataTypelist<W extends MainlineActionDataTypelist<W
             Future<ResultSet> rsFuture = exesvc.submit(q);
             Future<Boolean> nextFuture = null;
             MainlineDeputeResultSetNext rsDepute = null;
-            while (this.newStatus((W)this) instanceof SimpleStatusInnerRun) {
+            while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
                 if (r != null) {
                     r = this.send(r);
                 }

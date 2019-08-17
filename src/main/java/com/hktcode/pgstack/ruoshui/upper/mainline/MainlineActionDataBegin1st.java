@@ -10,10 +10,9 @@ import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 abstract class MainlineActionDataBegin1st
-    /* */< A extends MainlineActionDataBegin1st<A, C>
-    /* */, C extends MainlineConfig
+    /* */< C extends MainlineConfig
     /* */>
-    extends MainlineActionData<A, C>
+    extends MainlineActionData<C>
 {
     public final long startMillis;
 

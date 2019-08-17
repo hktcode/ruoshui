@@ -4,47 +4,56 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
+import com.hktcode.bgsimple.SimpleHolder;
+import com.hktcode.bgsimple.method.SimpleMethodDelParams;
+import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
+import com.hktcode.bgsimple.method.SimpleMethodPutParams;
+import com.hktcode.bgsimple.method.SimpleMethodPutParamsDefault;
 import com.hktcode.bgsimple.status.SimpleStatus;
+import com.hktcode.bgsimple.status.SimpleStatusOuterDel;
+import com.hktcode.bgsimple.status.SimpleStatusOuterPut;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerThreadBasic;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMetric;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpperConsumerThreadBasic;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
+import org.postgresql.replication.LogSequenceNumber;
 
 import java.util.concurrent.LinkedTransferQueue;
+import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class MainlineThread extends UpperConsumerThreadBasic<MainlineRecord>
+public class MainlineThread extends UpperConsumerThreadBasic
 {
-    public static MainlineThread of
-        /* */( MainlineConfig config //
-        /* */, AtomicReference<SimpleStatus> status //
-        /* */)
+    private final Thread thread;
+
+    private final TransferQueue<MainlineRecord> tqueue;
+
+    private final AtomicReference<SimpleStatus> status;
+
+    public static MainlineThread of(MainlineConfig config)
     {
         if (config == null) {
             throw new ArgumentNullException("thread");
         }
-        if (status == null) {
-            throw new ArgumentNullException("tqueue");
-        }
         TransferQueue<MainlineRecord> tqueue = new LinkedTransferQueue<>();
+        SimpleMethodPutParams[] put = new SimpleMethodPutParams[] {
+            SimpleMethodPutParamsDefault.of()
+        };
+        SimpleStatus s = SimpleStatusOuterPut.of(put, new Phaser(2));
+        AtomicReference<SimpleStatus> status = new AtomicReference<>(s);
         Thread thread = new Thread(Mainline.of(config, status, tqueue));
         thread.start();
-        return new MainlineThread(thread, tqueue);
+        return new MainlineThread(thread, tqueue, status);
     }
 
     @Override
-    public UpperConsumerRecord //
-    poll(long timeout, UpperConsumerMetric metric)
-        throws InterruptedException
+    public UpperConsumerRecord poll(long timeout) throws InterruptedException
     {
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
-        MainlineRecord record = this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);
+        MainlineRecordNormal record //
+            = (MainlineRecordNormal)this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);
         if (record != null) {
-            return record.update(metric);
+            return UpperConsumerRecord.of(record.lsn, record.msg);
         }
         else if (this.thread.isAlive()) {
             return null;
@@ -55,8 +64,32 @@ public class MainlineThread extends UpperConsumerThreadBasic<MainlineRecord>
         }
     }
 
-    protected MainlineThread(Thread thread, TransferQueue<MainlineRecord> tqueue)
+    protected MainlineThread //
+        /* */( Thread thread //
+        /* */, TransferQueue<MainlineRecord> tqueue //
+        /* */, AtomicReference<SimpleStatus> status //
+        /* */) //
     {
-        super(thread, tqueue);
+        this.thread = thread;
+        this.tqueue = tqueue;
+        this.status = status;
+    }
+
+    @Override
+    public String del()
+    {
+        SimpleHolder holder = SimpleHolder.of(status);
+        SimpleMethodDelParams[] params = new SimpleMethodDelParams[] {
+            SimpleMethodDelParamsDefault.of()
+        };
+        SimpleStatusOuterDel status = SimpleStatusOuterDel.of(params, new Phaser(2));
+        SimpleStatusOuterDel del = holder.del(status);
+        return null;
+    }
+
+    @Override
+    public void pst(LogSequenceNumber lsn)
+    {
+
     }
 }

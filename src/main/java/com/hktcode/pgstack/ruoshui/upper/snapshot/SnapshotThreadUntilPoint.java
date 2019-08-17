@@ -57,7 +57,7 @@ public class SnapshotThreadUntilPoint extends SnapshotThread
     @Override
     public UpperConsumerRecord poll(long timeout, UpperConsumerMetric metric) throws InterruptedException
     {
-        UpperConsumerRecord record = xact.poll(timeout, metric);
+        UpperConsumerRecord record = xact.poll(timeout);
         if (record != null) {
             if (record.msg instanceof LogicalTxactBeginsMsg) {
                 LogicalTxactBeginsMsg beginsMsg = (LogicalTxactBeginsMsg)record.msg;
@@ -70,7 +70,7 @@ public class SnapshotThreadUntilPoint extends SnapshotThread
         }
         if (!thread.isAlive()) {
             logger.error("snapshot post is not alive."); // TODO:
-            metric.fetchThread = xact;
+            // metric.fetchThread = xact;
         }
         return null;
     }

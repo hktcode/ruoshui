@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 public class MainlineActionDataSsFinish //
-    extends MainlineActionData<MainlineActionDataSsFinish, MainlineConfigSnapshot>
+    extends MainlineActionData<MainlineConfigSnapshot>
 {
     static MainlineActionDataSsFinish of(MainlineActionDataSrFinish action)
     {

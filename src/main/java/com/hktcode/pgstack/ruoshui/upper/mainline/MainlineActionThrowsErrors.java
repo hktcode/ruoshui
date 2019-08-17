@@ -7,13 +7,14 @@ package com.hktcode.pgstack.ruoshui.upper.mainline;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.lang.exception.ArgumentNullException;
+import org.postgresql.replication.LogSequenceNumber;
 
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-class MainlineActionThrowsErrors implements MainlineAction<MainlineActionThrowsErrors>
+class MainlineActionThrowsErrors implements MainlineAction
 {
-    public static <T extends MainlineActionData<T, C>, C extends MainlineConfig>
+    public static <T extends MainlineActionData<C>, C extends MainlineConfig>
     MainlineActionThrowsErrors of(T action, Throwable throwsError)
     {
         if (action == null) {
@@ -25,7 +26,7 @@ class MainlineActionThrowsErrors implements MainlineAction<MainlineActionThrowsE
         return new MainlineActionThrowsErrors(action, throwsError);
     }
 
-    public static <T extends MainlineActionRepl<T, C>, C extends MainlineConfig>
+    public static <T extends MainlineActionRepl<C>, C extends MainlineConfig>
     MainlineActionThrowsErrors of(T action, Throwable throwsError)
     {
         if (action == null) {
@@ -65,7 +66,7 @@ class MainlineActionThrowsErrors implements MainlineAction<MainlineActionThrowsE
         this.tqueue = action.tqueue;
     }
 
-    private <T extends MainlineActionData<T, C>, C extends MainlineConfig> //
+    private <T extends MainlineActionData<C>, C extends MainlineConfig> //
     MainlineActionThrowsErrors(T action, Throwable throwsError)
     {
         this.config = action.config;
@@ -74,7 +75,7 @@ class MainlineActionThrowsErrors implements MainlineAction<MainlineActionThrowsE
         this.tqueue = action.tqueue;
     }
 
-    private <T extends MainlineActionRepl<T, C>, C extends MainlineConfig> //
+    private <T extends MainlineActionRepl<C>, C extends MainlineConfig> //
     MainlineActionThrowsErrors(T action, Throwable throwsError)
     {
         this.config = action.config;
@@ -84,31 +85,40 @@ class MainlineActionThrowsErrors implements MainlineAction<MainlineActionThrowsE
     }
 
     @Override
-    public MainlineResultRun<MainlineActionThrowsErrors> pst()
+    public MainlineResultRun pst()
     {
         return MainlineResultRun.of(this.config, this.metric);
     }
 
     @Override
-    public MainlineResultRun<MainlineActionThrowsErrors> put()
+    public MainlineResultRun pst(LogSequenceNumber lsn)
+    {
+        if (lsn == null) {
+            throw new ArgumentNullException("lsn");
+        }
+        return MainlineResultRun.of(this.config, this.metric);
+    }
+
+    @Override
+    public MainlineResultRun put()
     {
         return MainlineResultRun.of(this.config, this.metric);
     }
 
     @Override
-    public MainlineResultRun<MainlineActionThrowsErrors> get()
+    public MainlineResultRun get()
     {
         return MainlineResultRun.of(this.config, this.metric);
     }
 
     @Override
-    public MainlineResultEnd<MainlineActionThrowsErrors> del()
+    public MainlineResultEnd del()
     {
         return MainlineResultEnd.of(this.config, this.metric);
     }
 
     @Override
-    public SimpleStatusInner newStatus(MainlineActionThrowsErrors wkstep) //
+    public SimpleStatusInner newStatus(MainlineAction wkstep) //
         throws InterruptedException
     {
         return null;

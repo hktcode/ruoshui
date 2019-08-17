@@ -5,8 +5,6 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
-import com.hktcode.bgsimple.method.SimpleMethodDel;
-import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;

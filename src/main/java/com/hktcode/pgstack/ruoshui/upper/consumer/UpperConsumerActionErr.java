@@ -5,18 +5,11 @@
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.bgsimple.SimpleWorker;
-import com.hktcode.bgsimple.method.SimpleMethodDelResult;
-import com.hktcode.bgsimple.method.SimpleMethodGetResult;
-import com.hktcode.bgsimple.method.SimpleMethodPstResult;
-import com.hktcode.bgsimple.method.SimpleMethodPutResult;
-import com.hktcode.bgsimple.status.SimpleStatus;
-import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class UpperConsumerActionErr //
     extends SimpleWorker<UpperConsumerActionErr> //
@@ -37,6 +30,18 @@ public class UpperConsumerActionErr //
         return new UpperConsumerActionErr(action, statusInfor, throwsError);
     }
 
+    public static UpperConsumerActionErr of //
+        (UpperConsumerActionEnd action, Throwable throwsError)
+    {
+        if (action == null) {
+            throw new ArgumentNullException("action");
+        }
+        if (throwsError == null) {
+            throw new ArgumentNullException("throwsError");
+        }
+        return new UpperConsumerActionErr(action, throwsError);
+    }
+
     public final MainlineConfig config;
 
     public final UpperConsumerMetricErr metric;
@@ -52,33 +57,43 @@ public class UpperConsumerActionErr //
         this.comein = action.comein;
     }
 
-    @Override
-    public UpperConsumerAction next(Throwable throwable) throws InterruptedException
+    private UpperConsumerActionErr //
+        (UpperConsumerActionEnd action, Throwable throwsError)
     {
-        return null;
+        super(action.status, 3);
+        this.config = action.config;
+        this.metric = UpperConsumerMetricErr.of(action.metric, throwsError);
+        this.comein = action.comein;
     }
 
     @Override
-    public SimpleMethodPstResult<UpperConsumerActionErr> pst()
+    public UpperConsumerActionErr next(Throwable throwable) //
+        throws InterruptedException
     {
-        return null;
+        return this;
     }
 
     @Override
-    public SimpleMethodPutResult<UpperConsumerActionErr> put()
+    public UpperConsumerResultErr pst()
     {
-        return null;
+        return UpperConsumerResultErr.of(config, metric);
     }
 
     @Override
-    public SimpleMethodGetResult<UpperConsumerActionErr> get()
+    public UpperConsumerResultErr put()
     {
-        return null;
+        return UpperConsumerResultErr.of(config, metric);
     }
 
     @Override
-    public SimpleMethodDelResult<UpperConsumerActionErr> del()
+    public UpperConsumerResultErr get()
     {
-        return null;
+        return UpperConsumerResultErr.of(config, metric);
+    }
+
+    @Override
+    public UpperConsumerResultErr del()
+    {
+        return UpperConsumerResultErr.of(config, metric);
     }
 }

@@ -23,6 +23,18 @@ public class UpperConsumerMetricErr
         return new UpperConsumerMetricErr(action, statusInfor, throwsError);
     }
 
+    public static UpperConsumerMetricErr of //
+        (UpperConsumerMetricEnd metric, Throwable throwsError)
+    {
+        if (metric == null) {
+            throw new ArgumentNullException("metric");
+        }
+        if (throwsError == null) {
+            throw new ArgumentNullException("throwsError");
+        }
+        return new UpperConsumerMetricErr(metric, throwsError);
+    }
+
     public final long actionStart;
 
     public final long recordCount;
@@ -56,6 +68,22 @@ public class UpperConsumerMetricErr
         this.logDatetime = action.logDatetime;
         this.totalMillis = finish - action.actionStart;
         this.statusInfor = statusInfor;
+        this.throwsError = throwsError;
+    }
+
+    private UpperConsumerMetricErr //
+    (UpperConsumerMetricEnd metric, Throwable throwsError)
+    {
+        long finish = System.currentTimeMillis();
+        this.actionStart = metric.actionStart;
+        this.recordCount = metric.recordCount;
+        this.fetchCounts = metric.fetchCounts;
+        this.fetchMillis = metric.fetchMillis;
+        this.offerCounts = metric.offerCounts;
+        this.offerMillis = metric.offerMillis;
+        this.logDatetime = metric.logDatetime;
+        this.totalMillis = finish - metric.actionStart;
+        this.statusInfor = metric.statusInfor;
         this.throwsError = throwsError;
     }
 }

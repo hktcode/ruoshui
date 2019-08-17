@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 class MainlineActionDataRelaList //
-    extends MainlineActionData<MainlineActionDataRelaList, MainlineConfigSnapshot>
+    extends MainlineActionData<MainlineConfigSnapshot>
 {
     static MainlineActionDataRelaList of(MainlineActionDataBegin1stSnapshot action)
     {

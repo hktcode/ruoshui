@@ -5,14 +5,13 @@
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
-import com.hktcode.bgsimple.method.SimpleMethodAllResultRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class MainlineResultEnd<W extends MainlineAction<W>> //
-    implements SimpleMethodAllResultEnd<W>
+public class MainlineResultEnd //
+    extends MainlineResult<MainlineMetricEnd> //
+    implements SimpleMethodAllResultEnd<MainlineAction> //
 {
-    public static <W extends MainlineAction<W>> //
-    MainlineResultEnd<W> of(MainlineConfig config, MainlineMetricEnd metric)
+    public static MainlineResultEnd of(MainlineConfig config, MainlineMetricEnd metric)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -20,16 +19,11 @@ public class MainlineResultEnd<W extends MainlineAction<W>> //
         if (metric == null) {
             throw new ArgumentNullException("metric");
         }
-        return new MainlineResultEnd<>(config, metric);
+        return new MainlineResultEnd(config, metric);
     }
-
-    public final MainlineConfig config;
-
-    public final MainlineMetricEnd metric;
 
     private MainlineResultEnd(MainlineConfig config, MainlineMetricEnd metric)
     {
-        this.config = config;
-        this.metric = metric;
+        super(config, metric);
     }
 }

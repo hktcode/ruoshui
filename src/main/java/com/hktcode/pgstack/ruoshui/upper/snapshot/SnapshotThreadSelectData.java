@@ -68,7 +68,7 @@ public class SnapshotThreadSelectData extends SnapshotThread
         }
         if (!thread.isAlive()) {
             logger.error("snapshot post is not alive."); // TODO:
-            metric.fetchThread = xact;
+            // metric.fetchThread = xact;
         }
         return null;
     }

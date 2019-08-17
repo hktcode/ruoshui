@@ -31,7 +31,7 @@ public class MainlineThreadWork extends MainlineThread
 
     private final MainlineMetric metric;
 
-    @Override
+    // @Override
     public void setTxactionLsn(LogSequenceNumber lsn)
     {
         if (lsn == null) {
@@ -46,7 +46,8 @@ public class MainlineThreadWork extends MainlineThread
         /* */, TransferQueue<MainlineRecord> tqueue //
         /* */)
     {
-        super(thread, tqueue);
+        super(thread, tqueue, null);
+        // super(thread, tqueue);
         this.metric = metric;
     }
 }

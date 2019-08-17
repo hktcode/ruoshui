@@ -119,7 +119,7 @@ public class UpperConsumerActionRun //
     }
 
     @Override
-    public UpperConsumerAction next(Throwable throwable) //
+    public UpperConsumerActionErr next(Throwable throwable) //
         throws InterruptedException
     {
         return null;

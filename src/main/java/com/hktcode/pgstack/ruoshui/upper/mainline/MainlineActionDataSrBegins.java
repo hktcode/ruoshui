@@ -16,7 +16,7 @@ import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 
 class MainlineActionDataSrBegins //
-    extends MainlineActionData<MainlineActionDataSrBegins, MainlineConfigSnapshot>
+    extends MainlineActionData<MainlineConfigSnapshot>
 {
     static MainlineActionDataSrBegins of(MainlineActionDataSsBegins action)
     {

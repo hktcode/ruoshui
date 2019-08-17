@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 class MainlineActionDataRelaLock //
-    extends MainlineActionData<MainlineActionDataRelaLock, MainlineConfigSnapshot>
+    extends MainlineActionData<MainlineConfigSnapshot>
 {
     static MainlineActionDataRelaLock of(MainlineActionDataRelaList action)
     {

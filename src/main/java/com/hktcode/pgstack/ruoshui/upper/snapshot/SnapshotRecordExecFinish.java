@@ -24,7 +24,7 @@ public class SnapshotRecordExecFinish implements SnapshotRecord
         /* */, MainlineThreadWork xact //
         /* */)
     {
-        metric.fetchThread = xact;
+        // metric.fetchThread = xact;
         return null;
     }
 

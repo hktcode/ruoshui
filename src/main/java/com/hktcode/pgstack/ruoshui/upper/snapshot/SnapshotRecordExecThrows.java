@@ -41,7 +41,7 @@ public class SnapshotRecordExecThrows implements SnapshotRecord
             throw new ArgumentNullException("xact");
         }
         logger.error("throws exception: ", throwable);
-        metric.fetchThread = xact;
+        // metric.fetchThread = xact;
         return null;
     }
 

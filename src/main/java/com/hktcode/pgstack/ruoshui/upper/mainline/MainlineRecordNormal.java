@@ -19,9 +19,9 @@ class MainlineRecordNormal implements MainlineRecord
         return new MainlineRecordNormal(lsn, msg);
     }
 
-    private final long lsn;
+    public final long lsn;
 
-    private final LogicalMsg msg;
+    public final LogicalMsg msg;
 
     private MainlineRecordNormal(long lsn, LogicalMsg msg)
     {

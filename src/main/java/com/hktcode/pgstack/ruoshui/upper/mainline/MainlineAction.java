@@ -5,10 +5,25 @@
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.hktcode.bgsimple.BgWorker;
+import org.postgresql.replication.LogSequenceNumber;
 
-interface MainlineAction<W extends MainlineAction<W>> extends BgWorker<W>
+interface MainlineAction extends BgWorker<MainlineAction>
 {
     MainlineActionThrowsErrors nextThrowErr(Throwable throwsError);
 
     MainlineMetricEnd toEndMetrics();
+
+    @Override
+    MainlineResultRun pst();
+
+    @Override
+    MainlineResultRun put();
+
+    @Override
+    MainlineResultRun get();
+
+    @Override
+    MainlineResultEnd del();
+
+    MainlineResultRun pst(LogSequenceNumber lsn);
 }

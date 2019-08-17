@@ -12,16 +12,15 @@ import org.postgresql.jdbc.PgConnection;
 import java.sql.SQLException;
 
 abstract class MainlineActionRepl
-    /* */< W extends MainlineActionRepl<W, C>
-    /* */, C extends MainlineConfig
+    /* */< C extends MainlineConfig
     /* */> //
-    extends TqueueAction<C, MainlineRecord> implements MainlineAction<W> //
+    extends TqueueAction<C, MainlineRecord> implements MainlineAction //
 {
     public long fetchCounts = 0;
 
     public long fetchMillis = 0;
 
-    protected <T extends MainlineActionData<T, F>, F extends C>
+    protected <T extends MainlineActionData<F>, F extends C>
     MainlineActionRepl(T action, long actionStart)
     {
         super(action.config, action.tqueue, action.status, actionStart);
@@ -34,7 +33,7 @@ abstract class MainlineActionRepl
     public abstract MainlineMetricRun toRunMetrics();
 
     @Override
-    public MainlineResultRun<W> pst()
+    public MainlineResultRun pst()
     {
         MainlineConfig config = this.config;
         MainlineMetric metric = this.toRunMetrics();
@@ -42,7 +41,7 @@ abstract class MainlineActionRepl
     }
 
     @Override
-    public MainlineResultRun<W> put()
+    public MainlineResultRun put()
     {
         MainlineConfig config = this.config;
         MainlineMetric metric = this.toRunMetrics();
@@ -50,7 +49,7 @@ abstract class MainlineActionRepl
     }
 
     @Override
-    public MainlineResultRun<W> get()
+    public MainlineResultRun get()
     {
         MainlineConfig config = this.config;
         MainlineMetric metric = this.toRunMetrics();
@@ -58,7 +57,7 @@ abstract class MainlineActionRepl
     }
 
     @Override
-    public MainlineResultEnd<W> del()
+    public MainlineResultEnd del()
     {
         MainlineConfig config = this.config;
         MainlineMetricEnd metric = this.toEndMetrics();
@@ -66,7 +65,7 @@ abstract class MainlineActionRepl
     }
 
     @Override
-    public SimpleStatusInner newStatus(W wkstep) throws InterruptedException
+    public SimpleStatusInner newStatus(MainlineAction wkstep) throws InterruptedException
     {
         return null;
     }
@@ -78,7 +77,7 @@ abstract class MainlineActionRepl
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
         }
-        return MainlineActionThrowsErrors.of((W)this, throwsError);
+        return MainlineActionThrowsErrors.of(this, throwsError);
     }
 
     // MainlineActionTerminateEnd nextComplete();

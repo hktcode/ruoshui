@@ -28,7 +28,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 class MainlineActionDataTupleval //
-    extends MainlineActionData<MainlineActionDataTupleval, MainlineConfigSnapshot> //
+    extends MainlineActionData<MainlineConfigSnapshot> //
 {
     static MainlineActionDataTupleval of(MainlineActionDataSrBegins action)
     {

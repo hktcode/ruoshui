@@ -66,11 +66,11 @@ public class SnapshotThreadLockingRel extends SnapshotThread
             return record.update(metric, thread, tqueue, xact);
         }
         else if (this.thread.isAlive()) {
-            return xact.poll(timeout, metric);
+            return xact.poll(timeout);
         }
         else {
             logger.error("snapshot post is not alive."); // TODO:
-            metric.fetchThread = xact;
+            // metric.fetchThread = xact;
             return null;
         }
     }
