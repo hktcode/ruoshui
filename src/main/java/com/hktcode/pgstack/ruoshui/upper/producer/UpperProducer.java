@@ -1,9 +1,11 @@
 /*
  * Copyright (c) 2019, Huang Ketian.
  */
-package com.hktcode.pgstack.ruoshui.upper;
+package com.hktcode.pgstack.ruoshui.upper.producer;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
@@ -12,11 +14,12 @@ import com.hktcode.bgsimple.triple.kafka.KafkaTripleProducer;
 import com.hktcode.lang.RunnableWithInterrupted;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.PgsqlValTxactCommit;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperProducerConfig;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperProducerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperKafkaProducerCallback;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.postgresql.replication.LogSequenceNumber;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
@@ -35,6 +38,8 @@ public class UpperProducer extends KafkaTripleProducer
     /* */> //
     implements RunnableWithInterrupted
 {
+    private static final Logger logger = LoggerFactory.getLogger(UpperProducer.class);
+
     public static UpperProducer of//
         /* */( UpperProducerConfig config
         /* */, AtomicReference<SimpleStatus> status
@@ -67,6 +72,8 @@ public class UpperProducer extends KafkaTripleProducer
         throws Exception
     {
         try (Producer<byte[], byte[]> kfk = this.producer(BYTES, BYTES)) {
+            logger.info("kfk.metrics={}", kfk.metrics());
+            logger.info("target_topic={}, partition_no={}", config.targetTopic, config.partitionNo);
             UpperProducerRecord d = null;
             while (super.newStatus(worker) instanceof SimpleStatusInnerRun) {
                 if (d == null) {
@@ -106,6 +113,6 @@ public class UpperProducer extends KafkaTripleProducer
     public JsonNode toJsonObject()
     {
         // TODO:
-        return null;
+        return new ObjectNode(JsonNodeFactory.instance);
     }
 }

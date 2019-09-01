@@ -8,13 +8,13 @@ import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.method.*;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumer;
-import com.hktcode.pgstack.ruoshui.upper.UpperJunction;
-import com.hktcode.pgstack.ruoshui.upper.UpperProducer;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConfig;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperProducerRecord;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperSnapshotPstParams;
+import com.hktcode.pgstack.ruoshui.upper.junction.UpperJunction;
+import com.hktcode.pgstack.ruoshui.upper.producer.UpperProducer;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpperConsumer;
+import com.hktcode.pgstack.ruoshui.upper.UpperConfig;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.producer.UpperProducerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperSnapshotPstParams;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -41,7 +41,7 @@ public class OnlyoneWorkingService implements WorkingService
             SimpleMethodPutParamsDefault.of(),
             SimpleMethodPutParamsDefault.of()
         };
-        SimpleStatus put = SimpleStatusOuterPut.of(method, new Phaser(3));
+        SimpleStatus put = SimpleStatusOuterPut.of(method, new Phaser(4));
         this.status = new AtomicReference<>(put);
     }
 
@@ -58,7 +58,7 @@ public class OnlyoneWorkingService implements WorkingService
             // TODO: 如何确保start只会被调用一次呢？
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        SimpleStatus put = s;
+        SimpleStatusOuterPut put = (SimpleStatusOuterPut)s;
         SimpleHolder holder = SimpleHolder.of(status);
         BlockingQueue<UpperConsumerRecord> comein = new ArrayBlockingQueue<>(config.junction.comeinCount);
         BlockingQueue<UpperProducerRecord> getout = new ArrayBlockingQueue<>(config.junction.getoutCount);
@@ -67,14 +67,22 @@ public class OnlyoneWorkingService implements WorkingService
         UpperJunction junction = UpperJunction.of(config.junction, this.status, comein, getout);
         UpperProducer producer = UpperProducer.of(config.producer, this.status, getout);
         Thread thread = new Thread(producer);
+        thread.setDaemon(false);
         thread.setName("ruoshui-upper-producer");
         thread.start();
         thread = new Thread(junction);
+        thread.setDaemon(false);
         thread.setName("ruoshui-upper-junction");
         thread.start();
         thread = new Thread(consumer);
+        thread.setDaemon(false);
         thread.setName("ruoshui-upper-consumer");
         thread.start();
+        put.phaser.awaitAdvanceInterruptibly(put.phaser.arrive());
+        // TODO:
+        SimpleStatusInnerRun run = SimpleStatusInnerRun.of();
+        this.status.compareAndSet(put, run);
+        put.phaser.arriveAndDeregister();
         return ResponseEntity.ok().build(); // TODO:
     }
 

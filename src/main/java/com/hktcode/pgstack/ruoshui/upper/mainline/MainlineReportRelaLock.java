@@ -4,6 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class MainlineReportRelaLock implements MainlineReport
@@ -30,5 +31,14 @@ public class MainlineReportRelaLock implements MainlineReport
         this.rsgetCounts = action.rsgetCounts;
         this.rsgetMillis = action.rsgetMillis;
         this.rsnextCount = action.rsnextCount;
+    }
+
+    @Override
+    public void toJsonObject(ObjectNode node)
+    {
+        node.put("total_millis", totalMillis);
+        node.put("rsget_counts", rsgetCounts);
+        node.put("rsget_millis", rsgetMillis);
+        node.put("rsnext_count", rsnextCount);
     }
 }

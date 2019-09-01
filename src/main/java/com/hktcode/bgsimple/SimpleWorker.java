@@ -9,8 +9,7 @@ import com.hktcode.bgsimple.status.SimpleStatusOuter;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class SimpleWorker<W extends SimpleWorker<W>> //
-    implements BgWorker<W>
+public abstract class SimpleWorker<W extends BgWorker<W>> //
 {
     public final int number;
 
@@ -22,13 +21,12 @@ public abstract class SimpleWorker<W extends SimpleWorker<W>> //
         this.status = status;
     }
 
-    @Override
     public SimpleStatusInner newStatus(W wkstep) throws InterruptedException
     {
         SimpleStatus origin;
         while (!((origin = this.status.get()) instanceof SimpleStatusInner)) {
             SimpleStatusOuter outer = (SimpleStatusOuter) origin;
-            outer.newStatus(wkstep);
+            outer.newStatus(wkstep, number);
         }
         return (SimpleStatusInner) origin;
     }

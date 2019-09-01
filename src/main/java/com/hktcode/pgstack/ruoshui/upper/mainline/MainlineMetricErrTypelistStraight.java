@@ -4,6 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class MainlineMetricErrTypelistStraight extends MainlineMetricErrTypelist
@@ -19,5 +20,16 @@ public class MainlineMetricErrTypelistStraight extends MainlineMetricErrTypelist
     private MainlineMetricErrTypelistStraight(MainlineMetricEndTypelistStraight metric, Throwable throwerr)
     {
         super(metric, throwerr);
+    }
+
+    @Override
+    public void toJsonObject(ObjectNode node)
+    {
+        ObjectNode begin1stNode = node.putObject("begin1st");
+        this.begin1st.toJsonObject(begin1stNode);
+        ObjectNode typelistNode = node.putObject("typelist");
+        this.typelist.toJsonObject(typelistNode);
+        ObjectNode throwerrNode = node.putObject("throwerr");
+        this.throwerr.toJsonObject(throwerrNode);
     }
 }

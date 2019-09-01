@@ -10,6 +10,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.ZonedDateTime;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -42,13 +43,15 @@ public abstract class TripleJunction //
         this.getout = getout;
     }
 
+    // TODO:
+    TripleJunctionMetric metric = TripleJunctionMetric.of(ZonedDateTime.now());
+
     protected I poll(BlockingQueue<I> queue) throws InterruptedException
     {
         if (queue == null) {
             throw new ArgumentNullException("queue");
         }
-        // TODO:
-        return Triple.poll(this.config, null, queue);
+        return Triple.poll(this.config, metric, queue);
     }
 
     protected O push(O record) throws InterruptedException
@@ -56,8 +59,7 @@ public abstract class TripleJunction //
         if (record == null) {
             throw new ArgumentNullException("record");
         }
-        // TODO:
-        return Triple.push(record, this.config, null, this.getout);
+        return Triple.push(record, this.config, metric, this.getout);
     }
 
     public void runInternal(W worker) throws InterruptedException

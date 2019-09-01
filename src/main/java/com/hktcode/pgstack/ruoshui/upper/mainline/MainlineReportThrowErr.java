@@ -4,6 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class MainlineReportThrowErr implements MainlineReport
@@ -24,5 +25,12 @@ public class MainlineReportThrowErr implements MainlineReport
     {
         this.actionStart = actionStart;
         this.throwsError = throwsError;
+    }
+
+    @Override
+    public void toJsonObject(ObjectNode node)
+    {
+        node.put("action_start", actionStart);
+        node.put("throws_err", throwsError.toString());
     }
 }

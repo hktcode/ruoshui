@@ -11,11 +11,12 @@ import org.postgresql.jdbc.PgConnection;
 
 import java.sql.SQLException;
 
-abstract class MainlineActionRepl
-    /* */< C extends MainlineConfig
-    /* */> //
-    extends TqueueAction<C, MainlineRecord> implements MainlineAction //
+abstract class MainlineActionRepl<C extends MainlineConfig> //
+    extends TqueueAction<MainlineAction, C, MainlineRecord> //
+    implements MainlineAction //
 {
+    public final long actionStart;
+
     public long fetchCounts = 0;
 
     public long fetchMillis = 0;
@@ -23,7 +24,8 @@ abstract class MainlineActionRepl
     protected <T extends MainlineActionData<F>, F extends C>
     MainlineActionRepl(T action, long actionStart)
     {
-        super(action.config, action.tqueue, action.status, actionStart);
+        super(action.config, action.tqueue, action.status);
+        this.actionStart = actionStart;
         this.logDatetime = action.logDatetime;
     }
 
@@ -35,17 +37,13 @@ abstract class MainlineActionRepl
     @Override
     public MainlineResultRun pst()
     {
-        MainlineConfig config = this.config;
-        MainlineMetric metric = this.toRunMetrics();
-        return MainlineResultRun.of(config, metric);
+        return this.get();
     }
 
     @Override
     public MainlineResultRun put()
     {
-        MainlineConfig config = this.config;
-        MainlineMetric metric = this.toRunMetrics();
-        return MainlineResultRun.of(config, metric);
+        return this.get();
     }
 
     @Override
@@ -65,13 +63,6 @@ abstract class MainlineActionRepl
     }
 
     @Override
-    public SimpleStatusInner newStatus(MainlineAction wkstep) throws InterruptedException
-    {
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
     public MainlineActionThrowsErrors nextThrowErr(Throwable throwsError)
     {
         if (throwsError == null) {
@@ -79,6 +70,4 @@ abstract class MainlineActionRepl
         }
         return MainlineActionThrowsErrors.of(this, throwsError);
     }
-
-    // MainlineActionTerminateEnd nextComplete();
 }

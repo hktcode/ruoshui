@@ -4,9 +4,9 @@
 package com.hktcode.pgstack.ruoshui.upper.snapshot;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMetric;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThreadWork;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerMetric;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +19,7 @@ public class SnapshotThreadSelectData extends SnapshotThread
         = LoggerFactory.getLogger(SnapshotThreadSelectData.class);
     public static SnapshotThreadSelectData of
         /* */( UpperConsumerRecord record
-        /* */, MainlineThreadWork xact
+        /* */, MainlineThread xact
         /* */, Thread thread
         /* */, TransferQueue<SnapshotRecord> tqueue
         /* */)
@@ -43,7 +43,7 @@ public class SnapshotThreadSelectData extends SnapshotThread
 
     private SnapshotThreadSelectData
         /* */( UpperConsumerRecord record
-        /* */, MainlineThreadWork xact
+        /* */, MainlineThread xact
         /* */, Thread thread
         /* */, TransferQueue<SnapshotRecord> tqueue
         /* */)

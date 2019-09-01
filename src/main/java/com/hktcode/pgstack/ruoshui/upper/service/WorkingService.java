@@ -3,7 +3,7 @@
  */
 package com.hktcode.pgstack.ruoshui.upper.service;
 
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConfig;
+import com.hktcode.pgstack.ruoshui.upper.UpperConfig;
 import org.springframework.http.ResponseEntity;
 
 import java.util.concurrent.ExecutionException;

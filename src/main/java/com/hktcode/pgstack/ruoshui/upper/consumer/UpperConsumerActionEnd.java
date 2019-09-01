@@ -6,38 +6,33 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.bgsimple.SimpleWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
 
 import java.util.concurrent.BlockingQueue;
 
 public class UpperConsumerActionEnd //
-    extends SimpleWorker<UpperConsumerActionEnd> //
-    implements UpperConsumerAction<UpperConsumerActionEnd>
+    extends SimpleWorker<UpperConsumerAction> implements UpperConsumerAction
 {
     public static UpperConsumerActionEnd of //
-        (UpperConsumerActionRun action, String statusInfor)
+        (UpperConsumerActionRun action, UpperConsumerReportFetchThread fetchThread)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        if (statusInfor == null) {
-            throw new ArgumentNullException("statusInfor");
+        if (fetchThread == null) {
+            throw new ArgumentNullException("fetchThread");
         }
-        return new UpperConsumerActionEnd(action, statusInfor);
+        return new UpperConsumerActionEnd(action, fetchThread);
     }
-
-    public final MainlineConfig config;
 
     public final UpperConsumerMetricEnd metric;
 
     public final BlockingQueue<UpperConsumerRecord> comein;
 
-    private UpperConsumerActionEnd(UpperConsumerActionRun action, String statusInfor)
+    private UpperConsumerActionEnd(UpperConsumerActionRun action, UpperConsumerReportFetchThread fetchThread)
     {
-        super(action.status, 3);
-        this.config = action.config;
-        this.metric = UpperConsumerMetricEnd.of(action, statusInfor);
+        super(action.status, 0);
+        this.metric = UpperConsumerMetricEnd.of(action, fetchThread);
         this.comein = action.comein;
     }
 
@@ -54,24 +49,24 @@ public class UpperConsumerActionEnd //
     @Override
     public UpperConsumerResultEnd pst()
     {
-        return UpperConsumerResultEnd.of(config, metric);
+        return UpperConsumerResultEnd.of(metric);
     }
 
     @Override
     public UpperConsumerResultEnd put()
     {
-        return UpperConsumerResultEnd.of(config, metric);
+        return UpperConsumerResultEnd.of(metric);
     }
 
     @Override
     public UpperConsumerResultEnd get()
     {
-        return UpperConsumerResultEnd.of(config, metric);
+        return UpperConsumerResultEnd.of(metric);
     }
 
     @Override
     public UpperConsumerResultEnd del()
     {
-        return UpperConsumerResultEnd.of(config, metric);
+        return UpperConsumerResultEnd.of(metric);
     }
 }

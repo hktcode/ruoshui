@@ -4,8 +4,8 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMetric;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerMetric;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
 
 interface MainlineRecord
 {

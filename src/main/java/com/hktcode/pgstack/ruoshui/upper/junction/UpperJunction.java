@@ -1,9 +1,11 @@
 /*
  * Copyright (c) 2019, Huang Ketian.
  */
-package com.hktcode.pgstack.ruoshui.upper;
+package com.hktcode.pgstack.ruoshui.upper.junction;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.triple.TripleJunction;
@@ -16,9 +18,8 @@ import com.hktcode.pgjdbc.LogicalTxactBeginsMsg;
 import com.hktcode.pgstack.ruoshui.pgsql.LogicalTxactContext;
 import com.hktcode.pgstack.ruoshui.pgsql.PgsqlKey;
 import com.hktcode.pgstack.ruoshui.pgsql.PgsqlVal;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperJunctionMetric;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperProducerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.producer.UpperProducerRecord;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -67,6 +68,8 @@ public class UpperJunction extends TripleJunction
         super(config, comein, getout, status);
     }
 
+    private UpperJunctionMetric metric = UpperJunctionMetric.of(ZonedDateTime.now());
+
     @Override
     protected List<UpperProducerRecord> convert //
         /* */( UpperConsumerRecord record //
@@ -94,21 +97,19 @@ public class UpperJunction extends TripleJunction
         // 此时LSN不是严格自增长.
 
         if (msg instanceof LogicalTxactBeginsMsg) {
-            // metric.curLsnofcmt = ((LogicalTxactBeginsMsg) msg).lsnofcmt;
-            // metric.curSequence = 1;
+            metric.curLsnofcmt = ((LogicalTxactBeginsMsg) msg).lsnofcmt;
+            metric.curSequence = 1;
         }
         else if (msg instanceof LogicalBegSnapshotMsg) {
-            // metric.curLsnofcmt = lsn;
-            // metric.curSequence = 1;
+            metric.curLsnofcmt = lsn;
+            metric.curSequence = 1;
         }
 
-        // TODO: LogicalTxactContext ctx = metric.txidContext;
-        LogicalTxactContext ctx = null;
+        LogicalTxactContext ctx = metric.txidContext;
         ImmutableList<PgsqlVal> vallist = PgsqlVal.of(lsn, msg, ctx);
         List<UpperProducerRecord> result = new ArrayList<>();
         for (PgsqlVal val : vallist) {
-            // TODO: PgsqlKey key = PgsqlKey.of(metric.curLsnofcmt, metric.curSequence++);
-            PgsqlKey key = null;
+            PgsqlKey key = PgsqlKey.of(metric.curLsnofcmt, metric.curSequence++);
             UpperProducerRecord d = UpperProducerRecord.of(key, val);
             result.add(d);
         }
@@ -127,6 +128,6 @@ public class UpperJunction extends TripleJunction
     public JsonNode toJsonObject()
     {
         // TODO:
-        return null;
+        return new ObjectNode(JsonNodeFactory.instance);
     }
 }

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2019, Huang Ketian.
  */
-package com.hktcode.pgstack.ruoshui.upper.entity;
+package com.hktcode.pgstack.ruoshui.upper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.hktcode.bgsimple.method.SimpleMethodPstParams;
@@ -10,12 +10,11 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilter;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilterDefault;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilterScript;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumer;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpperConsumerAction;
 
 import javax.script.ScriptException;
 
-public class UpperSnapshotPstParams //
-    implements SimpleMethodPstParams<UpperConsumer>
+public class UpperSnapshotPstParams implements SimpleMethodPstParams<UpperConsumerAction>
 {
     public static UpperSnapshotPstParams of(JsonNode json)
         throws ScriptException
@@ -36,13 +35,13 @@ public class UpperSnapshotPstParams //
     }
 
     @Override
-    public SimpleMethodPstResult<UpperConsumer> run(UpperConsumer worker)
+    public SimpleMethodPstResult<UpperConsumerAction> run(UpperConsumerAction worker)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");
         }
         // TODO:
-        return worker.pstWithSnapshot(this.json, this.whereScript);
+        return null; //worker.pstWithSnapshot(this.json, this.whereScript);
     }
 
     private final JsonNode json;

@@ -5,9 +5,9 @@ package com.hktcode.pgstack.ruoshui.upper.snapshot;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMetric;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThreadWork;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerMetric;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
 
 import java.util.concurrent.TransferQueue;
 
@@ -36,7 +36,7 @@ public class SnapshotRecordLogicalMsg implements SnapshotRecord
         /* */( UpperConsumerMetric metric
         /* */, Thread thread
         /* */, TransferQueue<SnapshotRecord> tqueue
-        /* */, MainlineThreadWork xact
+        /* */, MainlineThread xact
         /* */)
     {
         if (metric == null) {

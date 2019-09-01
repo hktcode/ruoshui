@@ -4,18 +4,13 @@
 
 package com.hktcode.pgstack.ruoshui.upper;
 
-import com.hktcode.bgsimple.method.SimpleMethodAllResult;
 import com.hktcode.bgsimple.method.SimpleMethodPst;
 import com.hktcode.bgsimple.method.SimpleMethodPstResult;
-import com.hktcode.bgsimple.triple.TripleConsumerMetric;
-import com.hktcode.bgsimple.triple.TripleMethodResult;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMetric;
-import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpperConsumerAction;
 import org.postgresql.replication.LogSequenceNumber;
 
-public class UpperMethodPstParamsRecvLsn
-    implements SimpleMethodPst<UpperConsumer>
+public class UpperMethodPstParamsRecvLsn implements SimpleMethodPst<UpperConsumerAction>
 {
     public static UpperMethodPstParamsRecvLsn of(LogSequenceNumber receiveLsn)
     {
@@ -33,12 +28,12 @@ public class UpperMethodPstParamsRecvLsn
     }
 
     @Override
-    public SimpleMethodPstResult<UpperConsumer> run(UpperConsumer worker)
+    public SimpleMethodPstResult<UpperConsumerAction> run(UpperConsumerAction worker)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");
         }
-        // TODO:
-        return worker.pst(this.receiveLsn);
+        // TODO: return worker.pst(this.receiveLsn);
+        return null;
     }
 }

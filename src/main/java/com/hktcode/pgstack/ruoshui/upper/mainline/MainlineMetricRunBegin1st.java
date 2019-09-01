@@ -4,6 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class MainlineMetricRunBegin1st implements MainlineMetricRun
@@ -35,5 +36,12 @@ public class MainlineMetricRunBegin1st implements MainlineMetricRun
     private MainlineMetricRunBegin1st(MainlineReportBegin1st begin1st)
     {
         this.begin1st = begin1st;
+    }
+
+    @Override
+    public void toJsonObject(ObjectNode node)
+    {
+        ObjectNode begin1stNode = node.putObject("begin1st");
+        this.begin1st.toJsonObject(begin1stNode);
     }
 }

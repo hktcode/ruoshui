@@ -1,11 +1,11 @@
 /*
  * Copyright (c) 2019, Huang Ketian.
  */
-package com.hktcode.pgstack.ruoshui.upper;
+package com.hktcode.pgstack.ruoshui.upper.snapshot;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMetric;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerMetric;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
 import org.postgresql.replication.LogSequenceNumber;
 
 public interface UpperConsumerThread

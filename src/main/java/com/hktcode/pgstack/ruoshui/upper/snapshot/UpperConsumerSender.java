@@ -1,14 +1,13 @@
 /*
  * Copyright (c) 2019, Huang Ketian.
  */
-package com.hktcode.pgstack.ruoshui.upper;
+package com.hktcode.pgstack.ruoshui.upper.snapshot;
 
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotSender;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperRunnableMetric;
-import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotMetric;
+import com.hktcode.pgstack.ruoshui.upper.UpperRunnableMetric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

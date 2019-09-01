@@ -39,9 +39,9 @@ public class MainlineActionDataSrFinish //
 
     public final ImmutableList<PgsqlRelationMetric> relationLst;
 
-    public final Iterator<PgsqlRelationMetric> relIterator;
+    final Iterator<PgsqlRelationMetric> relIterator;
 
-    public final PgsqlRelationMetric curRelation;
+    final PgsqlRelationMetric curRelation;
 
     private MainlineActionDataSrFinish(MainlineActionDataTupleval action) //
     {

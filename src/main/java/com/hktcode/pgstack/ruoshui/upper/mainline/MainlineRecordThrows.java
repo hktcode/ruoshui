@@ -6,8 +6,8 @@ package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperThreadThrowsException;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMetric;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerMetric;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
 
 import java.time.ZonedDateTime;
 

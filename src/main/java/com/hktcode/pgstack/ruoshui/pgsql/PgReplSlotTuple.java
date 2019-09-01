@@ -3,6 +3,7 @@
  */
 package com.hktcode.pgstack.ruoshui.pgsql;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
@@ -132,5 +133,13 @@ public class PgReplSlotTuple
         this.consistentPoint = consistentPoint;
         this.snapshotName = snapshotName;
         this.outputPlugin = outputPlugin;
+    }
+
+    public void toJsonObject(ObjectNode node)
+    {
+        node.put("slot_name", slotName);
+        node.put("consistent_point", consistentPoint);
+        node.put("snashot_name", snapshotName);
+        node.put("output_plugin", outputPlugin);
     }
 }

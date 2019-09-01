@@ -6,9 +6,9 @@ package com.hktcode.pgstack.ruoshui.upper.snapshot;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMetric;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThreadWork;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerMetric;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +22,7 @@ public class SnapshotThreadLockingRel extends SnapshotThread
     public static SnapshotThreadLockingRel of //
         /* */(PgSnapshotConfig config //
         /* */, AtomicReference<SimpleStatus> status //
-        /* */, MainlineThreadWork xact //
+        /* */, MainlineThread xact //
         /* */) //
     {
         if (config == null) {
@@ -44,7 +44,7 @@ public class SnapshotThreadLockingRel extends SnapshotThread
 
     private SnapshotThreadLockingRel
         /* */( Thread thread
-        /* */, MainlineThreadWork xact
+        /* */, MainlineThread xact
         /* */, TransferQueue<SnapshotRecord> tqueue
         /* */)
     {

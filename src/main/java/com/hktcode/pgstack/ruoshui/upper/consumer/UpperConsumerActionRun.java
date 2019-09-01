@@ -5,25 +5,22 @@
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.bgsimple.SimpleWorker;
-import com.hktcode.bgsimple.method.SimpleMethodDelResult;
-import com.hktcode.bgsimple.method.SimpleMethodGetResult;
-import com.hktcode.bgsimple.method.SimpleMethodPstResult;
-import com.hktcode.bgsimple.method.SimpleMethodPutResult;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class UpperConsumerActionRun //
-    extends SimpleWorker<UpperConsumerActionRun> //
-    implements UpperConsumerAction<UpperConsumerActionRun>
+    extends SimpleWorker<UpperConsumerAction> implements UpperConsumerAction
 {
     private static final Logger logger = LoggerFactory.getLogger(UpperConsumerActionRun.class);
 
@@ -31,7 +28,7 @@ public class UpperConsumerActionRun //
         /* */( MainlineConfig config //
         /* */, BlockingQueue<UpperConsumerRecord> comein //
         /* */, AtomicReference<SimpleStatus> status //
-        /* */) //
+        /* */) throws InterruptedException //
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -63,17 +60,18 @@ public class UpperConsumerActionRun //
 
     public long logDatetime = 0;
 
-    public UpperConsumerThread fetchThread = UpperConsumerThreadNoop.of();
+    public String statusInfor = "";
 
-    public UpperConsumerAction next() throws InterruptedException
+    public UpperConsumerThread fetchThread;
+
+    public UpperConsumerAction next() throws InterruptedException, ExecutionException
     {
-        // this.fetchThread = this.config.createsThread();
         UpperConsumerRecord r = null;
         while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
             r = (r == null ? this.poll() : this.push(r));
         }
-        String statusInfor = this.fetchThread.del();
-        return UpperConsumerActionEnd.of(this, statusInfor);
+        UpperConsumerReportFetchThread fetchThread = this.fetchThread.del();
+        return UpperConsumerActionEnd.of(this, fetchThread); // TODO:
     }
 
     private UpperConsumerRecord poll() throws InterruptedException
@@ -129,35 +127,39 @@ public class UpperConsumerActionRun //
         /* */( MainlineConfig config //
         /* */, BlockingQueue<UpperConsumerRecord> comein //
         /* */, AtomicReference<SimpleStatus> status //
-        /* */) //
+        /* */) throws InterruptedException // TODO:
     {
-        super(status, 3);
+        super(status, 0);
         this.config = config;
         this.comein = comein;
         this.actionStart = System.currentTimeMillis();
+        this.fetchThread = MainlineThread.of(config);
     }
 
     @Override
-    public SimpleMethodPstResult<UpperConsumerActionRun> pst()
+    public UpperConsumerResultRun pst()
     {
-        return null;
+        return this.get();
     }
 
     @Override
-    public SimpleMethodPutResult<UpperConsumerActionRun> put()
+    public UpperConsumerResultRun put()
     {
-        return null;
+        return this.get();
     }
 
     @Override
-    public SimpleMethodGetResult<UpperConsumerActionRun> get()
+    public UpperConsumerResultRun get()
     {
-        return null;
+        UpperConsumerMetricRun metric = UpperConsumerMetricRun.of(this);
+        return UpperConsumerResultRun.of(metric);
     }
 
     @Override
-    public SimpleMethodDelResult<UpperConsumerActionRun> del()
+    public UpperConsumerResultRun del()
     {
-        return null;
+        // TODO:
+        UpperConsumerMetricRun metric = UpperConsumerMetricRun.of(this);
+        return UpperConsumerResultRun.of(metric);
     }
 }

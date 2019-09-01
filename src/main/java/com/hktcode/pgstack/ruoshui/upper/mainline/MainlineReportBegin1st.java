@@ -4,6 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class MainlineReportBegin1st implements MainlineReport
@@ -35,5 +36,12 @@ public class MainlineReportBegin1st implements MainlineReport
     {
         this.startMillis = begin1st.startMillis;
         this.totalMillis = finish - begin1st.startMillis;
+    }
+
+    @Override
+    public void toJsonObject(ObjectNode node)
+    {
+        node.put("start_millis", startMillis);
+        node.put("total_millis", totalMillis);
     }
 }

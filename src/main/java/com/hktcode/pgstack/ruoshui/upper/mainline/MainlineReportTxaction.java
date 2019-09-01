@@ -4,6 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.replication.LogSequenceNumber;
 
@@ -40,5 +41,17 @@ public class MainlineReportTxaction implements MainlineReport
         this.offerMillis = action.offerMillis;
         this.recordCount = action.recordCount;
         this.txactionLsn = action.txactionLsn;
+    }
+
+    @Override
+    public void toJsonObject(ObjectNode node)
+    {
+        node.put("total_millis", totalMillis);
+        node.put("fetch_counts", fetchCounts);
+        node.put("fetch_millis", fetchMillis);
+        node.put("offer_counts", offerCounts);
+        node.put("offer_millis", offerMillis);
+        node.put("record_count", recordCount);
+        node.put("txaction_lsn", txactionLsn.toString());
     }
 }

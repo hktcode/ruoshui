@@ -1,12 +1,13 @@
 /*
  * Copyright (c) 2019, Huang Ketian.
  */
-package com.hktcode.pgstack.ruoshui.upper.entity;
+package com.hktcode.pgstack.ruoshui.upper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.hktcode.bgsimple.triple.TripleJunctionConfig;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
+import com.hktcode.pgstack.ruoshui.upper.producer.UpperProducerConfig;
 
 import javax.script.ScriptException;
 import java.util.Iterator;

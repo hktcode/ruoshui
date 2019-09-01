@@ -4,6 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class MainlineMetricRunRelaList implements MainlineMetricRun
@@ -26,4 +27,13 @@ public class MainlineMetricRunRelaList implements MainlineMetricRun
     public final MainlineReportBegin1st begin1st;
 
     public final MainlineReportRelaList relalist;
+
+    @Override
+    public void toJsonObject(ObjectNode node)
+    {
+        ObjectNode begin1stNode = node.putObject("begin1st");
+        this.begin1st.toJsonObject(begin1stNode);
+        ObjectNode relalistNode = node.putObject("relalist");
+        this.relalist.toJsonObject(relalistNode);
+    }
 }

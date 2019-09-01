@@ -75,7 +75,7 @@ public class MainlineConfigSnapshot extends MainlineConfig
         + "\n      ,                                              \"a\".\"attname\" as \"attrname\" " //
         + "\n      ,                                       \"a\".\"atttypid\"::int8 as \"datatype\" " //
         + "\n      ,                                      \"a\".\"atttypmod\"::int8 as \"attypmod\" " //
-        + "\n      ,                                              \"n\".\"nspname\" as \"tpschema\" " //
+        + "\n      ,                                             \"tn\".\"nspname\" as \"tpschema\" " //
         + "\n      ,                                              \"y\".\"typname\" as \"typename\" " //
         + "\n FROM            ( SELECT \"t\".\"oid\" " //
         + "\n                        , \"t\".\"relname\" " //
@@ -87,8 +87,8 @@ public class MainlineConfigSnapshot extends MainlineConfig
         + "\n                   WHERE EXISTS (SELECT * FROM \"publication\" WHERE puballtables) " //
         + "\n                   UNION " //
         + "\n                   SELECT \"t\".\"oid\" " //
-        + "\n                        , \"n\".\"nspname\" " //
         + "\n                        , \"t\".\"relname\" " //
+        + "\n                        , \"t\".\"relnamespace\" " //
         + "\n                        , \"t\".\"relreplident\" " //
         + "\n                        , \"t\".\"relpersistence\" " //
         + "\n                        , \"t\".\"relkind\" " //
@@ -98,7 +98,7 @@ public class MainlineConfigSnapshot extends MainlineConfig
         + "\n                        INNER JOIN \"pg_catalog\".\"pg_class\"       \"t\" " //
         + "\n                                ON \"r\".\"prrelid\" = \"t\".\"oid\" " //
         + "\n                   WHERE     NOT EXISTS (SELECT * FROM \"publication\" WHERE puballtables) " //
-        + "\n                         and NOT \"p\".\"puballtables\" " //
+        + "\n                         and NOT \"a\".\"puballtables\" " //
         + "\n                 ) t " //
         + "\n      INNER JOIN \"pg_catalog\".\"pg_namespace\" \"n\" " //
         + "\n              ON \"t\".\"relnamespace\" = \"n\".\"oid\" " //
@@ -106,8 +106,8 @@ public class MainlineConfigSnapshot extends MainlineConfig
         + "\n              ON \"t\".\"oid\" = \"a\".\"attrelid\" " //
         + "\n      INNER JOIN \"pg_catalog\".\"pg_type\" y " //
         + "\n              ON \"a\".\"atttypid\" = \"y\".\"oid\" " //
-        + "\n      INNER JOIN \"pg_catalog\".\"pg_namespace\" n " //
-        + "\n              ON \"y\".\"typnamespace\" = n.\"oid\" " //
+        + "\n      INNER JOIN \"pg_catalog\".\"pg_namespace\" tn " //
+        + "\n              ON \"y\".\"typnamespace\" = tn.\"oid\" " //
         + "\n       LEFT JOIN ( select     \"c\".\"conrelid\" as \"conrelid\" " //
         + "\n                        , \"unnest\"(\"conkey\") as \"conkey\" " //
         + "\n                   from            \"pg_catalog\".\"pg_constraint\" c " //

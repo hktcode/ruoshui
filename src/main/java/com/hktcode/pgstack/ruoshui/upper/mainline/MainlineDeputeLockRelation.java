@@ -6,6 +6,8 @@ package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.util.PSQLException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -34,11 +36,16 @@ public class MainlineDeputeLockRelation implements Callable<Boolean>
         this.sqlscript = sqlscript;
     }
 
+    private static final Logger logger = LoggerFactory.getLogger(MainlineDeputeLockRelation.class);
+
     @Override
     public Boolean call() throws SQLException
     {
         try {
-            return this.statement.execute(sqlscript);
+            // TODO: 为什么这里总是返回false.
+            boolean success = this.statement.execute(sqlscript);
+            logger.info("execute sql: success={}, sqlscript={}", success, sqlscript);
+            return true;
         }
         catch (PSQLException ex) {
             String sqlstate = ex.getSQLState();

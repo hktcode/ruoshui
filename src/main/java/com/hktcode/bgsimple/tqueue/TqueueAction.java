@@ -4,7 +4,10 @@
 
 package com.hktcode.bgsimple.tqueue;
 
+import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.bgsimple.status.SimpleStatus;
+import com.hktcode.bgsimple.status.SimpleStatusInner;
+import com.hktcode.bgsimple.status.SimpleStatusOuter;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,11 +16,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class TqueueAction<C extends TqueueConfig, R>
+public abstract class TqueueAction //
+    <A extends BgWorker<A>, C extends TqueueConfig, R>
 {
     private static final Logger logger = LoggerFactory.getLogger(TqueueAction.class);
-
-    public final long actionStart;
 
     public final C config;
 
@@ -29,13 +31,11 @@ public abstract class TqueueAction<C extends TqueueConfig, R>
         /* */( C config //
         /* */, TransferQueue<R> tqueue //
         /* */, AtomicReference<SimpleStatus> status //
-        /* */, long actionStart
         /* */) //
     {
         this.config = config;
         this.tqueue = tqueue;
         this.status = status;
-        this.actionStart = actionStart;
     }
 
     public long recordCount = 0;
@@ -72,5 +72,16 @@ public abstract class TqueueAction<C extends TqueueConfig, R>
             this.logDatetime = currMillis;
         }
         return record;
+    }
+
+    public SimpleStatusInner newStatus(A wkstep) //
+        throws InterruptedException
+    {
+        SimpleStatus origin;
+        while (!((origin = this.status.get()) instanceof SimpleStatusInner)) {
+            SimpleStatusOuter outer = (SimpleStatusOuter) origin;
+            outer.newStatus(wkstep, 0);
+        }
+        return (SimpleStatusInner) origin;
     }
 }

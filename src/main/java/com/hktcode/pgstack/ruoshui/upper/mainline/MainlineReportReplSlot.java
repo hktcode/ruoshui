@@ -4,6 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 
@@ -46,5 +47,20 @@ public class MainlineReportReplSlot implements MainlineReport
         this.recordCount = action.recordCount;
         this.sltDuration = action.sltDuration;
         this.createTuple = action.createTuple[0];
+    }
+
+    @Override
+    public void toJsonObject(ObjectNode node)
+    {
+        node.put("total_millis", this.totalMillis);
+        node.put("rsget_counts", this.rsgetCounts);
+        node.put("rsget_millis", this.rsgetMillis);
+        node.put("rsnext_count", this.rsnextCount);
+        node.put("offer_counts", this.offerCounts);
+        node.put("offer_millis", this.offerMillis);
+        node.put("record_count", this.recordCount);
+        node.put("slt_duration", this.sltDuration);
+        ObjectNode createTupleNode = node.putObject("create_tuple");
+        this.createTuple.toJsonObject(createTupleNode);
     }
 }

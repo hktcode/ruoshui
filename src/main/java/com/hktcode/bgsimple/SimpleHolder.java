@@ -4,6 +4,9 @@
 
 package com.hktcode.bgsimple;
 
+import com.hktcode.bgsimple.future.SimpleFutureDel;
+import com.hktcode.bgsimple.future.SimpleFutureGet;
+import com.hktcode.bgsimple.future.SimpleFuturePst;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusOuterDel;
 import com.hktcode.bgsimple.status.SimpleStatusOuterGet;
@@ -29,7 +32,7 @@ public class SimpleHolder
         this.status = status;
     }
 
-    public SimpleStatusOuterPst pst(SimpleStatusOuterPst pst)
+    public SimpleFuturePst pst(SimpleStatusOuterPst pst)
     {
         if (pst == null) {
             throw new ArgumentNullException("pst");
@@ -41,15 +44,15 @@ public class SimpleHolder
             origin = this.status.get();
             future = origin.pst(pst);
         } while (/*  */!(future instanceof SimpleStatusOuterPst) //
-                /**/|| (    future != origin  //
-                /*     */&& future == pst  //
-                /*     */&& !this.status.compareAndSet(origin, future) //
+                /**/|| ( // future != origin  //
+                /*     &&*/ future != pst  //
+                /*     */|| !this.status.compareAndSet(origin, future) //
                 /*   */)
             /**/);
-        return (SimpleStatusOuterPst) future;
+        return SimpleFuturePst.of(status, pst);
     }
 
-    public SimpleStatusOuterGet get(SimpleStatusOuterGet get)
+    public SimpleFutureGet get(SimpleStatusOuterGet get)
     {
         if (get == null) {
             throw new ArgumentNullException("get");
@@ -61,15 +64,15 @@ public class SimpleHolder
             origin = this.status.get();
             future = origin.get(get);
         } while (/*  */!(future instanceof SimpleStatusOuterGet) //
-                /**/|| (    future != origin  //
-                /*     */&& future == get  //
-                /*     */&& !this.status.compareAndSet(origin, future) //
+                /**/|| ( // future != origin  //
+                /*     &&*/ future != get  //
+                /*     */|| !this.status.compareAndSet(origin, future) //
                 /*   */)
             /**/);
-        return (SimpleStatusOuterGet)future;
+        return SimpleFutureGet.of(status, get);
     }
 
-    public SimpleStatusOuterDel del(SimpleStatusOuterDel del)
+    public SimpleFutureDel del(SimpleStatusOuterDel del)
     {
         if (del == null) {
             throw new ArgumentNullException("del");
@@ -81,11 +84,11 @@ public class SimpleHolder
             origin = this.status.get();
             future = origin.del(del);
         } while (/*  */!(future instanceof SimpleStatusOuterDel)  //
-                /**/|| (    future != origin  //
-                /*     */&& future == del //
-                /*     */&& !this.status.compareAndSet(origin, future) //
+                /**/|| ( // future != origin  //
+                /*     &&*/ future != del //
+                /*     */|| !this.status.compareAndSet(origin, future) //
                 /*   */) //
             /**/);
-        return (SimpleStatusOuterDel)future;
+        return SimpleFutureDel.of(status, del);
     }
 }

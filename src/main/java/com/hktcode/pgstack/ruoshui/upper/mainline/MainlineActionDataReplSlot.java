@@ -11,6 +11,8 @@ import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgsqlRelationMetric;
 import org.postgresql.core.Utils;
 import org.postgresql.jdbc.PgConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -20,6 +22,8 @@ import java.util.concurrent.Future;
 class MainlineActionDataReplSlot //
     extends MainlineActionData<MainlineConfigSnapshot>
 {
+    private static final Logger logger = LoggerFactory.getLogger(MainlineActionDataReplSlot.class);
+
     static MainlineActionDataReplSlot of(MainlineActionDataRelaLock action)
     {
         if (action == null) {
@@ -36,10 +40,9 @@ class MainlineActionDataReplSlot //
 
     public final ImmutableList<PgsqlRelationMetric> relationLst;
 
-    // public long createStart = 0;
-    public long sltDuration = 0;
+    long sltDuration = 0;
 
-    public PgReplSlotTuple[] createTuple = new PgReplSlotTuple[0];
+    PgReplSlotTuple[] createTuple = new PgReplSlotTuple[0];
 
     private MainlineActionDataReplSlot(MainlineActionDataRelaLock action)
     {
@@ -86,6 +89,7 @@ class MainlineActionDataReplSlot //
                 else if (sendCreateSlot == null) {
                     long finish = System.currentTimeMillis();
                     this.sltDuration = finish - starts;
+                    logger.info("create slot success");
                     this.createTuple = new PgReplSlotTuple[] { tuple };
                     starts = finish;
                     sendCreateSlot = this.sendCreateSlot(tuple);
@@ -95,7 +99,8 @@ class MainlineActionDataReplSlot //
                 }
                 else {
                     long finish = System.currentTimeMillis();
-                    // TODO: logger
+                    logger.info("send create slot success: duration={}" //
+                        , finish - starts);
                     return MainlineActionDataSizeDiff.of(this);
                 }
             }

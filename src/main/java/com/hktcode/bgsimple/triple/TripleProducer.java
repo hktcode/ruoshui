@@ -6,6 +6,7 @@ package com.hktcode.bgsimple.triple;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
 
+import java.time.ZonedDateTime;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -29,9 +30,11 @@ public abstract class TripleProducer //
         this.getout = getout;
     }
 
+    // TODO:
+    TripleProducerMetric metric = TripleProducerMetric.of(ZonedDateTime.now());
+
     public O poll() throws InterruptedException
     {
-        // TODO: return Triple.poll(this.config, metric, this.getout);
-        return Triple.poll(this.config, null, this.getout);
+        return Triple.poll(this.config, metric, this.getout);
     }
 }

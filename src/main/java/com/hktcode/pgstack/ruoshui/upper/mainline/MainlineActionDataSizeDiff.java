@@ -44,9 +44,9 @@ public class MainlineActionDataSizeDiff //
 
     public final MainlineReportReplSlot replSlot;
 
-    public final ImmutableList<PgsqlRelationMetric> oldRelalist;
+    final ImmutableList<PgsqlRelationMetric> oldRelalist;
 
-    public final List<PgsqlRelationMetric> newRelalist;
+    private final List<PgsqlRelationMetric> newRelalist;
 
     private MainlineActionDataSizeDiff(MainlineActionDataReplSlot action)
     {

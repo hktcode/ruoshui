@@ -4,6 +4,7 @@
 
 package com.hktcode.bgsimple.status;
 
+import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.bgsimple.method.SimpleMethodDel;
 import com.hktcode.bgsimple.SimpleWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
@@ -32,14 +33,13 @@ public class SimpleStatusOuterDel extends SimpleStatusOuter
     }
 
     @Override
-    public <W extends SimpleWorker<W>> void setResult(W wkstep)
+    public <A extends BgWorker<A>> void setResult(A wkstep, int number)
     {
         if (wkstep == null) {
             throw new ArgumentNullException("wkstep");
         }
-        int index = wkstep.number;
         @SuppressWarnings("unchecked")
-        SimpleMethodDel<W> w = (SimpleMethodDel<W>) this.method[index];
-        this.method[index] = w.run(wkstep);
+        SimpleMethodDel<A> w = (SimpleMethodDel<A>) this.method[number];
+        this.method[number] = w.run(wkstep);
     }
 }

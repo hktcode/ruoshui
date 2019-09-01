@@ -6,13 +6,16 @@ package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInner;
+import com.hktcode.bgsimple.tqueue.TqueueAction;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.replication.LogSequenceNumber;
 
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class MainlineActionTerminateEnd implements MainlineAction
+public class MainlineActionTerminateEnd
+    extends TqueueAction<MainlineAction, MainlineConfig, MainlineRecord> //
+    implements MainlineAction
 {
     public static <A extends MainlineActionData<C>, C extends MainlineConfig>
     MainlineActionTerminateEnd of(A action)
@@ -32,29 +35,19 @@ public class MainlineActionTerminateEnd implements MainlineAction
         return new MainlineActionTerminateEnd(action);
     }
 
-    public final MainlineConfig config;
-
     public final MainlineMetricEnd metric;
-
-    public final TransferQueue<MainlineRecord> tqueue;
-
-    public final AtomicReference<SimpleStatus> status;
 
     private <A extends MainlineActionData<C>, C extends MainlineConfig> //
     MainlineActionTerminateEnd(A action)
     {
-        this.config = action.config;
-        this.tqueue = action.tqueue;
-        this.status = action.status;
+        super(action.config, action.tqueue, action.status);
         this.metric = action.toEndMetrics();
     }
 
     private <A extends MainlineActionRepl<C>, C extends MainlineConfig> //
     MainlineActionTerminateEnd(A action)
     {
-        this.config = action.config;
-        this.tqueue = action.tqueue;
-        this.status = action.status;
+        super(action.config, action.tqueue, action.status);
         this.metric = action.toEndMetrics();
     }
 
@@ -76,13 +69,13 @@ public class MainlineActionTerminateEnd implements MainlineAction
     @Override
     public MainlineResultRun pst()
     {
-        return MainlineResultRun.of(this.config, this.metric);
+        return this.get();
     }
 
     @Override
     public MainlineResultRun put()
     {
-        return MainlineResultRun.of(this.config, this.metric);
+        return this.get();
     }
 
     @Override
@@ -103,13 +96,6 @@ public class MainlineActionTerminateEnd implements MainlineAction
         if (lsn == null) {
             throw new ArgumentNullException("lsn");
         }
-        return MainlineResultRun.of(this.config, this.metric);
-    }
-
-    @Override
-    public SimpleStatusInner newStatus(MainlineAction wkstep) //
-        throws InterruptedException
-    {
-        return null;
+        return this.get();
     }
 }

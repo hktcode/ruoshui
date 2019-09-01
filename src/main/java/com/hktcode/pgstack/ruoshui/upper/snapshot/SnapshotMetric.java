@@ -4,7 +4,7 @@
 package com.hktcode.pgstack.ruoshui.upper.snapshot;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperRunnableMetric;
+import com.hktcode.pgstack.ruoshui.upper.UpperRunnableMetric;
 
 import java.time.ZonedDateTime;
 

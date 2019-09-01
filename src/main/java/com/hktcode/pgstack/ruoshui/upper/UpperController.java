@@ -11,8 +11,6 @@ import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.hktcode.jackson.exception.JsonSchemaValidationImplException;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.jackson.exception.JsonSchemaValidationProcessingException;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConfig;
 import com.hktcode.pgstack.ruoshui.upper.service.OnlyoneWaitingService;
 import com.hktcode.pgstack.ruoshui.upper.service.UpperService;
 import com.hktcode.pgstack.ruoshui.upper.service.WaitingService;
@@ -40,7 +38,7 @@ public class UpperController implements DisposableBean
 
     private final JsonSchema upperConfigSchema;
 
-    // private final JsonSchema snapshotSchema;
+    private final JsonSchema snapshotSchema;
 
     public UpperController(@Autowired YAMLMapper mapper) //
         throws IOException, ProcessingException
@@ -52,9 +50,10 @@ public class UpperController implements DisposableBean
             JsonNode jsonNode = mapper.readTree(input);
             this.upperConfigSchema = factory.getJsonSchema(jsonNode);
         }
+        this.snapshotSchema = this.upperConfigSchema; // TODO:
     }
 
-    @PutMapping(produces = {"application/json"})
+    @PutMapping
     public ResponseEntity put(@RequestBody JsonNode body) //
         throws ScriptException, ExecutionException, InterruptedException, ProcessingException
     {
@@ -62,8 +61,6 @@ public class UpperController implements DisposableBean
             throw new ArgumentNullException("body");
         }
         ProcessingReport report = upperConfigSchema.validate(body);
-        logger.info("report:\n{}", report);
-
         if (!report.isSuccess()) {
             throw new JsonSchemaValidationImplException(report);
         }
@@ -103,18 +100,16 @@ public class UpperController implements DisposableBean
         if (body == null) {
             throw new ArgumentNullException("body");
         }
-        // ProcessingReport report = upperConfigSchema.validate(body);
-        // logger.info("report:\n{}", report);
-
-        // if (!report.isSuccess()) {
-        //     throw JsonSchemaValidationProcessingException.of(report);
-        // }
+        ProcessingReport report = this.snapshotSchema.validate(body);
+        if (!report.isSuccess()) {
+            throw new JsonSchemaValidationImplException(report);
+        }
         UpperService service = this.service.get();
         return service.pst(body);
     }
 
     @Override
-    public void destroy() throws Exception
+    public void destroy() throws ExecutionException, InterruptedException
     {
         this.del();
     }

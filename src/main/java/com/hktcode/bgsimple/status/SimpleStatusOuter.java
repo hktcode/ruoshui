@@ -4,6 +4,7 @@
 
 package com.hktcode.bgsimple.status;
 
+import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.bgsimple.SimpleWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
 
@@ -18,18 +19,20 @@ public abstract class SimpleStatusOuter implements SimpleStatus
         this.phaser = phaser;
     }
 
-    public <W extends SimpleWorker<W>> //
-    void newStatus(W wkstep) throws InterruptedException
+    public <A extends BgWorker<A>> void newStatus(A wkstep, int number) //
+        throws InterruptedException
     {
         if (wkstep == null) {
             throw new ArgumentNullException("wkstep");
         }
-        this.setResult(wkstep);
+        this.setResult(wkstep, number);
         int phase = this.phaser.arriveAndDeregister();
         this.phaser.awaitAdvanceInterruptibly(phase);
+        this.phaser.awaitAdvanceInterruptibly(this.phaser.getPhase());
     }
 
-    public abstract <W extends SimpleWorker<W>> void setResult(W worker);
+    public abstract <A extends BgWorker<A>> //
+    void setResult(A worker, int number);
 
     public SimpleStatus outer(SimpleStatus outer)
     {

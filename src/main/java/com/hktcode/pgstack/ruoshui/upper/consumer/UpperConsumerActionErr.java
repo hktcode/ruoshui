@@ -6,14 +6,12 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.bgsimple.SimpleWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
 
 import java.util.concurrent.BlockingQueue;
 
 public class UpperConsumerActionErr //
-    extends SimpleWorker<UpperConsumerActionErr> //
-    implements UpperConsumerAction<UpperConsumerActionErr>
+    extends SimpleWorker<UpperConsumerAction> implements UpperConsumerAction
 {
     public static UpperConsumerActionErr of //
         (UpperConsumerActionRun action, String statusInfor, Throwable throwsError)
@@ -42,8 +40,6 @@ public class UpperConsumerActionErr //
         return new UpperConsumerActionErr(action, throwsError);
     }
 
-    public final MainlineConfig config;
-
     public final UpperConsumerMetricErr metric;
 
     public final BlockingQueue<UpperConsumerRecord> comein;
@@ -51,8 +47,7 @@ public class UpperConsumerActionErr //
     private UpperConsumerActionErr //
         (UpperConsumerActionRun action, String statusInfor, Throwable throwsError)
     {
-        super(action.status, 3);
-        this.config = action.config;
+        super(action.status, 0);
         this.metric = UpperConsumerMetricErr.of(action, statusInfor, throwsError);
         this.comein = action.comein;
     }
@@ -60,8 +55,7 @@ public class UpperConsumerActionErr //
     private UpperConsumerActionErr //
         (UpperConsumerActionEnd action, Throwable throwsError)
     {
-        super(action.status, 3);
-        this.config = action.config;
+        super(action.status, 0);
         this.metric = UpperConsumerMetricErr.of(action.metric, throwsError);
         this.comein = action.comein;
     }
@@ -76,24 +70,24 @@ public class UpperConsumerActionErr //
     @Override
     public UpperConsumerResultErr pst()
     {
-        return UpperConsumerResultErr.of(config, metric);
+        return UpperConsumerResultErr.of(metric);
     }
 
     @Override
     public UpperConsumerResultErr put()
     {
-        return UpperConsumerResultErr.of(config, metric);
+        return UpperConsumerResultErr.of(metric);
     }
 
     @Override
     public UpperConsumerResultErr get()
     {
-        return UpperConsumerResultErr.of(config, metric);
+        return UpperConsumerResultErr.of(metric);
     }
 
     @Override
     public UpperConsumerResultErr del()
     {
-        return UpperConsumerResultErr.of(config, metric);
+        return UpperConsumerResultErr.of(metric);
     }
 }

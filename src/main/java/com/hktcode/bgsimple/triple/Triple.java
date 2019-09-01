@@ -64,7 +64,12 @@ public final class Triple
         if (record == null) {
             long currMillis = System.currentTimeMillis();
             if (currMillis - metric.logDatetime >= logDuration) {
-                logger.info("poll record from getout timeout: timeout={}, logDuration={}", waitTimeout, logDuration);
+                logger.info("poll record from getout timeout" //
+                        + ": waitTimeout={}" //
+                        + ", logDuration={}" //
+                        + ", logDatetime={}" //
+                        + ", currMillis={}" //
+                    , waitTimeout, logDuration, metric.logDatetime, currMillis);
                 metric.logDatetime = currMillis;
             }
         }

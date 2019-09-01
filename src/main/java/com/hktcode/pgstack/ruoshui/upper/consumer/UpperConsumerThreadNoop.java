@@ -3,9 +3,7 @@
  */
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
-import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMetric;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
 import org.postgresql.replication.LogSequenceNumber;
 
 public class UpperConsumerThreadNoop implements UpperConsumerThread
@@ -23,14 +21,15 @@ public class UpperConsumerThreadNoop implements UpperConsumerThread
     }
 
     @Override
-    public String del()
+    public UpperConsumerReportFetchThread del()
     {
-        return "miscarry";
+        return null; // TODO:
     }
 
     @Override
-    public void pst(LogSequenceNumber lsn)
+    public UpperConsumerReportFetchThread pst(LogSequenceNumber lsn)
     {
+        return null; // TODO:
     }
 
     public boolean stop(long timeout)

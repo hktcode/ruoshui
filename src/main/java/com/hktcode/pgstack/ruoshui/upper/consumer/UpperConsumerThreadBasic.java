@@ -11,7 +11,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class UpperConsumerThreadBasic implements UpperConsumerThread
 {
-
     // public boolean stop(long timeout) throws InterruptedException
     // {
     //     boolean result = this.thread.isAlive();

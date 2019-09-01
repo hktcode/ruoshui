@@ -9,15 +9,15 @@ import com.hktcode.lang.exception.ArgumentNullException;
 public class UpperConsumerMetricEnd
 {
     public static UpperConsumerMetricEnd of //
-        (UpperConsumerActionRun action, String statusInfor)
+        (UpperConsumerActionRun action, UpperConsumerReportFetchThread fetchThread)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        if (statusInfor == null) {
-            throw new ArgumentNullException("statusInfo");
+        if (fetchThread == null) {
+            throw new ArgumentNullException("fetchThread");
         }
-        return new UpperConsumerMetricEnd(action, statusInfor);
+        return new UpperConsumerMetricEnd(action, fetchThread);
     }
 
     public final long actionStart;
@@ -36,10 +36,13 @@ public class UpperConsumerMetricEnd
 
     public final long totalMillis;
 
+    public final UpperConsumerReportFetchThread fetchThread;
+
     public final String statusInfor;
 
     private UpperConsumerMetricEnd //
-    (UpperConsumerActionRun action, String statusInfor)
+    (UpperConsumerActionRun action //
+        , UpperConsumerReportFetchThread fetchThread)
     {
         long finish = System.currentTimeMillis();
         this.actionStart = action.actionStart;
@@ -49,7 +52,8 @@ public class UpperConsumerMetricEnd
         this.offerCounts = action.offerCounts;
         this.offerMillis = action.offerMillis;
         this.logDatetime = action.logDatetime;
+        this.statusInfor = action.statusInfor;
         this.totalMillis = finish - action.actionStart;
-        this.statusInfor = statusInfor;
+        this.fetchThread = fetchThread;
     }
 }

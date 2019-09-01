@@ -5,8 +5,8 @@
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMetric;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerMetric;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
 
 import java.util.concurrent.TransferQueue;
 
@@ -43,7 +43,7 @@ class MainlineRecordMetric implements MainlineRecord
             throw new ArgumentNullException("metric");
         }
         // metric.txactMetric = this.metric; TODO:
-        // metric.fetchThread = MainlineThreadWork.of(thread, this.metric, tqueue);
+        // metric.fetchThread = MainlineThread.of(thread, this.metric, tqueue);
         return null;
     }
 

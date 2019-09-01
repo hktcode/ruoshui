@@ -4,9 +4,9 @@
 package com.hktcode.pgstack.ruoshui.upper.snapshot;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerMetric;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThreadWork;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerMetric;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +18,7 @@ public class SnapshotThreadCreateSlot extends SnapshotThread
     public static SnapshotThreadCreateSlot of //
         /* */(Thread thread //
         /* */, TransferQueue<SnapshotRecord> tqueue //
-        /* */, MainlineThreadWork xact //
+        /* */, MainlineThread xact //
         /* */)
     {
         if (thread == null) {
@@ -36,7 +36,7 @@ public class SnapshotThreadCreateSlot extends SnapshotThread
     private SnapshotThreadCreateSlot //
         /* */(Thread thread //
         /* */, TransferQueue<SnapshotRecord> tqueue //
-        /* */, MainlineThreadWork xact //
+        /* */, MainlineThread xact //
         /* */) //
     {
         super(thread, tqueue, xact);

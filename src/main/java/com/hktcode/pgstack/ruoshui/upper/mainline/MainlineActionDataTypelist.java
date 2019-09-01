@@ -20,7 +20,7 @@ abstract class MainlineActionDataTypelist
 {
     public final MainlineReportBegin1st begin1st;
 
-    protected <T extends MainlineActionDataBegin1st<F>, F extends MainlineConfig>
+    <T extends MainlineActionDataBegin1st<F>, F extends MainlineConfig>
     MainlineActionDataTypelist(T action)
     {
         super(action, System.currentTimeMillis());
@@ -28,7 +28,7 @@ abstract class MainlineActionDataTypelist
         this.logDatetime = action.logDatetime;
     }
 
-    protected <T extends MainlineActionDataSsFinish>
+    <T extends MainlineActionDataSsFinish>
     MainlineActionDataTypelist(T action)
     {
         super(action, System.currentTimeMillis());
@@ -36,7 +36,6 @@ abstract class MainlineActionDataTypelist
         this.logDatetime = action.logDatetime;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     MainlineAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws SQLException, InterruptedException

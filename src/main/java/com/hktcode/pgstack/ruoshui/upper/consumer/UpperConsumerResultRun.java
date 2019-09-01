@@ -9,26 +9,20 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
 
 public class UpperConsumerResultRun //
-    implements SimpleMethodAllResultEnd<UpperConsumerActionRun>
+    implements SimpleMethodAllResultEnd<UpperConsumerAction>
 {
-    public static UpperConsumerResultRun of(MainlineConfig config, UpperConsumerMetricRun metric)
+    public static UpperConsumerResultRun of(UpperConsumerMetricRun metric)
     {
-        if (config == null) {
-            throw new ArgumentNullException("config");
-        }
         if (metric == null) {
             throw new ArgumentNullException("metric");
         }
-        return new UpperConsumerResultRun(config, metric);
+        return new UpperConsumerResultRun(metric);
     }
-
-    public final MainlineConfig config;
 
     public final UpperConsumerMetricRun metric;
 
-    private UpperConsumerResultRun(MainlineConfig config, UpperConsumerMetricRun metric)
+    private UpperConsumerResultRun(UpperConsumerMetricRun metric)
     {
-        this.config = config;
         this.metric = metric;
     }
 }

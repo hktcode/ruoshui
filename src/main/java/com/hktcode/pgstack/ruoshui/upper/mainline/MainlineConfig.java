@@ -63,9 +63,9 @@ public abstract class MainlineConfig extends TripleConsumerConfig
         // create_slot
         // create_publication
 
-        boolean iniSnapshot = json.path("ini_snapshot").asBoolean(true);
+        boolean getSnapshot = json.path("get_snapshot").asBoolean(true);
         MainlineConfig result;
-        if (!iniSnapshot) {
+        if (!getSnapshot) {
             result = MainlineConfigStraight.of(srcProperty, logicalRepl, typelistSql);
         }
         else {
@@ -86,7 +86,8 @@ public abstract class MainlineConfig extends TripleConsumerConfig
             } else {
                 whereScript = PgSnapshotFilterScript.of(whereScriptNode);
             }
-            PgLockMode lockingMode = PgLockMode.valueOf(json.path("locking_mode").asText("SHARE UPDATE EXCLUSIVE MODE"));
+            String lockingModeText = json.path("locking_mode").asText("SHARE_UPDATE_EXCLUSIVE");
+            PgLockMode lockingMode = PgLockMode.valueOf(lockingModeText);
         result = MainlineConfigSnapshot.of
             /* */( srcProperty //
             /* */, typelistSql //

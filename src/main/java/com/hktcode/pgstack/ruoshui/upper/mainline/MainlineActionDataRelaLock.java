@@ -9,6 +9,8 @@ import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgsqlRelationMetric;
 import org.postgresql.jdbc.PgConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -20,6 +22,8 @@ import java.util.concurrent.Future;
 class MainlineActionDataRelaLock //
     extends MainlineActionData<MainlineConfigSnapshot>
 {
+    private static final Logger logger = LoggerFactory.getLogger(MainlineActionDataRelaLock.class);
+
     static MainlineActionDataRelaLock of(MainlineActionDataRelaList action)
     {
         if (action == null) {
@@ -68,7 +72,8 @@ class MainlineActionDataRelaLock //
                 }
                 else if (Boolean.TRUE.equals(success)) {
                     long finish = System.currentTimeMillis();
-                    // TODO: 不再需要此方法，记录日志即可
+                    logger.info("lock relation success: relation={}, duration={}" //
+                        , relation.relationInfo, finish - starts);
                     relation.lockDuration = (finish - starts);
                     success = null;
                     executeFuture = null;
@@ -79,6 +84,7 @@ class MainlineActionDataRelaLock //
                 else if (iter.hasNext()) {
                     relation = iter.next();
                     String sql = this.config.lockRelation(relation.relationInfo, pgdata);
+                    logger.info("lock relation: sql={}", sql);
                     Callable<Boolean> callable = MainlineDeputeLockRelation.of(s, sql);
                     starts = System.currentTimeMillis();
                     executeFuture = exesvc.submit(callable);

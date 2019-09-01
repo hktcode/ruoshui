@@ -29,24 +29,24 @@ properties:
             default: "0/0"
             pattern: "[0-9A-Fa-f]{1,8}/[0-9A-Fa-f]{1,8}"
           publication_names: { "type": "array" } # TODO:
-      ini_snapshot:
-        type: object
-        properties:
-          select_props: { "type": object } # TODO:
-          tuple_select: { "type": object } # TODO:
-          rs_fetchsize:
-            type: integer
-            default: 128
-            minimum: 0
-            maximum: 2147483647
-          standby_skip: { "type": "boolean", "default": true }
-          program_code:
-            oneOf:
-              - type: string
-              - type: object
-                properties:
-                  engine_name: { type: string } #TODO:
-                  script_text: { type: string }
+      get_snapshot:
+        type: boolean
+        default: true
+      select_props: { "type": object } # TODO:
+      tuple_select: { "type": object } # TODO:
+      rs_fetchsize:
+        type: integer
+        default: 128
+        minimum: 0
+        maximum: 2147483647
+      standby_skip: { "type": "boolean", "default": true }
+      # program_code:
+      #   oneOf:
+      #     - type: string
+      #     - type: object
+      #       properties:
+      #       engine_name: { type: string } #TODO:
+      #       script_text: { type: string }
       wait_timeout: { "type": "integer", "default": 100 } # TODO:
       log_duration: { "type": "integer", "default": 30000 } # TODO:
   junction:

@@ -4,6 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class MainlineReportComplete implements MainlineReport
@@ -18,5 +19,11 @@ public class MainlineReportComplete implements MainlineReport
     private MainlineReportComplete(long actionStart)
     {
         this.actionStart = actionStart;
+    }
+
+    @Override
+    public void toJsonObject(ObjectNode node)
+    {
+        node.put("action_start", actionStart);
     }
 }

@@ -4,6 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class UpperConsumerMetricErr

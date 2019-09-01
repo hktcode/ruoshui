@@ -4,6 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class MainlineMetricEndSsbegins implements MainlineMetricEnd
@@ -49,6 +50,23 @@ public class MainlineMetricEndSsbegins implements MainlineMetricEnd
             throw new ArgumentNullException("throwerr");
         }
         return MainlineMetricErrSsbegins.of(this, throwerr);
+    }
+
+    @Override
+    public void toJsonObject(ObjectNode node)
+    {
+        ObjectNode begin1stNode = node.putObject("begin1st");
+        this.begin1st.toJsonObject(begin1stNode);
+        ObjectNode relalistNode = node.putObject("relalist");
+        this.relalist.toJsonObject(relalistNode);
+        ObjectNode relalockNode = node.putObject("relalock");
+        this.relalock.toJsonObject(relalockNode);
+        ObjectNode sizediffNode = node.putObject("sizediff");
+        this.sizediff.toJsonObject(sizediffNode);
+        ObjectNode ssbeginsNode = node.putObject("ssbegins");
+        this.ssbegins.toJsonObject(ssbeginsNode);
+        ObjectNode completeNode = node.putObject("complete");
+        this.complete.toJsonObject(completeNode);
     }
 }
 

@@ -4,6 +4,7 @@
 
 package com.hktcode.bgsimple.status;
 
+import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.bgsimple.SimpleWorker;
 import com.hktcode.bgsimple.method.SimpleMethodGet;
 import com.hktcode.lang.exception.ArgumentNullException;
@@ -23,7 +24,7 @@ public class SimpleStatusOuterGet extends SimpleStatusOuter
         return new SimpleStatusOuterGet(method, phaser);
     }
 
-    private final SimpleMethodGet[] method;
+    public final SimpleMethodGet[] method;
 
     private SimpleStatusOuterGet(SimpleMethodGet[] method, Phaser phaser)
     {
@@ -32,14 +33,13 @@ public class SimpleStatusOuterGet extends SimpleStatusOuter
     }
 
     @Override
-    public <W extends SimpleWorker<W>> void setResult(W wkstep)
+    public <A extends BgWorker<A>> void setResult(A wkstep, int number)
     {
         if (wkstep == null) {
             throw new ArgumentNullException("wkstep");
         }
-        int index = wkstep.number;
         @SuppressWarnings("unchecked")
-        SimpleMethodGet<W> w = (SimpleMethodGet<W>) this.method[index];
-        this.method[index] = w.run(wkstep);
+        SimpleMethodGet<A> w = (SimpleMethodGet<A>) this.method[number];
+        this.method[number] = w.run(wkstep);
     }
 }

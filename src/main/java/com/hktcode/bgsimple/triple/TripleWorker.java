@@ -4,12 +4,13 @@
 package com.hktcode.bgsimple.triple;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.bgsimple.SimpleWorker;
-import com.hktcode.bgsimple.method.*;
+import com.hktcode.bgsimple.method.SimpleMethodDel;
+import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;
 import com.hktcode.bgsimple.status.SimpleStatusOuterDel;
-import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,7 @@ public abstract class TripleWorker //
     /* */, F extends TripleConfig //
     /* */, M extends TripleMetric //
     /* */>
-    extends SimpleWorker<W>
+    extends SimpleWorker<W> implements BgWorker<W>
 {
     private static final Logger logger = LoggerFactory.getLogger(TripleWorker.class);
 

@@ -4,8 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
-import com.hktcode.bgsimple.method.SimpleMethodDel;
-import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
+import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;
@@ -19,6 +18,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static java.sql.Connection.TRANSACTION_REPEATABLE_READ;
 
 public class Mainline implements Runnable
 {
@@ -62,6 +63,7 @@ public class Mainline implements Runnable
     @Override
     public void run()
     {
+        logger.info("mainline starts.");
         try {
             this.runWithInterrupted();
         }
@@ -69,9 +71,9 @@ public class Mainline implements Runnable
             logger.error("should not be interrupted by other thread.");
             Thread.currentThread().interrupt();
         }
+        logger.info("mainline finish.");
     }
 
-    @SuppressWarnings("unchecked")
     private void runWithInterrupted() throws InterruptedException
     {
         MainlineAction action = config.createsAction(status, tqueue);
@@ -80,6 +82,8 @@ public class Mainline implements Runnable
             ExecutorService exesvc = Executors.newSingleThreadExecutor();
             try (Connection data = config.srcProperty.queriesConnection()) {
                 PgConnection pgdata = data.unwrap(PgConnection.class);
+                pgdata.setAutoCommit(false);
+                pgdata.setTransactionIsolation(TRANSACTION_REPEATABLE_READ);
                 do {
                     MainlineActionData dataAction = (MainlineActionData)action;
                     action = dataAction.next(exesvc, pgdata, pgrepl);
@@ -100,14 +104,11 @@ public class Mainline implements Runnable
             logger.error("mainline throws exception: ", ex);
             action = action.nextThrowErr(ex);
         }
-        SimpleMethodDel[] method = new SimpleMethodDel[] {
-            SimpleMethodDelParamsDefault.of()
-        };
         SimpleStatusInner o;
-        SimpleStatusInnerEnd f = null; // TODO:
+        SimpleStatusInnerEnd f;
         do {
             o = action.newStatus(action);
+            f = SimpleStatusInnerEnd.of(ImmutableList.of(action.del()));
         } while (!this.status.compareAndSet(o, f));
-        logger.info("mainline terminate");
     }
 }

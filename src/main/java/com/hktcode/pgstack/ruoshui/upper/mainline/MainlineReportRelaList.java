@@ -4,6 +4,8 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.lang.exception.ArgumentNullException;
 
@@ -76,5 +78,19 @@ public class MainlineReportRelaList implements MainlineReport
         this.rsnextCount = rsnextCount;
         this.retryReason = retryReason;
         this.relationLst = relationLst;
+    }
+
+    @Override
+    public void toJsonObject(ObjectNode node)
+    {
+        node.put("total_millis", totalMillis);
+        node.put("rsget_counts", rsgetCounts);
+        node.put("rsget_millis", rsgetMillis);
+        node.put("rsnext_count", rsnextCount);
+        ArrayNode retryReasonNode = node.putArray("retry_reason");
+        for (String s : this.retryReason) {
+            retryReasonNode.add(s);
+        }
+        node.put("relation_lst", relationLst);
     }
 }

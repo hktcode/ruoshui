@@ -5,9 +5,9 @@
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.hktcode.bgsimple.status.SimpleStatus;
-import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.bgsimple.tqueue.TqueueAction;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.lang.exception.NeverHappenAssertionError;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
 import org.slf4j.Logger;
@@ -18,23 +18,25 @@ import java.sql.SQLException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class MainlineActionData
-    /* */< C extends MainlineConfig
-    /* */> //
-    extends TqueueAction<C, MainlineRecord> implements MainlineAction //
+abstract class MainlineActionData<C extends MainlineConfig> //
+    extends TqueueAction<MainlineAction, C, MainlineRecord> //
+    implements MainlineAction //
 {
     private static final Logger logger = LoggerFactory.getLogger(MainlineActionData.class);
 
-    public long rsgetCounts = 0;
+    public final long actionStart;
 
-    public long rsgetMillis = 0;
+    long rsgetCounts = 0;
 
-    public long rsnextCount = 0;
+    long rsgetMillis = 0;
+
+    long rsnextCount = 0;
 
     protected <T extends MainlineActionData<F>, F extends C> //
     MainlineActionData(T action, long actionStart)
     {
-        super(action.config, action.tqueue, action.status, actionStart);
+        super(action.config, action.tqueue, action.status);
+        this.actionStart = actionStart;
         this.statusInfor = action.statusInfor;
         this.logDatetime = action.logDatetime;
     }
@@ -46,7 +48,8 @@ public abstract class MainlineActionData
         /* */, long actionStart //
         /* */) //
     {
-        super(config, tqueue, status, actionStart);
+        super(config, tqueue, status);
+        this.actionStart = actionStart;
     }
 
     abstract MainlineAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
@@ -83,6 +86,7 @@ public abstract class MainlineActionData
             return null;
         }
         catch (ExecutionException ex) {
+            logger.error("pollFromFuture throws ExcecutionException", ex);
             Throwable cause = ex.getCause();
             if (cause instanceof RuntimeException) {
                 throw (RuntimeException)cause;
@@ -94,15 +98,13 @@ public abstract class MainlineActionData
                 throw (Error)cause;
             }
             else {
-                // TODO:
-                throw new RuntimeException(cause);
+                throw new NeverHappenAssertionError(cause);
             }
         }
     }
 
     public abstract MainlineMetricRun toRunMetrics();
 
-    @SuppressWarnings("unchecked")
     @Override
     public MainlineActionThrowsErrors nextThrowErr(Throwable throwsError)
     {
@@ -115,9 +117,7 @@ public abstract class MainlineActionData
     @Override
     public MainlineResultRun pst()
     {
-        MainlineConfig config = this.config;
-        MainlineMetric metric = this.toRunMetrics();
-        return MainlineResultRun.of(config, metric);
+        return this.get();
     }
 
     @Override
@@ -126,15 +126,13 @@ public abstract class MainlineActionData
         if (lsn == null) {
             throw new ArgumentNullException("lsn");
         }
-        return this.pst();
+        return this.get();
     }
 
     @Override
     public MainlineResultRun put()
     {
-        MainlineConfig config = this.config;
-        MainlineMetric metric = this.toRunMetrics();
-        return MainlineResultRun.of(config, metric);
+        return this.get();
     }
 
     @Override
@@ -152,12 +150,4 @@ public abstract class MainlineActionData
         MainlineMetricEnd metric = this.toEndMetrics();
         return MainlineResultEnd.of(config, metric);
     }
-
-    @Override
-    public SimpleStatusInner newStatus(MainlineAction wkstep) throws InterruptedException
-    {
-        return null;
-    }
-
-    // MainlineActionTerminateEnd nextComplete();
 }

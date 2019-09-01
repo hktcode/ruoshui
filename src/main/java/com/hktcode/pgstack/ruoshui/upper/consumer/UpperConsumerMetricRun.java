@@ -8,16 +8,12 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class UpperConsumerMetricRun
 {
-    public static UpperConsumerMetricRun of //
-        (UpperConsumerActionRun action, String statusInfor)
+    public static UpperConsumerMetricRun of(UpperConsumerActionRun action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        if (statusInfor == null) {
-            throw new ArgumentNullException("statusInfor");
-        }
-        return new UpperConsumerMetricRun(action, statusInfor);
+        return new UpperConsumerMetricRun(action);
     }
 
     public final long actionStart;
@@ -34,8 +30,7 @@ public class UpperConsumerMetricRun
 
     public final String statusInfor;
 
-    private UpperConsumerMetricRun //
-        (UpperConsumerActionRun action, String statusInfor)
+    private UpperConsumerMetricRun(UpperConsumerActionRun action)
     {
         this.actionStart = action.actionStart;
         this.recordCount = action.recordCount;
@@ -43,6 +38,6 @@ public class UpperConsumerMetricRun
         this.fetchMillis = action.fetchMillis;
         this.offerCounts = action.offerCounts;
         this.offerMillis = action.offerMillis;
-        this.statusInfor = statusInfor;
+        this.statusInfor = action.statusInfor;
     }
 }

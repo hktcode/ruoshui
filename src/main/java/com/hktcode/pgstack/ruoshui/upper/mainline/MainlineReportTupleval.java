@@ -4,6 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class MainlineReportTupleval implements MainlineReport
@@ -93,5 +94,17 @@ public class MainlineReportTupleval implements MainlineReport
         this.offerCounts = action.offerCounts;
         this.offerMillis = action.offerMillis;
         this.recordCount = action.recordCount;
+    }
+
+    @Override
+    public void toJsonObject(ObjectNode node)
+    {
+        node.put("total_millis", totalMillis);
+        node.put("rsget_counts", rsgetCounts);
+        node.put("rsget_millis", rsgetMillis);
+        node.put("rsnext_count", rsnextCount);
+        node.put("offer_counts", offerCounts);
+        node.put("offer_millis", offerMillis);
+        node.put("record_count", recordCount);
     }
 }

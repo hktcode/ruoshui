@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2019, Huang Ketian.
  */
-package com.hktcode.pgstack.ruoshui.upper.entity;
+package com.hktcode.pgstack.ruoshui.upper.producer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
@@ -10,6 +10,7 @@ import com.hktcode.bgsimple.triple.kafka.KafkaTripleProducerConfig;
 import com.hktcode.kafka.Kafka;
 import com.hktcode.lang.exception.ArgumentIllegalException;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.pgstack.ruoshui.upper.UpperConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
 import java.util.HashMap;

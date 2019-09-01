@@ -87,7 +87,7 @@ class MainlineActionDataRelaList //
     @Deprecated
     public long maxnextTime = -1;
 
-    public final ImmutableList<String> retryReason;
+    final ImmutableList<String> retryReason;
 
     public final List<PgsqlRelationMetric> relationLst = new ArrayList<>();
 
@@ -164,7 +164,7 @@ class MainlineActionDataRelaList //
     private void build(RelationBuilder[] builder, long duration)
     {
         if (this.maxnextTime < duration) {
-            logger.info("get max next time: new={}", duration);
+            logger.info("get max next time: new={}, old={}", duration, this.maxnextTime);
             this.maxnextTime = duration;
         }
         this.relationLst.add(builder[0].builder());
@@ -174,7 +174,7 @@ class MainlineActionDataRelaList //
         throws SQLException, ScriptException
     {
         if (this.maxnextTime < duration) {
-            logger.info("get max next time: new={}", duration);
+            logger.info("get max next time: new={}, old={}", duration, this.maxnextTime);
             this.maxnextTime = duration;
         }
         long relident = rs.getLong("relident");

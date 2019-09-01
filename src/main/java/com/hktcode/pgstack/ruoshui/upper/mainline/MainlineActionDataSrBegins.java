@@ -48,9 +48,9 @@ class MainlineActionDataSrBegins //
 
     public final ImmutableList<PgsqlRelationMetric> relationLst;
 
-    public final Iterator<PgsqlRelationMetric> relIterator;
+    final Iterator<PgsqlRelationMetric> relIterator;
 
-    public final PgsqlRelationMetric curRelation;
+    final PgsqlRelationMetric curRelation;
 
     private MainlineActionDataSrBegins(MainlineActionDataSsBegins action)
     {

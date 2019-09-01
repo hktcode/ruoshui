@@ -4,6 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class MainlineMetricErrSizeDiff implements MainlineMetricErr
@@ -41,4 +42,21 @@ public class MainlineMetricErrSizeDiff implements MainlineMetricErr
     public final MainlineReportSizeDiff sizediff;
 
     public final MainlineReportThrowErr throwerr;
+
+    @Override
+    public void toJsonObject(ObjectNode node)
+    {
+        ObjectNode begin1stNode = node.putObject("begin1st");
+        this.begin1st.toJsonObject(begin1stNode);
+        ObjectNode relalistNode = node.putObject("relalist");
+        this.relalist.toJsonObject(relalistNode);
+        ObjectNode relalockNode = node.putObject("relalock");
+        this.relalock.toJsonObject(relalockNode);
+        ObjectNode replslotNode = node.putObject("replslot");
+        this.replslot.toJsonObject(replslotNode);
+        ObjectNode sizediffNode = node.putObject("sizediff");
+        this.sizediff.toJsonObject(sizediffNode);
+        ObjectNode throwerrNode = node.putObject("throwerr");
+        this.throwerr.toJsonObject(throwerrNode);
+    }
 }

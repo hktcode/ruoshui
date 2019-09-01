@@ -82,7 +82,7 @@ public class UpperKafkaProducerCallback implements Callback
             method[0] = SimpleMethodDelParamsDefault.of(); // TODO:
             method[1] = SimpleMethodDelParamsDefault.of();
             method[2] = SimpleMethodDelParamsDefault.of();
-            Phaser phaser = new Phaser(3);
+            Phaser phaser = new Phaser(4);
             SimpleStatusOuterDel del = SimpleStatusOuterDel.of(method, phaser);
             this.holder.del(del);
         }

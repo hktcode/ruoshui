@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2019, Huang Ketian.
  */
-package com.hktcode.pgstack.ruoshui.upper.entity;
+package com.hktcode.pgstack.ruoshui.upper.junction;
 
 import com.hktcode.bgsimple.triple.TripleJunctionMetric;
 import com.hktcode.lang.exception.ArgumentNullException;

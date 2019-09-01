@@ -7,8 +7,7 @@ import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerSender;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperRunnableMetric;
+import com.hktcode.pgstack.ruoshui.upper.UpperRunnableMetric;
 
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;

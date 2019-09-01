@@ -36,7 +36,6 @@ abstract class MainlineActionReplTxaction
         this.logDatetime = action.logDatetime;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     MainlineAction next(PgConnection pgrepl) throws SQLException, InterruptedException
     {
@@ -95,8 +94,6 @@ abstract class MainlineActionReplTxaction
             throw new ArgumentNullException("lsn");
         }
         this.txactionLsn = lsn;
-        MainlineConfig config = this.config;
-        MainlineMetric metric = this.toRunMetrics();
-        return MainlineResultRun.of(config, metric);
+        return this.get();
     }
 }

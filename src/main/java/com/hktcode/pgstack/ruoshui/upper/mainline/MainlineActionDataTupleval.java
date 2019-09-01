@@ -52,9 +52,9 @@ class MainlineActionDataTupleval //
 
     public final ImmutableList<PgsqlRelationMetric> relationLst;
 
-    public final Iterator<PgsqlRelationMetric> relIterator;
+    final Iterator<PgsqlRelationMetric> relIterator;
 
-    public final PgsqlRelationMetric curRelation;
+    final PgsqlRelationMetric curRelation;
 
     private MainlineActionDataTupleval(MainlineActionDataSrBegins action) //
     {

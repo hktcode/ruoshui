@@ -4,19 +4,22 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
+import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.SimpleHolder;
-import com.hktcode.bgsimple.method.SimpleMethodDelParams;
-import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
-import com.hktcode.bgsimple.method.SimpleMethodPutParams;
-import com.hktcode.bgsimple.method.SimpleMethodPutParamsDefault;
-import com.hktcode.bgsimple.status.SimpleStatus;
-import com.hktcode.bgsimple.status.SimpleStatusOuterDel;
-import com.hktcode.bgsimple.status.SimpleStatusOuterPut;
+import com.hktcode.bgsimple.future.SimpleFutureDel;
+import com.hktcode.bgsimple.future.SimpleFuturePst;
+import com.hktcode.bgsimple.method.*;
+import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.pgstack.ruoshui.upper.UpperMethodPstParamsRecvLsn;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpperConsumerReportFetchThread;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpperConsumerThreadBasic;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotResult;
 import org.postgresql.replication.LogSequenceNumber;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
@@ -25,25 +28,29 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class MainlineThread extends UpperConsumerThreadBasic
 {
+    private final List<SnapshotResult> sslist = new ArrayList<>();
+
     private final Thread thread;
 
     private final TransferQueue<MainlineRecord> tqueue;
 
     private final AtomicReference<SimpleStatus> status;
 
-    public static MainlineThread of(MainlineConfig config)
+    public static MainlineThread of(MainlineConfig config) throws InterruptedException
     {
         if (config == null) {
             throw new ArgumentNullException("thread");
         }
         TransferQueue<MainlineRecord> tqueue = new LinkedTransferQueue<>();
-        SimpleMethodPutParams[] put = new SimpleMethodPutParams[] {
+        SimpleMethodPut[] put = new SimpleMethodPut[] {
             SimpleMethodPutParamsDefault.of()
         };
-        SimpleStatus s = SimpleStatusOuterPut.of(put, new Phaser(2));
+        SimpleStatusOuterPut s = SimpleStatusOuterPut.of(put, new Phaser(2));
         AtomicReference<SimpleStatus> status = new AtomicReference<>(s);
         Thread thread = new Thread(Mainline.of(config, status, tqueue));
         thread.start();
+        MainlineFuturePut future = MainlineFuturePut.of(status, s);
+        future.get();
         return new MainlineThread(thread, tqueue, status);
     }
 
@@ -64,7 +71,7 @@ public class MainlineThread extends UpperConsumerThreadBasic
         }
     }
 
-    protected MainlineThread //
+    private MainlineThread //
         /* */( Thread thread //
         /* */, TransferQueue<MainlineRecord> tqueue //
         /* */, AtomicReference<SimpleStatus> status //
@@ -76,20 +83,33 @@ public class MainlineThread extends UpperConsumerThreadBasic
     }
 
     @Override
-    public String del()
+    public UpperConsumerReportFetchThread del() throws InterruptedException
     {
         SimpleHolder holder = SimpleHolder.of(status);
-        SimpleMethodDelParams[] params = new SimpleMethodDelParams[] {
+        SimpleMethodDel[] params = new SimpleMethodDel[] {
             SimpleMethodDelParamsDefault.of()
         };
-        SimpleStatusOuterDel status = SimpleStatusOuterDel.of(params, new Phaser(2));
-        SimpleStatusOuterDel del = holder.del(status);
-        return null;
+        Phaser phaser = new Phaser(2);
+        SimpleStatusOuterDel del = SimpleStatusOuterDel.of(params, phaser);
+        SimpleFutureDel future = holder.del(del);
+        MainlineResult mainline = (MainlineResult)future.get().get(0);
+        ImmutableList<SnapshotResult> snapshot = ImmutableList.copyOf(sslist);
+        return UpperConsumerReportFetchThread.of(mainline, snapshot);
     }
 
     @Override
-    public void pst(LogSequenceNumber lsn)
+    public UpperConsumerReportFetchThread pst(LogSequenceNumber lsn) //
+        throws InterruptedException
     {
-
+        SimpleHolder holder = SimpleHolder.of(status);
+        SimpleMethodPst[] params = new SimpleMethodPst[] {
+            UpperMethodPstParamsRecvLsn.of(lsn)
+        };
+        Phaser phaser = new Phaser(2);
+        SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(params, phaser);
+        SimpleFuturePst future = holder.pst(pst);
+        MainlineResult mainline = (MainlineResult)future.get().get(0);
+        ImmutableList<SnapshotResult> snapshot = ImmutableList.copyOf(sslist);
+        return UpperConsumerReportFetchThread.of(mainline, snapshot);
     }
 }

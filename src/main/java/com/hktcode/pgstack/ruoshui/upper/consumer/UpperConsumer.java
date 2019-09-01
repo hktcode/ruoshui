@@ -4,13 +4,14 @@
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.google.common.collect.ImmutableList;
+import com.hktcode.bgsimple.method.SimpleMethodAllResult;
 import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;
 import com.hktcode.lang.RunnableWithInterrupted;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.entity.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +58,6 @@ public class UpperConsumer implements RunnableWithInterrupted
         this.status = status;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void runWithInterrupted() throws InterruptedException
     {
@@ -69,9 +69,6 @@ public class UpperConsumer implements RunnableWithInterrupted
                 action = act.next();
             } while (action instanceof UpperConsumerActionRun);
             logger.info("upper consumer completes");
-        }
-        catch (InterruptedException ex) {
-            throw ex;
         }
         catch (Exception ex) {
             logger.error("upper consumer throws exception: ", ex);
@@ -85,7 +82,7 @@ public class UpperConsumer implements RunnableWithInterrupted
             } while (!(o instanceof SimpleStatusInnerEnd));
             SimpleStatusInnerEnd end = (SimpleStatusInnerEnd)o;
             SimpleMethodAllResultEnd[] results = new SimpleMethodAllResultEnd[] {
-                null, // TODO:
+                (SimpleMethodAllResultEnd)action.del(),
                 end.result.get(1),
                 end.result.get(2)
             };

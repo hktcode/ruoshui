@@ -13,9 +13,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-class MainlineActionDataBegin1stSnapshot extends MainlineActionDataBegin1st //
-    /* */< MainlineConfigSnapshot
-    /* */>
+class MainlineActionDataBegin1stSnapshot //
+    extends MainlineActionDataBegin1st<MainlineConfigSnapshot>
 {
     public static MainlineActionDataBegin1stSnapshot of //
         /* */( MainlineConfigSnapshot config //

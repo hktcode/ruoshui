@@ -9,14 +9,12 @@ import com.hktcode.bgsimple.status.SimpleStatus;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-abstract class MainlineActionDataBegin1st
-    /* */< C extends MainlineConfig
-    /* */>
+abstract class MainlineActionDataBegin1st<C extends MainlineConfig> //
     extends MainlineActionData<C>
 {
     public final long startMillis;
 
-    protected MainlineActionDataBegin1st //
+    MainlineActionDataBegin1st //
         /* */( C config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<MainlineRecord> tqueue //

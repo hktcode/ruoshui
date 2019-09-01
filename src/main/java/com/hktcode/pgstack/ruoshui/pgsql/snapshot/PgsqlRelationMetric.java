@@ -19,6 +19,7 @@ public class PgsqlRelationMetric
 
     public final PgReplRelation relationInfo;
 
+    @Deprecated
     public long lockDuration = -1;
 
     public long selectMillis = -1;

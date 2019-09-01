@@ -4,20 +4,19 @@
 package com.hktcode.pgstack.ruoshui.upper.snapshot;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerThreadBasic;
-import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThreadWork;
+import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
 import org.postgresql.replication.LogSequenceNumber;
 
 import java.util.concurrent.TransferQueue;
 
 public abstract class SnapshotThread extends UpperConsumerThreadBasic<SnapshotRecord>
 {
-    protected final MainlineThreadWork xact;
+    protected final MainlineThread xact;
 
     protected SnapshotThread
         /* */( Thread thread
         /* */, TransferQueue<SnapshotRecord> tqueue
-        /* */, MainlineThreadWork xact
+        /* */, MainlineThread xact
         /* */)
     {
         super(thread, tqueue);
@@ -30,6 +29,6 @@ public abstract class SnapshotThread extends UpperConsumerThreadBasic<SnapshotRe
         if (lsn == null) {
             throw new ArgumentNullException("lsn");
         }
-        this.xact.setTxactionLsn(lsn);
+        // this.xact.setTxactionLsn(lsn);
     }
 }

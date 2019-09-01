@@ -40,7 +40,7 @@ class MainlineActionDataSsBegins //
 
     public final ImmutableList<PgsqlRelationMetric> relationLst;
 
-    public final Iterator<PgsqlRelationMetric> relIterator;
+    final Iterator<PgsqlRelationMetric> relIterator;
 
     private MainlineActionDataSsBegins(MainlineActionDataSizeDiff action)
     {
