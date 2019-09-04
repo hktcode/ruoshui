@@ -24,11 +24,6 @@ public class Ruoshui
 
     private static final Logger logger = LoggerFactory.getLogger(Ruoshui.class);
 
-    static
-    {
-        Thread.setDefaultUncaughtExceptionHandler(DefaultUncaughtExceptionHandler.of());
-    }
-
     public static void main(String[] args)
     {
         logger.info("ruoshui starts: HOME={}", HOME);

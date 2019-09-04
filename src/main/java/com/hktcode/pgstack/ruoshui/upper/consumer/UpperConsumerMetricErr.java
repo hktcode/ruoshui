@@ -4,24 +4,20 @@
 
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class UpperConsumerMetricErr
 {
     public static UpperConsumerMetricErr of //
-        (UpperConsumerActionRun action, String statusInfor, Throwable throwsError)
+        (UpperConsumerActionRun action, Throwable throwsError)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        if (statusInfor == null) {
-            throw new ArgumentNullException("statusInfor");
-        }
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
         }
-        return new UpperConsumerMetricErr(action, statusInfor, throwsError);
+        return new UpperConsumerMetricErr(action, throwsError);
     }
 
     public static UpperConsumerMetricErr of //
@@ -54,10 +50,12 @@ public class UpperConsumerMetricErr
 
     public final String statusInfor;
 
+    // TODO: public final UpperConsumerReportFetchThread fetchThread;
+
     public final Throwable throwsError;
 
     private UpperConsumerMetricErr //
-    (UpperConsumerActionRun action, String statusInfor, Throwable throwsError)
+    (UpperConsumerActionRun action, Throwable throwsError)
     {
         long finish = System.currentTimeMillis();
         this.actionStart = action.actionStart;
@@ -68,7 +66,7 @@ public class UpperConsumerMetricErr
         this.offerMillis = action.offerMillis;
         this.logDatetime = action.logDatetime;
         this.totalMillis = finish - action.actionStart;
-        this.statusInfor = statusInfor;
+        this.statusInfor = action.statusInfor;
         this.throwsError = throwsError;
     }
 

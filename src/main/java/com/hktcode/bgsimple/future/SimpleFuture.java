@@ -5,14 +5,8 @@
 package com.hktcode.bgsimple.future;
 
 import com.google.common.collect.ImmutableList;
-import com.hktcode.bgsimple.method.SimpleMethodAllResult;
-import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
-import com.hktcode.bgsimple.method.SimpleMethodDel;
-import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
-import com.hktcode.bgsimple.status.SimpleStatus;
-import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
-import com.hktcode.bgsimple.status.SimpleStatusOuter;
-import com.hktcode.bgsimple.status.SimpleStatusOuterDel;
+import com.hktcode.bgsimple.method.*;
+import com.hktcode.bgsimple.status.*;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.Future;
@@ -108,18 +102,24 @@ public abstract class SimpleFuture<S extends SimpleStatusOuter>
     {
         int delCount = 0;
         SimpleMethodDel[] method = new SimpleMethodDel[result.length];
+        SimpleMethodAllResultEnd[] endresult = new SimpleMethodAllResultEnd[result.length];
         for (int i = 0; i < result.length; ++i) {
             if (result[i] instanceof SimpleMethodAllResultEnd) {
                 method[i] = result[i];
-            }
-            else {
+                endresult[i] = (SimpleMethodAllResultEnd)result[i];
+            } else {
                 method[i] = SimpleMethodDelParamsDefault.of();
                 ++delCount;
             }
         }
-        if (delCount == result.length) {
+        if (delCount == 0) {
+            return SimpleStatusInnerEnd.of(ImmutableList.copyOf(endresult));
+        } else if (delCount == result.length) {
             return SimpleStatusInnerRun.of();
+        } else if (this.origin instanceof SimpleStatusOuterDel) {
+            return SimpleStatusInnerEnd.of(ImmutableList.copyOf(endresult));
+        } else {
+            return SimpleStatusOuterDel.of(method, new Phaser(delCount + 1));
         }
-        return SimpleStatusOuterDel.of(method, new Phaser(delCount + 1));
     }
 }

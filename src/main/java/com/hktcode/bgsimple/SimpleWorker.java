@@ -9,7 +9,7 @@ import com.hktcode.bgsimple.status.SimpleStatusOuter;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class SimpleWorker<W extends BgWorker<W>> //
+public abstract class SimpleWorker<W extends BgWorker<W>>
 {
     public final int number;
 

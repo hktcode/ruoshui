@@ -13,26 +13,22 @@ import java.util.concurrent.BlockingQueue;
 public class UpperConsumerActionEnd //
     extends SimpleWorker<UpperConsumerAction> implements UpperConsumerAction
 {
-    public static UpperConsumerActionEnd of //
-        (UpperConsumerActionRun action, UpperConsumerReportFetchThread fetchThread)
+    public static UpperConsumerActionEnd of(UpperConsumerActionRun action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        if (fetchThread == null) {
-            throw new ArgumentNullException("fetchThread");
-        }
-        return new UpperConsumerActionEnd(action, fetchThread);
+        return new UpperConsumerActionEnd(action);
     }
 
     public final UpperConsumerMetricEnd metric;
 
     public final BlockingQueue<UpperConsumerRecord> comein;
 
-    private UpperConsumerActionEnd(UpperConsumerActionRun action, UpperConsumerReportFetchThread fetchThread)
+    private UpperConsumerActionEnd(UpperConsumerActionRun action)
     {
         super(action.status, 0);
-        this.metric = UpperConsumerMetricEnd.of(action, fetchThread);
+        this.metric = UpperConsumerMetricEnd.of(action);
         this.comein = action.comein;
     }
 

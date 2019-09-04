@@ -14,18 +14,15 @@ public class UpperConsumerActionErr //
     extends SimpleWorker<UpperConsumerAction> implements UpperConsumerAction
 {
     public static UpperConsumerActionErr of //
-        (UpperConsumerActionRun action, String statusInfor, Throwable throwsError)
+        (UpperConsumerActionRun action, Throwable throwsError)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        if (statusInfor == null) {
-            throw new ArgumentNullException("statusInfor");
-        }
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
         }
-        return new UpperConsumerActionErr(action, statusInfor, throwsError);
+        return new UpperConsumerActionErr(action, throwsError);
     }
 
     public static UpperConsumerActionErr of //
@@ -45,10 +42,10 @@ public class UpperConsumerActionErr //
     public final BlockingQueue<UpperConsumerRecord> comein;
 
     private UpperConsumerActionErr //
-        (UpperConsumerActionRun action, String statusInfor, Throwable throwsError)
+        (UpperConsumerActionRun action, Throwable throwsError)
     {
         super(action.status, 0);
-        this.metric = UpperConsumerMetricErr.of(action, statusInfor, throwsError);
+        this.metric = UpperConsumerMetricErr.of(action, throwsError);
         this.comein = action.comein;
     }
 

@@ -5,11 +5,12 @@
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
+import com.hktcode.bgsimple.method.SimpleMethodAllResultRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
 
 public class UpperConsumerResultRun //
-    implements SimpleMethodAllResultEnd<UpperConsumerAction>
+    implements SimpleMethodAllResultRun<UpperConsumerAction>
 {
     public static UpperConsumerResultRun of(UpperConsumerMetricRun metric)
     {

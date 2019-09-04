@@ -67,21 +67,21 @@ public class MainlineActionTerminateEnd
     }
 
     @Override
-    public MainlineResultRun pst()
+    public MainlineResultEnd pst()
     {
         return this.get();
     }
 
     @Override
-    public MainlineResultRun put()
+    public MainlineResultEnd put()
     {
         return this.get();
     }
 
     @Override
-    public MainlineResultRun get()
+    public MainlineResultEnd get()
     {
-        return MainlineResultRun.of(this.config, this.metric);
+        return MainlineResultEnd.of(this.config, this.metric);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class MainlineActionTerminateEnd
     }
 
     @Override
-    public MainlineResultRun pst(LogSequenceNumber lsn)
+    public MainlineResultEnd pst(LogSequenceNumber lsn)
     {
         if (lsn == null) {
             throw new ArgumentNullException("lsn");

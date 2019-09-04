@@ -28,6 +28,8 @@ public class UpperConsumerMetricRun
 
     public final long offerMillis;
 
+    // TODO: public final UpperConsumerReportFetchThread fetchThread;
+
     public final String statusInfor;
 
     private UpperConsumerMetricRun(UpperConsumerActionRun action)

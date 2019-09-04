@@ -70,8 +70,7 @@ public class UpperConsumerActionRun //
         while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
             r = (r == null ? this.poll() : this.push(r));
         }
-        UpperConsumerReportFetchThread fetchThread = this.fetchThread.del();
-        return UpperConsumerActionEnd.of(this, fetchThread); // TODO:
+        return UpperConsumerActionEnd.of(this);
     }
 
     private UpperConsumerRecord poll() throws InterruptedException
@@ -120,7 +119,10 @@ public class UpperConsumerActionRun //
     public UpperConsumerActionErr next(Throwable throwable) //
         throws InterruptedException
     {
-        return null;
+        if (throwable == null) {
+            throw new ArgumentNullException("throwable");
+        }
+        return UpperConsumerActionErr.of(this, throwable);
     }
 
     private UpperConsumerActionRun //
@@ -156,10 +158,9 @@ public class UpperConsumerActionRun //
     }
 
     @Override
-    public UpperConsumerResultRun del()
+    public UpperConsumerResultEnd del()
     {
-        // TODO:
-        UpperConsumerMetricRun metric = UpperConsumerMetricRun.of(this);
-        return UpperConsumerResultRun.of(metric);
+        UpperConsumerMetricEnd metric = UpperConsumerMetricEnd.of(this);
+        return UpperConsumerResultEnd.of(metric);
     }
 }

@@ -13,17 +13,20 @@ interface MainlineAction extends BgWorker<MainlineAction>
 
     MainlineMetricEnd toEndMetrics();
 
+    @SuppressWarnings("unchecked")
     @Override
-    MainlineResultRun pst();
+    MainlineResult pst();
 
+    @SuppressWarnings("unchecked")
     @Override
-    MainlineResultRun put();
+    MainlineResult put();
 
+    @SuppressWarnings("unchecked")
     @Override
-    MainlineResultRun get();
+    MainlineResult get();
 
     @Override
     MainlineResultEnd del();
 
-    MainlineResultRun pst(LogSequenceNumber lsn);
+    MainlineResult pst(LogSequenceNumber lsn);
 }

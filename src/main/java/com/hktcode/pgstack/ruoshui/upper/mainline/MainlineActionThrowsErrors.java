@@ -85,30 +85,30 @@ class MainlineActionThrowsErrors implements MainlineAction
     }
 
     @Override
-    public MainlineResultRun pst()
+    public MainlineResultEnd pst()
     {
-        return MainlineResultRun.of(this.config, this.metric);
+        return MainlineResultEnd.of(this.config, this.metric);
     }
 
     @Override
-    public MainlineResultRun pst(LogSequenceNumber lsn)
+    public MainlineResultEnd pst(LogSequenceNumber lsn)
     {
         if (lsn == null) {
             throw new ArgumentNullException("lsn");
         }
-        return MainlineResultRun.of(this.config, this.metric);
+        return MainlineResultEnd.of(this.config, this.metric);
     }
 
     @Override
-    public MainlineResultRun put()
+    public MainlineResultEnd put()
     {
-        return MainlineResultRun.of(this.config, this.metric);
+        return MainlineResultEnd.of(this.config, this.metric);
     }
 
     @Override
-    public MainlineResultRun get()
+    public MainlineResultEnd get()
     {
-        return MainlineResultRun.of(this.config, this.metric);
+        return MainlineResultEnd.of(this.config, this.metric);
     }
 
     @Override
@@ -121,7 +121,7 @@ class MainlineActionThrowsErrors implements MainlineAction
     public SimpleStatusInner newStatus(MainlineAction wkstep) //
         throws InterruptedException
     {
-        return null;
+        return null; // TODO
     }
 
     @Override
