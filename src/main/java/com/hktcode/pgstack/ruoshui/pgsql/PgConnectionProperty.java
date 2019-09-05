@@ -5,13 +5,16 @@ package com.hktcode.pgstack.ruoshui.pgsql;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.PostgreSQL;
 import org.postgresql.PGProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -63,6 +66,7 @@ public class PgConnectionProperty
         result.put(PGProperty.USER.getName(), "postgres");
         result.put(PGProperty.ASSUME_MIN_SERVER_VERSION.getName(), "10");
         result.put(PGProperty.APPLICATION_NAME.getName(), "ruoshui");
+        result.put("database", "postgres");
         return result;
     }
 
@@ -98,8 +102,15 @@ public class PgConnectionProperty
         PGProperty.REPLICATION.set(props, "database");
         PGProperty.PREFER_QUERY_MODE.set(props, "simple");
         StringBuilder sb = toText(props);
-        logger.info("get replication connection: url={}{}", PostgreSQL.JDBC_URL, sb);
-        return DriverManager.getConnection(PostgreSQL.JDBC_URL, props);
+        String database = this.propertyMap.get("database");
+        try {
+            database = URLEncoder.encode(database, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            // this should never happen
+        }
+        String url = PostgreSQL.JDBC_URL + database;
+        logger.info("get replication connection: url={}{}", url, sb);
+        return DriverManager.getConnection(url, props);
     }
 
     /**
@@ -118,9 +129,16 @@ public class PgConnectionProperty
 
         props.remove(PGProperty.REPLICATION.getName());
         props.remove(PGProperty.PREFER_QUERY_MODE.getName());
+        String database = this.propertyMap.get("database");
+        try {
+            database = URLEncoder.encode(database, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            // this should never happen
+        }
+        String url = PostgreSQL.JDBC_URL + database;
         StringBuilder sb = toText(props);
-        logger.info("get queryies connection: url={}{}", PostgreSQL.JDBC_URL, sb);
-        return DriverManager.getConnection(PostgreSQL.JDBC_URL, props);
+        logger.info("get queryies connection: url={}{}", url, sb);
+        return DriverManager.getConnection(url, props);
     }
 
     /**
