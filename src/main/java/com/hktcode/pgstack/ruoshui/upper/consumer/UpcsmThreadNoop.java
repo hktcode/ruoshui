@@ -6,11 +6,11 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
 import org.postgresql.replication.LogSequenceNumber;
 
-public class UpperConsumerThreadNoop implements UpperConsumerThread
+public class UpcsmThreadNoop implements UpcsmThread
 {
-    public static UpperConsumerThreadNoop of()
+    public static UpcsmThreadNoop of()
     {
-        return new UpperConsumerThreadNoop();
+        return new UpcsmThreadNoop();
     }
 
     @Override
@@ -21,13 +21,13 @@ public class UpperConsumerThreadNoop implements UpperConsumerThread
     }
 
     @Override
-    public UpperConsumerReportFetchThread del()
+    public UpcsmReportFetchThread del()
     {
         return null; // TODO:
     }
 
     @Override
-    public UpperConsumerReportFetchThread pst(LogSequenceNumber lsn)
+    public UpcsmReportFetchThread pst(LogSequenceNumber lsn)
     {
         return null; // TODO:
     }
@@ -37,7 +37,7 @@ public class UpperConsumerThreadNoop implements UpperConsumerThread
         return true;
     }
 
-    private UpperConsumerThreadNoop()
+    private UpcsmThreadNoop()
     {
     }
 }

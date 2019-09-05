@@ -6,10 +6,10 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class UpperConsumerMetricErr
+public class UpcsmMetricErr
 {
-    public static UpperConsumerMetricErr of //
-        (UpperConsumerActionRun action, Throwable throwsError)
+    public static UpcsmMetricErr of //
+        (UpcsmActionRun action, Throwable throwsError)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -17,11 +17,11 @@ public class UpperConsumerMetricErr
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
         }
-        return new UpperConsumerMetricErr(action, throwsError);
+        return new UpcsmMetricErr(action, throwsError);
     }
 
-    public static UpperConsumerMetricErr of //
-        (UpperConsumerMetricEnd metric, Throwable throwsError)
+    public static UpcsmMetricErr of //
+        (UpcsmMetricEnd metric, Throwable throwsError)
     {
         if (metric == null) {
             throw new ArgumentNullException("metric");
@@ -29,7 +29,7 @@ public class UpperConsumerMetricErr
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
         }
-        return new UpperConsumerMetricErr(metric, throwsError);
+        return new UpcsmMetricErr(metric, throwsError);
     }
 
     public final long actionStart;
@@ -48,12 +48,12 @@ public class UpperConsumerMetricErr
 
     public final String statusInfor;
 
-    // TODO: public final UpperConsumerReportFetchThread fetchThread;
+    // TODO: public final UpcsmReportFetchThread fetchThread;
 
     public final Throwable throwsError;
 
-    private UpperConsumerMetricErr //
-    (UpperConsumerActionRun action, Throwable throwsError)
+    private UpcsmMetricErr //
+    (UpcsmActionRun action, Throwable throwsError)
     {
         long finish = System.currentTimeMillis();
         this.actionStart = action.actionStart;
@@ -67,8 +67,8 @@ public class UpperConsumerMetricErr
         this.throwsError = throwsError;
     }
 
-    private UpperConsumerMetricErr //
-    (UpperConsumerMetricEnd metric, Throwable throwsError)
+    private UpcsmMetricErr //
+    (UpcsmMetricEnd metric, Throwable throwsError)
     {
         long finish = System.currentTimeMillis();
         this.actionStart = metric.actionStart;

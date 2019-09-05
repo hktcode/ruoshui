@@ -6,15 +6,15 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class UpperConsumerMetricEnd
+public class UpcsmMetricEnd
 {
-    public static UpperConsumerMetricEnd of //
-        (UpperConsumerActionRun action)
+    public static UpcsmMetricEnd of //
+        (UpcsmActionRun action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new UpperConsumerMetricEnd(action);
+        return new UpcsmMetricEnd(action);
     }
 
     public final long actionStart;
@@ -31,12 +31,12 @@ public class UpperConsumerMetricEnd
 
     public final long totalMillis;
 
-    // TODO: public final UpperConsumerReportFetchThread fetchThread;
+    // TODO: public final UpcsmReportFetchThread fetchThread;
 
     public final String statusInfor;
 
-    private UpperConsumerMetricEnd //
-    (UpperConsumerActionRun action) //
+    private UpcsmMetricEnd //
+    (UpcsmActionRun action) //
     {
         long finish = System.currentTimeMillis();
         this.actionStart = action.actionStart;

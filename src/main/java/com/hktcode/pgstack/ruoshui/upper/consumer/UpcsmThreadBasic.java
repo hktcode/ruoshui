@@ -3,13 +3,7 @@
  */
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
-import com.hktcode.bgsimple.status.SimpleStatus;
-import org.postgresql.replication.LogSequenceNumber;
-
-import java.util.concurrent.TransferQueue;
-import java.util.concurrent.atomic.AtomicReference;
-
-public abstract class UpperConsumerThreadBasic implements UpperConsumerThread
+public abstract class UpcsmThreadBasic implements UpcsmThread
 {
     // public boolean stop(long timeout) throws InterruptedException
     // {

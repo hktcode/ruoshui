@@ -7,10 +7,10 @@ package com.hktcode.pgstack.ruoshui.upper;
 import com.hktcode.bgsimple.method.SimpleMethodPst;
 import com.hktcode.bgsimple.method.SimpleMethodPstResult;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpperConsumerAction;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmAction;
 import org.postgresql.replication.LogSequenceNumber;
 
-public class UpperMethodPstParamsRecvLsn implements SimpleMethodPst<UpperConsumerAction>
+public class UpperMethodPstParamsRecvLsn implements SimpleMethodPst<UpcsmAction>
 {
     public static UpperMethodPstParamsRecvLsn of(LogSequenceNumber receiveLsn)
     {
@@ -28,7 +28,7 @@ public class UpperMethodPstParamsRecvLsn implements SimpleMethodPst<UpperConsume
     }
 
     @Override
-    public SimpleMethodPstResult<UpperConsumerAction> run(UpperConsumerAction worker)
+    public SimpleMethodPstResult<UpcsmAction> run(UpcsmAction worker)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");

@@ -13,8 +13,8 @@ import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperMethodPstParamsRecvLsn;
 import com.hktcode.pgstack.ruoshui.upper.consumer.FetchThreadThrowsErrorException;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpperConsumerReportFetchThread;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpperConsumerThreadBasic;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmReportFetchThread;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmThreadBasic;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
 import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotResult;
 import org.postgresql.replication.LogSequenceNumber;
@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class MainlineThread extends UpperConsumerThreadBasic
+public class MainlineThread extends UpcsmThreadBasic
 {
     private final List<SnapshotResult> sslist = new ArrayList<>();
 
@@ -89,7 +89,7 @@ public class MainlineThread extends UpperConsumerThreadBasic
     }
 
     @Override
-    public UpperConsumerReportFetchThread del() throws InterruptedException
+    public UpcsmReportFetchThread del() throws InterruptedException
     {
         SimpleHolder holder = SimpleHolder.of(status);
         SimpleMethodDel[] params = new SimpleMethodDel[] {
@@ -100,11 +100,11 @@ public class MainlineThread extends UpperConsumerThreadBasic
         SimpleFutureDel future = holder.del(del);
         MainlineResult mainline = (MainlineResult)future.get().get(0);
         ImmutableList<SnapshotResult> snapshot = ImmutableList.copyOf(sslist);
-        return UpperConsumerReportFetchThread.of(mainline, snapshot);
+        return UpcsmReportFetchThread.of(mainline, snapshot);
     }
 
     @Override
-    public UpperConsumerReportFetchThread pst(LogSequenceNumber lsn) //
+    public UpcsmReportFetchThread pst(LogSequenceNumber lsn) //
         throws InterruptedException
     {
         SimpleHolder holder = SimpleHolder.of(status);
@@ -116,6 +116,6 @@ public class MainlineThread extends UpperConsumerThreadBasic
         SimpleFuturePst future = holder.pst(pst);
         MainlineResult mainline = (MainlineResult)future.get().get(0);
         ImmutableList<SnapshotResult> snapshot = ImmutableList.copyOf(sslist);
-        return UpperConsumerReportFetchThread.of(mainline, snapshot);
+        return UpcsmReportFetchThread.of(mainline, snapshot);
     }
 }

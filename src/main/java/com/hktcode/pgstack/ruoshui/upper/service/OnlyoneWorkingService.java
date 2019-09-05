@@ -11,7 +11,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperConfig;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
 import com.hktcode.pgstack.ruoshui.upper.UpperSnapshotPstParams;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpperConsumer;
+import com.hktcode.pgstack.ruoshui.upper.consumer.Upcsm;
 import com.hktcode.pgstack.ruoshui.upper.junction.Upjct;
 import com.hktcode.pgstack.ruoshui.upper.producer.Uppdc;
 import com.hktcode.pgstack.ruoshui.upper.producer.UpperProducerRecord;
@@ -63,7 +63,7 @@ public class OnlyoneWorkingService implements WorkingService
         BlockingQueue<UpperConsumerRecord> comein = new ArrayBlockingQueue<>(config.junction.comeinCount);
         BlockingQueue<UpperProducerRecord> getout = new ArrayBlockingQueue<>(config.junction.getoutCount);
 
-        UpperConsumer consumer = UpperConsumer.of(config.consumer, this.status, comein);
+        Upcsm consumer = Upcsm.of(config.consumer, this.status, comein);
         Upjct junction = Upjct.of(config.junction, comein, getout, this.status);
         Uppdc producer = Uppdc.of(config.producer, getout, status);
         Thread thread = new Thread(producer);

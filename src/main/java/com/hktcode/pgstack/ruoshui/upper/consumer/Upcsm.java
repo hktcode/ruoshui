@@ -18,11 +18,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class UpperConsumer implements RunnableWithInterrupted
+public class Upcsm implements RunnableWithInterrupted
 {
-    private static final Logger logger = LoggerFactory.getLogger(UpperConsumer.class);
+    private static final Logger logger = LoggerFactory.getLogger(Upcsm.class);
 
-    public static UpperConsumer of //
+    public static Upcsm of //
         /* */( MainlineConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, BlockingQueue<UpperConsumerRecord> comein //
@@ -37,7 +37,7 @@ public class UpperConsumer implements RunnableWithInterrupted
         if (status == null) {
             throw new ArgumentNullException("status");
         }
-        return new UpperConsumer(config, comein, status);
+        return new Upcsm(config, comein, status);
     }
 
     private final MainlineConfig config;
@@ -46,7 +46,7 @@ public class UpperConsumer implements RunnableWithInterrupted
 
     private final AtomicReference<SimpleStatus> status;
 
-    private UpperConsumer //
+    private Upcsm //
         /* */( MainlineConfig config //
         /* */, BlockingQueue<UpperConsumerRecord> comein //
         /* */, AtomicReference<SimpleStatus> status //
@@ -60,13 +60,13 @@ public class UpperConsumer implements RunnableWithInterrupted
     @Override
     public void runWithInterrupted() throws InterruptedException
     {
-        UpperConsumerAction action //
-            = UpperConsumerActionRun.of(config, comein, status);
+        UpcsmAction action //
+            = UpcsmActionRun.of(config, comein, status);
         try {
             do {
-                UpperConsumerActionRun act = (UpperConsumerActionRun)action;
+                UpcsmActionRun act = (UpcsmActionRun)action;
                 action = act.next();
-            } while (action instanceof UpperConsumerActionRun);
+            } while (action instanceof UpcsmActionRun);
             logger.info("upper consumer completes");
         }
         catch (InterruptedException ex) {
@@ -79,7 +79,7 @@ public class UpperConsumer implements RunnableWithInterrupted
             else {
                 logger.error("upper consumer throws exception: ", ex);
             }
-            UpperConsumerActionErr erract = action.next(ex);
+            UpcsmActionErr erract = action.next(ex);
             SimpleStatusInner o;
             SimpleStatus f;
             do {
@@ -96,7 +96,7 @@ public class UpperConsumer implements RunnableWithInterrupted
                 }
                 else {
                     SimpleStatusInnerEnd end = (SimpleStatusInnerEnd)o;
-                    if (erract.metric != ((UpperConsumerResultErr)end.result.get(0)).metric) {
+                    if (erract.metric != ((UpcsmResultErr)end.result.get(0)).metric) {
                         SimpleMethodAllResultEnd[] method = new SimpleMethodAllResultEnd[] {
                             (SimpleMethodAllResultEnd)action.del(),
                             end.result.get(1),

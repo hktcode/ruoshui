@@ -4,10 +4,8 @@
 
 package com.hktcode.pgstack.ruoshui.upper.junction;
 
-import com.hktcode.bgsimple.method.SimpleMethodAllResultRun;
 import com.hktcode.bgsimple.triple.TripleJunctionConfig;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpperConsumerAction;
 
 public class UpjctResultRun implements UpjctResult
 {

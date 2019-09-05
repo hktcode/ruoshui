@@ -6,14 +6,14 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class UpperConsumerMetricRun
+public class UpcsmMetricRun
 {
-    public static UpperConsumerMetricRun of(UpperConsumerActionRun action)
+    public static UpcsmMetricRun of(UpcsmActionRun action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new UpperConsumerMetricRun(action);
+        return new UpcsmMetricRun(action);
     }
 
     public final long actionStart;
@@ -28,11 +28,11 @@ public class UpperConsumerMetricRun
 
     public final long offerMillis;
 
-    // TODO: public final UpperConsumerReportFetchThread fetchThread;
+    // TODO: public final UpcsmReportFetchThread fetchThread;
 
     public final String statusInfor;
 
-    private UpperConsumerMetricRun(UpperConsumerActionRun action)
+    private UpcsmMetricRun(UpcsmActionRun action)
     {
         this.actionStart = action.actionStart;
         this.recordCount = action.recordCount;

@@ -10,11 +10,11 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilter;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilterDefault;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilterScript;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpperConsumerAction;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmAction;
 
 import javax.script.ScriptException;
 
-public class UpperSnapshotPstParams implements SimpleMethodPstParams<UpperConsumerAction>
+public class UpperSnapshotPstParams implements SimpleMethodPstParams<UpcsmAction>
 {
     public static UpperSnapshotPstParams of(JsonNode json)
         throws ScriptException
@@ -35,7 +35,7 @@ public class UpperSnapshotPstParams implements SimpleMethodPstParams<UpperConsum
     }
 
     @Override
-    public SimpleMethodPstResult<UpperConsumerAction> run(UpperConsumerAction worker)
+    public SimpleMethodPstResult<UpcsmAction> run(UpcsmAction worker)
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");
