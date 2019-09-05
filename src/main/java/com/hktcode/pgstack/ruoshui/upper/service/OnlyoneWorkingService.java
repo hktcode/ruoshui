@@ -13,7 +13,7 @@ import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
 import com.hktcode.pgstack.ruoshui.upper.UpperSnapshotPstParams;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpperConsumer;
 import com.hktcode.pgstack.ruoshui.upper.junction.Upjct;
-import com.hktcode.pgstack.ruoshui.upper.producer.UpperProducer;
+import com.hktcode.pgstack.ruoshui.upper.producer.Uppdc;
 import com.hktcode.pgstack.ruoshui.upper.producer.UpperProducerRecord;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,7 +65,7 @@ public class OnlyoneWorkingService implements WorkingService
 
         UpperConsumer consumer = UpperConsumer.of(config.consumer, this.status, comein);
         Upjct junction = Upjct.of(config.junction, comein, getout, this.status);
-        UpperProducer producer = UpperProducer.of(config.producer, this.status, getout);
+        Uppdc producer = Uppdc.of(config.producer, getout, status);
         Thread thread = new Thread(producer);
         thread.setDaemon(false);
         thread.setName("ruoshui-upper-producer");

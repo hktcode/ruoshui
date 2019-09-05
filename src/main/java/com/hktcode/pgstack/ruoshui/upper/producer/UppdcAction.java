@@ -2,7 +2,7 @@
  * Copyright (c) 2019, Huang Ketian.
  */
 
-package com.hktcode.pgstack.ruoshui.upper.junction;
+package com.hktcode.pgstack.ruoshui.upper.producer;
 
 import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.bgsimple.method.SimpleMethodDelResult;
@@ -11,25 +11,25 @@ import com.hktcode.bgsimple.method.SimpleMethodPstResult;
 import com.hktcode.bgsimple.method.SimpleMethodPutResult;
 import com.hktcode.bgsimple.status.SimpleStatusInner;
 
-interface UpjctAction extends BgWorker<UpjctAction>
+public interface UppdcAction extends BgWorker<UppdcAction>
 {
-    UpjctActionErr next(Throwable throwsError);
+    UppdcActionErr next(Throwable throwsError);
 
-    SimpleStatusInner newStatus(UpjctAction action) throws InterruptedException;
+    SimpleStatusInner newStatus(UppdcAction action) throws InterruptedException;
 
-    UpjctResult get();
+    UppdcResult get();
 
-    default UpjctResult pst()
+    default UppdcResult pst()
     {
         return this.get();
     }
 
-    default UpjctResult put()
+    default UppdcResult put()
     {
         return this.get();
     }
 
-    default UpjctResult del()
+    default UppdcResult del()
     {
         return this.get();
     }

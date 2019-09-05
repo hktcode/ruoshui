@@ -4,10 +4,12 @@
 
 package com.hktcode.pgstack.ruoshui.upper.junction;
 
+import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
 import com.hktcode.bgsimple.triple.TripleJunctionConfig;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class UpjctResultErr implements UpjctResult
+public class UpjctResultErr //
+    implements UpjctResult, SimpleMethodAllResultEnd<UpjctAction>
 {
     public static UpjctResultErr //
     of(TripleJunctionConfig config, UpjctMetricErr metric)
