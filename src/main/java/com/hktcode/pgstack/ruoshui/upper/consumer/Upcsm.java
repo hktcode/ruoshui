@@ -5,7 +5,9 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.future.SimpleFutureDel;
-import com.hktcode.bgsimple.method.*;
+import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
+import com.hktcode.bgsimple.method.SimpleMethodDel;
+import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.RunnableWithInterrupted;
 import com.hktcode.lang.exception.ArgumentNullException;
@@ -60,58 +62,66 @@ public class Upcsm implements RunnableWithInterrupted
     @Override
     public void runWithInterrupted() throws InterruptedException
     {
-        UpcsmAction action //
-            = UpcsmActionRun.of(config, comein, status);
+        UpcsmAction action = UpcsmActionRun.of(config, comein, status);
         try {
             do {
                 UpcsmActionRun act = (UpcsmActionRun)action;
                 action = act.next();
             } while (action instanceof UpcsmActionRun);
             logger.info("upper consumer completes");
+            return;
         }
         catch (InterruptedException ex) {
             throw ex;
         }
+        catch (FetchThreadThrowsErrorException ex) {
+            logger.info("upper consumer throws FetchThreadThrowsErrorException");
+            action = action.next(ex);
+        }
         catch (Exception ex) {
-            if (ex instanceof FetchThreadThrowsErrorException) {
-                logger.info("upper consumer throws FetchThreadThrowsErrorException");
+            logger.error("upper consumer throws exception: ", ex);
+            action = action.next(ex);
+        }
+        UpcsmActionErr erract = (UpcsmActionErr) action;
+        SimpleStatusInner o;
+        SimpleStatus f;
+        do {
+            o = erract.newStatus(erract);
+            f = o;
+            if (o instanceof SimpleStatusInnerRun) {
+                SimpleMethodDel[] method = new SimpleMethodDel[] {
+                    action.del(),
+                    SimpleMethodDelParamsDefault.of(),
+                    SimpleMethodDelParamsDefault.of()
+                };
+                Phaser phaser = new Phaser(3);
+                f = SimpleStatusOuterDel.of(method, phaser);
             }
-            else {
-                logger.error("upper consumer throws exception: ", ex);
+            else if (!isSameEnd(erract, (SimpleStatusInnerEnd)o)) {
+                SimpleStatusInnerEnd end = (SimpleStatusInnerEnd)o;
+                SimpleMethodAllResultEnd[] method = new SimpleMethodAllResultEnd[] {
+                    (SimpleMethodAllResultEnd)action.del(),
+                    end.result.get(1),
+                    end.result.get(2)
+                };
+                f = SimpleStatusInnerEnd.of(ImmutableList.copyOf(method));
             }
-            UpcsmActionErr erract = action.next(ex);
-            SimpleStatusInner o;
-            SimpleStatus f;
-            do {
-                o = erract.newStatus(erract);
-                f = o;
-                if (o instanceof SimpleStatusInnerRun) {
-                    SimpleMethodDel[] method = new SimpleMethodDel[] {
-                        action.del(),
-                        SimpleMethodDelParamsDefault.of(),
-                        SimpleMethodDelParamsDefault.of()
-                    };
-                    Phaser phaser = new Phaser(3);
-                    f = SimpleStatusOuterDel.of(method, phaser);
-                }
-                else {
-                    SimpleStatusInnerEnd end = (SimpleStatusInnerEnd)o;
-                    if (erract.metric != ((UpcsmResultErr)end.result.get(0)).metric) {
-                        SimpleMethodAllResultEnd[] method = new SimpleMethodAllResultEnd[] {
-                            (SimpleMethodAllResultEnd)action.del(),
-                            end.result.get(1),
-                            end.result.get(2)
-                        };
-                        f = SimpleStatusInnerEnd.of(ImmutableList.copyOf(method));
-                    }
-                }
-            } while (o != f && !this.status.compareAndSet(o, f));
-            if (f instanceof SimpleStatusOuterDel) {
-                SimpleStatusOuterDel del = (SimpleStatusOuterDel)f;
-                SimpleFutureDel future = SimpleFutureDel.of(status, del);
-                future.get();
-            }
+        } while (o != f && !this.status.compareAndSet(o, f));
+        if (f instanceof SimpleStatusOuterDel) {
+            SimpleStatusOuterDel del = (SimpleStatusOuterDel)f;
+            SimpleFutureDel future = SimpleFutureDel.of(status, del);
+            future.get();
         }
         logger.info("upper consumer terminate.");
+    }
+
+    private static boolean isSameEnd(UpcsmActionErr erract, SimpleStatusInnerEnd status)
+    {
+        SimpleMethodAllResultEnd statusResult = status.result.get(1);
+        if (!(statusResult instanceof UpcsmResultErr)) {
+            return false;
+        }
+        UpcsmResultErr rhs = (UpcsmResultErr)statusResult;
+        return rhs.metric == erract.metric;// && rhs.config == erract.config;
     }
 }

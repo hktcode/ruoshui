@@ -17,8 +17,9 @@ consumer:
     password: postgres
 producer:
   kfk_property:
-    bootstrap.servers: 192.168.119.136:9092
+    bootstrap.servers: 192.168.119.137:9092
     acks: all
+  target_topic: ruoshui-upper
 
 ###
 

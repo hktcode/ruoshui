@@ -15,6 +15,8 @@ import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplRelationName;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilter;
 import org.postgresql.jdbc.PgConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.script.ScriptException;
 import java.sql.Connection;
@@ -26,6 +28,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class MainlineConfigSnapshot extends MainlineConfig
 {
+    private static final Logger logger = LoggerFactory.getLogger(MainlineConfigSnapshot.class);
+
     static MainlineConfigSnapshot of //
         /* */( PgConnectionProperty srcProperty //
         /* */, String typelistSql //
@@ -204,6 +208,7 @@ public class MainlineConfigSnapshot extends MainlineConfig
             ps.setFetchDirection(ResultSet.FETCH_FORWARD);
             ps.setFetchSize(this.rsFetchsize);
             ps.setString(1, arrayNode.toString());
+            logger.info("prepared relalist statement: parameter={}, sql={}", arrayNode, relationSql);
             return ps;
         }
         catch (Exception ex) {
