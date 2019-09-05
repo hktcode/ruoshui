@@ -9,5 +9,5 @@ import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
 
 interface MainlineRecord
 {
-    UpperConsumerRecord update(UpperConsumerMetric metric);
+    UpperConsumerRecord toUpcsmRecord();
 }

@@ -167,7 +167,9 @@ class MainlineActionDataRelaList //
             logger.info("get max next time: new={}, old={}", duration, this.maxnextTime);
             this.maxnextTime = duration;
         }
-        this.relationLst.add(builder[0].builder());
+        if (builder[0] != null) {
+            this.relationLst.add(builder[0].builder());
+        }
     }
 
     private void build(ResultSet rs, RelationBuilder[] builder, long duration)

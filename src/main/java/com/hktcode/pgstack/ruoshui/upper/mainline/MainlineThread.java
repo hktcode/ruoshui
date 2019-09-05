@@ -57,17 +57,13 @@ public class MainlineThread extends UpcsmThreadBasic
     @Override
     public UpperConsumerRecord poll(long timeout) throws InterruptedException
     {
-        MainlineRecordNormal record //
-            = (MainlineRecordNormal)this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);
+        MainlineRecord record = this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);
         SimpleStatus origin;
         if (record != null) {
-            return UpperConsumerRecord.of(record.lsn, record.msg);
+            return record.toUpcsmRecord();
         }
         else if (this.thread.isAlive()) {
             return null;
-        }
-        else if ((origin = this.status.get()) instanceof SimpleStatusInnerEnd) {
-            throw new FetchThreadThrowsErrorException();
         }
         else {
             // TODO: throw new DelegateNotAliveException();

@@ -8,35 +8,24 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperThreadThrowsException;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumerMetric;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.consumer.FetchThreadThrowsErrorException;
 
 import java.time.ZonedDateTime;
 
 class MainlineRecordThrows implements MainlineRecord
 {
-    static MainlineRecordThrows of(ZonedDateTime endtime, Throwable throwable)
+    static MainlineRecordThrows of()
     {
-        if (throwable == null) {
-            throw new ArgumentNullException("throwable");
-        }
-        return new MainlineRecordThrows(endtime, throwable);
+        return new MainlineRecordThrows();
     }
-
-    private final ZonedDateTime endtime;
-
-    private final Throwable throwable;
 
     @Override
-    public UpperConsumerRecord update(UpperConsumerMetric metric)
+    public UpperConsumerRecord toUpcsmRecord()
     {
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
-        throw new UpperThreadThrowsException("datatype", throwable);
+        throw new FetchThreadThrowsErrorException();
     }
 
-    private MainlineRecordThrows(ZonedDateTime endtime, Throwable throwable)
+    private MainlineRecordThrows()
     {
-        this.endtime = endtime;
-        this.throwable = throwable;
     }
 }

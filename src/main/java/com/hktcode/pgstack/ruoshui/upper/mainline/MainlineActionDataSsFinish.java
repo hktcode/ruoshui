@@ -41,7 +41,7 @@ public class MainlineActionDataSsFinish //
 
     public final MainlineReportRelaLock relaLock;
 
-    public final MainlineReportReplSlot replSlot;
+    public final MainlineReportReplSlotTuple replSlot;
 
     public final MainlineReportSizeDiff sizeDiff;
 

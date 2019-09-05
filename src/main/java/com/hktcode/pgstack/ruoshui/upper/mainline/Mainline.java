@@ -103,6 +103,10 @@ public class Mainline implements Runnable
         catch (Exception ex) {
             logger.error("mainline throws exception: ", ex);
             action = action.nextThrowErr(ex);
+            MainlineRecord r = MainlineRecordThrows.of();
+            do {
+                r = action.send(r);
+            } while (r != null);
         }
         SimpleStatusInner o;
         SimpleStatusInnerEnd f;

@@ -29,4 +29,6 @@ interface MainlineAction extends BgWorker<MainlineAction>
     MainlineResultEnd del();
 
     MainlineResult pst(LogSequenceNumber lsn);
+
+    MainlineRecord send(MainlineRecord record) throws InterruptedException;
 }

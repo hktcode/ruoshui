@@ -42,7 +42,7 @@ public class MainlineActionDataSizeDiff //
 
     public final MainlineReportRelaLock relaLock;
 
-    public final MainlineReportReplSlot replSlot;
+    public final MainlineReportReplSlotTuple replSlot;
 
     final ImmutableList<PgsqlRelationMetric> oldRelalist;
 
@@ -54,7 +54,7 @@ public class MainlineActionDataSizeDiff //
         this.begin1st = action.begin1st;
         this.relalist = action.relalist;
         this.relaLock = action.relaLock;
-        this.replSlot = MainlineReportReplSlot.of(action, this.actionStart);
+        this.replSlot = MainlineReportReplSlotTuple.of(action, this.actionStart);
         this.oldRelalist = action.relationLst;
         this.newRelalist = new ArrayList<>();
         this.logDatetime = action.logDatetime;
@@ -116,7 +116,9 @@ public class MainlineActionDataSizeDiff //
 
     private List<PgsqlRelationMetric> build(RelationBuilder[] builder)
     {
-        this.newRelalist.add(builder[0].builder());
+        if (builder[0] != null) {
+            this.newRelalist.add(builder[0].builder());
+        }
         return this.newRelalist;
     }
 

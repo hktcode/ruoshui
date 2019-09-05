@@ -6,6 +6,9 @@ package com.hktcode.pgstack.ruoshui.upper.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.SimpleHolder;
+import com.hktcode.bgsimple.future.SimpleFutureDel;
+import com.hktcode.bgsimple.future.SimpleFutureGet;
+import com.hktcode.bgsimple.future.SimpleFuturePst;
 import com.hktcode.bgsimple.future.SimpleFuturePut;
 import com.hktcode.bgsimple.method.*;
 import com.hktcode.bgsimple.status.*;
@@ -17,13 +20,11 @@ import com.hktcode.pgstack.ruoshui.upper.consumer.Upcsm;
 import com.hktcode.pgstack.ruoshui.upper.junction.Upjct;
 import com.hktcode.pgstack.ruoshui.upper.producer.Uppdc;
 import com.hktcode.pgstack.ruoshui.upper.producer.UpperProducerRecord;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import javax.script.ScriptException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -49,7 +50,7 @@ public class OnlyoneWorkingService implements WorkingService
 
     @Override
     public ResponseEntity put(UpperConfig config) //
-        throws ExecutionException, InterruptedException
+        throws InterruptedException
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -79,7 +80,7 @@ public class OnlyoneWorkingService implements WorkingService
     }
 
     @Override
-    public ResponseEntity del() throws ExecutionException, InterruptedException
+    public ResponseEntity del() throws InterruptedException
     {
         SimpleMethodDel[] method = new SimpleMethodDel[] {
             SimpleMethodDelParamsDefault.of(),
@@ -88,12 +89,13 @@ public class OnlyoneWorkingService implements WorkingService
         };
         SimpleStatusOuterDel del = SimpleStatusOuterDel.of(method, new Phaser(3));
         SimpleHolder holder = SimpleHolder.of(this.status);
-        holder.del(del);
-        return ResponseEntity.ok().build(); // TODO:
+        SimpleFutureDel future = holder.del(del);
+        ImmutableList<SimpleMethodAllResult> list = future.get();
+        return ResponseEntity.ok(list);
     }
 
     @Override
-    public ResponseEntity get() throws ExecutionException, InterruptedException
+    public ResponseEntity get() throws InterruptedException
     {
         SimpleMethodGet[] method = new SimpleMethodGet[] {
             SimpleMethodGetParamsDefault.of(),
@@ -102,13 +104,14 @@ public class OnlyoneWorkingService implements WorkingService
         };
         SimpleStatusOuterGet get = SimpleStatusOuterGet.of(method, new Phaser(3));
         SimpleHolder holder = SimpleHolder.of(this.status);
-        holder.get(get);
-        return ResponseEntity.ok().build(); // TODO:
+        SimpleFutureGet future = holder.get(get);
+        ImmutableList<SimpleMethodAllResult> list = future.get();
+        return ResponseEntity.ok(list);
     }
 
     @Override
     public ResponseEntity pst(JsonNode json)
-        throws ExecutionException, InterruptedException, ScriptException
+        throws InterruptedException, ScriptException
     {
         if (json == null) {
             throw new ArgumentNullException("json");
@@ -120,8 +123,9 @@ public class OnlyoneWorkingService implements WorkingService
         };
         SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(method, new Phaser(3));
         SimpleHolder holder = SimpleHolder.of(this.status);
-        holder.pst(pst);
-        return ResponseEntity.ok().build(); // TODO:
+        SimpleFuturePst future = holder.pst(pst);
+        ImmutableList<SimpleMethodAllResult> list = future.get();
+        return ResponseEntity.ok(list);
     }
 
     @Override

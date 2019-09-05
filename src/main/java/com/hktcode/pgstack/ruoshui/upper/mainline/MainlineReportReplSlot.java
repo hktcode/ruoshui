@@ -15,7 +15,12 @@ public class MainlineReportReplSlot implements MainlineReport
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new MainlineReportReplSlot(action, finish);
+        if (action.createTuple.length == 0) {
+            return MainlineReportReplSlotEmpty.of(action, finish);
+        }
+        else {
+            return MainlineReportReplSlotTuple.of(action, finish);
+        }
     }
 
     public final long totalMillis;
@@ -34,9 +39,7 @@ public class MainlineReportReplSlot implements MainlineReport
 
     public final long sltDuration;
 
-    public final PgReplSlotTuple createTuple;
-
-    private MainlineReportReplSlot(MainlineActionDataReplSlot action, long finish)
+    protected MainlineReportReplSlot(MainlineActionDataReplSlot action, long finish)
     {
         this.totalMillis = finish - action.actionStart;
         this.rsgetCounts = action.rsgetCounts;
@@ -46,7 +49,6 @@ public class MainlineReportReplSlot implements MainlineReport
         this.offerMillis = action.offerMillis;
         this.recordCount = action.recordCount;
         this.sltDuration = action.sltDuration;
-        this.createTuple = action.createTuple[0];
     }
 
     @Override
@@ -60,7 +62,5 @@ public class MainlineReportReplSlot implements MainlineReport
         node.put("offer_millis", this.offerMillis);
         node.put("record_count", this.recordCount);
         node.put("slt_duration", this.sltDuration);
-        ObjectNode createTupleNode = node.putObject("create_tuple");
-        this.createTuple.toJsonObject(createTupleNode);
     }
 }

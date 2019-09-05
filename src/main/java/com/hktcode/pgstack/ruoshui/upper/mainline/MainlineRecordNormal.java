@@ -30,11 +30,8 @@ class MainlineRecordNormal implements MainlineRecord
     }
 
     @Override
-    public UpperConsumerRecord update(UpperConsumerMetric metric)
+    public UpperConsumerRecord toUpcsmRecord()
     {
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
         return UpperConsumerRecord.of(this.lsn, this.msg);
     }
 }

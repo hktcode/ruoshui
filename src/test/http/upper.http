@@ -14,6 +14,7 @@ consumer:
   src_property:
     PGHOST: 192.168.119.137
     PGPORT: 5432
+    password: postgres
 producer:
   kfk_property:
     bootstrap.servers: 192.168.119.136:9092
@@ -30,3 +31,10 @@ Accept: application/xml
 
 ###
 
+DELETE http://localhost:8080/api/upper/ruoshui
+
+###
+
+GET http://localhost:8080/api/upper/ruoshui
+
+###
