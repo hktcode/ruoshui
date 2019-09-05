@@ -85,7 +85,7 @@ class MainlineActionDataSrBegins //
         this.offerCounts = action.offerCounts;
         this.rsnextCount = action.rsnextCount;
         this.recordCount = action.recordCount;
-        this.curRelation = action.curRelation;
+        this.curRelation = action.relIterator.next();
     }
 
 
