@@ -4,7 +4,9 @@
 package com.hktcode.pgstack.ruoshui.upper.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.SimpleHolder;
+import com.hktcode.bgsimple.future.SimpleFuturePut;
 import com.hktcode.bgsimple.method.*;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
@@ -52,38 +54,10 @@ public class OnlyoneWorkingService implements WorkingService
         if (config == null) {
             throw new ArgumentNullException("config");
         }
-        SimpleStatus s = this.status.get();
-        if (!(s instanceof SimpleStatusOuterPut)) {
-            // TODO: 抛出异常可能会好点.
-            // TODO: 如何确保start只会被调用一次呢？
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-        SimpleStatusOuterPut put = (SimpleStatusOuterPut)s;
         SimpleHolder holder = SimpleHolder.of(status);
-        BlockingQueue<UpperConsumerRecord> comein = new ArrayBlockingQueue<>(config.junction.comeinCount);
-        BlockingQueue<UpperProducerRecord> getout = new ArrayBlockingQueue<>(config.junction.getoutCount);
-
-        Upcsm consumer = Upcsm.of(config.consumer, this.status, comein);
-        Upjct junction = Upjct.of(config.junction, comein, getout, this.status);
-        Uppdc producer = Uppdc.of(config.producer, getout, status);
-        Thread thread = new Thread(producer);
-        thread.setDaemon(false);
-        thread.setName("ruoshui-upper-producer");
-        thread.start();
-        thread = new Thread(junction);
-        thread.setDaemon(false);
-        thread.setName("ruoshui-upper-junction");
-        thread.start();
-        thread = new Thread(consumer);
-        thread.setDaemon(false);
-        thread.setName("ruoshui-upper-consumer");
-        thread.start();
-        // TODO:
-        put.phaser.awaitAdvanceInterruptibly(put.phaser.arrive());
-        SimpleStatusInnerRun run = SimpleStatusInnerRun.of();
-        this.status.compareAndSet(put, run);
-        put.phaser.arriveAndDeregister();
-        return ResponseEntity.ok().build(); // TODO:
+        SimpleFuturePut future = holder.put(config);
+        ImmutableList<SimpleMethodAllResult> list = future.get();
+        return ResponseEntity.ok(list);
     }
 
     @Override
