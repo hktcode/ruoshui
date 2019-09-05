@@ -7,5 +7,5 @@ import com.hktcode.bgsimple.BgWorker;
 
 public interface SimpleMethodDel<W extends BgWorker<W>>
 {
-    SimpleMethodDelResult<W> run(W wkstep);
+    SimpleMethodDelResult<W> run(W wkstep) throws InterruptedException;
 }

@@ -9,5 +9,5 @@ public interface SimpleMethodGetParams<W extends BgWorker<W>> //
     extends SimpleMethodGet<W>
 {
     @Override
-    SimpleMethodGetResult<W> run(W wkstep);
+    SimpleMethodGetResult<W> run(W wkstep) throws InterruptedException;
 }

@@ -33,7 +33,7 @@ public class SimpleStatusOuterPst extends SimpleStatusOuter
     }
 
     @Override
-    public <A extends BgWorker<A>> void setResult(A wkstep, int number)
+    public <A extends BgWorker<A>> void setResult(A wkstep, int number) throws InterruptedException
     {
         if (wkstep == null) {
             throw new ArgumentNullException("wkstep");

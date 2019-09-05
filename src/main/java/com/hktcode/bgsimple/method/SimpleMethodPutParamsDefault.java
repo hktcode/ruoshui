@@ -19,7 +19,7 @@ public class SimpleMethodPutParamsDefault<W extends BgWorker<W>> //
     }
 
     @Override
-    public SimpleMethodPutResult<W> run(W wkstep)
+    public SimpleMethodPutResult<W> run(W wkstep) throws InterruptedException
     {
         if (wkstep == null) {
             throw new ArgumentNullException("wkstep");

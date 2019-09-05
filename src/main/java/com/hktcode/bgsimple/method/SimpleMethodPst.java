@@ -7,5 +7,5 @@ import com.hktcode.bgsimple.BgWorker;
 
 public interface SimpleMethodPst<W extends BgWorker<W>>
 {
-    SimpleMethodPstResult<W> run(W worker);
+    SimpleMethodPstResult<W> run(W worker) throws InterruptedException;
 }

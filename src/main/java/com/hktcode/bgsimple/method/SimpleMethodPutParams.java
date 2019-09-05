@@ -9,5 +9,5 @@ public interface SimpleMethodPutParams<W extends BgWorker<W>> //
     extends SimpleMethodPut<W>
 {
     @Override
-    SimpleMethodPutResult<W> run(W wkstep);
+    SimpleMethodPutResult<W> run(W wkstep) throws InterruptedException;
 }

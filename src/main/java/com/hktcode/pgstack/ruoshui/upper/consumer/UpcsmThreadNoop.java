@@ -21,15 +21,28 @@ public class UpcsmThreadNoop implements UpcsmThread
     }
 
     @Override
-    public UpcsmReportFetchThread del()
+    public UpcsmReportFetchThread put() throws InterruptedException
+    {
+        return this.get();
+    }
+
+    @Override
+    public UpcsmReportFetchThread get()
     {
         return null; // TODO:
+    }
+
+
+    @Override
+    public UpcsmReportFetchThread del()
+    {
+        return this.get(); // TODO:
     }
 
     @Override
     public UpcsmReportFetchThread pst(LogSequenceNumber lsn)
     {
-        return null; // TODO:
+        return this.get(); // TODO:
     }
 
     public boolean stop(long timeout)

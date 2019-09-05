@@ -32,7 +32,7 @@ public abstract class SimpleStatusOuter implements SimpleStatus
     }
 
     public abstract <A extends BgWorker<A>> //
-    void setResult(A worker, int number);
+    void setResult(A worker, int number) throws InterruptedException;
 
     public SimpleStatus outer(SimpleStatus outer)
     {

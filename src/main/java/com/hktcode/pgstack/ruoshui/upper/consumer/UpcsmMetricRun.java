@@ -8,12 +8,15 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class UpcsmMetricRun
 {
-    public static UpcsmMetricRun of(UpcsmActionRun action)
+    public static UpcsmMetricRun of(UpcsmActionRun action, UpcsmReportFetchThread fetchThread)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new UpcsmMetricRun(action);
+        if (fetchThread == null) {
+            throw new ArgumentNullException("fetchThread");
+        }
+        return new UpcsmMetricRun(action, fetchThread);
     }
 
     public final long actionStart;
@@ -28,11 +31,11 @@ public class UpcsmMetricRun
 
     public final long offerMillis;
 
-    // TODO: public final UpcsmReportFetchThread fetchThread;
+    public final UpcsmReportFetchThread fetchThread;
 
     public final String statusInfor;
 
-    private UpcsmMetricRun(UpcsmActionRun action)
+    private UpcsmMetricRun(UpcsmActionRun action, UpcsmReportFetchThread fetchThread)
     {
         this.actionStart = action.actionStart;
         this.recordCount = action.recordCount;
@@ -41,5 +44,6 @@ public class UpcsmMetricRun
         this.offerCounts = action.offerCounts;
         this.offerMillis = action.offerMillis;
         this.statusInfor = action.statusInfor;
+        this.fetchThread = fetchThread;
     }
 }

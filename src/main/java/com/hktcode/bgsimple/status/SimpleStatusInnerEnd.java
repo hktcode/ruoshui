@@ -37,7 +37,7 @@ public class SimpleStatusInnerEnd implements SimpleStatusInner
         // TODO: 检查pst中的Phaser是否已经终止.
         SimpleMethodAllResultEnd[] method = new SimpleMethodAllResultEnd[result.size()];
         result.toArray(method);
-        return SimpleStatusOuterGet.of(method, new Phaser(0));
+        return SimpleStatusOuterGet.of(method, new Phaser(1));
     }
 
     @Override
@@ -49,7 +49,7 @@ public class SimpleStatusInnerEnd implements SimpleStatusInner
         // TODO: 检查pst中的Phaser是否已经终止.
         SimpleMethodAllResultEnd[] method = new SimpleMethodAllResultEnd[result.size()];
         result.toArray(method);
-        return SimpleStatusOuterPst.of(method, new Phaser(0));
+        return SimpleStatusOuterPst.of(method, new Phaser(1));
     }
 
     @Override
@@ -61,6 +61,6 @@ public class SimpleStatusInnerEnd implements SimpleStatusInner
         // TODO: 检查del中的Phaser是否已经终止
         SimpleMethodAllResultEnd[] method = new SimpleMethodAllResultEnd[result.size()];
         result.toArray(method);
-        return SimpleStatusOuterDel.of(method, new Phaser(0));
+        return SimpleStatusOuterDel.of(method, new Phaser(1));
     }
 }

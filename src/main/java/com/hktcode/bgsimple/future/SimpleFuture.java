@@ -55,7 +55,7 @@ public abstract class SimpleFuture<S extends SimpleStatusOuter>
         SimpleStatus future = this.newStatus(result);
         if (!(future instanceof SimpleStatusOuterDel)) {
             this.status.compareAndSet(origin, future);
-            origin.phaser.arriveAndDeregister();
+            phaser.arriveAndDeregister();
             return ImmutableList.copyOf(result);
         }
         else if (future == origin) {
@@ -63,7 +63,7 @@ public abstract class SimpleFuture<S extends SimpleStatusOuter>
             throw new RuntimeException("should never happen");
         }
         else if (this.status.compareAndSet(origin, future)) {
-            origin.phaser.arriveAndDeregister();
+            phaser.arriveAndDeregister();
             SimpleStatusOuterDel f = (SimpleStatusOuterDel)future;
             SimpleFutureDel del = SimpleFutureDel.of(this.status, f);
             return del.get();
@@ -85,17 +85,17 @@ public abstract class SimpleFuture<S extends SimpleStatusOuter>
         SimpleStatus future = this.newStatus(result);
         if (!(future instanceof SimpleStatusOuterDel)) {
             this.status.compareAndSet(origin, future);
-            origin.phaser.arriveAndDeregister();
+            phaser.arriveAndDeregister();
             return ImmutableList.copyOf(result);
         }
         else if (this.status.compareAndSet(origin, future)) {
-            origin.phaser.arriveAndDeregister();
+            phaser.arriveAndDeregister();
             SimpleStatusOuterDel f = (SimpleStatusOuterDel)future;
             SimpleFutureDel del = SimpleFutureDel.of(this.status, f);
             return del.get(timeout, unit);
         }
         else {
-            origin.phaser.arriveAndDeregister();
+            phaser.arriveAndDeregister();
             return ImmutableList.copyOf(result);
         }
     }

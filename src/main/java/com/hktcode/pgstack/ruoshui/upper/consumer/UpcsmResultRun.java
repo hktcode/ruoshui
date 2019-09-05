@@ -7,8 +7,7 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 import com.hktcode.bgsimple.method.SimpleMethodAllResultRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class UpcsmResultRun //
-    implements SimpleMethodAllResultRun<UpcsmAction>
+public class UpcsmResultRun implements UpcsmResult
 {
     public static UpcsmResultRun of(UpcsmMetricRun metric)
     {

@@ -9,5 +9,5 @@ public interface SimpleMethodPstParams<W extends BgWorker<W>> //
     extends SimpleMethodPst<W>
 {
     @Override
-    SimpleMethodPstResult<W> run(W worker);
+    SimpleMethodPstResult<W> run(W worker) throws InterruptedException;
 }

@@ -10,52 +10,37 @@ import com.hktcode.lang.exception.ArgumentNullException;
 public class UpcsmActionEnd //
     extends SimpleWorker<UpcsmAction> implements UpcsmAction
 {
-    public static UpcsmActionEnd of(UpcsmActionRun action)
+    public static UpcsmActionEnd of(UpcsmActionRun action, UpcsmReportFetchThread fetchThread)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new UpcsmActionEnd(action);
+        if (fetchThread == null) {
+            throw new ArgumentNullException("fetchThread");
+        }
+        return new UpcsmActionEnd(action, fetchThread);
     }
 
     public final UpcsmMetricEnd metric;
 
-    private UpcsmActionEnd(UpcsmActionRun action)
+    private UpcsmActionEnd(UpcsmActionRun action, UpcsmReportFetchThread fetchThread)
     {
         super(action.status, 0);
-        this.metric = UpcsmMetricEnd.of(action);
+        this.metric = UpcsmMetricEnd.of(action, fetchThread);
     }
 
     @Override
-    public UpcsmActionErr next(Throwable throwable) //
+    public UpcsmActionErr next(Throwable throwsError) //
         throws InterruptedException
     {
-        if (throwable == null) {
-            throw new ArgumentNullException("throwable");
+        if (throwsError == null) {
+            throw new ArgumentNullException("throwsError");
         }
-        return UpcsmActionErr.of(this, throwable);
-    }
-
-    @Override
-    public UpcsmResultEnd pst()
-    {
-        return UpcsmResultEnd.of(metric);
-    }
-
-    @Override
-    public UpcsmResultEnd put()
-    {
-        return UpcsmResultEnd.of(metric);
+        return UpcsmActionErr.of(this, throwsError);
     }
 
     @Override
     public UpcsmResultEnd get()
-    {
-        return UpcsmResultEnd.of(metric);
-    }
-
-    @Override
-    public UpcsmResultEnd del()
     {
         return UpcsmResultEnd.of(metric);
     }

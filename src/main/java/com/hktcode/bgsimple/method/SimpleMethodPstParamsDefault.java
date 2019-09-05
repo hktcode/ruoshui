@@ -19,7 +19,7 @@ public class SimpleMethodPstParamsDefault<W extends BgWorker<W>> //
     }
 
     @Override
-    public SimpleMethodPstResult<W> run(W wkstep)
+    public SimpleMethodPstResult<W> run(W wkstep) throws InterruptedException
     {
         if (wkstep == null) {
             throw new ArgumentNullException("worker");

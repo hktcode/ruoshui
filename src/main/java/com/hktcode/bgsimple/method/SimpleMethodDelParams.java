@@ -9,5 +9,5 @@ public interface SimpleMethodDelParams<W extends BgWorker<W>> //
     extends SimpleMethodDel<W>
 {
     @Override
-    SimpleMethodDelResult<W> run(W wkstep);
+    SimpleMethodDelResult<W> run(W wkstep) throws InterruptedException;
 }

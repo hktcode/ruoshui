@@ -11,15 +11,18 @@ public class UpcsmActionErr //
     extends SimpleWorker<UpcsmAction> implements UpcsmAction
 {
     public static UpcsmActionErr of //
-        (UpcsmActionRun action, Throwable throwsError)
+        (UpcsmActionRun action, UpcsmReportFetchThread fetchThread, Throwable throwsError)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
+        if (fetchThread == null) {
+            throw new ArgumentNullException("fetchThread");
+        }
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
         }
-        return new UpcsmActionErr(action, throwsError);
+        return new UpcsmActionErr(action, fetchThread, throwsError);
     }
 
     public static UpcsmActionErr of //
@@ -37,10 +40,10 @@ public class UpcsmActionErr //
     public final UpcsmMetricErr metric;
 
     private UpcsmActionErr //
-        (UpcsmActionRun action, Throwable throwsError)
+        (UpcsmActionRun action, UpcsmReportFetchThread fetchThread, Throwable throwsError)
     {
         super(action.status, 0);
-        this.metric = UpcsmMetricErr.of(action, throwsError);
+        this.metric = UpcsmMetricErr.of(action, fetchThread, throwsError);
     }
 
     private UpcsmActionErr //
@@ -51,32 +54,17 @@ public class UpcsmActionErr //
     }
 
     @Override
-    public UpcsmActionErr next(Throwable throwable) //
+    public UpcsmActionErr next(Throwable throwsError) //
         throws InterruptedException
     {
+        if (throwsError == null) {
+            throw new ArgumentNullException("throwsError");
+        }
         return this;
     }
 
     @Override
-    public UpcsmResultErr pst()
-    {
-        return UpcsmResultErr.of(metric);
-    }
-
-    @Override
-    public UpcsmResultErr put()
-    {
-        return UpcsmResultErr.of(metric);
-    }
-
-    @Override
     public UpcsmResultErr get()
-    {
-        return UpcsmResultErr.of(metric);
-    }
-
-    @Override
-    public UpcsmResultErr del()
     {
         return UpcsmResultErr.of(metric);
     }

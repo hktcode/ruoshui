@@ -7,5 +7,5 @@ import com.hktcode.bgsimple.BgWorker;
 
 public interface SimpleMethodGet<W extends BgWorker<W>>
 {
-    SimpleMethodGetResult<W> run(W wkstep);
+    SimpleMethodGetResult<W> run(W wkstep) throws InterruptedException;
 }

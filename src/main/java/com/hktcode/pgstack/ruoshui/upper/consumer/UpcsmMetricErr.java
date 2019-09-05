@@ -9,15 +9,18 @@ import com.hktcode.lang.exception.ArgumentNullException;
 public class UpcsmMetricErr
 {
     public static UpcsmMetricErr of //
-        (UpcsmActionRun action, Throwable throwsError)
+        (UpcsmActionRun action, UpcsmReportFetchThread fetchThread, Throwable throwsError)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
+        if (fetchThread == null) {
+            throw new ArgumentNullException("fetchThread");
+        }
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
         }
-        return new UpcsmMetricErr(action, throwsError);
+        return new UpcsmMetricErr(action, fetchThread, throwsError);
     }
 
     public static UpcsmMetricErr of //
@@ -48,12 +51,12 @@ public class UpcsmMetricErr
 
     public final String statusInfor;
 
-    // TODO: public final UpcsmReportFetchThread fetchThread;
+    public final UpcsmReportFetchThread fetchThread;
 
     public final Throwable throwsError;
 
     private UpcsmMetricErr //
-    (UpcsmActionRun action, Throwable throwsError)
+    (UpcsmActionRun action, UpcsmReportFetchThread fetchThread, Throwable throwsError)
     {
         long finish = System.currentTimeMillis();
         this.actionStart = action.actionStart;
@@ -65,6 +68,7 @@ public class UpcsmMetricErr
         this.totalMillis = finish - action.actionStart;
         this.statusInfor = action.statusInfor;
         this.throwsError = throwsError;
+        this.fetchThread = fetchThread;
     }
 
     private UpcsmMetricErr //
@@ -77,8 +81,9 @@ public class UpcsmMetricErr
         this.fetchMillis = metric.fetchMillis;
         this.offerCounts = metric.offerCounts;
         this.offerMillis = metric.offerMillis;
-        this.totalMillis = finish - metric.actionStart;
+        this.fetchThread = metric.fetchThread;
         this.statusInfor = metric.statusInfor;
+        this.totalMillis = finish - metric.actionStart;
         this.throwsError = throwsError;
     }
 }

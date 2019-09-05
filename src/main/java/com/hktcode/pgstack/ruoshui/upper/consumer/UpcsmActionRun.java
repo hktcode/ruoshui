@@ -28,7 +28,7 @@ public class UpcsmActionRun //
         /* */( MainlineConfig config //
         /* */, BlockingQueue<UpperConsumerRecord> comein //
         /* */, AtomicReference<SimpleStatus> status //
-        /* */) throws InterruptedException //
+        /* */)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -70,7 +70,7 @@ public class UpcsmActionRun //
         while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
             r = (r == null ? this.poll() : this.push(r));
         }
-        return UpcsmActionEnd.of(this);
+        return UpcsmActionEnd.of(this, this.fetchThread.get());
     }
 
     private UpperConsumerRecord poll() throws InterruptedException
@@ -116,20 +116,20 @@ public class UpcsmActionRun //
     }
 
     @Override
-    public UpcsmActionErr next(Throwable throwable) //
+    public UpcsmActionErr next(Throwable throwsError) //
         throws InterruptedException
     {
-        if (throwable == null) {
-            throw new ArgumentNullException("throwable");
+        if (throwsError == null) {
+            throw new ArgumentNullException("throwsError");
         }
-        return UpcsmActionErr.of(this, throwable);
+        return UpcsmActionErr.of(this, this.fetchThread.get(), throwsError);
     }
 
     private UpcsmActionRun //
         /* */( MainlineConfig config //
         /* */, BlockingQueue<UpperConsumerRecord> comein //
         /* */, AtomicReference<SimpleStatus> status //
-        /* */) throws InterruptedException // TODO:
+        /* */)
     {
         super(status, 0);
         this.config = config;
@@ -139,28 +139,26 @@ public class UpcsmActionRun //
     }
 
     @Override
-    public UpcsmResultRun pst()
+    public UpcsmResult put() throws InterruptedException
     {
-        return this.get();
-    }
-
-    @Override
-    public UpcsmResultRun put()
-    {
-        return this.get();
-    }
-
-    @Override
-    public UpcsmResultRun get()
-    {
-        UpcsmMetricRun metric = UpcsmMetricRun.of(this);
+        UpcsmReportFetchThread fetchThreadReport = this.fetchThread.put();
+        UpcsmMetricRun metric = UpcsmMetricRun.of(this, fetchThreadReport);
         return UpcsmResultRun.of(metric);
     }
 
     @Override
-    public UpcsmResultEnd del()
+    public UpcsmResultRun get() throws InterruptedException
     {
-        UpcsmMetricEnd metric = UpcsmMetricEnd.of(this);
+        UpcsmReportFetchThread fetchThreadReport = this.fetchThread.get();
+        UpcsmMetricRun metric = UpcsmMetricRun.of(this, fetchThreadReport);
+        return UpcsmResultRun.of(metric);
+    }
+
+    @Override
+    public UpcsmResultEnd del() throws InterruptedException
+    {
+        UpcsmReportFetchThread fetchThreadReport = this.fetchThread.del();
+        UpcsmMetricEnd metric = UpcsmMetricEnd.of(this, fetchThreadReport);
         return UpcsmResultEnd.of(metric);
     }
 }

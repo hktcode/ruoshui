@@ -8,7 +8,7 @@ import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class UpcsmResultErr //
-    implements SimpleMethodAllResultEnd<UpcsmAction>
+    implements UpcsmResult, SimpleMethodAllResultEnd<UpcsmAction>
 {
     public static UpcsmResultErr of(UpcsmMetricErr metric)
     {

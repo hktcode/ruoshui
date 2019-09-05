@@ -7,7 +7,9 @@ package com.hktcode.pgstack.ruoshui.upper.mainline;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.future.SimpleFutureDel;
+import com.hktcode.bgsimple.future.SimpleFutureGet;
 import com.hktcode.bgsimple.future.SimpleFuturePst;
+import com.hktcode.bgsimple.future.SimpleFuturePut;
 import com.hktcode.bgsimple.method.*;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
@@ -37,8 +39,7 @@ public class MainlineThread extends UpcsmThreadBasic
 
     private final AtomicReference<SimpleStatus> status;
 
-    public static MainlineThread of(MainlineConfig config) //
-        throws InterruptedException
+    public static MainlineThread of(MainlineConfig config)
     {
         if (config == null) {
             throw new ArgumentNullException("thread");
@@ -50,9 +51,6 @@ public class MainlineThread extends UpcsmThreadBasic
         SimpleStatusOuterPut s = SimpleStatusOuterPut.of(put, new Phaser(2));
         AtomicReference<SimpleStatus> status = new AtomicReference<>(s);
         Thread thread = new Thread(Mainline.of(config, status, tqueue));
-        thread.start();
-        MainlineFuturePut future = MainlineFuturePut.of(status, s);
-        future.get();
         return new MainlineThread(thread, tqueue, status);
     }
 
@@ -86,6 +84,32 @@ public class MainlineThread extends UpcsmThreadBasic
         this.thread = thread;
         this.tqueue = tqueue;
         this.status = status;
+    }
+
+    @Override
+    public UpcsmReportFetchThread put() throws InterruptedException
+    {
+        SimpleHolder holder = SimpleHolder.of(status);
+        SimpleFuturePut future = holder.put();
+        thread.start();
+        MainlineResult mainline = (MainlineResult)future.get().get(0);
+        ImmutableList<SnapshotResult> snapshot = ImmutableList.copyOf(sslist);
+        return UpcsmReportFetchThread.of(mainline, snapshot);
+    }
+
+    @Override
+    public UpcsmReportFetchThread get() throws InterruptedException
+    {
+        SimpleHolder holder = SimpleHolder.of(status);
+        SimpleMethodGet[] params = new SimpleMethodGet[] {
+            SimpleMethodGetParamsDefault.of()
+        };
+        Phaser phaser = new Phaser(2);
+        SimpleStatusOuterGet get = SimpleStatusOuterGet.of(params, phaser);
+        SimpleFutureGet future = holder.get(get);
+        MainlineResult mainline = (MainlineResult)future.get().get(0);
+        ImmutableList<SnapshotResult> snapshot = ImmutableList.copyOf(sslist);
+        return UpcsmReportFetchThread.of(mainline, snapshot);
     }
 
     @Override

@@ -15,7 +15,7 @@ public class SimpleMethodGetParamsDefault<W extends BgWorker<W>> //
     }
 
     @Override
-    public SimpleMethodGetResult<W> run(W wkstep)
+    public SimpleMethodGetResult<W> run(W wkstep) throws InterruptedException
     {
         if (wkstep == null) {
             throw new ArgumentNullException("wkstep");
