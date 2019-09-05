@@ -8,13 +8,13 @@ import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.method.*;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.junction.UpperJunction;
-import com.hktcode.pgstack.ruoshui.upper.producer.UpperProducer;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpperConsumer;
 import com.hktcode.pgstack.ruoshui.upper.UpperConfig;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.producer.UpperProducerRecord;
 import com.hktcode.pgstack.ruoshui.upper.UpperSnapshotPstParams;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpperConsumer;
+import com.hktcode.pgstack.ruoshui.upper.junction.Upjct;
+import com.hktcode.pgstack.ruoshui.upper.producer.UpperProducer;
+import com.hktcode.pgstack.ruoshui.upper.producer.UpperProducerRecord;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -64,7 +64,7 @@ public class OnlyoneWorkingService implements WorkingService
         BlockingQueue<UpperProducerRecord> getout = new ArrayBlockingQueue<>(config.junction.getoutCount);
 
         UpperConsumer consumer = UpperConsumer.of(config.consumer, this.status, comein);
-        UpperJunction junction = UpperJunction.of(config.junction, this.status, comein, getout);
+        Upjct junction = Upjct.of(config.junction, comein, getout, this.status);
         UpperProducer producer = UpperProducer.of(config.producer, this.status, getout);
         Thread thread = new Thread(producer);
         thread.setDaemon(false);
@@ -78,8 +78,8 @@ public class OnlyoneWorkingService implements WorkingService
         thread.setDaemon(false);
         thread.setName("ruoshui-upper-consumer");
         thread.start();
-        put.phaser.awaitAdvanceInterruptibly(put.phaser.arrive());
         // TODO:
+        put.phaser.awaitAdvanceInterruptibly(put.phaser.arrive());
         SimpleStatusInnerRun run = SimpleStatusInnerRun.of();
         this.status.compareAndSet(put, run);
         put.phaser.arriveAndDeregister();

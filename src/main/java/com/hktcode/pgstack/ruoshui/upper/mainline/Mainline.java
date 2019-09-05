@@ -110,5 +110,6 @@ public class Mainline implements Runnable
             o = action.newStatus(action);
             f = SimpleStatusInnerEnd.of(ImmutableList.of(action.del()));
         } while (!this.status.compareAndSet(o, f));
+        logger.info("mainline terminate");
     }
 }

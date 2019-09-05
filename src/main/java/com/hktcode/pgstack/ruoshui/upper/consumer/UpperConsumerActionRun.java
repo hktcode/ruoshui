@@ -44,7 +44,7 @@ public class UpperConsumerActionRun //
 
     public final MainlineConfig config;
 
-    public final BlockingQueue<UpperConsumerRecord> comein;
+    private final BlockingQueue<UpperConsumerRecord> comein;
 
     public final long actionStart;
 

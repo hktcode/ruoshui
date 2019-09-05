@@ -2,19 +2,18 @@
  * Copyright (c) 2019, Huang Ketian.
  */
 
-package com.hktcode.pgstack.ruoshui.upper.consumer;
+package com.hktcode.pgstack.ruoshui.upper.junction;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class UpperConsumerMetricEnd
+public class UpjctMetricEnd
 {
-    public static UpperConsumerMetricEnd of //
-        (UpperConsumerActionRun action)
+    public static UpjctMetricEnd of(UpjctActionRun action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new UpperConsumerMetricEnd(action);
+        return new UpjctMetricEnd(action);
     }
 
     public final long actionStart;
@@ -31,12 +30,13 @@ public class UpperConsumerMetricEnd
 
     public final long totalMillis;
 
-    // TODO: public final UpperConsumerReportFetchThread fetchThread;
+    public final long curLsnofcmt;
+
+    public final long curSequence;
 
     public final String statusInfor;
 
-    private UpperConsumerMetricEnd //
-    (UpperConsumerActionRun action) //
+    private UpjctMetricEnd(UpjctActionRun action)
     {
         long finish = System.currentTimeMillis();
         this.actionStart = action.actionStart;
@@ -45,6 +45,8 @@ public class UpperConsumerMetricEnd
         this.fetchMillis = action.fetchMillis;
         this.offerCounts = action.offerCounts;
         this.offerMillis = action.offerMillis;
+        this.curLsnofcmt = action.curLsnofcmt;
+        this.curSequence = action.curSequence;
         this.statusInfor = action.statusInfor;
         this.totalMillis = finish - action.actionStart;
     }

@@ -6,9 +6,6 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.bgsimple.SimpleWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
-
-import java.util.concurrent.BlockingQueue;
 
 public class UpperConsumerActionEnd //
     extends SimpleWorker<UpperConsumerAction> implements UpperConsumerAction
@@ -23,13 +20,10 @@ public class UpperConsumerActionEnd //
 
     public final UpperConsumerMetricEnd metric;
 
-    public final BlockingQueue<UpperConsumerRecord> comein;
-
     private UpperConsumerActionEnd(UpperConsumerActionRun action)
     {
         super(action.status, 0);
         this.metric = UpperConsumerMetricEnd.of(action);
-        this.comein = action.comein;
     }
 
     @Override

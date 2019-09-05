@@ -4,15 +4,13 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
-import com.hktcode.bgsimple.status.SimpleStatus;
-import com.hktcode.bgsimple.status.SimpleStatusInner;
+import com.hktcode.bgsimple.tqueue.TqueueAction;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.replication.LogSequenceNumber;
 
-import java.util.concurrent.TransferQueue;
-import java.util.concurrent.atomic.AtomicReference;
-
-class MainlineActionThrowsErrors implements MainlineAction
+class MainlineActionThrowsErrors
+    extends TqueueAction<MainlineAction, MainlineConfig, MainlineRecord> //
+    implements MainlineAction
 {
     public static <T extends MainlineActionData<C>, C extends MainlineConfig>
     MainlineActionThrowsErrors of(T action, Throwable throwsError)
@@ -50,44 +48,32 @@ class MainlineActionThrowsErrors implements MainlineAction
         return new MainlineActionThrowsErrors(action, throwsError);
     }
 
-    public final MainlineConfig config;
-
     public final MainlineMetricErr metric;
-
-    public final AtomicReference<SimpleStatus> status;
-
-    public final TransferQueue<MainlineRecord> tqueue;
 
     private MainlineActionThrowsErrors(MainlineActionTerminateEnd action, Throwable throwsError)
     {
-        this.config = action.config;
+        super(action.config, action.tqueue, action.status);
         this.metric = action.metric.toErrMetrics(throwsError);
-        this.status = action.status;
-        this.tqueue = action.tqueue;
     }
 
     private <T extends MainlineActionData<C>, C extends MainlineConfig> //
     MainlineActionThrowsErrors(T action, Throwable throwsError)
     {
-        this.config = action.config;
+        super(action.config, action.tqueue, action.status);
         this.metric = action.toEndMetrics().toErrMetrics(throwsError);
-        this.status = action.status;
-        this.tqueue = action.tqueue;
     }
 
     private <T extends MainlineActionRepl<C>, C extends MainlineConfig> //
     MainlineActionThrowsErrors(T action, Throwable throwsError)
     {
-        this.config = action.config;
+        super(action.config, action.tqueue, action.status);
         this.metric = action.toEndMetrics().toErrMetrics(throwsError);
-        this.status = action.status;
-        this.tqueue = action.tqueue;
     }
 
     @Override
     public MainlineResultEnd pst()
     {
-        return MainlineResultEnd.of(this.config, this.metric);
+        return this.get();
     }
 
     @Override
@@ -96,13 +82,13 @@ class MainlineActionThrowsErrors implements MainlineAction
         if (lsn == null) {
             throw new ArgumentNullException("lsn");
         }
-        return MainlineResultEnd.of(this.config, this.metric);
+        return this.get();
     }
 
     @Override
     public MainlineResultEnd put()
     {
-        return MainlineResultEnd.of(this.config, this.metric);
+        return this.get();
     }
 
     @Override
@@ -114,14 +100,7 @@ class MainlineActionThrowsErrors implements MainlineAction
     @Override
     public MainlineResultEnd del()
     {
-        return MainlineResultEnd.of(this.config, this.metric);
-    }
-
-    @Override
-    public SimpleStatusInner newStatus(MainlineAction wkstep) //
-        throws InterruptedException
-    {
-        return null; // TODO
+        return this.get();
     }
 
     @Override

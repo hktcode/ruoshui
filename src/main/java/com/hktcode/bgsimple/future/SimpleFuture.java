@@ -58,6 +58,10 @@ public abstract class SimpleFuture<S extends SimpleStatusOuter>
             origin.phaser.arriveAndDeregister();
             return ImmutableList.copyOf(result);
         }
+        else if (future == origin) {
+            // TODO 不可能发生.
+            throw new RuntimeException("should never happen");
+        }
         else if (this.status.compareAndSet(origin, future)) {
             origin.phaser.arriveAndDeregister();
             SimpleStatusOuterDel f = (SimpleStatusOuterDel)future;
@@ -117,7 +121,7 @@ public abstract class SimpleFuture<S extends SimpleStatusOuter>
         } else if (delCount == result.length) {
             return SimpleStatusInnerRun.of();
         } else if (this.origin instanceof SimpleStatusOuterDel) {
-            return SimpleStatusInnerEnd.of(ImmutableList.copyOf(endresult));
+            return this.origin;
         } else {
             return SimpleStatusOuterDel.of(method, new Phaser(delCount + 1));
         }

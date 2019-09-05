@@ -39,14 +39,11 @@ public class UpperConsumerActionErr //
 
     public final UpperConsumerMetricErr metric;
 
-    public final BlockingQueue<UpperConsumerRecord> comein;
-
     private UpperConsumerActionErr //
         (UpperConsumerActionRun action, Throwable throwsError)
     {
         super(action.status, 0);
         this.metric = UpperConsumerMetricErr.of(action, throwsError);
-        this.comein = action.comein;
     }
 
     private UpperConsumerActionErr //
@@ -54,7 +51,6 @@ public class UpperConsumerActionErr //
     {
         super(action.status, 0);
         this.metric = UpperConsumerMetricErr.of(action.metric, throwsError);
-        this.comein = action.comein;
     }
 
     @Override

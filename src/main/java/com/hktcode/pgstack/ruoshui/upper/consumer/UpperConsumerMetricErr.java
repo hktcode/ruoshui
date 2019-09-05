@@ -44,8 +44,6 @@ public class UpperConsumerMetricErr
 
     public final long offerMillis;
 
-    public final long logDatetime;
-
     public final long totalMillis;
 
     public final String statusInfor;
@@ -64,7 +62,6 @@ public class UpperConsumerMetricErr
         this.fetchMillis = action.fetchMillis;
         this.offerCounts = action.offerCounts;
         this.offerMillis = action.offerMillis;
-        this.logDatetime = action.logDatetime;
         this.totalMillis = finish - action.actionStart;
         this.statusInfor = action.statusInfor;
         this.throwsError = throwsError;
@@ -80,7 +77,6 @@ public class UpperConsumerMetricErr
         this.fetchMillis = metric.fetchMillis;
         this.offerCounts = metric.offerCounts;
         this.offerMillis = metric.offerMillis;
-        this.logDatetime = metric.logDatetime;
         this.totalMillis = finish - metric.actionStart;
         this.statusInfor = metric.statusInfor;
         this.throwsError = throwsError;

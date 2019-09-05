@@ -12,6 +12,7 @@ import com.hktcode.bgsimple.method.*;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperMethodPstParamsRecvLsn;
+import com.hktcode.pgstack.ruoshui.upper.consumer.FetchThreadThrowsErrorException;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpperConsumerReportFetchThread;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpperConsumerThreadBasic;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
@@ -36,7 +37,8 @@ public class MainlineThread extends UpperConsumerThreadBasic
 
     private final AtomicReference<SimpleStatus> status;
 
-    public static MainlineThread of(MainlineConfig config) throws InterruptedException
+    public static MainlineThread of(MainlineConfig config) //
+        throws InterruptedException
     {
         if (config == null) {
             throw new ArgumentNullException("thread");
@@ -59,11 +61,15 @@ public class MainlineThread extends UpperConsumerThreadBasic
     {
         MainlineRecordNormal record //
             = (MainlineRecordNormal)this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);
+        SimpleStatus origin;
         if (record != null) {
             return UpperConsumerRecord.of(record.lsn, record.msg);
         }
         else if (this.thread.isAlive()) {
             return null;
+        }
+        else if ((origin = this.status.get()) instanceof SimpleStatusInnerEnd) {
+            throw new FetchThreadThrowsErrorException();
         }
         else {
             // TODO: throw new DelegateNotAliveException();

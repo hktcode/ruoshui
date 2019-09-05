@@ -44,12 +44,12 @@ public class SimpleHolder
             origin = this.status.get();
             future = origin.pst(pst);
         } while (/*  */!(future instanceof SimpleStatusOuterPst) //
-                /**/|| ( // future != origin  //
-                /*     &&*/ future != pst  //
-                /*     */|| !this.status.compareAndSet(origin, future) //
+                /**/|| future == origin  //
+                /**/|| (    future == pst  //
+                /*     */&& !this.status.compareAndSet(origin, future) //
                 /*   */)
             /**/);
-        return SimpleFuturePst.of(status, pst);
+        return SimpleFuturePst.of(status, (SimpleStatusOuterPst)future);
     }
 
     public SimpleFutureGet get(SimpleStatusOuterGet get)
@@ -64,12 +64,12 @@ public class SimpleHolder
             origin = this.status.get();
             future = origin.get(get);
         } while (/*  */!(future instanceof SimpleStatusOuterGet) //
-                /**/|| ( // future != origin  //
-                /*     &&*/ future != get  //
-                /*     */|| !this.status.compareAndSet(origin, future) //
+                /**/|| future != origin  //
+                /**/|| (    future == get  //
+                /*     */&& !this.status.compareAndSet(origin, future) //
                 /*   */)
             /**/);
-        return SimpleFutureGet.of(status, get);
+        return SimpleFutureGet.of(status, (SimpleStatusOuterGet)future);
     }
 
     public SimpleFutureDel del(SimpleStatusOuterDel del)
@@ -84,11 +84,11 @@ public class SimpleHolder
             origin = this.status.get();
             future = origin.del(del);
         } while (/*  */!(future instanceof SimpleStatusOuterDel)  //
-                /**/|| ( // future != origin  //
-                /*     &&*/ future != del //
+                /**/|| future == origin  //
+                /**/|| (    future != del //
                 /*     */|| !this.status.compareAndSet(origin, future) //
                 /*   */) //
             /**/);
-        return SimpleFutureDel.of(status, del);
+        return SimpleFutureDel.of(status, (SimpleStatusOuterDel)future);
     }
 }
