@@ -14,6 +14,7 @@ consumer:
   src_property:
     PGHOST: 192.168.119.137
     PGPORT: 5432
+    PGDBNAME: postgres
     password: postgres
 producer:
   kfk_property:

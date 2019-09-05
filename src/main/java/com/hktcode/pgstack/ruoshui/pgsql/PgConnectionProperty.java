@@ -66,7 +66,6 @@ public class PgConnectionProperty
         result.put(PGProperty.USER.getName(), "postgres");
         result.put(PGProperty.ASSUME_MIN_SERVER_VERSION.getName(), "10");
         result.put(PGProperty.APPLICATION_NAME.getName(), "ruoshui");
-        result.put("database", "postgres");
         return result;
     }
 
@@ -102,13 +101,7 @@ public class PgConnectionProperty
         PGProperty.REPLICATION.set(props, "database");
         PGProperty.PREFER_QUERY_MODE.set(props, "simple");
         StringBuilder sb = toText(props);
-        String database = this.propertyMap.get("database");
-        try {
-            database = URLEncoder.encode(database, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            // this should never happen
-        }
-        String url = PostgreSQL.JDBC_URL + database;
+        String url = PostgreSQL.JDBC_URL;
         logger.info("get replication connection: url={}{}", url, sb);
         return DriverManager.getConnection(url, props);
     }
@@ -129,13 +122,7 @@ public class PgConnectionProperty
 
         props.remove(PGProperty.REPLICATION.getName());
         props.remove(PGProperty.PREFER_QUERY_MODE.getName());
-        String database = this.propertyMap.get("database");
-        try {
-            database = URLEncoder.encode(database, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            // this should never happen
-        }
-        String url = PostgreSQL.JDBC_URL + database;
+        String url = PostgreSQL.JDBC_URL;
         StringBuilder sb = toText(props);
         logger.info("get queryies connection: url={}{}", url, sb);
         return DriverManager.getConnection(url, props);
