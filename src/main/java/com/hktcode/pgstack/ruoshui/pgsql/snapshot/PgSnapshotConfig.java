@@ -116,8 +116,20 @@ public class PgSnapshotConfig extends TqueueConfig
         if (sql == null) {
             sql = buildSelect(pgdata, relation);
         }
-        PreparedStatement ps = pgdata.prepareStatement
-            /* */( sql //
+        return preparedStatement(pgdata, sql);
+    }
+
+    protected PreparedStatement preparedStatement(PgConnection pg, String sql)
+        throws SQLException
+    {
+        if (pg == null) {
+            throw new ArgumentNullException("pg");
+        }
+        if (sql == null) {
+            throw new ArgumentNullException("sql");
+        }
+        PreparedStatement ps = pg.prepareStatement //
+                /* */( sql //
                 /* */, ResultSet.TYPE_FORWARD_ONLY //
                 /* */, ResultSet.CONCUR_READ_ONLY //
                 /* */, ResultSet.CLOSE_CURSORS_AT_COMMIT //

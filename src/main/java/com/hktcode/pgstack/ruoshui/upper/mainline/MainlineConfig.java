@@ -18,7 +18,6 @@ import org.postgresql.jdbc.PgConnection;
 
 import javax.script.ScriptException;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -76,6 +75,7 @@ public class MainlineConfig extends PgSnapshotConfig
         }
         String lockingModeText = json.path("locking_mode").asText("SHARE_UPDATE_EXCLUSIVE");
         PgLockMode lockingMode = PgLockMode.valueOf(lockingModeText);
+        boolean getSnapshot = json.path("get_snapshot").asBoolean(true);
         MainlineConfig result = MainlineConfig.of
             /* */( srcProperty //
                 /* */, typelistSql //
@@ -84,15 +84,14 @@ public class MainlineConfig extends PgSnapshotConfig
                 /* */, lockingMode //
                 /* */, logicalRepl //
                 /* */, tupleSelect //
+                /* */, getSnapshot //
                 /* */);
         long waitTimeout = json.path("wait_timeout").asLong(DEFALUT_WAIT_TIMEOUT);
         long logDuration = json.path("log_duration").asLong(DEFAULT_LOG_DURATION);
         int rsFetchsize = json.path("rs_fetchsize").asInt(DEFAULT_RS_FETCHSIZE);
-        boolean getSnapshot = json.path("get_snapshot").asBoolean(true);
         result.waitTimeout = waitTimeout;
         result.logDuration = logDuration;
         result.rsFetchsize = rsFetchsize;
-        result.getSnapshot = getSnapshot;
         return result;
     }
 
@@ -102,8 +101,9 @@ public class MainlineConfig extends PgSnapshotConfig
         /* */, String relationSql //
         /* */, PgSnapshotFilter whereScript //
         /* */, PgLockMode lockingMode //
-        /* */, LogicalReplConfig logicalRepl
-        /* */, ImmutableMap<PgReplRelationName, String> tupleSelect
+        /* */, LogicalReplConfig logicalRepl //
+        /* */, ImmutableMap<PgReplRelationName, String> tupleSelect //
+        /* */, boolean getSnapshot //
         /* */) //
     {
         if (srcProperty == null) {
@@ -127,44 +127,35 @@ public class MainlineConfig extends PgSnapshotConfig
         if (tupleSelect == null) {
             throw new ArgumentNullException("tupleSelect");
         }
-        return new MainlineConfig(srcProperty, typelistSql, relationSql, whereScript, lockingMode, logicalRepl, tupleSelect);
+        return new MainlineConfig(srcProperty, typelistSql, relationSql, whereScript, lockingMode, logicalRepl, tupleSelect, getSnapshot);
     }
 
     public final String typelistSql;
 
-    public boolean getSnapshot = true;
+    public final boolean getSnapshot;
 
-    MainlineConfig //
+    private MainlineConfig //
         /* */( PgConnectionProperty srcProperty //
         /* */, String typelistSql //
         /* */, String relationSql //
         /* */, PgSnapshotFilter whereScript //
         /* */, PgLockMode lockingMode //
-        /* */, LogicalReplConfig logicalRepl
-        /* */, ImmutableMap<PgReplRelationName, String> tupleSelect
+        /* */, LogicalReplConfig logicalRepl //
+        /* */, ImmutableMap<PgReplRelationName, String> tupleSelect //
+        /* */, boolean getSnapshot //
         /* */) //
     {
         super(srcProperty, relationSql, whereScript, lockingMode, logicalRepl, tupleSelect);
         this.typelistSql = typelistSql;
+        this.getSnapshot = getSnapshot;
     }
 
-    public PreparedStatement queryTypelist(PgConnection pgdata)
+    public PreparedStatement queryTypelist(PgConnection pgdata) //
         throws SQLException
     {
-        PreparedStatement ps = pgdata.prepareStatement
-            /* */(TYPELIST_SQL //
-                /* */, ResultSet.TYPE_FORWARD_ONLY //
-                /* */, ResultSet.CONCUR_READ_ONLY //
-                /* */, ResultSet.CLOSE_CURSORS_AT_COMMIT //
-                /* */);
-        try {
-            ps.setFetchDirection(ResultSet.FETCH_FORWARD);
-            ps.setFetchSize(this.rsFetchsize);
-            return ps;
+        if (pgdata == null) {
+            throw new ArgumentNullException("pgdata");
         }
-        catch (Exception ex) {
-            ps.close();
-            throw ex;
-        }
+        return preparedStatement(pgdata, typelistSql);
     }
 }
