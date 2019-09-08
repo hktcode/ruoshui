@@ -340,7 +340,7 @@ public class MainlineConfig extends TripleConsumerConfig
         this.typelistSql = typelistSql;
     }
 
-    public String lockRelation(PgReplRelation relation, PgConnection cnt)
+    public String lockStatement(PgReplRelation relation, PgConnection cnt)
         throws SQLException
     {
         if (relation == null) {

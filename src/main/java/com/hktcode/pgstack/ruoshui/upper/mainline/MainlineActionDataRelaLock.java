@@ -81,7 +81,7 @@ class MainlineActionDataRelaLock //
                 }
                 else if (iter.hasNext()) {
                     relation = iter.next();
-                    String sql = this.config.lockRelation(relation.relationInfo, pgdata);
+                    String sql = this.config.lockStatement(relation.relationInfo, pgdata);
                     logger.info("lock relation: sql={}", sql);
                     Callable<Boolean> callable = MainlineDeputeLockRelation.of(s, sql);
                     starts = System.currentTimeMillis();
