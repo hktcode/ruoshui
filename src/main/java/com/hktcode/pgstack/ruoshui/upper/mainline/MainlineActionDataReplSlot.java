@@ -20,8 +20,7 @@ import java.sql.Statement;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-class MainlineActionDataReplSlot //
-    extends MainlineActionData<MainlineConfig>
+class MainlineActionDataReplSlot extends MainlineActionData
 {
     private static final Logger logger = LoggerFactory.getLogger(MainlineActionDataReplSlot.class);
 

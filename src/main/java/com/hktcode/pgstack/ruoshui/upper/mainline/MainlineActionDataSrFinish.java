@@ -17,8 +17,7 @@ import javax.script.ScriptException;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 
-public class MainlineActionDataSrFinish //
-    extends MainlineActionData<MainlineConfig>
+public class MainlineActionDataSrFinish extends MainlineActionData
 {
     static MainlineActionDataSrFinish of(MainlineActionDataTupleval action)
     {

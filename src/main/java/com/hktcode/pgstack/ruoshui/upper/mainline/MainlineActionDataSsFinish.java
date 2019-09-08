@@ -19,8 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-public class MainlineActionDataSsFinish //
-    extends MainlineActionData<MainlineConfig>
+public class MainlineActionDataSsFinish extends MainlineActionData
 {
     static MainlineActionDataSsFinish of(MainlineActionDataSrFinish action)
     {

@@ -20,8 +20,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-class MainlineActionDataRelaLock //
-    extends MainlineActionData<MainlineConfig>
+class MainlineActionDataRelaLock extends MainlineActionData
 {
     private static final Logger logger = LoggerFactory.getLogger(MainlineActionDataRelaLock.class);
 

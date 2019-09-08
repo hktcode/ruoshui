@@ -13,8 +13,7 @@ class MainlineActionThrowsErrors
     extends TqueueAction<MainlineAction, MainlineConfig, MainlineRecord> //
     implements MainlineAction
 {
-    public static <T extends MainlineActionData<C>, C extends MainlineConfig>
-    MainlineActionThrowsErrors of(T action, Throwable throwsError)
+    public static MainlineActionThrowsErrors of(MainlineActionData action, Throwable throwsError)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -25,8 +24,7 @@ class MainlineActionThrowsErrors
         return new MainlineActionThrowsErrors(action, throwsError);
     }
 
-    public static <T extends MainlineActionRepl<C>, C extends MainlineConfig>
-    MainlineActionThrowsErrors of(T action, Throwable throwsError)
+    public static MainlineActionThrowsErrors of(MainlineActionRepl action, Throwable throwsError)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -57,15 +55,13 @@ class MainlineActionThrowsErrors
         this.metric = action.metric.toErrMetrics(throwsError);
     }
 
-    private <T extends MainlineActionData<C>, C extends MainlineConfig> //
-    MainlineActionThrowsErrors(T action, Throwable throwsError)
+    private MainlineActionThrowsErrors(MainlineActionData action, Throwable throwsError)
     {
         super(action.config, action.tqueue, action.status);
         this.metric = action.toEndMetrics().toErrMetrics(throwsError);
     }
 
-    private <T extends MainlineActionRepl<C>, C extends MainlineConfig> //
-    MainlineActionThrowsErrors(T action, Throwable throwsError)
+    private MainlineActionThrowsErrors(MainlineActionRepl action, Throwable throwsError)
     {
         super(action.config, action.tqueue, action.status);
         this.metric = action.toEndMetrics().toErrMetrics(throwsError);

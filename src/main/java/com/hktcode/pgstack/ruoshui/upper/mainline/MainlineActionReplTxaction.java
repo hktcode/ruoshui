@@ -22,8 +22,7 @@ import javax.script.ScriptException;
 import java.nio.ByteBuffer;
 import java.sql.SQLException;
 
-abstract class MainlineActionReplTxaction
-    extends MainlineActionRepl<MainlineConfig>
+abstract class MainlineActionReplTxaction extends MainlineActionRepl
 {
     private static final Logger logger = LoggerFactory.getLogger(MainlineActionReplTxaction.class);
 

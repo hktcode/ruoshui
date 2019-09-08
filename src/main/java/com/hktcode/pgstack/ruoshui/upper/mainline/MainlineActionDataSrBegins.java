@@ -18,8 +18,7 @@ import javax.script.ScriptException;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 
-class MainlineActionDataSrBegins //
-    extends MainlineActionData<MainlineConfig>
+class MainlineActionDataSrBegins extends MainlineActionData
 {
     static MainlineActionDataSrBegins of(MainlineActionDataSsBegins action)
     {

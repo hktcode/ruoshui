@@ -20,8 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-class MainlineActionDataSsBegins //
-    extends MainlineActionData<MainlineConfig>
+class MainlineActionDataSsBegins extends MainlineActionData
 {
     static MainlineActionDataSsBegins of(MainlineActionDataSizeDiff action)
     {

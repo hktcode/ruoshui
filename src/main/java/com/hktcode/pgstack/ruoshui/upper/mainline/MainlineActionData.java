@@ -19,8 +19,8 @@ import java.sql.SQLException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-abstract class MainlineActionData<C extends MainlineConfig> //
-    extends TqueueAction<MainlineAction, C, MainlineRecord> //
+abstract class MainlineActionData //
+    extends TqueueAction<MainlineAction, MainlineConfig, MainlineRecord> //
     implements MainlineAction //
 {
     private static final Logger logger = LoggerFactory.getLogger(MainlineActionData.class);
@@ -33,8 +33,7 @@ abstract class MainlineActionData<C extends MainlineConfig> //
 
     long rsnextCount = 0;
 
-    protected <T extends MainlineActionData<F>, F extends C> //
-    MainlineActionData(T action, long actionStart)
+    protected MainlineActionData(MainlineActionData action, long actionStart)
     {
         super(action.config, action.tqueue, action.status);
         this.actionStart = actionStart;
@@ -43,7 +42,7 @@ abstract class MainlineActionData<C extends MainlineConfig> //
     }
 
     protected MainlineActionData //
-        /* */( C config //
+        /* */( MainlineConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<MainlineRecord> tqueue //
         /* */, long actionStart //

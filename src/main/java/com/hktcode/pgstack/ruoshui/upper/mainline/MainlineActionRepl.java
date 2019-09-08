@@ -12,8 +12,8 @@ import org.postgresql.jdbc.PgConnection;
 import javax.script.ScriptException;
 import java.sql.SQLException;
 
-abstract class MainlineActionRepl<C extends MainlineConfig> //
-    extends TqueueAction<MainlineAction, C, MainlineRecord> //
+abstract class MainlineActionRepl //
+    extends TqueueAction<MainlineAction, MainlineConfig, MainlineRecord> //
     implements MainlineAction //
 {
     public final long actionStart;
@@ -22,8 +22,7 @@ abstract class MainlineActionRepl<C extends MainlineConfig> //
 
     public long fetchMillis = 0;
 
-    protected <T extends MainlineActionData<F>, F extends C>
-    MainlineActionRepl(T action, long actionStart)
+    protected MainlineActionRepl(MainlineActionData action, long actionStart)
     {
         super(action.config, action.tqueue, action.status);
         this.actionStart = actionStart;

@@ -30,8 +30,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-class MainlineActionDataTupleval //
-    extends MainlineActionData<MainlineConfig> //
+class MainlineActionDataTupleval extends MainlineActionData
 {
     static MainlineActionDataTupleval of(MainlineActionDataSrBegins action)
     {

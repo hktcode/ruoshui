@@ -13,8 +13,7 @@ public class MainlineActionTerminateEnd
     extends TqueueAction<MainlineAction, MainlineConfig, MainlineRecord> //
     implements MainlineAction
 {
-    public static <A extends MainlineActionData<C>, C extends MainlineConfig>
-    MainlineActionTerminateEnd of(A action)
+    public static MainlineActionTerminateEnd of(MainlineActionData action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -22,8 +21,7 @@ public class MainlineActionTerminateEnd
         return new MainlineActionTerminateEnd(action);
     }
 
-    public static <A extends MainlineActionRepl<C>, C extends MainlineConfig>
-    MainlineActionTerminateEnd of(A action)
+    public static MainlineActionTerminateEnd of(MainlineActionRepl action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -33,15 +31,13 @@ public class MainlineActionTerminateEnd
 
     public final MainlineMetricEnd metric;
 
-    private <A extends MainlineActionData<C>, C extends MainlineConfig> //
-    MainlineActionTerminateEnd(A action)
+    private MainlineActionTerminateEnd(MainlineActionData action)
     {
         super(action.config, action.tqueue, action.status);
         this.metric = action.toEndMetrics();
     }
 
-    private <A extends MainlineActionRepl<C>, C extends MainlineConfig> //
-    MainlineActionTerminateEnd(A action)
+    private MainlineActionTerminateEnd(MainlineActionRepl action)
     {
         super(action.config, action.tqueue, action.status);
         this.metric = action.toEndMetrics();

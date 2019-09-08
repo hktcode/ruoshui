@@ -26,8 +26,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-class MainlineActionDataRelaList //
-    extends MainlineActionData<MainlineConfig>
+class MainlineActionDataRelaList extends MainlineActionData
 {
     static MainlineActionDataRelaList of
         /* */( MainlineConfig config //
