@@ -55,7 +55,7 @@ public class UpperController implements DisposableBean
 
     @PutMapping
     public ResponseEntity put(@RequestBody JsonNode body) //
-        throws ScriptException, ExecutionException, InterruptedException, ProcessingException
+        throws ScriptException, InterruptedException, ProcessingException
     {
         if (body == null) {
             throw new ArgumentNullException("body");
@@ -75,7 +75,7 @@ public class UpperController implements DisposableBean
     }
 
     @DeleteMapping
-    public ResponseEntity del() throws ExecutionException, InterruptedException
+    public ResponseEntity del() throws InterruptedException
     {
         WaitingService future;
         UpperService origin;
@@ -87,7 +87,7 @@ public class UpperController implements DisposableBean
     }
 
     @GetMapping
-    public ResponseEntity get() throws ExecutionException, InterruptedException
+    public ResponseEntity get() throws InterruptedException
     {
         UpperService service = this.service.get();
         return service.get();
@@ -95,7 +95,7 @@ public class UpperController implements DisposableBean
 
     @PostMapping(path="snapshot")
     public ResponseEntity pst(@RequestBody JsonNode body) //
-        throws ExecutionException, InterruptedException, ScriptException, ProcessingException
+        throws InterruptedException, ScriptException, ProcessingException
     {
         if (body == null) {
             throw new ArgumentNullException("body");

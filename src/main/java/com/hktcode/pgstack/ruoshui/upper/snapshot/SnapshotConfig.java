@@ -14,7 +14,6 @@ import com.hktcode.pgjdbc.PgReplRelation;
 import com.hktcode.pgstack.ruoshui.pgsql.LogicalReplConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplRelationName;
-import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilter;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilterDefault;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilterScript;
@@ -68,7 +67,7 @@ public class SnapshotConfig extends TqueueConfig
         }
         String lockingModeText = json.path("locking_mode").asText("SHARE_UPDATE_EXCLUSIVE");
         PgLockMode lockingMode = PgLockMode.valueOf(lockingModeText);
-        int rsFetchsize = json.path("rs_fetchsize").asInt(PgSnapshotConfig.DEFAULT_RS_FETCHISIZE);
+        int rsFetchsize = json.path("rs_fetchsize").asInt(DEFAULT_RS_FETCHISIZE);
         SnapshotConfig result = SnapshotConfig.of
             /* */( srcProperty //
                 /* */, relationSql //
@@ -84,6 +83,12 @@ public class SnapshotConfig extends TqueueConfig
         result.rsFetchsize = rsFetchsize;
         return result;
     }
+
+    /**
+     * 默认的{@link ResultSet#setFetchSize(int)}值.
+     */
+    public static final int DEFAULT_RS_FETCHISIZE = 128;
+
 
     public static SnapshotConfig of //
         /* */( PgConnectionProperty srcProperty //

@@ -33,8 +33,6 @@ class MainlineActionDataReplSlot //
         return new MainlineActionDataReplSlot(action);
     }
 
-    public final MainlineReportBegin1st begin1st;
-
     public final MainlineReportRelaList relalist;
 
     public final MainlineReportRelaLock relaLock;
@@ -48,7 +46,6 @@ class MainlineActionDataReplSlot //
     private MainlineActionDataReplSlot(MainlineActionDataRelaLock action)
     {
         super(action, System.currentTimeMillis());
-        this.begin1st = action.begin1st;
         this.relalist = action.relalist;
         this.relaLock = MainlineReportRelaLock.of(action, this.actionStart);
         this.relationLst = action.relationLst;

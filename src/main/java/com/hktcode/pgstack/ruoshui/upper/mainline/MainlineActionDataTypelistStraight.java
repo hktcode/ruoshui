@@ -4,22 +4,41 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
+import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
+
+import java.util.concurrent.TransferQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
 class MainlineActionDataTypelistStraight //
     extends MainlineActionDataTypelist
 {
-    static MainlineActionDataTypelistStraight of(MainlineActionDataBegin1stStraight action)
+    static MainlineActionDataTypelistStraight of
+        /* */( MainlineConfig config //
+        /* */, AtomicReference<SimpleStatus> status //
+        /* */, TransferQueue<MainlineRecord> tqueue //
+        /* */)
     {
-        if (action == null) {
-            throw new ArgumentNullException("action");
+        if (config == null) {
+            throw new ArgumentNullException("config");
         }
-        return new MainlineActionDataTypelistStraight(action);
+        if (status == null) {
+            throw new ArgumentNullException("status");
+        }
+        if (tqueue == null) {
+            throw new ArgumentNullException("tqueue");
+        }
+        return new MainlineActionDataTypelistStraight(config, status, tqueue);
     }
 
-    private MainlineActionDataTypelistStraight(MainlineActionDataBegin1stStraight action)
+    private MainlineActionDataTypelistStraight
+        /* */( MainlineConfig config //
+        /* */, AtomicReference<SimpleStatus> status //
+        /* */, TransferQueue<MainlineRecord> tqueue //
+        /* */)
     {
-        super(action);
+        super(config, status, tqueue);
     }
 
     public MainlineActionReplTxactionStraight txaction()

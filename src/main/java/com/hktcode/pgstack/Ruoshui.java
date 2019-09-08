@@ -4,7 +4,6 @@
 package com.hktcode.pgstack;
 
 import com.hktcode.lang.Application;
-import com.hktcode.lang.DefaultUncaughtExceptionHandler;
 import com.hktcode.pgstack.ruoshui.RuoshuiConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

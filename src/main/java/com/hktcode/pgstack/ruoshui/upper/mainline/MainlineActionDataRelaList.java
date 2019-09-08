@@ -5,10 +5,12 @@
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.google.common.collect.ImmutableList;
+import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.PgReplAttribute;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgsqlRelationMetric;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
 import org.postgresql.jdbc.PgConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,16 +23,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.TransferQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
 class MainlineActionDataRelaList //
     extends MainlineActionData<MainlineConfig>
 {
-    static MainlineActionDataRelaList of(MainlineActionDataBegin1stSnapshot action)
+    static MainlineActionDataRelaList of
+        /* */( MainlineConfig config //
+        /* */, AtomicReference<SimpleStatus> status //
+        /* */, TransferQueue<MainlineRecord> tqueue //
+        /* */)
     {
-        if (action == null) {
-            throw new ArgumentNullException("action");
+        if (config == null) {
+            throw new ArgumentNullException("config");
         }
-        return new MainlineActionDataRelaList(action);
+        if (status == null) {
+            throw new ArgumentNullException("status");
+        }
+        if (tqueue == null) {
+            throw new ArgumentNullException("tqueue");
+        }
+        return new MainlineActionDataRelaList(config, status, tqueue);
     }
 
     static MainlineActionDataRelaList of(MainlineActionDataRelaLock action)
@@ -51,18 +65,20 @@ class MainlineActionDataRelaList //
 
     private static final Logger logger = LoggerFactory.getLogger(MainlineActionDataRelaList.class);
 
-    private MainlineActionDataRelaList(MainlineActionDataBegin1stSnapshot action)
+    private MainlineActionDataRelaList
+        /* */( MainlineConfig config //
+        /* */, AtomicReference<SimpleStatus> status //
+        /* */, TransferQueue<MainlineRecord> tqueue //
+        /* */)
     {
-        super(action, System.currentTimeMillis());
-        this.begin1st = MainlineReportBegin1st.of(action, this.actionStart);
+        super(config, status, tqueue, System.currentTimeMillis());
         this.retryReason = ImmutableList.of();
-        this.logDatetime = action.logDatetime;
+        this.logDatetime = super.actionStart;
     }
 
     private MainlineActionDataRelaList(MainlineActionDataRelaLock action)
     {
         super(action, System.currentTimeMillis());
-        this.begin1st = action.begin1st;
         this.retryReason = ImmutableList.<String>builder() //
             .addAll(action.relalist.retryReason).add("lock relation fail") //
             .build();
@@ -72,14 +88,11 @@ class MainlineActionDataRelaList //
     private MainlineActionDataRelaList(MainlineActionDataSizeDiff action)
     {
         super(action, System.currentTimeMillis());
-        this.begin1st = action.begin1st;
         this.retryReason = ImmutableList.<String>builder() //
             .addAll(action.relalist.retryReason).add("relalist change") //
             .build();
         this.logDatetime = action.logDatetime;
     }
-
-    public final MainlineReportBegin1st begin1st;
 
     @Deprecated
     public long getrsMillis = -1;

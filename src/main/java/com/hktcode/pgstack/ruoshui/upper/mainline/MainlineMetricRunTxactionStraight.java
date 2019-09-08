@@ -25,8 +25,6 @@ public class MainlineMetricRunTxactionStraight extends MainlineMetricRunTxaction
     @Override
     public void toJsonObject(ObjectNode node)
     {
-        ObjectNode begin1stNode = node.putObject("begin1st");
-        this.begin1st.toJsonObject(begin1stNode);
         ObjectNode typelistNode = node.putObject("typelist");
         this.typelist.toJsonObject(typelistNode);
         ObjectNode txactionNode = node.putObject("txaction");

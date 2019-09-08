@@ -8,18 +8,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.google.common.collect.ImmutableMap;
-import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.triple.TripleConsumerConfig;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.PgReplRelation;
 import com.hktcode.pgstack.ruoshui.pgsql.LogicalReplConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplRelationName;
-import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilter;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilterDefault;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilterScript;
-import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
 import org.postgresql.jdbc.PgConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +29,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.TransferQueue;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class MainlineConfig extends TripleConsumerConfig
 {
@@ -97,7 +92,7 @@ public class MainlineConfig extends TripleConsumerConfig
                 /* */);
         long waitTimeout = json.path("wait_timeout").asLong(DEFALUT_WAIT_TIMEOUT);
         long logDuration = json.path("log_duration").asLong(DEFAULT_LOG_DURATION);
-        int rsFetchsize = json.path("rs_fetchsize").asInt(PgSnapshotConfig.DEFAULT_RS_FETCHISIZE);
+        int rsFetchsize = json.path("rs_fetchsize").asInt(DEFAULT_RS_FETCHISIZE);
         boolean getSnapshot = json.path("get_snapshot").asBoolean(true);
         result.waitTimeout = waitTimeout;
         result.logDuration = logDuration;
@@ -105,6 +100,11 @@ public class MainlineConfig extends TripleConsumerConfig
         result.getSnapshot = getSnapshot;
         return result;
     }
+
+    /**
+     * 默认的{@link ResultSet#setFetchSize(int)}值.
+     */
+    public static final int DEFAULT_RS_FETCHISIZE = 128;
 
     static MainlineConfig of //
         /* */( PgConnectionProperty srcProperty //
@@ -354,25 +354,6 @@ public class MainlineConfig extends TripleConsumerConfig
             + lockingMode.textFormat //
             + " MODE" //
             ;
-    }
-
-    public MainlineActionDataBegin1st createsAction //
-        /* */(AtomicReference<SimpleStatus> status //
-        /* */, TransferQueue<MainlineRecord> tqueue //
-        /* */) //
-    {
-        if (status == null) {
-            throw new ArgumentNullException("status");
-        }
-        if (tqueue == null) {
-            throw new ArgumentNullException("tqueue");
-        }
-        if (this.getSnapshot) {
-            return MainlineActionDataBegin1stSnapshot.of(this, status, tqueue);
-        }
-        else {
-            return MainlineActionDataBegin1stStraight.of(this, status, tqueue);
-        }
     }
 
     public PreparedStatement queryTypelist(PgConnection pgdata)

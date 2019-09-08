@@ -11,11 +11,11 @@ import java.util.concurrent.ExecutionException;
 
 public interface UpperService
 {
-    ResponseEntity del() throws ExecutionException, InterruptedException;
+    ResponseEntity del() throws InterruptedException;
 
-    ResponseEntity get() throws ExecutionException, InterruptedException;
+    ResponseEntity get() throws InterruptedException;
 
-    ResponseEntity pst(JsonNode json) throws ExecutionException, InterruptedException, ScriptException;
+    ResponseEntity pst(JsonNode json) throws InterruptedException, ScriptException;
 
     WorkingService putService();
 

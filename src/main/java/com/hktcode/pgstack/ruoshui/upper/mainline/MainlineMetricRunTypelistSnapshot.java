@@ -46,8 +46,6 @@ public class MainlineMetricRunTypelistSnapshot extends MainlineMetricRunTypelist
     @Override
     public void toJsonObject(ObjectNode node)
     {
-        ObjectNode begin1stNode = node.putObject("begin1st");
-        this.begin1st.toJsonObject(begin1stNode);
         ObjectNode relalistNode = node.putObject("relalist");
         this.relalist.toJsonObject(relalistNode);
         ObjectNode relalockNode = node.putObject("relalock");

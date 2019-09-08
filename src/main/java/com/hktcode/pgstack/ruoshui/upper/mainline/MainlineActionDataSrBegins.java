@@ -37,8 +37,6 @@ class MainlineActionDataSrBegins //
         return new MainlineActionDataSrBegins(action);
     }
 
-    public final MainlineReportBegin1st begin1st;
-
     public final MainlineReportRelaList relalist;
 
     public final MainlineReportRelaLock relaLock;
@@ -58,7 +56,6 @@ class MainlineActionDataSrBegins //
     private MainlineActionDataSrBegins(MainlineActionDataSsBegins action)
     {
         super(action, System.currentTimeMillis());
-        this.begin1st = action.begin1st;
         this.relalist = action.relalist;
         this.relaLock = action.relaLock;
         this.replSlot = action.replSlot;
@@ -73,7 +70,6 @@ class MainlineActionDataSrBegins //
     private MainlineActionDataSrBegins(MainlineActionDataSrFinish action) //
     {
         super(action, action.actionStart);
-        this.begin1st = action.begin1st;
         this.relalist = action.relalist;
         this.relaLock = action.relaLock;
         this.replSlot = action.replSlot;

@@ -33,8 +33,6 @@ class MainlineActionDataRelaLock //
         return new MainlineActionDataRelaLock(action);
     }
 
-    public final MainlineReportBegin1st begin1st;
-
     public final MainlineReportRelaList relalist;
 
     public final ImmutableList<PgsqlRelationMetric> relationLst;
@@ -42,7 +40,6 @@ class MainlineActionDataRelaLock //
     private MainlineActionDataRelaLock(MainlineActionDataRelaList action)
     {
         super(action, System.currentTimeMillis());
-        this.begin1st = action.begin1st;
         this.relalist = MainlineReportRelaList.of(action, this.actionStart);
         this.relationLst = ImmutableList.copyOf(action.relationLst);
         this.logDatetime = action.logDatetime;

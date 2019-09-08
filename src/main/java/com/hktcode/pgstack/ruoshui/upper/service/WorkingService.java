@@ -10,6 +10,5 @@ import java.util.concurrent.ExecutionException;
 
 public interface WorkingService extends UpperService
 {
-    ResponseEntity put(UpperConfig config) //
-        throws ExecutionException, InterruptedException;
+    ResponseEntity put(UpperConfig config) throws InterruptedException;
 }

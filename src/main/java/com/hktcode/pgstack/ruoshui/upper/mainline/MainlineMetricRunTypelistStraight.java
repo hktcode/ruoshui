@@ -25,8 +25,6 @@ public class MainlineMetricRunTypelistStraight extends MainlineMetricRunTypelist
     @Override
     public void toJsonObject(ObjectNode node)
     {
-        ObjectNode begin1stNode = node.putObject("begin1st");
-        this.begin1st.toJsonObject(begin1stNode);
         ObjectNode typelistNode = node.putObject("typelist");
         this.typelist.toJsonObject(typelistNode);
     }

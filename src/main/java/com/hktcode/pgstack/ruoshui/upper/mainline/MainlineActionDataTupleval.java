@@ -41,8 +41,6 @@ class MainlineActionDataTupleval //
         return new MainlineActionDataTupleval(action);
     }
 
-    public final MainlineReportBegin1st begin1st;
-
     public final MainlineReportRelaList relalist;
 
     public final MainlineReportRelaLock relaLock;
@@ -62,7 +60,6 @@ class MainlineActionDataTupleval //
     private MainlineActionDataTupleval(MainlineActionDataSrBegins action) //
     {
         super(action, action.actionStart);
-        this.begin1st = action.begin1st;
         this.relalist = action.relalist;
         this.relaLock = action.relaLock;
         this.replSlot = action.replSlot;

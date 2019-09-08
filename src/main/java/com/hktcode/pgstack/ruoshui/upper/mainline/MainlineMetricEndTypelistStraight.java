@@ -34,8 +34,6 @@ public class MainlineMetricEndTypelistStraight extends MainlineMetricEndTypelist
     @Override
     public void toJsonObject(ObjectNode node)
     {
-        ObjectNode begin1stNode = node.putObject("begin1st");
-        this.begin1st.toJsonObject(begin1stNode);
         ObjectNode typelistNode = node.putObject("typelist");
         this.typelist.toJsonObject(typelistNode);
         ObjectNode completeNode = node.putObject("complete");

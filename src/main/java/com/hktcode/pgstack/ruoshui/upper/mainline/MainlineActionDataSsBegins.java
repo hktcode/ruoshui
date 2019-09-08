@@ -31,8 +31,6 @@ class MainlineActionDataSsBegins //
         return new MainlineActionDataSsBegins(action);
     }
 
-    public final MainlineReportBegin1st begin1st;
-
     public final MainlineReportRelaList relalist;
 
     public final MainlineReportRelaLock relaLock;
@@ -48,7 +46,6 @@ class MainlineActionDataSsBegins //
     private MainlineActionDataSsBegins(MainlineActionDataSizeDiff action)
     {
         super(action, System.currentTimeMillis());
-        this.begin1st = action.begin1st;
         this.relalist = action.relalist;
         this.relaLock = action.relaLock;
         this.replSlot = action.replSlot;

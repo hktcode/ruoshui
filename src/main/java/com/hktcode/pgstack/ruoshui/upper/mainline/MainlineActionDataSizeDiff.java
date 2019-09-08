@@ -36,8 +36,6 @@ public class MainlineActionDataSizeDiff //
 
     private static final Logger logger = LoggerFactory.getLogger(MainlineActionDataSizeDiff.class);
 
-    public final MainlineReportBegin1st begin1st;
-
     public final MainlineReportRelaList relalist;
 
     public final MainlineReportRelaLock relaLock;
@@ -51,7 +49,6 @@ public class MainlineActionDataSizeDiff //
     private MainlineActionDataSizeDiff(MainlineActionDataReplSlot action)
     {
         super(action, System.currentTimeMillis());
-        this.begin1st = action.begin1st;
         this.relalist = action.relalist;
         this.relaLock = action.relaLock;
         this.replSlot = MainlineReportReplSlotTuple.of(action, this.actionStart);

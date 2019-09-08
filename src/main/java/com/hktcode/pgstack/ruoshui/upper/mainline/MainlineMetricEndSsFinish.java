@@ -20,7 +20,6 @@ public class MainlineMetricEndSsFinish implements MainlineMetricEnd
     private MainlineMetricEndSsFinish(MainlineActionDataSsFinish action)
     {
         long finish = System.currentTimeMillis();
-        this.begin1st = action.begin1st;
         this.relalist = action.relalist;
         this.relalock = action.relaLock;
         this.replslot = action.replSlot;
@@ -30,8 +29,6 @@ public class MainlineMetricEndSsFinish implements MainlineMetricEnd
         this.ssfinish = MainlineReportSsFinish.of(action, finish);
         this.complete = MainlineReportComplete.of(finish);
     }
-
-    public final MainlineReportBegin1st begin1st;
 
     public final MainlineReportRelaList relalist;
 
@@ -61,8 +58,6 @@ public class MainlineMetricEndSsFinish implements MainlineMetricEnd
     @Override
     public void toJsonObject(ObjectNode node)
     {
-        ObjectNode begin1stNode = node.putObject("begin1st");
-        this.begin1st.toJsonObject(begin1stNode);
         ObjectNode relalistNode = node.putObject("relalist");
         this.relalist.toJsonObject(relalistNode);
         ObjectNode relalockNode = node.putObject("relalock");

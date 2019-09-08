@@ -23,15 +23,12 @@ public class MainlineMetricErrSizeDiff implements MainlineMetricErr
     private MainlineMetricErrSizeDiff(MainlineMetricEndSizeDiff metric, Throwable throwerr)
     {
         long finish = System.currentTimeMillis();
-        this.begin1st = metric.begin1st;
         this.relalist = metric.relalist;
         this.relalock = metric.relalock;
         this.replslot = metric.replslot;
         this.sizediff = metric.sizediff;
         this.throwerr = MainlineReportThrowErr.of(finish, throwerr);
     }
-
-    public final MainlineReportBegin1st begin1st;
 
     public final MainlineReportRelaList relalist;
 
@@ -46,8 +43,6 @@ public class MainlineMetricErrSizeDiff implements MainlineMetricErr
     @Override
     public void toJsonObject(ObjectNode node)
     {
-        ObjectNode begin1stNode = node.putObject("begin1st");
-        this.begin1st.toJsonObject(begin1stNode);
         ObjectNode relalistNode = node.putObject("relalist");
         this.relalist.toJsonObject(relalistNode);
         ObjectNode relalockNode = node.putObject("relalock");

@@ -44,8 +44,8 @@ public class RuoshuiConfiguration
      * @return 配置了{@link LogSequenceNumber}的{@link ObjectMapper}对象.
      * @throws ArgumentNullException if {@code builder} is {@code null}.
      */
-    @Bean
     @Primary
+    @Bean
     public ObjectMapper jacksonObjectMapper(Jackson2ObjectMapperBuilder builder)
     {
         if (builder == null) {
@@ -90,7 +90,8 @@ public class RuoshuiConfiguration
     /**
      * 将yaml消息转换为Http消息（body）的转化器类.
      */
-    static final class MappingJackson2YamlHttpMessageConverter extends AbstractJackson2HttpMessageConverter
+    static final class MappingJackson2YamlHttpMessageConverter //
+        extends AbstractJackson2HttpMessageConverter
     {
         /**
          * 构造函数.
@@ -115,7 +116,8 @@ public class RuoshuiConfiguration
      * @throws ArgumentNullException if {@code yamlMapper} is {@code null}.
      */
     @Bean
-    public MappingJackson2YamlHttpMessageConverter mappingJackson2YamlHttpMessageConverter(YAMLMapper yamlMapper)
+    public MappingJackson2YamlHttpMessageConverter //
+    mappingJackson2YamlHttpMessageConverter(YAMLMapper yamlMapper)
     {
         if (yamlMapper == null) {
             throw new ArgumentNullException("yamlMapper");

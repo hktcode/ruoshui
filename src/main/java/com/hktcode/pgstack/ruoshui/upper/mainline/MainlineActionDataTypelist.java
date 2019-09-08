@@ -4,6 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
+import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalDatatypeInfMsg;
@@ -17,25 +18,26 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.TransferQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
 abstract class MainlineActionDataTypelist
     extends MainlineActionData<MainlineConfig>
 {
-    public final MainlineReportBegin1st begin1st;
-
-    <T extends MainlineActionDataBegin1st<F>, F extends MainlineConfig>
-    MainlineActionDataTypelist(T action)
+    MainlineActionDataTypelist
+        /* */( MainlineConfig config //
+        /* */, AtomicReference<SimpleStatus> status //
+        /* */, TransferQueue<MainlineRecord> tqueue //
+        /* */)
     {
-        super(action, System.currentTimeMillis());
-        this.begin1st = MainlineReportBegin1st.of(action, this.actionStart);
-        this.logDatetime = action.logDatetime;
+        super(config, status, tqueue, System.currentTimeMillis());
+        this.logDatetime = super.actionStart;
     }
 
     <T extends MainlineActionDataSsFinish>
     MainlineActionDataTypelist(T action)
     {
         super(action, System.currentTimeMillis());
-        this.begin1st = action.begin1st;
         this.logDatetime = action.logDatetime;
     }
 

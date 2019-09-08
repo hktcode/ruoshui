@@ -27,8 +27,6 @@ abstract class MainlineActionReplTxaction
 {
     private static final Logger logger = LoggerFactory.getLogger(MainlineActionReplTxaction.class);
 
-    public final MainlineReportBegin1st begin1st;
-
     public final MainlineReportTypelist typelist;
 
     public LogSequenceNumber txactionLsn = LogSequenceNumber.INVALID_LSN;
@@ -37,7 +35,6 @@ abstract class MainlineActionReplTxaction
     MainlineActionReplTxaction(T action)
     {
         super(action, System.currentTimeMillis());
-        this.begin1st = action.begin1st;
         this.typelist = MainlineReportTypelist.of(action, this.actionStart);
         this.logDatetime = action.logDatetime;
     }

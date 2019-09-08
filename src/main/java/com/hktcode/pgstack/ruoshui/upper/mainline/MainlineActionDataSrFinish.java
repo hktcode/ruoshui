@@ -28,8 +28,6 @@ public class MainlineActionDataSrFinish //
         return new MainlineActionDataSrFinish(action);
     }
 
-    public final MainlineReportBegin1st begin1st;
-
     public final MainlineReportRelaList relalist;
 
     public final MainlineReportRelaLock relaLock;
@@ -49,7 +47,6 @@ public class MainlineActionDataSrFinish //
     private MainlineActionDataSrFinish(MainlineActionDataTupleval action) //
     {
         super(action, action.actionStart);
-        this.begin1st = action.begin1st;
         this.relalist = action.relalist;
         this.relaLock = action.relaLock;
         this.replSlot = action.replSlot;

@@ -11,6 +11,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshot;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshotExecThrows;
 import org.postgresql.jdbc.PgConnection;
+import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,6 +102,17 @@ public class Snapshot implements Runnable
         catch (InterruptedException ex) {
             throw ex;
         }
+        // catch (PSQLException ex) {
+        //     String sqlState = ex.getSQLState();
+        //     ImmutableList<String> cancelStates //
+        //         = ImmutableList.of("57014", "55000", "08006");
+        //     if (cancelStates.contains(sqlState)) {
+        //         // 如果是被Connection取消，属于业务范畴
+        //         logger.info("statement was canceled: ", ex);
+        //         return;
+        //     }
+        //     throw ex;
+        // }
         catch (Exception ex) {
             logger.error("snapshot throws exception: ", ex);
             action = action.next(ex);

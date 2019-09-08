@@ -15,7 +15,6 @@ import org.postgresql.jdbc.PgConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.script.ScriptException;
 import java.sql.Connection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -74,15 +73,17 @@ public class Mainline implements Runnable
             logger.error("should not be interrupted by other thread.");
             Thread.currentThread().interrupt();
         }
-        catch (ScriptException ex) {
-            logger.error("should never happen", ex);
-        }
         logger.info("mainline finish.");
     }
 
-    private void runWithInterrupted() throws InterruptedException, ScriptException
+    private void runWithInterrupted() throws InterruptedException
     {
-        MainlineAction action = config.createsAction(status, tqueue);
+        MainlineAction action;
+        if (config.getSnapshot) {
+            action = MainlineActionDataRelaList.of(config, status, tqueue);
+        } else {
+            action = MainlineActionDataTypelistStraight.of(config, status, tqueue);
+        }
         try (Connection repl = config.srcProperty.replicaConnection()) {
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
             ExecutorService exesvc = Executors.newSingleThreadExecutor();
