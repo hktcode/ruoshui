@@ -4,14 +4,10 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
-import com.hktcode.bgsimple.status.SimpleStatus;
-import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.bgsimple.tqueue.TqueueAction;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
 import org.postgresql.replication.LogSequenceNumber;
-
-import java.util.concurrent.TransferQueue;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class MainlineActionTerminateEnd
     extends TqueueAction<MainlineAction, MainlineConfig, MainlineRecord> //

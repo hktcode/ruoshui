@@ -10,21 +10,22 @@ import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
 import com.hktcode.bgsimple.method.SimpleMethodDel;
 import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
 import com.hktcode.bgsimple.status.*;
-import com.hktcode.lang.RunnableWithInterrupted;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.pgstack.ruoshui.upper.UpperProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.script.ScriptException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class Uppdc implements RunnableWithInterrupted
+public class Uppdc implements Runnable
 {
     private static final Logger logger = LoggerFactory.getLogger(Uppdc.class);
 
     public static Uppdc of //
-        /* */( UpperProducerConfig config //
+        /* */(UpperProducerConfig config //
         /* */, BlockingQueue<UpperProducerRecord> getout //
         /* */, AtomicReference<SimpleStatus> status //
         /* */)
@@ -58,8 +59,7 @@ public class Uppdc implements RunnableWithInterrupted
         this.status = status;
     }
 
-    @Override
-    public void runWithInterrupted() throws InterruptedException
+    public void runWithInterrupted() throws InterruptedException, ScriptException
     {
         UppdcAction action = UppdcActionRun.of(config, getout, status);
         try {
@@ -116,5 +116,20 @@ public class Uppdc implements RunnableWithInterrupted
         }
         UppdcResultErr rhs = (UppdcResultErr)statusResult;
         return rhs.metric == erract.metric && rhs.config == erract.config;
+    }
+
+    @Override
+    public void run()
+    {
+        try {
+            this.runWithInterrupted();
+        }
+        catch (InterruptedException ex) {
+            logger.error("should never happen", ex);
+            Thread.currentThread().interrupt();
+        }
+        catch (ScriptException ex) {
+            logger.error("should never happen", ex);
+        }
     }
 }

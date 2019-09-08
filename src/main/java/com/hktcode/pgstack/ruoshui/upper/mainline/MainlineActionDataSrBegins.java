@@ -10,13 +10,16 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalBegRelationMsg;
 import com.hktcode.pgjdbc.PgReplRelation;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgsqlRelationMetric;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecordNormal;
 import org.postgresql.jdbc.PgConnection;
 
+import javax.script.ScriptException;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 
 class MainlineActionDataSrBegins //
-    extends MainlineActionData<MainlineConfigSnapshot>
+    extends MainlineActionData<MainlineConfig>
 {
     static MainlineActionDataSrBegins of(MainlineActionDataSsBegins action)
     {
@@ -91,7 +94,7 @@ class MainlineActionDataSrBegins //
 
     @Override
     public MainlineAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
-        throws InterruptedException
+        throws InterruptedException, ScriptException
     {
         PgReplRelation r = this.curRelation.relationInfo;
         long lsn = this.replSlot.createTuple.consistentPoint;

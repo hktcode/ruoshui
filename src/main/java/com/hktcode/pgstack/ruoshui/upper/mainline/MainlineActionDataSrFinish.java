@@ -9,13 +9,16 @@ import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalEndRelationMsg;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgsqlRelationMetric;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecordNormal;
 import org.postgresql.jdbc.PgConnection;
 
+import javax.script.ScriptException;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 
 public class MainlineActionDataSrFinish //
-    extends MainlineActionData<MainlineConfigSnapshot>
+    extends MainlineActionData<MainlineConfig>
 {
     static MainlineActionDataSrFinish of(MainlineActionDataTupleval action)
     {
@@ -66,7 +69,7 @@ public class MainlineActionDataSrFinish //
 
     @Override
     public MainlineAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
-        throws InterruptedException
+        throws InterruptedException, ScriptException
     {
         long lsn = this.replSlot.createTuple.consistentPoint;
         LogicalEndRelationMsg msg //

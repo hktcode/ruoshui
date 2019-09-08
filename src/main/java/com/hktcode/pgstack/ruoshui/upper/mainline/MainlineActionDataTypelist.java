@@ -7,8 +7,11 @@ package com.hktcode.pgstack.ruoshui.upper.mainline;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalDatatypeInfMsg;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecordNormal;
 import org.postgresql.jdbc.PgConnection;
 
+import javax.script.ScriptException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,7 +41,7 @@ abstract class MainlineActionDataTypelist
 
     @Override
     MainlineAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
-        throws SQLException, InterruptedException
+        throws SQLException, InterruptedException, ScriptException
     {
         if (exesvc == null) {
             throw new ArgumentNullException("exesvc");

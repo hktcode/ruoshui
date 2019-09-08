@@ -3,62 +3,119 @@
  */
 package com.hktcode.pgstack.ruoshui.upper.snapshot;
 
+import com.google.common.collect.ImmutableList;
+import com.hktcode.bgsimple.status.SimpleStatus;
+import com.hktcode.bgsimple.status.SimpleStatusInner;
+import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshot;
-import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshot;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshotExecThrows;
 import org.postgresql.jdbc.PgConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.script.ScriptException;
 import java.sql.Connection;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TransferQueue;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static java.sql.Connection.TRANSACTION_REPEATABLE_READ;
 
 public class Snapshot implements Runnable
 {
-    public static Snapshot of(PgSnapshotConfig config, SnapshotSender sender)
+    private static final Logger logger = LoggerFactory.getLogger(Snapshot.class);
+
+    public static Snapshot of
+        /* */( SnapshotConfig config //
+        /* */, AtomicReference<SimpleStatus> status
+        /* */, TransferQueue<UpcsmFetchRecordSnapshot> tqueue
+        /* */)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
         }
-        if (sender == null) {
-            throw new ArgumentNullException("sender");
+        if (status == null) {
+            throw new ArgumentNullException("status");
         }
-        return new Snapshot(config, sender);
+        if (tqueue == null) {
+            throw new ArgumentNullException("tqueue");
+        }
+        return new Snapshot(config, status, tqueue);
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(Snapshot.class);
 
-    private final PgSnapshotConfig config;
+    private final SnapshotConfig config;
 
-    private final SnapshotSender sender;
+    private final AtomicReference<SimpleStatus> status;
 
-    private Snapshot(PgSnapshotConfig config, SnapshotSender sender)
+    private final TransferQueue<UpcsmFetchRecordSnapshot> tqueue;
+
+    private Snapshot //
+        /* */( SnapshotConfig config //
+        /* */, AtomicReference<SimpleStatus> status
+        /* */, TransferQueue<UpcsmFetchRecordSnapshot> tqueue
+        /* */)
     {
         this.config = config;
-        this.sender = sender;
+        this.status = status;
+        this.tqueue = tqueue;
     }
 
     public void run()
     {
-        try (Connection repl = this.config.srcProperty.replicaConnection();
-             Connection data = this.config.srcProperty.queriesConnection()) {
+        logger.info("snapshot starts.");
+        try {
+            this.runWithInterrupted();
+        }
+        catch (InterruptedException ex) {
+            logger.error("should not be interrupted by other thread.");
+            Thread.currentThread().interrupt();
+        } catch (ScriptException e) {
+            logger.error("should never happen", e);
+        }
+        logger.info("snapshot finish.");
+    }
+
+    private void runWithInterrupted() throws InterruptedException, ScriptException
+    {
+        SnapshotAction action = SnapshotActionDataRelaList.of(config, status, tqueue, System.currentTimeMillis());
+        try (Connection repl = config.srcProperty.replicaConnection()) {
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
-            PgConnection pgdata = data.unwrap(PgConnection.class);
-            PgSnapshot<SnapshotMetric> runnable //
-                = PgSnapshot.of(config, pgrepl, pgdata, sender);
-            Thread t = new Thread(runnable);
-            t.start();
-            while (!sender.isDone()) {
-                if (!t.isAlive()) {
-                    return;
-                }
-                t.join(this.config.waitTimeout);
+            ExecutorService exesvc = Executors.newSingleThreadExecutor();
+            try (Connection data = config.srcProperty.queriesConnection()) {
+                PgConnection pgdata = data.unwrap(PgConnection.class);
+                pgdata.setAutoCommit(false);
+                pgdata.setTransactionIsolation(TRANSACTION_REPEATABLE_READ);
+                do {
+                    SnapshotActionData dataAction = (SnapshotActionData)action;
+                    action = dataAction.next(exesvc, pgdata, pgrepl);
+                } while (action instanceof SnapshotActionData);
             }
-            t.interrupt();
-            pgdata.cancelQuery();
-            pgrepl.cancelQuery();
+            finally {
+                exesvc.shutdown();
+            }
+            logger.info("snapshot completes");
+        }
+        catch (InterruptedException ex) {
+            throw ex;
         }
         catch (Exception ex) {
-            logger.error("snapshot throws exception.", ex); // TODO:
+            logger.error("snapshot throws exception: ", ex);
+            action = action.next(ex);
+            UpcsmFetchRecordSnapshot r //
+                = UpcsmFetchRecordSnapshotExecThrows.of(ex);
+            do {
+                r = action.send(r);
+            } while (r != null);
         }
+        SimpleStatusInner o;
+        SimpleStatusInnerEnd f;
+        do {
+            o = action.newStatus(action);
+            f = SimpleStatusInnerEnd.of(ImmutableList.of(action.del()));
+        } while (!this.status.compareAndSet(o, f));
+        logger.info("snapshot terminate");
     }
 }

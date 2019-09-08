@@ -4,6 +4,8 @@
 package com.hktcode.pgstack.ruoshui.upper;
 
 import com.hktcode.bgsimple.SimpleHolder;
+import com.hktcode.bgsimple.future.SimpleFutureDel;
+import com.hktcode.bgsimple.future.SimpleFuturePst;
 import com.hktcode.bgsimple.method.SimpleMethodDel;
 import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
 import com.hktcode.bgsimple.method.SimpleMethodPst;
@@ -11,6 +13,7 @@ import com.hktcode.bgsimple.method.SimpleMethodPstParamsDefault;
 import com.hktcode.bgsimple.status.SimpleStatusOuterDel;
 import com.hktcode.bgsimple.status.SimpleStatusOuterPst;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpperMethodPstParamsRecvLsn;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -65,36 +68,44 @@ public class UpperKafkaProducerCallback implements Callback
     @Override
     public void onCompletion(RecordMetadata metadata, Exception ex)
     {
-        if (ex != null) {
-            // TODO: 此处不应该对每条记录都将this.producer.close()方法执行一遍
-            logger.error("kafka producer send record fail: lsn={}", this.lsn, ex);
-            // 如果已经关闭了，再次调用close不会抛出异常：
-            // 但是ex的值固定为：
-            // java.lang.IllegalStateException: Producer is closed forcefully.
-            //	at org.apache.kafka.clients.producer.internals.RecordAccumulator.abortBatches(RecordAccumulator.java:696) [kafka-clients-1.1.0.jar:na]
-            //	at org.apache.kafka.clients.producer.internals.RecordAccumulator.abortIncompleteBatches(RecordAccumulator.java:683) [kafka-clients-1.1.0.jar:na]
-            //	at org.apache.kafka.clients.producer.internals.Sender.run(Sender.java:185) [kafka-clients-1.1.0.jar:na]
-            //	at java.lang.Thread.run(Thread.java:745) [na:1.8.0_121]
+        try {
+            if (ex != null) {
+                // TODO: 此处不应该对每条记录都将this.producer.close()方法执行一遍
+                logger.error("kafka producer send record fail: lsn={}", this.lsn, ex);
+                // 如果已经关闭了，再次调用close不会抛出异常：
+                // 但是ex的值固定为：
+                // java.lang.IllegalStateException: Producer is closed forcefully.
+                //	at org.apache.kafka.clients.producer.internals.RecordAccumulator.abortBatches(RecordAccumulator.java:696) [kafka-clients-1.1.0.jar:na]
+                //	at org.apache.kafka.clients.producer.internals.RecordAccumulator.abortIncompleteBatches(RecordAccumulator.java:683) [kafka-clients-1.1.0.jar:na]
+                //	at org.apache.kafka.clients.producer.internals.Sender.run(Sender.java:185) [kafka-clients-1.1.0.jar:na]
+                //	at java.lang.Thread.run(Thread.java:745) [na:1.8.0_121]
 
-            this.producer.close(0, TimeUnit.MILLISECONDS);
-            ZonedDateTime endtime = ZonedDateTime.now();
-            SimpleMethodDel[] method = new SimpleMethodDel[3];
-            method[0] = SimpleMethodDelParamsDefault.of(); // TODO:
-            method[1] = SimpleMethodDelParamsDefault.of();
-            method[2] = SimpleMethodDelParamsDefault.of();
-            Phaser phaser = new Phaser(4);
-            SimpleStatusOuterDel del = SimpleStatusOuterDel.of(method, phaser);
-            this.holder.del(del);
-        }
-        else if (this.lsn.asLong() != LogSequenceNumber.INVALID_LSN.asLong()) {
-            logger.info("kafka producer send record success: lsn={}", this.lsn);
-            SimpleMethodPst[] method = new SimpleMethodPst[3];
-            method[0] = UpperMethodPstParamsRecvLsn.of(this.lsn);
-            method[1] = SimpleMethodPstParamsDefault.of();
-            method[2] = SimpleMethodPstParamsDefault.of();
-            Phaser phaser = new Phaser(3);
-            SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(method, phaser);
-            this.holder.pst(pst);
+                this.producer.close(0, TimeUnit.MILLISECONDS);
+                ZonedDateTime endtime = ZonedDateTime.now();
+                SimpleMethodDel[] method = new SimpleMethodDel[3];
+                method[0] = SimpleMethodDelParamsDefault.of(); // TODO:
+                method[1] = SimpleMethodDelParamsDefault.of();
+                method[2] = SimpleMethodDelParamsDefault.of();
+                Phaser phaser = new Phaser(4);
+                SimpleStatusOuterDel del = SimpleStatusOuterDel.of(method, phaser);
+                SimpleFutureDel future = this.holder.del(del);
+                future.get();
+
+            }
+            else if (this.lsn.asLong() != LogSequenceNumber.INVALID_LSN.asLong()) {
+                logger.info("kafka producer send record success: lsn={}", this.lsn);
+                SimpleMethodPst[] method = new SimpleMethodPst[3];
+                method[0] = UpperMethodPstParamsRecvLsn.of(this.lsn);
+                method[1] = SimpleMethodPstParamsDefault.of();
+                method[2] = SimpleMethodPstParamsDefault.of();
+                Phaser phaser = new Phaser(4);
+                SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(method, phaser);
+                SimpleFuturePst future = this.holder.pst(pst);
+                future.get();
+            }
+        } catch (InterruptedException e) {
+            logger.error("should never happen", ex);
+            Thread.currentThread().interrupt();
         }
     }
 }

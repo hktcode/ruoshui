@@ -15,11 +15,11 @@ import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperConfig;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.UpperSnapshotPstParams;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpperSnapshotPstParams;
 import com.hktcode.pgstack.ruoshui.upper.consumer.Upcsm;
 import com.hktcode.pgstack.ruoshui.upper.junction.Upjct;
 import com.hktcode.pgstack.ruoshui.upper.producer.Uppdc;
-import com.hktcode.pgstack.ruoshui.upper.producer.UpperProducerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperProducerRecord;
 import org.springframework.http.ResponseEntity;
 
 import javax.script.ScriptException;
@@ -87,7 +87,7 @@ public class OnlyoneWorkingService implements WorkingService
             SimpleMethodDelParamsDefault.of(),
             SimpleMethodDelParamsDefault.of()
         };
-        SimpleStatusOuterDel del = SimpleStatusOuterDel.of(method, new Phaser(3));
+        SimpleStatusOuterDel del = SimpleStatusOuterDel.of(method, new Phaser(4));
         SimpleHolder holder = SimpleHolder.of(this.status);
         SimpleFutureDel future = holder.del(del);
         ImmutableList<SimpleMethodAllResult> list = future.get();
@@ -102,7 +102,7 @@ public class OnlyoneWorkingService implements WorkingService
             SimpleMethodGetParamsDefault.of(),
             SimpleMethodGetParamsDefault.of()
         };
-        SimpleStatusOuterGet get = SimpleStatusOuterGet.of(method, new Phaser(3));
+        SimpleStatusOuterGet get = SimpleStatusOuterGet.of(method, new Phaser(4));
         SimpleHolder holder = SimpleHolder.of(this.status);
         SimpleFutureGet future = holder.get(get);
         ImmutableList<SimpleMethodAllResult> list = future.get();
@@ -121,7 +121,7 @@ public class OnlyoneWorkingService implements WorkingService
             SimpleMethodPstParamsDefault.of(),
             SimpleMethodPstParamsDefault.of()
         };
-        SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(method, new Phaser(3));
+        SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(method, new Phaser(4));
         SimpleHolder holder = SimpleHolder.of(this.status);
         SimpleFuturePst future = holder.pst(pst);
         ImmutableList<SimpleMethodAllResult> list = future.get();

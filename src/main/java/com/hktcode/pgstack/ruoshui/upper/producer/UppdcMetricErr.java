@@ -5,7 +5,6 @@
 package com.hktcode.pgstack.ruoshui.upper.producer;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.UpperMetric;
 
 public class UppdcMetricErr
 {

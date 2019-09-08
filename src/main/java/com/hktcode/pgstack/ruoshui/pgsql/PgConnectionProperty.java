@@ -30,6 +30,14 @@ public class PgConnectionProperty
 {
     public static final Logger logger = LoggerFactory.getLogger(PgConnectionProperty.class);
 
+    public static PgConnectionProperty of(ImmutableMap<String, String> propertyMap)
+    {
+        if (propertyMap == null) {
+            throw new ArgumentNullException("propertyMap");
+        }
+        return new PgConnectionProperty(propertyMap);
+    }
+
     /**
      * Obtain a {@link PgConnectionProperty} from a {@link JsonNode}.
      *

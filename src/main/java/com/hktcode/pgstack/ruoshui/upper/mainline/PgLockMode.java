@@ -10,6 +10,8 @@ import java.util.Objects;
 
 public enum PgLockMode
 {
+    NULL_LOCK("null"),
+
     NO_LOCK(""),
 
     ACCESS_SHARE("ACCESS SHARE"),

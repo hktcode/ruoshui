@@ -10,15 +10,18 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalBegSnapshotMsg;
 import com.hktcode.pgjdbc.PgReplRelation;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgsqlRelationMetric;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecordNormal;
 import org.postgresql.jdbc.PgConnection;
 
+import javax.script.ScriptException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 class MainlineActionDataSsBegins //
-    extends MainlineActionData<MainlineConfigSnapshot>
+    extends MainlineActionData<MainlineConfig>
 {
     static MainlineActionDataSsBegins of(MainlineActionDataSizeDiff action)
     {
@@ -57,7 +60,7 @@ class MainlineActionDataSsBegins //
 
     @Override
     public MainlineAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
-        throws InterruptedException
+        throws InterruptedException, ScriptException
     {
         long lsn = this.replSlot.createTuple.consistentPoint;
         List<PgReplRelation> list = new ArrayList<>(this.relationLst.size());

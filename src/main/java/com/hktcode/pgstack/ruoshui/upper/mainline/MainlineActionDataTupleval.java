@@ -16,8 +16,11 @@ import com.hktcode.pgjdbc.PgReplAttribute;
 import com.hktcode.pgjdbc.PgReplComponent;
 import com.hktcode.pgjdbc.PgReplRelation;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgsqlRelationMetric;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecordNormal;
 import org.postgresql.jdbc.PgConnection;
 
+import javax.script.ScriptException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,7 +31,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 class MainlineActionDataTupleval //
-    extends MainlineActionData<MainlineConfigSnapshot> //
+    extends MainlineActionData<MainlineConfig> //
 {
     static MainlineActionDataTupleval of(MainlineActionDataSrBegins action)
     {
@@ -79,7 +82,7 @@ class MainlineActionDataTupleval //
 
     @Override
     MainlineAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
-        throws SQLException, InterruptedException
+        throws SQLException, InterruptedException, ScriptException
     {
         if (exesvc == null) {
             throw new ArgumentNullException("exesvc");

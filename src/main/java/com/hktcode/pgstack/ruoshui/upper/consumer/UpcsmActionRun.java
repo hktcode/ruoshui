@@ -10,10 +10,12 @@ import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
-import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineThread;
+import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotConfig;
+import org.postgresql.replication.LogSequenceNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.script.ScriptException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -64,7 +66,7 @@ public class UpcsmActionRun //
 
     public UpcsmThread fetchThread;
 
-    public UpcsmAction next() throws InterruptedException, ExecutionException
+    public UpcsmAction next() throws InterruptedException, ExecutionException, ScriptException
     {
         UpperConsumerRecord r = null;
         while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
@@ -78,15 +80,18 @@ public class UpcsmActionRun //
         long waitTimeout = this.config.waitTimeout;
         long logDuration = this.config.logDuration;
         long startMillis = System.currentTimeMillis();
-        UpperConsumerRecord r = this.fetchThread.poll(waitTimeout);
+        UpperConsumerRecord r = this.fetchThread.poll(waitTimeout, this);
         long finishMillis = System.currentTimeMillis();
         this.fetchMillis += (startMillis - finishMillis);
         ++this.fetchCounts;
-        if (r == null && finishMillis - this.logDatetime >= logDuration) {
+        if (r != null) {
+            this.logDatetime = finishMillis;
+        }
+        else if (finishMillis - this.logDatetime >= logDuration) {
             logger.info("poll returns null: waitTimeout={}, logDuration={}" //
                 , waitTimeout, logDuration);
+            this.logDatetime = finishMillis;
         }
-        this.logDatetime = finishMillis;
         return r;
     }
 
@@ -135,7 +140,7 @@ public class UpcsmActionRun //
         this.config = config;
         this.comein = comein;
         this.actionStart = System.currentTimeMillis();
-        this.fetchThread = MainlineThread.of(config);
+        this.fetchThread = UpcsmThreadMainline.of(config);
     }
 
     @Override
@@ -160,5 +165,35 @@ public class UpcsmActionRun //
         UpcsmReportFetchThread fetchThreadReport = this.fetchThread.del();
         UpcsmMetricEnd metric = UpcsmMetricEnd.of(this, fetchThreadReport);
         return UpcsmResultEnd.of(metric);
+    }
+
+    @Override
+    public UpcsmResult pst(LogSequenceNumber lsn) throws InterruptedException
+    {
+        if (lsn == null) {
+            throw new ArgumentNullException("lsn");
+        }
+        UpcsmReportFetchThread fetchThreadReport = this.fetchThread.pst(lsn);
+        UpcsmMetricRun metric = UpcsmMetricRun.of(this, fetchThreadReport);
+        return UpcsmResultRun.of(metric);
+    }
+
+    @Override
+    public UpcsmResult pst(UpperSnapshotPstParams params) //
+        throws InterruptedException
+    {
+        if (params == null) {
+            throw new ArgumentNullException("params");
+        }
+        SnapshotConfig config = params.toConfig(this.config);
+        UpcsmThread oldThread = this.fetchThread;
+        UpcsmThread newThread = this.fetchThread.pst(config);
+        if (oldThread == newThread) {
+            return this.get();
+        }
+        this.fetchThread = newThread;
+        UpcsmReportFetchThread fetchThreadReport =  this.fetchThread.put();
+        UpcsmMetricRun metric = UpcsmMetricRun.of(this, fetchThreadReport);
+        return UpcsmResultRun.of(metric);
     }
 }

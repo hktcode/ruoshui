@@ -10,14 +10,17 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalEndSnapshotMsg;
 import com.hktcode.pgjdbc.PgReplRelation;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgsqlRelationMetric;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecordNormal;
 import org.postgresql.jdbc.PgConnection;
 
+import javax.script.ScriptException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 public class MainlineActionDataSsFinish //
-    extends MainlineActionData<MainlineConfigSnapshot>
+    extends MainlineActionData<MainlineConfig>
 {
     static MainlineActionDataSsFinish of(MainlineActionDataSrFinish action)
     {
@@ -81,7 +84,7 @@ public class MainlineActionDataSsFinish //
 
     @Override
     public MainlineAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl)
-        throws InterruptedException
+        throws InterruptedException, ScriptException
     {
         if (exesvc == null) {
             throw new ArgumentNullException("exesvc");

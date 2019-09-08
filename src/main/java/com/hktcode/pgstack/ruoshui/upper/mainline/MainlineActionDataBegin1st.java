@@ -5,6 +5,7 @@
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.hktcode.bgsimple.status.SimpleStatus;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
 
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
@@ -15,7 +16,7 @@ abstract class MainlineActionDataBegin1st<C extends MainlineConfig> //
     public final long startMillis;
 
     MainlineActionDataBegin1st //
-        /* */( C config //
+        /* */(C config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<MainlineRecord> tqueue //
         /* */, long actionStart //

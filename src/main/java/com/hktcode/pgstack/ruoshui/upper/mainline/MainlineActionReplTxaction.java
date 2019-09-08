@@ -7,12 +7,18 @@ package com.hktcode.pgstack.ruoshui.upper.mainline;
 import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecordNormal;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmReportFetchThread;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmThreadSnapshotLockingRel;
+import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotConfig;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
 import org.postgresql.replication.PGReplicationStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.script.ScriptException;
 import java.nio.ByteBuffer;
 import java.sql.SQLException;
 
@@ -37,7 +43,7 @@ abstract class MainlineActionReplTxaction
     }
 
     @Override
-    MainlineAction next(PgConnection pgrepl) throws SQLException, InterruptedException
+    MainlineAction next(PgConnection pgrepl) throws SQLException, InterruptedException, ScriptException
     {
         MainlineRecord r = null;
         this.statusInfor = "start logical replication stream";
@@ -95,5 +101,14 @@ abstract class MainlineActionReplTxaction
         }
         this.txactionLsn = lsn;
         return this.get();
+    }
+
+    @Override
+    public MainlineResultRunSnapshot pst(SnapshotConfig config)
+    {
+        if (config == null) {
+            throw new ArgumentNullException("config");
+        }
+        return MainlineResultRunSnapshot.of(this.config, this.toRunMetrics());
     }
 }

@@ -5,10 +5,6 @@
 package com.hktcode.pgstack.ruoshui.upper.producer;
 
 import com.hktcode.bgsimple.BgWorker;
-import com.hktcode.bgsimple.method.SimpleMethodDelResult;
-import com.hktcode.bgsimple.method.SimpleMethodGetResult;
-import com.hktcode.bgsimple.method.SimpleMethodPstResult;
-import com.hktcode.bgsimple.method.SimpleMethodPutResult;
 import com.hktcode.bgsimple.status.SimpleStatusInner;
 
 public interface UppdcAction extends BgWorker<UppdcAction>

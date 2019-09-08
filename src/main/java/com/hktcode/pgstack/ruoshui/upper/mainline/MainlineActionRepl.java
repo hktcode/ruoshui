@@ -4,11 +4,12 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
-import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.bgsimple.tqueue.TqueueAction;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
 import org.postgresql.jdbc.PgConnection;
 
+import javax.script.ScriptException;
 import java.sql.SQLException;
 
 abstract class MainlineActionRepl<C extends MainlineConfig> //
@@ -30,7 +31,7 @@ abstract class MainlineActionRepl<C extends MainlineConfig> //
     }
 
     abstract MainlineAction next(PgConnection pgrepl) //
-        throws SQLException, InterruptedException;
+        throws SQLException, InterruptedException, ScriptException;
 
     public abstract MainlineMetricRun toRunMetrics();
 

@@ -27,7 +27,7 @@ public class UpcsmReportFetchThread
 
     public final ImmutableList<SnapshotResult> snapshot;
 
-    private UpcsmReportFetchThread //
+    protected UpcsmReportFetchThread //
         (MainlineResult mainline, ImmutableList<SnapshotResult> snapshot)
     {
         this.mainline = mainline;

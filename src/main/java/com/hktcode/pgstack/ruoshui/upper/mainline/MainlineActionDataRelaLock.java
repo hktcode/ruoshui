@@ -12,6 +12,7 @@ import org.postgresql.jdbc.PgConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.script.ScriptException;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
@@ -20,7 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 class MainlineActionDataRelaLock //
-    extends MainlineActionData<MainlineConfigSnapshot>
+    extends MainlineActionData<MainlineConfig>
 {
     private static final Logger logger = LoggerFactory.getLogger(MainlineActionDataRelaLock.class);
 
@@ -49,7 +50,7 @@ class MainlineActionDataRelaLock //
 
     @Override
     MainlineAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
-        throws SQLException, InterruptedException
+        throws SQLException, InterruptedException, ScriptException
     {
         if (exesvc == null) {
             throw new ArgumentNullException("exesvc");

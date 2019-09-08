@@ -17,10 +17,11 @@ import com.hktcode.pgstack.ruoshui.pgsql.LogicalTxactContext;
 import com.hktcode.pgstack.ruoshui.pgsql.PgsqlKey;
 import com.hktcode.pgstack.ruoshui.pgsql.PgsqlVal;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.producer.UpperProducerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.script.ScriptException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -126,7 +127,7 @@ class UpjctActionRun extends SimpleWorker<UpjctAction> implements UpjctAction
         return record;
     }
 
-    public UpjctAction next() throws InterruptedException
+    public UpjctAction next() throws InterruptedException, ScriptException
     {
         UpperConsumerRecord r = null;
         UpperProducerRecord o = null;

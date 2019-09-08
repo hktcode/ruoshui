@@ -11,6 +11,8 @@ import com.hktcode.bgsimple.method.SimpleMethodPstResult;
 import com.hktcode.bgsimple.method.SimpleMethodPutResult;
 import com.hktcode.bgsimple.status.SimpleStatusInner;
 
+import javax.script.ScriptException;
+
 interface UpjctAction extends BgWorker<UpjctAction>
 {
     UpjctActionErr next(Throwable throwsError);

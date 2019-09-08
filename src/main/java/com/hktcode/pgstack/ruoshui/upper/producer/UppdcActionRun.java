@@ -11,6 +11,7 @@ import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.PgsqlValTxactCommit;
 import com.hktcode.pgstack.ruoshui.upper.UpperKafkaProducerCallback;
+import com.hktcode.pgstack.ruoshui.upper.UpperProducerRecord;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -19,6 +20,7 @@ import org.postgresql.replication.LogSequenceNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.script.ScriptException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Properties;
@@ -109,7 +111,7 @@ public class UppdcActionRun //
         return UppdcResultEnd.of(config, metric);
     }
 
-    public UppdcAction next() throws InterruptedException
+    public UppdcAction next() throws InterruptedException, ScriptException
     {
         try (Producer<byte[], byte[]> kfk = this.producer(BYTES, BYTES)) {
             logger.info("kfk.metrics={}", kfk.metrics());

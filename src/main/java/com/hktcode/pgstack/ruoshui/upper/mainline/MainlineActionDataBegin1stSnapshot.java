@@ -7,17 +7,19 @@ package com.hktcode.pgstack.ruoshui.upper.mainline;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
 import org.postgresql.jdbc.PgConnection;
 
+import javax.script.ScriptException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 class MainlineActionDataBegin1stSnapshot //
-    extends MainlineActionDataBegin1st<MainlineConfigSnapshot>
+    extends MainlineActionDataBegin1st<MainlineConfig>
 {
     public static MainlineActionDataBegin1stSnapshot of //
-        /* */( MainlineConfigSnapshot config //
+        /* */(MainlineConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<MainlineRecord> tqueue //
         /* */)
@@ -35,7 +37,7 @@ class MainlineActionDataBegin1stSnapshot //
     }
 
     private MainlineActionDataBegin1stSnapshot //
-        /* */( MainlineConfigSnapshot config //
+        /* */(MainlineConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<MainlineRecord> tqueue //
         /* */)
@@ -45,7 +47,7 @@ class MainlineActionDataBegin1stSnapshot //
 
     @Override
     MainlineAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
-        throws InterruptedException
+        throws InterruptedException, ScriptException
     {
         if (exesvc == null) {
             throw new ArgumentNullException("exesvc");

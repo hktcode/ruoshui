@@ -22,7 +22,7 @@ public class MainlineResultRun extends MainlineResult<MainlineMetric> //
         return new MainlineResultRun(config, metric);
     }
 
-    private MainlineResultRun(MainlineConfig config, MainlineMetric metric)
+    protected MainlineResultRun(MainlineConfig config, MainlineMetric metric)
     {
         super(config, metric);
     }

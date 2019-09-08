@@ -4,6 +4,8 @@
 
 package com.hktcode.pgstack.ruoshui.upper.snapshot;
 
-public interface SnapshotResult
+import com.hktcode.bgsimple.method.SimpleMethodAllResult;
+
+public interface SnapshotResult extends SimpleMethodAllResult<SnapshotAction>
 {
 }

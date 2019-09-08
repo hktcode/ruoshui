@@ -9,18 +9,18 @@ import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
 import com.hktcode.bgsimple.method.SimpleMethodDel;
 import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
 import com.hktcode.bgsimple.status.*;
-import com.hktcode.lang.RunnableWithInterrupted;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.script.ScriptException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class Upcsm implements RunnableWithInterrupted
+public class Upcsm implements Runnable
 {
     private static final Logger logger = LoggerFactory.getLogger(Upcsm.class);
 
@@ -59,8 +59,7 @@ public class Upcsm implements RunnableWithInterrupted
         this.status = status;
     }
 
-    @Override
-    public void runWithInterrupted() throws InterruptedException
+    public void runWithInterrupted() throws InterruptedException, ScriptException
     {
         UpcsmAction action = UpcsmActionRun.of(config, comein, status);
         try {
@@ -123,5 +122,18 @@ public class Upcsm implements RunnableWithInterrupted
         }
         UpcsmResultErr rhs = (UpcsmResultErr)statusResult;
         return rhs.metric == erract.metric;// && rhs.config == erract.config;
+    }
+
+    @Override
+    public void run()
+    {
+        try {
+            this.runWithInterrupted();
+        } catch (InterruptedException e) {
+            logger.error("should never happen", e);
+            Thread.currentThread().interrupt();
+        } catch (ScriptException e) {
+            logger.error("should never happen", e);
+        }
     }
 }

@@ -9,10 +9,13 @@ import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecordThrows;
 import org.postgresql.jdbc.PgConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.script.ScriptException;
 import java.sql.Connection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,7 +29,7 @@ public class Mainline implements Runnable
     private static final Logger logger = LoggerFactory.getLogger(Mainline.class);
 
     public static Mainline of //
-        /* */( MainlineConfig config //
+        /* */(MainlineConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<MainlineRecord> tqueue //
         /* */)
@@ -71,10 +74,13 @@ public class Mainline implements Runnable
             logger.error("should not be interrupted by other thread.");
             Thread.currentThread().interrupt();
         }
+        catch (ScriptException ex) {
+            logger.error("should never happen", ex);
+        }
         logger.info("mainline finish.");
     }
 
-    private void runWithInterrupted() throws InterruptedException
+    private void runWithInterrupted() throws InterruptedException, ScriptException
     {
         MainlineAction action = config.createsAction(status, tqueue);
         try (Connection repl = config.srcProperty.replicaConnection()) {
