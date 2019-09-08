@@ -133,7 +133,7 @@ public class PgSnapshotConfig extends TqueueConfig
         }
     }
 
-    static String buildSelect(PgConnection c, PgReplRelation r) //
+    private static String buildSelect(PgConnection c, PgReplRelation r) //
         throws SQLException
     {
         StringBuilder sb = new StringBuilder("\nSELECT ");
