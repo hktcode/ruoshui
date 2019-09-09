@@ -5,12 +5,13 @@
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.hktcode.bgsimple.method.SimpleMethodPst;
-import com.hktcode.bgsimple.method.SimpleMethodPstResult;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmAction;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderAction;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderResult;
 import org.postgresql.replication.LogSequenceNumber;
 
-public class MainlineMethodPstParamsRecvLsn implements SimpleMethodPst<MainlineAction>
+public class MainlineMethodPstParamsRecvLsn implements SimpleMethodPst<PgsenderAction<MainlineRecord, MainlineConfig>>
 {
     public static MainlineMethodPstParamsRecvLsn of(LogSequenceNumber receiveLsn)
     {
@@ -28,8 +29,7 @@ public class MainlineMethodPstParamsRecvLsn implements SimpleMethodPst<MainlineA
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public MainlineResult run(MainlineAction action)
+    public PgsenderResult<MainlineRecord, MainlineConfig> run(PgsenderAction<MainlineRecord, MainlineConfig> action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");

@@ -5,8 +5,9 @@
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderMetricRun;
 
-public abstract class MainlineMetricRunTypelist implements MainlineMetricRun
+public abstract class MainlineMetricRunTypelist implements PgsenderMetricRun
 {
     protected MainlineMetricRunTypelist(MainlineActionDataTypelist action)
     {

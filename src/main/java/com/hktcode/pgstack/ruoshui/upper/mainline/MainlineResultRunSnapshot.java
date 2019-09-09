@@ -4,34 +4,27 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.hktcode.bgsimple.method.SimpleMethodAllResultRun;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderMetric;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderMetricRun;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderResultRun;
 
-public class MainlineResultRunSnapshot extends MainlineResultRun //
+public class MainlineResultRunSnapshot extends PgsenderResultRun<MainlineRecord, MainlineConfig> //
 {
-    public static MainlineResultRunSnapshot of(MainlineConfig config, MainlineMetric metric)
+    public static MainlineResultRunSnapshot of(MainlineConfig config, PgsenderMetricRun metric)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
         }
         if (metric == null) {
-            throw new ArgumentNullException("metrci");
+            throw new ArgumentNullException("metric");
         }
         return new MainlineResultRunSnapshot(config, metric);
     }
 
-    private MainlineResultRunSnapshot(MainlineConfig config, MainlineMetric metric)
+    private MainlineResultRunSnapshot(MainlineConfig config, PgsenderMetricRun metric)
     {
         super(config, metric);
-    }
-
-    @Override
-    public void toJsonObject(ObjectNode node)
-    {
-        ObjectNode config = node.putObject("config");
-        this.config.toJsonObject(config);
-        ObjectNode metric = node.putObject("metric");
-        this.metric.toJsonObject(metric);
     }
 }

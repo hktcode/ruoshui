@@ -4,16 +4,19 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
-public abstract class MainlineMetricErrTypelist implements MainlineMetricErr
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderMetricErr;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderReportThrowErr;
+
+public abstract class MainlineMetricErrTypelist implements PgsenderMetricErr
 {
     protected MainlineMetricErrTypelist(MainlineMetricEndTypelist metric, Throwable throwerr)
     {
         long finish = System.currentTimeMillis();
         this.typelist = metric.typelist;
-        this.throwerr = MainlineReportThrowErr.of(finish, throwerr);
+        this.throwerr = PgsenderReportThrowErr.of(finish, throwerr);
     }
 
     public final MainlineReportTypelist typelist;
 
-    public final MainlineReportThrowErr throwerr;
+    public final PgsenderReportThrowErr throwerr;
 }

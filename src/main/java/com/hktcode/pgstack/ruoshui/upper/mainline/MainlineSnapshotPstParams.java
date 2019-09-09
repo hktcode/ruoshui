@@ -4,14 +4,13 @@
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.hktcode.bgsimple.method.SimpleMethodPstParams;
-import com.hktcode.bgsimple.method.SimpleMethodPstResult;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmAction;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderAction;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderResult;
 import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotConfig;
 
-import javax.script.ScriptException;
-
-public class MainlineSnapshotPstParams implements SimpleMethodPstParams<MainlineAction>
+public class MainlineSnapshotPstParams implements SimpleMethodPstParams<PgsenderAction<MainlineRecord, MainlineConfig>>
 {
     public static MainlineSnapshotPstParams of(SnapshotConfig config)
     {
@@ -22,8 +21,7 @@ public class MainlineSnapshotPstParams implements SimpleMethodPstParams<Mainline
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public MainlineResult run(MainlineAction action)
+    public PgsenderResult<MainlineRecord, MainlineConfig> run(PgsenderAction<MainlineRecord, MainlineConfig> action)
         throws InterruptedException
     {
         if (action == null) {

@@ -11,6 +11,9 @@ import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
 import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecordThrows;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderAction;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderActionData;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderActionDataRelaList;
 import org.postgresql.jdbc.PgConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,9 +81,9 @@ public class Mainline implements Runnable
 
     private void runWithInterrupted() throws InterruptedException
     {
-        MainlineAction action;
+        PgsenderAction<MainlineRecord, MainlineConfig> action;
         if (config.getSnapshot) {
-            action = MainlineActionDataRelaList.of(config, status, tqueue);
+            action = PgsenderActionDataRelaList.of(config, status, tqueue);
         } else {
             action = MainlineActionDataTypelistStraight.of(config, status, tqueue);
         }
@@ -92,9 +95,10 @@ public class Mainline implements Runnable
                 pgdata.setAutoCommit(false);
                 pgdata.setTransactionIsolation(TRANSACTION_REPEATABLE_READ);
                 do {
-                    MainlineActionData dataAction = (MainlineActionData)action;
+                    PgsenderActionData<MainlineRecord, MainlineConfig>
+                        dataAction = (PgsenderActionData<MainlineRecord, MainlineConfig>)action;
                     action = dataAction.next(exesvc, pgdata, pgrepl);
-                } while (action instanceof MainlineActionData);
+                } while (action instanceof PgsenderActionData);
             }
             finally {
                 exesvc.shutdown();
@@ -109,7 +113,7 @@ public class Mainline implements Runnable
         }
         catch (Exception ex) {
             logger.error("mainline throws exception: ", ex);
-            action = action.nextThrowErr(ex);
+            action = action.next(ex);
             MainlineRecord r = MainlineRecordThrows.of();
             do {
                 r = action.send(r);

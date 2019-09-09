@@ -6,14 +6,20 @@ package com.hktcode.pgstack.ruoshui.upper.snapshot;
 
 import com.google.common.collect.ImmutableMap;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgstack.ruoshui.pgsql.LogicalReplConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplRelationName;
-import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig;
+import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshot;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshotCreateSlot;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshotLogicalMsg;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshotPauseWorld;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilter;
 import com.hktcode.pgstack.ruoshui.upper.mainline.PgLockMode;
 
-public class SnapshotConfig extends PgSnapshotConfig
+public class SnapshotConfig extends PgsenderConfig<UpcsmFetchRecordSnapshot, SnapshotConfig>
 {
     public static SnapshotConfig of //
         /* */( PgConnectionProperty srcProperty //
@@ -62,5 +68,25 @@ public class SnapshotConfig extends PgSnapshotConfig
         /* */) //
     {
         super(srcProperty, relationSql, whereScript, lockingMode, logicalRepl, tupleSelect);
+    }
+
+    @Override
+    public UpcsmFetchRecordSnapshot createMessage(long lsn, LogicalMsg msg)
+    {
+        return UpcsmFetchRecordSnapshotLogicalMsg.of(lsn, msg);
+    }
+
+    @Override
+    public UpcsmFetchRecordSnapshotPauseWorld pauseWorldMsg()
+    {
+        return UpcsmFetchRecordSnapshotPauseWorld.of();
+    }
+
+    public UpcsmFetchRecordSnapshotCreateSlot createSlotMsg(PgReplSlotTuple tuple)
+    {
+        if (tuple == null) {
+            throw new ArgumentNullException("tuple");
+        }
+        return UpcsmFetchRecordSnapshotCreateSlot.of(tuple);
     }
 }

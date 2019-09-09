@@ -4,18 +4,21 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
-public abstract class MainlineMetricEndTypelist implements MainlineMetricEnd
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderMetricEnd;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderReportComplete;
+
+public abstract class MainlineMetricEndTypelist implements PgsenderMetricEnd
 {
     protected MainlineMetricEndTypelist(MainlineActionDataTypelist action)
     {
         long finish = System.currentTimeMillis();
         this.typelist = MainlineReportTypelist.of(action, finish);
-        this.complete = MainlineReportComplete.of(finish);
+        this.complete = PgsenderReportComplete.of(finish);
     }
 
     public final MainlineReportTypelist typelist;
 
-    public final MainlineReportComplete complete;
+    public final PgsenderReportComplete complete;
 
     @Override
     public abstract MainlineMetricErrTypelist toErrMetrics(Throwable throwerr);

@@ -11,8 +11,7 @@ import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-class MainlineActionDataTypelistStraight //
-    extends MainlineActionDataTypelist
+class MainlineActionDataTypelistStraight extends MainlineActionDataTypelist
 {
     static MainlineActionDataTypelistStraight of
         /* */( MainlineConfig config //

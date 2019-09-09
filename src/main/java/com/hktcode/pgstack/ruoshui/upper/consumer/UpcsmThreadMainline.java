@@ -15,12 +15,12 @@ import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
 import com.hktcode.pgstack.ruoshui.upper.mainline.*;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderResult;
 import com.hktcode.pgstack.ruoshui.upper.snapshot.Snapshot;
 import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotConfig;
 import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotResult;
 import org.postgresql.replication.LogSequenceNumber;
 
-import javax.script.ScriptException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedTransferQueue;
@@ -86,7 +86,8 @@ public class UpcsmThreadMainline extends UpcsmThread
         SimpleHolder holder = SimpleHolder.of(status);
         SimpleFuturePut future = holder.put();
         thread.start();
-        MainlineResult mainline = (MainlineResult)future.get().get(0);
+        PgsenderResult<MainlineRecord, MainlineConfig> mainline //
+            = (PgsenderResult<MainlineRecord, MainlineConfig>)future.get().get(0);
         ImmutableList<SnapshotResult> snapshot = ImmutableList.copyOf(sslist);
         return UpcsmReportFetchThread.of(mainline, snapshot);
     }
@@ -101,7 +102,8 @@ public class UpcsmThreadMainline extends UpcsmThread
         Phaser phaser = new Phaser(2);
         SimpleStatusOuterGet get = SimpleStatusOuterGet.of(params, phaser);
         SimpleFutureGet future = holder.get(get);
-        MainlineResult mainline = (MainlineResult)future.get().get(0);
+        PgsenderResult<MainlineRecord, MainlineConfig> mainline //
+            = (PgsenderResult<MainlineRecord, MainlineConfig>)future.get().get(0);
         ImmutableList<SnapshotResult> snapshot = ImmutableList.copyOf(sslist);
         return UpcsmReportFetchThread.of(mainline, snapshot);
     }
@@ -116,7 +118,8 @@ public class UpcsmThreadMainline extends UpcsmThread
         Phaser phaser = new Phaser(2);
         SimpleStatusOuterDel del = SimpleStatusOuterDel.of(params, phaser);
         SimpleFutureDel future = holder.del(del);
-        MainlineResult mainline = (MainlineResult)future.get().get(0);
+        PgsenderResult<MainlineRecord, MainlineConfig> mainline
+            = (PgsenderResult<MainlineRecord, MainlineConfig>)future.get().get(0);
         ImmutableList<SnapshotResult> snapshot = ImmutableList.copyOf(sslist);
         return UpcsmReportFetchThread.of(mainline, snapshot);
     }
@@ -132,7 +135,8 @@ public class UpcsmThreadMainline extends UpcsmThread
         Phaser phaser = new Phaser(2);
         SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(params, phaser);
         SimpleFuturePst future = holder.pst(pst);
-        MainlineResult mainline = (MainlineResult)future.get().get(0);
+        PgsenderResult<MainlineRecord, MainlineConfig> mainline //
+            = (PgsenderResult<MainlineRecord, MainlineConfig>)future.get().get(0);
         ImmutableList<SnapshotResult> snapshot = ImmutableList.copyOf(sslist);
         return UpcsmReportFetchThread.of(mainline, snapshot);
     }
@@ -148,7 +152,7 @@ public class UpcsmThreadMainline extends UpcsmThread
         Phaser phaser = new Phaser(2);
         SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(params, phaser);
         SimpleFuturePst future = holder.pst(pst);
-        MainlineResult mainline = (MainlineResult)future.get().get(0);
+        PgsenderResult mainline = (PgsenderResult)future.get().get(0);
         if (!(mainline instanceof MainlineResultRunSnapshot)) {
             return this;
         }

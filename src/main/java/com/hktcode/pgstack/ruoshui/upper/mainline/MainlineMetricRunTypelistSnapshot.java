@@ -4,8 +4,8 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.*;
 
 public class MainlineMetricRunTypelistSnapshot extends MainlineMetricRunTypelist
 {
@@ -29,38 +29,17 @@ public class MainlineMetricRunTypelistSnapshot extends MainlineMetricRunTypelist
         this.ssfinish = action.ssfinish;
     }
 
-    public final MainlineReportRelaList relalist;
+    public final PgsenderReportRelaList relalist;
 
-    public final MainlineReportRelaLock relalock;
+    public final PgsenderReportRelaLock relalock;
 
-    public final MainlineReportReplSlot replslot;
+    public final PgsenderReportReplSlot replslot;
 
-    public final MainlineReportSizeDiff sizediff;
+    public final PgsenderReportSizeDiff sizediff;
 
-    public final MainlineReportSsBegins ssbegins;
+    public final PgsenderReportSsBegins ssbegins;
 
-    public final MainlineReportTupleval tupleval;
+    public final PgsenderReportTupleval tupleval;
 
-    public final MainlineReportSsFinish ssfinish;
-
-    @Override
-    public void toJsonObject(ObjectNode node)
-    {
-        ObjectNode relalistNode = node.putObject("relalist");
-        this.relalist.toJsonObject(relalistNode);
-        ObjectNode relalockNode = node.putObject("relalock");
-        this.relalock.toJsonObject(relalockNode);
-        ObjectNode replslotNode = node.putObject("replslot");
-        this.replslot.toJsonObject(replslotNode);
-        ObjectNode sizediffNode = node.putObject("sizediff");
-        this.sizediff.toJsonObject(sizediffNode);
-        ObjectNode ssbeginsNode = node.putObject("ssbegins");
-        this.ssbegins.toJsonObject(ssbeginsNode);
-        ObjectNode tuplevalNode = node.putObject("tupleval");
-        this.tupleval.toJsonObject(tuplevalNode);
-        ObjectNode ssfinishNode = node.putObject("ssfinish");
-        this.ssfinish.toJsonObject(ssfinishNode);
-        ObjectNode typelistNode = node.putObject("typelist");
-        this.typelist.toJsonObject(typelistNode);
-    }
+    public final PgsenderReportSsFinish ssfinish;
 }

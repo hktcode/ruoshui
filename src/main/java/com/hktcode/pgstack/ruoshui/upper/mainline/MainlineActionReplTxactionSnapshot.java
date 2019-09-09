@@ -5,9 +5,9 @@
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.*;
 
-class MainlineActionReplTxactionSnapshot //
-    extends MainlineActionReplTxaction
+class MainlineActionReplTxactionSnapshot extends MainlineActionReplTxaction
 {
     static MainlineActionReplTxactionSnapshot of(MainlineActionDataTypelistSnapshot action)
     {
@@ -17,19 +17,19 @@ class MainlineActionReplTxactionSnapshot //
         return new MainlineActionReplTxactionSnapshot(action);
     }
 
-    public final MainlineReportRelaList relalist;
+    public final PgsenderReportRelaList relalist;
 
-    public final MainlineReportRelaLock relaLock;
+    public final PgsenderReportRelaLock relaLock;
 
-    public final MainlineReportReplSlot replSlot;
+    public final PgsenderReportReplSlot replSlot;
 
-    public final MainlineReportSizeDiff sizeDiff;
+    public final PgsenderReportSizeDiff sizeDiff;
 
-    public final MainlineReportSsBegins ssBegins;
+    public final PgsenderReportSsBegins ssBegins;
 
-    public final MainlineReportTupleval tupleval;
+    public final PgsenderReportTupleval tupleval;
 
-    public final MainlineReportSsFinish ssfinish;
+    public final PgsenderReportSsFinish ssfinish;
 
     private MainlineActionReplTxactionSnapshot(MainlineActionDataTypelistSnapshot action)
     {

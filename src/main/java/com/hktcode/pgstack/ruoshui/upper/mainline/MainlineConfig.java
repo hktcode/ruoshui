@@ -7,13 +7,18 @@ package com.hktcode.pgstack.ruoshui.upper.mainline;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgstack.ruoshui.pgsql.LogicalReplConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplRelationName;
-import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilter;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilterDefault;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilterScript;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecordNormal;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderAction;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderActionDataSsFinish;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderConfig;
 import org.postgresql.jdbc.PgConnection;
 
 import javax.script.ScriptException;
@@ -26,7 +31,7 @@ import java.util.Map;
 import static com.hktcode.bgsimple.triple.TripleConfig.DEFALUT_WAIT_TIMEOUT;
 import static com.hktcode.bgsimple.triple.TripleConfig.DEFAULT_LOG_DURATION;
 
-public class MainlineConfig extends PgSnapshotConfig
+public class MainlineConfig extends PgsenderConfig<MainlineRecord, MainlineConfig>
 {
     private static final String TYPELIST_SQL = "" //
         + "\n select \"t\".    \"oid\"::int8 as \"datatype\" " //
@@ -156,6 +161,22 @@ public class MainlineConfig extends PgSnapshotConfig
         if (pgdata == null) {
             throw new ArgumentNullException("pgdata");
         }
-        return preparedStatement(pgdata, typelistSql);
+        return prepStatement(pgdata, typelistSql);
+    }
+
+    @Override
+    public PgsenderAction<MainlineRecord, MainlineConfig> //
+    afterSnapshot(PgsenderActionDataSsFinish<MainlineRecord, MainlineConfig> action)
+    {
+        return MainlineActionDataTypelistSnapshot.of(action);
+    }
+
+    @Override
+    public MainlineRecord createMessage(long lsn, LogicalMsg msg)
+    {
+        if (msg == null) {
+            throw new ArgumentNullException("msg");
+        }
+        return MainlineRecordNormal.of(lsn, msg);
     }
 }

@@ -4,7 +4,6 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class MainlineMetricEndTypelistStraight extends MainlineMetricEndTypelist
@@ -29,14 +28,5 @@ public class MainlineMetricEndTypelistStraight extends MainlineMetricEndTypelist
             throw new ArgumentNullException("throwerr");
         }
         return MainlineMetricErrTypelistStraight.of(this, throwerr);
-    }
-
-    @Override
-    public void toJsonObject(ObjectNode node)
-    {
-        ObjectNode typelistNode = node.putObject("typelist");
-        this.typelist.toJsonObject(typelistNode);
-        ObjectNode completeNode = node.putObject("complete");
-        this.complete.toJsonObject(completeNode);
     }
 }

@@ -5,11 +5,13 @@
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.*;
 
-class MainlineActionDataTypelistSnapshot //
-    extends MainlineActionDataTypelist
+class MainlineActionDataTypelistSnapshot extends MainlineActionDataTypelist
 {
-    static MainlineActionDataTypelistSnapshot of(MainlineActionDataSsFinish action)
+    static MainlineActionDataTypelistSnapshot //
+    of(PgsenderActionDataSsFinish<MainlineRecord, MainlineConfig> action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -17,21 +19,22 @@ class MainlineActionDataTypelistSnapshot //
         return new MainlineActionDataTypelistSnapshot(action);
     }
 
-    public final MainlineReportRelaList relalist;
+    public final PgsenderReportRelaList relalist;
 
-    public final MainlineReportRelaLock relaLock;
+    public final PgsenderReportRelaLock relaLock;
 
-    public final MainlineReportReplSlot replSlot;
+    public final PgsenderReportReplSlot replSlot;
 
-    public final MainlineReportSizeDiff sizeDiff;
+    public final PgsenderReportSizeDiff sizeDiff;
 
-    public final MainlineReportSsBegins ssBegins;
+    public final PgsenderReportSsBegins ssBegins;
 
-    public final MainlineReportTupleval tupleval;
+    public final PgsenderReportTupleval tupleval;
 
-    public final MainlineReportSsFinish ssfinish;
+    public final PgsenderReportSsFinish ssfinish;
 
-    private MainlineActionDataTypelistSnapshot(MainlineActionDataSsFinish action)
+    private MainlineActionDataTypelistSnapshot
+        (PgsenderActionDataSsFinish<MainlineRecord, MainlineConfig> action)
     {
         super(action);
         this.relalist = action.relalist;
@@ -40,7 +43,7 @@ class MainlineActionDataTypelistSnapshot //
         this.sizeDiff = action.sizeDiff;
         this.ssBegins = action.ssBegins;
         this.tupleval = action.tupleval;
-        this.ssfinish = MainlineReportSsFinish.of(action, this.actionStart);
+        this.ssfinish = PgsenderReportSsFinish.of(action, this.actionStart);
     }
 
     public MainlineActionReplTxaction txaction()

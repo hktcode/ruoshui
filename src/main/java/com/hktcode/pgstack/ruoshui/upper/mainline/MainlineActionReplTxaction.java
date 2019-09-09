@@ -9,8 +9,9 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
 import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecordNormal;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmReportFetchThread;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmThreadSnapshotLockingRel;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderAction;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderActionTerminateEnd;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderResultRun;
 import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotConfig;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
@@ -18,7 +19,6 @@ import org.postgresql.replication.PGReplicationStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.script.ScriptException;
 import java.nio.ByteBuffer;
 import java.sql.SQLException;
 
@@ -30,8 +30,7 @@ abstract class MainlineActionReplTxaction extends MainlineActionRepl
 
     public LogSequenceNumber txactionLsn = LogSequenceNumber.INVALID_LSN;
 
-    protected <T extends MainlineActionDataTypelist>
-    MainlineActionReplTxaction(T action)
+    protected MainlineActionReplTxaction(MainlineActionDataTypelist action)
     {
         super(action, System.currentTimeMillis());
         this.typelist = MainlineReportTypelist.of(action, this.actionStart);
@@ -39,7 +38,7 @@ abstract class MainlineActionReplTxaction extends MainlineActionRepl
     }
 
     @Override
-    MainlineAction next(PgConnection pgrepl) throws SQLException, InterruptedException, ScriptException
+    public PgsenderAction next(PgConnection pgrepl) throws SQLException, InterruptedException
     {
         MainlineRecord r = null;
         this.statusInfor = "start logical replication stream";
@@ -59,7 +58,7 @@ abstract class MainlineActionReplTxaction extends MainlineActionRepl
             }
         }
         this.statusInfor = "send txation finish record.";
-        return MainlineActionTerminateEnd.of(this);
+        return PgsenderActionTerminateEnd.of(this.config, this.tqueue, this.status, this.toEndMetrics());
     }
 
     private MainlineRecordNormal poll(PGReplicationStream s)
@@ -90,7 +89,7 @@ abstract class MainlineActionReplTxaction extends MainlineActionRepl
     public abstract MainlineMetricRunTxaction complete();
 
     @Override
-    public MainlineResultRun pst(LogSequenceNumber lsn)
+    public PgsenderResultRun<MainlineRecord, MainlineConfig> pst(LogSequenceNumber lsn)
     {
         if (lsn == null) {
             throw new ArgumentNullException("lsn");

@@ -24,15 +24,4 @@ public class MainlineMetricErrTxactionStraight extends MainlineMetricErrTxaction
     {
         super(metric, throwerr);
     }
-
-    @Override
-    public void toJsonObject(ObjectNode node)
-    {
-        ObjectNode typelistNode = node.putObject("typelist");
-        this.typelist.toJsonObject(typelistNode);
-        ObjectNode txactionNode = node.putObject("txaction");
-        this.txaction.toJsonObject(txactionNode);
-        ObjectNode throwerrNode = node.putObject("throwerr");
-        this.throwerr.toJsonObject(throwerrNode);
-    }
 }

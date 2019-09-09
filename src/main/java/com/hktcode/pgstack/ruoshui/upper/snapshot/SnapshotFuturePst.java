@@ -7,7 +7,6 @@ package com.hktcode.pgstack.ruoshui.upper.snapshot;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusOuterPst;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineResult;
 
 import java.util.concurrent.atomic.AtomicReference;
 

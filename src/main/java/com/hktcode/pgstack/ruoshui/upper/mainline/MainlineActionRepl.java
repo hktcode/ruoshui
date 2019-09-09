@@ -7,14 +7,14 @@ package com.hktcode.pgstack.ruoshui.upper.mainline;
 import com.hktcode.bgsimple.tqueue.TqueueAction;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.*;
 import org.postgresql.jdbc.PgConnection;
 
-import javax.script.ScriptException;
 import java.sql.SQLException;
 
 abstract class MainlineActionRepl //
-    extends TqueueAction<MainlineAction, MainlineConfig, MainlineRecord> //
-    implements MainlineAction //
+    extends TqueueAction<PgsenderAction<MainlineRecord, MainlineConfig>, MainlineConfig, MainlineRecord> //
+    implements PgsenderAction<MainlineRecord, MainlineConfig> //
 {
     public final long actionStart;
 
@@ -22,52 +22,46 @@ abstract class MainlineActionRepl //
 
     public long fetchMillis = 0;
 
-    protected MainlineActionRepl(MainlineActionData action, long actionStart)
+    protected MainlineActionRepl(PgsenderActionData<MainlineRecord, MainlineConfig> action, long actionStart)
     {
         super(action.config, action.tqueue, action.status);
         this.actionStart = actionStart;
         this.logDatetime = action.logDatetime;
     }
 
-    abstract MainlineAction next(PgConnection pgrepl) //
-        throws SQLException, InterruptedException, ScriptException;
+    abstract PgsenderAction<MainlineRecord, MainlineConfig> next(PgConnection pgrepl) //
+        throws SQLException, InterruptedException;
 
-    public abstract MainlineMetricRun toRunMetrics();
-
-    @Override
-    public MainlineResultRun pst()
-    {
-        return this.get();
-    }
+    public abstract PgsenderMetricRun toRunMetrics();
 
     @Override
-    public MainlineResultRun put()
-    {
-        return this.get();
-    }
-
-    @Override
-    public MainlineResultRun get()
+    public PgsenderResultRun<MainlineRecord, MainlineConfig> get()
     {
         MainlineConfig config = this.config;
-        MainlineMetric metric = this.toRunMetrics();
-        return MainlineResultRun.of(config, metric);
+        PgsenderMetricRun metric = this.toRunMetrics();
+        return PgsenderResultRun.of(config, metric);
     }
 
     @Override
-    public MainlineResultEnd del()
+    public PgsenderResultEnd<MainlineRecord, MainlineConfig, PgsenderMetricEnd> del()
     {
         MainlineConfig config = this.config;
-        MainlineMetricEnd metric = this.toEndMetrics();
-        return MainlineResultEnd.of(config, metric);
+        PgsenderMetricEnd metric = this.toEndMetrics();
+        return PgsenderResultEnd.of(config, metric);
     }
 
     @Override
-    public MainlineActionThrowsErrors nextThrowErr(Throwable throwsError)
+    public PgsenderActionThrowsErrors<MainlineRecord, MainlineConfig>
+    next(Throwable throwsError)
     {
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
         }
-        return MainlineActionThrowsErrors.of(this, throwsError);
+        return PgsenderActionThrowsErrors.of //
+            /* */( this.config //
+            /* */, this.tqueue //
+            /* */, this.status //
+            /* */, this.toEndMetrics().toErrMetrics(throwsError) //
+            /* */);
     }
 }

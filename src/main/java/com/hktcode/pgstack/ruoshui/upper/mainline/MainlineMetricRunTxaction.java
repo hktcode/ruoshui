@@ -4,9 +4,10 @@
 
 package com.hktcode.pgstack.ruoshui.upper.mainline;
 
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderMetricRun;
 import org.postgresql.replication.LogSequenceNumber;
 
-public abstract class MainlineMetricRunTxaction implements MainlineMetricRun
+public abstract class MainlineMetricRunTxaction implements PgsenderMetricRun
 {
     protected MainlineMetricRunTxaction(MainlineActionReplTxaction action)
     {

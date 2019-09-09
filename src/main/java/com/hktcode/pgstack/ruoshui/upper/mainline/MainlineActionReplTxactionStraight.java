@@ -6,8 +6,7 @@ package com.hktcode.pgstack.ruoshui.upper.mainline;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-class MainlineActionReplTxactionStraight //
-    extends MainlineActionReplTxaction
+class MainlineActionReplTxactionStraight extends MainlineActionReplTxaction
 {
     static MainlineActionReplTxactionStraight of(MainlineActionDataTypelistStraight action)
     {
