@@ -7,9 +7,9 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.PgsqlKey;
 import com.hktcode.pgstack.ruoshui.pgsql.PgsqlVal;
 
-public class UpperProducerRecord
+public class UpperRecordProducer
 {
-    public static UpperProducerRecord of(PgsqlKey key, PgsqlVal val)
+    public static UpperRecordProducer of(PgsqlKey key, PgsqlVal val)
     {
         if (key == null) {
             throw new ArgumentNullException("key");
@@ -17,14 +17,14 @@ public class UpperProducerRecord
         if (val == null) {
             throw new ArgumentNullException("val");
         }
-        return new UpperProducerRecord(key, val);
+        return new UpperRecordProducer(key, val);
     }
 
     public final PgsqlKey key;
 
     public final PgsqlVal val;
 
-    private UpperProducerRecord(PgsqlKey key, PgsqlVal val)
+    private UpperRecordProducer(PgsqlKey key, PgsqlVal val)
     {
         this.key = key;
         this.val = val;

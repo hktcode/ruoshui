@@ -8,7 +8,7 @@ import com.hktcode.bgsimple.SimpleWorker;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.MainlineConfig;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.SnapshotConfig;
 import org.postgresql.replication.LogSequenceNumber;
@@ -27,8 +27,8 @@ public class UpcsmActionRun //
     private static final Logger logger = LoggerFactory.getLogger(UpcsmActionRun.class);
 
     public static UpcsmActionRun of //
-        /* */( MainlineConfig config //
-        /* */, BlockingQueue<UpperConsumerRecord> comein //
+        /* */(MainlineConfig config //
+        /* */, BlockingQueue<UpperRecordConsumer> comein //
         /* */, AtomicReference<SimpleStatus> status //
         /* */)
     {
@@ -46,7 +46,7 @@ public class UpcsmActionRun //
 
     public final MainlineConfig config;
 
-    private final BlockingQueue<UpperConsumerRecord> comein;
+    private final BlockingQueue<UpperRecordConsumer> comein;
 
     public final long actionStart;
 
@@ -68,19 +68,19 @@ public class UpcsmActionRun //
 
     public UpcsmAction next() throws InterruptedException, ExecutionException, ScriptException
     {
-        UpperConsumerRecord r = null;
+        UpperRecordConsumer r = null;
         while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
             r = (r == null ? this.poll() : this.push(r));
         }
         return UpcsmActionEnd.of(this, this.fetchThread.get());
     }
 
-    private UpperConsumerRecord poll() throws InterruptedException
+    private UpperRecordConsumer poll() throws InterruptedException
     {
         long waitTimeout = this.config.waitTimeout;
         long logDuration = this.config.logDuration;
         long startMillis = System.currentTimeMillis();
-        UpperConsumerRecord r = this.fetchThread.poll(waitTimeout, this);
+        UpperRecordConsumer r = this.fetchThread.poll(waitTimeout, this);
         long finishMillis = System.currentTimeMillis();
         this.fetchMillis += (startMillis - finishMillis);
         ++this.fetchCounts;
@@ -95,7 +95,7 @@ public class UpcsmActionRun //
         return r;
     }
 
-    private UpperConsumerRecord push(UpperConsumerRecord record) //
+    private UpperRecordConsumer push(UpperRecordConsumer record) //
         throws InterruptedException
     {
         long waitTimeout = config.waitTimeout;
@@ -131,8 +131,8 @@ public class UpcsmActionRun //
     }
 
     private UpcsmActionRun //
-        /* */( MainlineConfig config //
-        /* */, BlockingQueue<UpperConsumerRecord> comein //
+        /* */(MainlineConfig config //
+        /* */, BlockingQueue<UpperRecordConsumer> comein //
         /* */, AtomicReference<SimpleStatus> status //
         /* */)
     {

@@ -6,7 +6,7 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalTxactBeginsMsg;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,10 +41,10 @@ public class UpcsmThreadSnapshotUntilPoint extends UpcsmThreadSnapshot
     }
 
     @Override
-    public UpperConsumerRecord poll(long timeout, UpcsmActionRun action) //
+    public UpperRecordConsumer poll(long timeout, UpcsmActionRun action) //
         throws InterruptedException
     {
-        UpperConsumerRecord record = mlxact.poll(timeout, action);
+        UpperRecordConsumer record = mlxact.poll(timeout, action);
         if (record != null) {
             if (record.msg instanceof LogicalTxactBeginsMsg) {
                 LogicalTxactBeginsMsg beginsMsg = (LogicalTxactBeginsMsg)record.msg;

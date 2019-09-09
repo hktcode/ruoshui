@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2019, Huang Ketian.
  */
-package com.hktcode.pgstack.ruoshui.upper;
+package com.hktcode.pgstack.ruoshui.upper.producer;
 
 import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.future.SimpleFutureDel;

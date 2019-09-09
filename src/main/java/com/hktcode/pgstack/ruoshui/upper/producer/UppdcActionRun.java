@@ -10,8 +10,7 @@ import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.PgsqlValTxactCommit;
-import com.hktcode.pgstack.ruoshui.upper.UpperKafkaProducerCallback;
-import com.hktcode.pgstack.ruoshui.upper.UpperProducerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperRecordProducer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -35,7 +34,7 @@ public class UppdcActionRun //
 {
     public static UppdcActionRun of
         /* */( UpperProducerConfig config
-        /* */, BlockingQueue<UpperProducerRecord> getout
+        /* */, BlockingQueue<UpperRecordProducer> getout
         /* */, AtomicReference<SimpleStatus> status
         /* */)
     {
@@ -55,7 +54,7 @@ public class UppdcActionRun //
 
     public final UpperProducerConfig config;
 
-    public final BlockingQueue<UpperProducerRecord> getout;
+    public final BlockingQueue<UpperRecordProducer> getout;
 
     public final long actionStart;
 
@@ -78,7 +77,7 @@ public class UppdcActionRun //
 
     private UppdcActionRun
         /* */( UpperProducerConfig config
-        /* */, BlockingQueue<UpperProducerRecord> getout
+        /* */, BlockingQueue<UpperRecordProducer> getout
         /* */, AtomicReference<SimpleStatus> status
         /* */)
     {
@@ -116,7 +115,7 @@ public class UppdcActionRun //
         try (Producer<byte[], byte[]> kfk = this.producer(BYTES, BYTES)) {
             logger.info("kfk.metrics={}", kfk.metrics());
             logger.info("target_topic={}, partition_no={}", config.targetTopic, config.partitionNo);
-            UpperProducerRecord d = null;
+            UpperRecordProducer d = null;
             while (super.newStatus(this) instanceof SimpleStatusInnerRun) {
                 if (d == null) {
                     d = this.poll();
@@ -154,12 +153,12 @@ public class UppdcActionRun //
         return new KafkaProducer<>(properties, k, v);
     }
 
-    private UpperProducerRecord poll() throws InterruptedException
+    private UpperRecordProducer poll() throws InterruptedException
     {
         long waitTimeout = config.waitTimeout;
         long logDuration = config.logDuration;
         long startsMillis = System.currentTimeMillis();
-        UpperProducerRecord record = getout.poll(waitTimeout, TimeUnit.MILLISECONDS);
+        UpperRecordProducer record = getout.poll(waitTimeout, TimeUnit.MILLISECONDS);
         long finishMillis = System.currentTimeMillis();
         this.fetchMillis += (finishMillis - startsMillis);
         ++fetchCounts;

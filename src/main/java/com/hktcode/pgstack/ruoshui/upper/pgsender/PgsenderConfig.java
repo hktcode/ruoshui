@@ -15,7 +15,6 @@ import com.hktcode.pgstack.ruoshui.pgsql.LogicalReplConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplRelationName;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
-import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilter;
 import org.postgresql.jdbc.PgConnection;
 
 import javax.script.ScriptException;

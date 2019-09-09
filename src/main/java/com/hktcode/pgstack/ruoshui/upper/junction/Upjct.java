@@ -12,8 +12,8 @@ import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.bgsimple.triple.TripleJunctionConfig;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.UpperProducerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
+import com.hktcode.pgstack.ruoshui.upper.UpperRecordProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,9 +27,9 @@ public class Upjct implements Runnable
     private static final Logger logger = LoggerFactory.getLogger(Upjct.class);
 
     public static Upjct of //
-        /* */( TripleJunctionConfig config //
-        /* */, BlockingQueue<UpperConsumerRecord> comein //
-        /* */, BlockingQueue<UpperProducerRecord> getout //
+        /* */(TripleJunctionConfig config //
+        /* */, BlockingQueue<UpperRecordConsumer> comein //
+        /* */, BlockingQueue<UpperRecordProducer> getout //
         /* */, AtomicReference<SimpleStatus> status //
         /* */)
     {
@@ -50,16 +50,16 @@ public class Upjct implements Runnable
 
     private final TripleJunctionConfig config;
 
-    private final BlockingQueue<UpperConsumerRecord> comein;
+    private final BlockingQueue<UpperRecordConsumer> comein;
 
-    private final BlockingQueue<UpperProducerRecord> getout;
+    private final BlockingQueue<UpperRecordProducer> getout;
 
     private final AtomicReference<SimpleStatus> status;
 
     private Upjct //
-        /* */( TripleJunctionConfig config //
-        /* */, BlockingQueue<UpperConsumerRecord> comein //
-        /* */, BlockingQueue<UpperProducerRecord> getout //
+        /* */(TripleJunctionConfig config //
+        /* */, BlockingQueue<UpperRecordConsumer> comein //
+        /* */, BlockingQueue<UpperRecordProducer> getout //
         /* */, AtomicReference<SimpleStatus> status //
         /* */)
     {

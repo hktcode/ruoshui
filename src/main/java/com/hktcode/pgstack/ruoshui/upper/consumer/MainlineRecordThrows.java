@@ -4,7 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 
 public class MainlineRecordThrows implements MainlineRecord
 {
@@ -14,7 +14,7 @@ public class MainlineRecordThrows implements MainlineRecord
     }
 
     @Override
-    public UpperConsumerRecord toUpcsmRecord()
+    public UpperRecordConsumer toUpcsmRecord()
     {
         throw new FetchThreadThrowsErrorException();
     }

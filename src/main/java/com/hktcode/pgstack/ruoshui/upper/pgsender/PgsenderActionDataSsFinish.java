@@ -9,7 +9,6 @@ import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalEndSnapshotMsg;
 import com.hktcode.pgjdbc.PgReplRelation;
-import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgsqlRelationMetric;
 import org.postgresql.jdbc.PgConnection;
 
 import java.util.ArrayList;

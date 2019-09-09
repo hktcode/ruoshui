@@ -11,10 +11,6 @@ import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.hktcode.jackson.exception.JsonSchemaValidationImplException;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.service.OnlyoneWaitingService;
-import com.hktcode.pgstack.ruoshui.upper.service.UpperService;
-import com.hktcode.pgstack.ruoshui.upper.service.WaitingService;
-import com.hktcode.pgstack.ruoshui.upper.service.WorkingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -34,7 +30,7 @@ public class UpperController implements DisposableBean
 {
     private static Logger logger = LoggerFactory.getLogger(UpperController.class);
 
-    private final AtomicReference<UpperService> service = new AtomicReference<>(OnlyoneWaitingService.of());
+    private final AtomicReference<UpperService> service = new AtomicReference<>(UpperServiceWaitingOnlyone.of());
 
     private final JsonSchema upperConfigSchema;
 
@@ -65,7 +61,7 @@ public class UpperController implements DisposableBean
             throw new JsonSchemaValidationImplException(report);
         }
         UpperConfig config = UpperConfig.of(body);
-        WorkingService future;
+        UpperServiceWorking future;
         UpperService origin;
         do {
             origin = this.service.get();
@@ -77,7 +73,7 @@ public class UpperController implements DisposableBean
     @DeleteMapping
     public ResponseEntity del() throws InterruptedException
     {
-        WaitingService future;
+        UpperServiceWaiting future;
         UpperService origin;
         do {
             origin = this.service.get();

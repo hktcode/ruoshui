@@ -10,4 +10,4 @@
  *
  * TODO: 需要重构，并添加相关信息。
  */
-package com.hktcode.pgstack.ruoshui.pgsql.snapshot;
+package com.hktcode.pgstack.ruoshui.upper.pgsender;

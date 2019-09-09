@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2019, Huang Ketian.
  */
-package com.hktcode.pgstack.ruoshui.upper.service;
+package com.hktcode.pgstack.ruoshui.upper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
@@ -13,13 +13,10 @@ import com.hktcode.bgsimple.future.SimpleFuturePut;
 import com.hktcode.bgsimple.method.*;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.UpperConfig;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpperSnapshotPstParams;
 import com.hktcode.pgstack.ruoshui.upper.consumer.Upcsm;
 import com.hktcode.pgstack.ruoshui.upper.junction.Upjct;
 import com.hktcode.pgstack.ruoshui.upper.producer.Uppdc;
-import com.hktcode.pgstack.ruoshui.upper.UpperProducerRecord;
 import org.springframework.http.ResponseEntity;
 
 import javax.script.ScriptException;
@@ -28,16 +25,16 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class OnlyoneWorkingService implements WorkingService
+public class UpperServiceWorkingOnlyone implements UpperServiceWorking
 {
-    public static OnlyoneWorkingService of()
+    public static UpperServiceWorkingOnlyone of()
     {
-        return new OnlyoneWorkingService();
+        return new UpperServiceWorkingOnlyone();
     }
 
     private final AtomicReference<SimpleStatus> status;
 
-    private OnlyoneWorkingService()
+    private UpperServiceWorkingOnlyone()
     {
         SimpleMethodPut[] method = new SimpleMethodPut[] {
             SimpleMethodPutParamsDefault.of(),
@@ -57,8 +54,8 @@ public class OnlyoneWorkingService implements WorkingService
         }
         SimpleHolder holder = SimpleHolder.of(status);
         SimpleFuturePut future = holder.put();
-        BlockingQueue<UpperConsumerRecord> comein = new ArrayBlockingQueue<>(config.junction.comeinCount);
-        BlockingQueue<UpperProducerRecord> getout = new ArrayBlockingQueue<>(config.junction.getoutCount);
+        BlockingQueue<UpperRecordConsumer> comein = new ArrayBlockingQueue<>(config.junction.comeinCount);
+        BlockingQueue<UpperRecordProducer> getout = new ArrayBlockingQueue<>(config.junction.getoutCount);
 
         Upcsm consumer = Upcsm.of(config.consumer, this.status, comein);
         Upjct junction = Upjct.of(config.junction, comein, getout, this.status);
@@ -129,14 +126,14 @@ public class OnlyoneWorkingService implements WorkingService
     }
 
     @Override
-    public WorkingService putService()
+    public UpperServiceWorking putService()
     {
         return this;
     }
 
     @Override
-    public OnlyoneWaitingService delService()
+    public UpperServiceWaitingOnlyone delService()
     {
-        return OnlyoneWaitingService.of();
+        return UpperServiceWaitingOnlyone.of();
     }
 }

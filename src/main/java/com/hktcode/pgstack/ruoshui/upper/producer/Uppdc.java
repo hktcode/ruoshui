@@ -11,7 +11,7 @@ import com.hktcode.bgsimple.method.SimpleMethodDel;
 import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.UpperProducerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperRecordProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +26,7 @@ public class Uppdc implements Runnable
 
     public static Uppdc of //
         /* */(UpperProducerConfig config //
-        /* */, BlockingQueue<UpperProducerRecord> getout //
+        /* */, BlockingQueue<UpperRecordProducer> getout //
         /* */, AtomicReference<SimpleStatus> status //
         /* */)
     {
@@ -44,13 +44,13 @@ public class Uppdc implements Runnable
 
     private final UpperProducerConfig config;
 
-    private final BlockingQueue<UpperProducerRecord> getout;
+    private final BlockingQueue<UpperRecordProducer> getout;
 
     private final AtomicReference<SimpleStatus> status;
 
     private Uppdc //
-        /* */( UpperProducerConfig config //
-        /* */, BlockingQueue<UpperProducerRecord> getout //
+        /* */(UpperProducerConfig config //
+        /* */, BlockingQueue<UpperRecordProducer> getout //
         /* */, AtomicReference<SimpleStatus> status //
         /* */)
     {

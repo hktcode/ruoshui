@@ -4,7 +4,7 @@
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,7 @@ public class UpcsmFetchRecordSnapshotExecThrows implements UpcsmFetchRecordSnaps
     private static final Logger logger = LoggerFactory.getLogger(UpcsmFetchRecordSnapshotExecThrows.class);
 
     @Override
-    public UpperConsumerRecord toRecord(UpcsmActionRun action, UpcsmThreadSnapshot thread)
+    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmThreadSnapshot thread)
     {
         if (action == null) {
             throw new ArgumentNullException("action");

@@ -4,7 +4,7 @@
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,8 +16,8 @@ public class UpcsmThreadSnapshotSelectData extends UpcsmThreadSnapshot
         = LoggerFactory.getLogger(UpcsmThreadSnapshotSelectData.class);
 
     public static UpcsmThreadSnapshotSelectData of
-        /* */( UpcsmThreadSnapshot thread //
-        /* */, UpperConsumerRecord record //
+        /* */(UpcsmThreadSnapshot thread //
+        /* */, UpperRecordConsumer record //
         /* */) //
     {
         if (thread == null) {
@@ -29,11 +29,11 @@ public class UpcsmThreadSnapshotSelectData extends UpcsmThreadSnapshot
         return new UpcsmThreadSnapshotSelectData(thread, record);
     }
 
-    private final UpperConsumerRecord record;
+    private final UpperRecordConsumer record;
 
     private UpcsmThreadSnapshotSelectData
-        /* */( UpcsmThreadSnapshot thread //
-        /* */, UpperConsumerRecord record //
+        /* */(UpcsmThreadSnapshot thread //
+        /* */, UpperRecordConsumer record //
         /* */) //
     {
         super(thread);
@@ -41,7 +41,7 @@ public class UpcsmThreadSnapshotSelectData extends UpcsmThreadSnapshot
     }
 
     @Override
-    public UpperConsumerRecord poll(long timeout, UpcsmActionRun action)
+    public UpperRecordConsumer poll(long timeout, UpcsmActionRun action)
         throws InterruptedException
     {
         if (action == null) {
@@ -51,7 +51,7 @@ public class UpcsmThreadSnapshotSelectData extends UpcsmThreadSnapshot
         if (   (r instanceof UpcsmFetchRecordSnapshotLogicalMsg)
             || (r instanceof UpcsmFetchRecordSnapshotExecFinish)
             || (r instanceof UpcsmFetchRecordSnapshotExecThrows)) {
-            UpperConsumerRecord result = r.toRecord(action, this);
+            UpperRecordConsumer result = r.toRecord(action, this);
             return action.fetchThread == mlxact ? this.record : result;
         }
         else if (thread.isAlive()) {

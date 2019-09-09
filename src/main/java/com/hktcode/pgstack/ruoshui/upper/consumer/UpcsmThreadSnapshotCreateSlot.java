@@ -4,7 +4,7 @@
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +28,7 @@ public class UpcsmThreadSnapshotCreateSlot extends UpcsmThreadSnapshot
     private static final Logger logger = LoggerFactory.getLogger(UpcsmThreadSnapshotCreateSlot.class);
 
     @Override
-    public UpperConsumerRecord poll(long timeout, UpcsmActionRun action)
+    public UpperRecordConsumer poll(long timeout, UpcsmActionRun action)
         throws InterruptedException
     {
         UpcsmFetchRecordSnapshot record = this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);

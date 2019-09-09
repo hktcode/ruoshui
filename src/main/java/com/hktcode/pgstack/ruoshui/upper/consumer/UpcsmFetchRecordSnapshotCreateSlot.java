@@ -5,7 +5,7 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 
 public class UpcsmFetchRecordSnapshotCreateSlot implements UpcsmFetchRecordSnapshot
 {
@@ -25,7 +25,7 @@ public class UpcsmFetchRecordSnapshotCreateSlot implements UpcsmFetchRecordSnaps
     }
 
     @Override
-    public UpperConsumerRecord toRecord(UpcsmActionRun action, UpcsmThreadSnapshot thread)
+    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmThreadSnapshot thread)
     {
         if (action == null) {
             throw new ArgumentNullException("action");

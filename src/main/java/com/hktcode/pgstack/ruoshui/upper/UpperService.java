@@ -1,13 +1,12 @@
 /*
  * Copyright (c) 2019, Huang Ketian.
  */
-package com.hktcode.pgstack.ruoshui.upper.service;
+package com.hktcode.pgstack.ruoshui.upper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.http.ResponseEntity;
 
 import javax.script.ScriptException;
-import java.util.concurrent.ExecutionException;
 
 public interface UpperService
 {
@@ -17,7 +16,7 @@ public interface UpperService
 
     ResponseEntity pst(JsonNode json) throws InterruptedException, ScriptException;
 
-    WorkingService putService();
+    UpperServiceWorking putService();
 
-    WaitingService delService();
+    UpperServiceWaiting delService();
 }

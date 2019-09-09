@@ -3,9 +3,9 @@
  */
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 
 public interface UpcsmFetchRecordSnapshot extends UpcsmFetchRecord
 {
-    UpperConsumerRecord toRecord(UpcsmActionRun action, UpcsmThreadSnapshot thread);
+    UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmThreadSnapshot thread);
 }

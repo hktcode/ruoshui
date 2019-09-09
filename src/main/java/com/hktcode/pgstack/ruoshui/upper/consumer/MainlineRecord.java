@@ -4,9 +4,9 @@
 
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 
 public interface MainlineRecord
 {
-    UpperConsumerRecord toUpcsmRecord();
+    UpperRecordConsumer toUpcsmRecord();
 }

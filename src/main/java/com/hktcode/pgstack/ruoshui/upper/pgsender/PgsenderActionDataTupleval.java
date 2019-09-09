@@ -15,7 +15,6 @@ import com.hktcode.pgjdbc.LogicalCreateTupleMsg;
 import com.hktcode.pgjdbc.PgReplAttribute;
 import com.hktcode.pgjdbc.PgReplComponent;
 import com.hktcode.pgjdbc.PgReplRelation;
-import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgsqlRelationMetric;
 import org.postgresql.jdbc.PgConnection;
 
 import java.sql.PreparedStatement;

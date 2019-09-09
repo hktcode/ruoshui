@@ -5,7 +5,7 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.SnapshotConfig;
 import org.postgresql.replication.LogSequenceNumber;
 
@@ -40,7 +40,7 @@ public abstract class UpcsmThread
         this.status = status;
     }
 
-    public abstract UpperConsumerRecord poll(long timeout, UpcsmActionRun action) //
+    public abstract UpperRecordConsumer poll(long timeout, UpcsmActionRun action) //
         throws InterruptedException;
 
     public abstract UpcsmReportFetchThread put() throws InterruptedException;

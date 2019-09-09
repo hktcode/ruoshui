@@ -13,7 +13,7 @@ import com.hktcode.bgsimple.future.SimpleFuturePut;
 import com.hktcode.bgsimple.method.*;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.*;
 import org.postgresql.replication.LogSequenceNumber;
 
@@ -48,7 +48,7 @@ public class UpcsmThreadMainline extends UpcsmThread
     }
 
     @Override
-    public UpperConsumerRecord poll(long timeout, UpcsmActionRun action) //
+    public UpperRecordConsumer poll(long timeout, UpcsmActionRun action) //
         throws InterruptedException
     {
         if (action == null) {

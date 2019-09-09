@@ -3,13 +3,9 @@
  */
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
-import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
-
-import java.util.concurrent.TransferQueue;
-import java.util.concurrent.atomic.AtomicReference;
+import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 
 public class UpcsmFetchRecordSnapshotLogicalMsg implements UpcsmFetchRecordSnapshot
 {
@@ -32,7 +28,7 @@ public class UpcsmFetchRecordSnapshotLogicalMsg implements UpcsmFetchRecordSnaps
     }
 
     @Override
-    public UpperConsumerRecord toRecord(UpcsmActionRun action, UpcsmThreadSnapshot thread)
+    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmThreadSnapshot thread)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -40,6 +36,6 @@ public class UpcsmFetchRecordSnapshotLogicalMsg implements UpcsmFetchRecordSnaps
         if (thread == null) {
             throw new ArgumentNullException("thread");
         }
-        return UpperConsumerRecord.of(lsn, msg);
+        return UpperRecordConsumer.of(lsn, msg);
     }
 }

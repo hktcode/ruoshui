@@ -6,7 +6,7 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 
 public class MainlineRecordNormal implements MainlineRecord
 {
@@ -29,8 +29,8 @@ public class MainlineRecordNormal implements MainlineRecord
     }
 
     @Override
-    public UpperConsumerRecord toUpcsmRecord()
+    public UpperRecordConsumer toUpcsmRecord()
     {
-        return UpperConsumerRecord.of(this.lsn, this.msg);
+        return UpperRecordConsumer.of(this.lsn, this.msg);
     }
 }

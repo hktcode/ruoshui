@@ -1,13 +1,13 @@
 /*
  * Copyright (c) 2019, Huang Ketian.
  */
-package com.hktcode.pgstack.ruoshui.upper.service;
+package com.hktcode.pgstack.ruoshui.upper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.springframework.http.ResponseEntity;
 
-public interface WaitingService extends UpperService
+public interface UpperServiceWaiting extends UpperService
 {
     @Override
     default ResponseEntity del()
@@ -31,7 +31,7 @@ public interface WaitingService extends UpperService
     }
 
     @Override
-    default WaitingService delService()
+    default UpperServiceWaiting delService()
     {
         return this;
     }

@@ -9,7 +9,6 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.PgReplAttribute;
 import com.hktcode.pgjdbc.PgReplRelation;
 import com.hktcode.pgjdbc.PgReplRelationMetadata;
-import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgsqlRelationMetric;
 
 import java.util.ArrayList;
 import java.util.List;

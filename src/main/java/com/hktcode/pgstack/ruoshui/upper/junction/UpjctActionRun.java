@@ -16,8 +16,8 @@ import com.hktcode.pgjdbc.LogicalTxactBeginsMsg;
 import com.hktcode.pgstack.ruoshui.pgsql.LogicalTxactContext;
 import com.hktcode.pgstack.ruoshui.pgsql.PgsqlKey;
 import com.hktcode.pgstack.ruoshui.pgsql.PgsqlVal;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.UpperProducerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
+import com.hktcode.pgstack.ruoshui.upper.UpperRecordProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +35,8 @@ class UpjctActionRun extends SimpleWorker<UpjctAction> implements UpjctAction
 
     public static UpjctActionRun of //
         /* */( TripleJunctionConfig config
-        /* */, BlockingQueue<UpperConsumerRecord> comein
-        /* */, BlockingQueue<UpperProducerRecord> getout
+        /* */, BlockingQueue<UpperRecordConsumer> comein
+        /* */, BlockingQueue<UpperRecordProducer> getout
         /* */, AtomicReference<SimpleStatus> status
         /* */)
     {
@@ -57,9 +57,9 @@ class UpjctActionRun extends SimpleWorker<UpjctAction> implements UpjctAction
 
     public final TripleJunctionConfig config;
 
-    private final BlockingQueue<UpperConsumerRecord> comein;
+    private final BlockingQueue<UpperRecordConsumer> comein;
 
-    private final BlockingQueue<UpperProducerRecord> getout;
+    private final BlockingQueue<UpperRecordProducer> getout;
 
     public final long actionStart;
 
@@ -88,8 +88,8 @@ class UpjctActionRun extends SimpleWorker<UpjctAction> implements UpjctAction
 
     private UpjctActionRun //
         /* */( TripleJunctionConfig config
-        /* */, BlockingQueue<UpperConsumerRecord> comein
-        /* */, BlockingQueue<UpperProducerRecord> getout
+        /* */, BlockingQueue<UpperRecordConsumer> comein
+        /* */, BlockingQueue<UpperRecordProducer> getout
         /* */, AtomicReference<SimpleStatus> status
         /* */)
     {
@@ -101,12 +101,12 @@ class UpjctActionRun extends SimpleWorker<UpjctAction> implements UpjctAction
         this.txidContext = LogicalTxactContext.of();
     }
 
-    protected UpperConsumerRecord poll() throws InterruptedException
+    protected UpperRecordConsumer poll() throws InterruptedException
     {
         long waitTimeout = config.waitTimeout;
         long logDuration = config.logDuration;
         long startsMillis = System.currentTimeMillis();
-        UpperConsumerRecord record //
+        UpperRecordConsumer record //
             = this.comein.poll(waitTimeout, TimeUnit.MILLISECONDS);
         long finishMillis = System.currentTimeMillis();
         this.fetchMillis += (finishMillis - startsMillis);
@@ -129,10 +129,10 @@ class UpjctActionRun extends SimpleWorker<UpjctAction> implements UpjctAction
 
     public UpjctAction next() throws InterruptedException, ScriptException
     {
-        UpperConsumerRecord r = null;
-        UpperProducerRecord o = null;
-        Iterator<UpperProducerRecord> t //
-            = ImmutableList.<UpperProducerRecord>of().iterator();
+        UpperRecordConsumer r = null;
+        UpperRecordProducer o = null;
+        Iterator<UpperRecordProducer> t //
+            = ImmutableList.<UpperRecordProducer>of().iterator();
         while (super.newStatus(this) instanceof SimpleStatusInnerRun) {
             if (o != null) {
                 o = this.push(o);
@@ -151,7 +151,7 @@ class UpjctActionRun extends SimpleWorker<UpjctAction> implements UpjctAction
         return UpjctActionEnd.of(this);
     }
 
-    private UpperProducerRecord push(UpperProducerRecord record) //
+    private UpperRecordProducer push(UpperRecordProducer record) //
         throws InterruptedException
     {
         long waitTimeout = config.waitTimeout;
@@ -178,7 +178,7 @@ class UpjctActionRun extends SimpleWorker<UpjctAction> implements UpjctAction
         }
     }
 
-    private List<UpperProducerRecord> convert(UpperConsumerRecord record)
+    private List<UpperRecordProducer> convert(UpperRecordConsumer record)
     {
         long lsn = record.lsn;
         LogicalMsg msg = record.msg;
@@ -204,10 +204,10 @@ class UpjctActionRun extends SimpleWorker<UpjctAction> implements UpjctAction
         }
 
         ImmutableList<PgsqlVal> vallist = PgsqlVal.of(lsn, msg, txidContext);
-        List<UpperProducerRecord> result = new ArrayList<>();
+        List<UpperRecordProducer> result = new ArrayList<>();
         for (PgsqlVal val : vallist) {
             PgsqlKey key = PgsqlKey.of(this.curLsnofcmt, this.curSequence++);
-            UpperProducerRecord d = UpperProducerRecord.of(key, val);
+            UpperRecordProducer d = UpperRecordProducer.of(key, val);
             result.add(d);
         }
         return ImmutableList.copyOf(result);

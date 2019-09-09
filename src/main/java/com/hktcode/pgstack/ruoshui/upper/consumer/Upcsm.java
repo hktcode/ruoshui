@@ -10,7 +10,7 @@ import com.hktcode.bgsimple.method.SimpleMethodDel;
 import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
+import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.MainlineConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +25,9 @@ public class Upcsm implements Runnable
     private static final Logger logger = LoggerFactory.getLogger(Upcsm.class);
 
     public static Upcsm of //
-        /* */( MainlineConfig config //
+        /* */(MainlineConfig config //
         /* */, AtomicReference<SimpleStatus> status //
-        /* */, BlockingQueue<UpperConsumerRecord> comein //
+        /* */, BlockingQueue<UpperRecordConsumer> comein //
         /* */)
     {
         if (config == null) {
@@ -44,13 +44,13 @@ public class Upcsm implements Runnable
 
     private final MainlineConfig config;
 
-    private final BlockingQueue<UpperConsumerRecord> comein;
+    private final BlockingQueue<UpperRecordConsumer> comein;
 
     private final AtomicReference<SimpleStatus> status;
 
     private Upcsm //
-        /* */( MainlineConfig config //
-        /* */, BlockingQueue<UpperConsumerRecord> comein //
+        /* */(MainlineConfig config //
+        /* */, BlockingQueue<UpperRecordConsumer> comein //
         /* */, AtomicReference<SimpleStatus> status //
         /* */)
     {
