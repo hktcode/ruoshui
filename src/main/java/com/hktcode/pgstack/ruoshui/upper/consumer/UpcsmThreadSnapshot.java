@@ -15,7 +15,7 @@ import com.hktcode.bgsimple.status.SimpleStatusOuterDel;
 import com.hktcode.bgsimple.status.SimpleStatusOuterGet;
 import com.hktcode.bgsimple.status.SimpleStatusOuterPst;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderResult;
-import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotConfig;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.SnapshotConfig;
 import org.postgresql.replication.LogSequenceNumber;
 
 import java.util.concurrent.Phaser;

@@ -6,7 +6,6 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotConfig;
 import org.postgresql.replication.LogSequenceNumber;
 
 public interface PgsenderAction<R, C extends PgsenderConfig<R, C>> //

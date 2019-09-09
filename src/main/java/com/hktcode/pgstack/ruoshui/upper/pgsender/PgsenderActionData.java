@@ -8,8 +8,6 @@ import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.tqueue.TqueueAction;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.lang.exception.NeverHappenAssertionError;
-import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
-import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
 import org.postgresql.jdbc.PgConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

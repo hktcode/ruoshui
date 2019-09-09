@@ -5,7 +5,6 @@
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotReport;
 
 public class PgsenderReportThrowErr
 {

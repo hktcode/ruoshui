@@ -4,8 +4,6 @@
 
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
-import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotReport;
-
 public class PgsenderReportComplete
 {
     public final long actionStart;

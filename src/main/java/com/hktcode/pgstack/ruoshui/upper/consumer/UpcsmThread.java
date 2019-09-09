@@ -6,11 +6,9 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperConsumerRecord;
-import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotConfig;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.SnapshotConfig;
 import org.postgresql.replication.LogSequenceNumber;
 
-import javax.script.ScriptException;
-import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class UpcsmThread

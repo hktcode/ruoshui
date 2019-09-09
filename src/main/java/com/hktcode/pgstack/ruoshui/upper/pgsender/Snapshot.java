@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2019, Huang Ketian.
  */
-package com.hktcode.pgstack.ruoshui.upper.snapshot;
+package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.status.SimpleStatus;
@@ -10,9 +10,6 @@ import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshot;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshotExecThrows;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderAction;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderActionData;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderActionDataRelaList;
 import org.postgresql.jdbc.PgConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

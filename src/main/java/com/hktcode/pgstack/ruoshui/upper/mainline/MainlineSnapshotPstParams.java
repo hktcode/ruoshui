@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderAction;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderResult;
-import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotConfig;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.SnapshotConfig;
 
 public class MainlineSnapshotPstParams implements SimpleMethodPstParams<PgsenderAction<MainlineRecord, MainlineConfig>>
 {

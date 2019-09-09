@@ -12,7 +12,7 @@ import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecordNormal;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderAction;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderActionTerminateEnd;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderResultRun;
-import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotConfig;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.SnapshotConfig;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
 import org.postgresql.replication.PGReplicationStream;

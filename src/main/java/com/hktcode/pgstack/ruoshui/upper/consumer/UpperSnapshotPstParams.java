@@ -15,7 +15,7 @@ import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilterDefault;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilterScript;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
 import com.hktcode.pgstack.ruoshui.upper.mainline.PgLockMode;
-import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotConfig;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.SnapshotConfig;
 
 import javax.script.ScriptException;
 import java.util.HashMap;

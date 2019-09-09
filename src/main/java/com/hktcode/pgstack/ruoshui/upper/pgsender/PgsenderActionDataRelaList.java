@@ -110,7 +110,7 @@ public class PgsenderActionDataRelaList<R, C extends PgsenderConfig<R, C>> //
     public final List<PgsqlRelationMetric> relationLst = new ArrayList<>();
 
     @Override
-    public PgsenderAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
+    public PgsenderAction<R, C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws SQLException, ScriptException, InterruptedException
     {
         if (exesvc == null) {

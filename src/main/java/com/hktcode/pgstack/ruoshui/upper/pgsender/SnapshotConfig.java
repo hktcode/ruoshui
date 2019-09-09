@@ -2,7 +2,7 @@
  * Copyright (c) 2019, Huang Ketian.
  */
 
-package com.hktcode.pgstack.ruoshui.upper.snapshot;
+package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.google.common.collect.ImmutableMap;
 import com.hktcode.lang.exception.ArgumentNullException;
@@ -15,8 +15,6 @@ import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshot;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshotCreateSlot;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshotLogicalMsg;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshotPauseWorld;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.DeputeCreateReplSlotSnapshot;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilter;
 import com.hktcode.pgstack.ruoshui.upper.mainline.PgLockMode;
 

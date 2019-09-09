@@ -4,12 +4,9 @@
 
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.junction.UpjctResult;
-import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotConfig;
 import org.postgresql.replication.LogSequenceNumber;
 
 public interface UpcsmAction extends BgWorker<UpcsmAction>

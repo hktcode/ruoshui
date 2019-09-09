@@ -64,7 +64,7 @@ public class PgsenderActionDataSrFinish<R, C extends PgsenderConfig<R, C>> //
     }
 
     @Override
-    public PgsenderAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
+    public PgsenderAction<R, C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws InterruptedException, ScriptException
     {
         long lsn = this.replSlot.createTuple.consistentPoint;

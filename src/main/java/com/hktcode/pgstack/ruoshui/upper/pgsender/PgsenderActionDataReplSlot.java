@@ -9,7 +9,6 @@ import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgsqlRelationMetric;
-import org.postgresql.core.Utils;
 import org.postgresql.jdbc.PgConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +53,7 @@ class PgsenderActionDataReplSlot<R, C extends PgsenderConfig<R, C>> //
     }
 
     @Override
-    public PgsenderAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl)
+    public PgsenderAction<R, C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl)
         throws SQLException, InterruptedException
     {
         if (exesvc == null) {
@@ -104,15 +103,6 @@ class PgsenderActionDataReplSlot<R, C extends PgsenderConfig<R, C>> //
             }
         }
         return PgsenderActionTerminateEnd.of(this);
-    }
-
-    private String buildCreateSlotStatement() throws SQLException
-    {
-        String slotnameInf = config.logicalRepl.slotName;
-        StringBuilder sb = new StringBuilder("CREATE_REPLICATION_SLOT ");
-        Utils.escapeIdentifier(sb, slotnameInf);
-        sb.append(" LOGICAL pgoutput EXPORT_SNAPSHOT");
-        return sb.toString();
     }
 
     @Override

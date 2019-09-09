@@ -87,9 +87,8 @@ class PgsenderActionDataSrBegins<R, C extends PgsenderConfig<R, C>> //
         this.curRelation = action.relIterator.next();
     }
 
-
     @Override
-    public PgsenderAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
+    public PgsenderAction<R, C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws InterruptedException, ScriptException
     {
         PgReplRelation r = this.curRelation.relationInfo;
