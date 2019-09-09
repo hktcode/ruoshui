@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
@@ -76,8 +77,7 @@ class PgsenderActionDataReplSlot<R, C extends PgsenderConfig<R, C>> //
                     pauseWorldRecord = this.send(pauseWorldRecord);
                 }
                 else if (tupleFuture == null) {
-                    String sqlscript = this.buildCreateSlotStatement();
-                    MainlineDeputeCreateReplSlot callable = MainlineDeputeCreateReplSlot.of(s, sqlscript);
+                    Callable<PgReplSlotTuple> callable = this.config.newCreateSlot(s);
                     starts = System.currentTimeMillis();
                     tupleFuture = exesvc.submit(callable);
                 }

@@ -20,10 +20,8 @@ import com.hktcode.pgstack.ruoshui.upper.mainline.PgLockMode;
 import org.postgresql.jdbc.PgConnection;
 
 import javax.script.ScriptException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.concurrent.Callable;
 
 public abstract class PgsenderConfig<R, C extends PgsenderConfig<R, C>> extends TqueueConfig
 {
@@ -256,6 +254,8 @@ public abstract class PgsenderConfig<R, C extends PgsenderConfig<R, C>> extends 
     }
 
     public abstract R createMessage(long lsn, LogicalMsg msg);
+
+    public abstract Callable<PgReplSlotTuple> newCreateSlot(Statement statement);
 
     public R pauseWorldMsg()
     {

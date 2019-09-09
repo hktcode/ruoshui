@@ -11,11 +11,13 @@ import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgstack.ruoshui.pgsql.LogicalReplConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplRelationName;
+import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilter;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilterDefault;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilterScript;
 import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
 import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecordNormal;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.MainlineDeputeCreateReplSlot;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderAction;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderActionDataSsFinish;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderConfig;
@@ -24,9 +26,11 @@ import org.postgresql.jdbc.PgConnection;
 import javax.script.ScriptException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import static com.hktcode.bgsimple.triple.TripleConfig.DEFALUT_WAIT_TIMEOUT;
 import static com.hktcode.bgsimple.triple.TripleConfig.DEFAULT_LOG_DURATION;
@@ -178,5 +182,14 @@ public class MainlineConfig extends PgsenderConfig<MainlineRecord, MainlineConfi
             throw new ArgumentNullException("msg");
         }
         return MainlineRecordNormal.of(lsn, msg);
+    }
+
+    @Override
+    public Callable<PgReplSlotTuple> newCreateSlot(Statement statement)
+    {
+        if (statement == null) {
+            throw new ArgumentNullException("statement");
+        }
+        return MainlineDeputeCreateReplSlot.of(statement, logicalRepl.slotName);
     }
 }

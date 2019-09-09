@@ -8,12 +8,14 @@ import com.google.common.collect.ImmutableList;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderResult;
-import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotResult;
+import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotConfig;
 
 public class UpcsmReportFetchThread
 {
-    public static UpcsmReportFetchThread //
-    of(PgsenderResult<MainlineRecord, MainlineConfig> mainline, ImmutableList<SnapshotResult> snapshot)
+    public static UpcsmReportFetchThread of //
+        /* */( PgsenderResult<MainlineRecord, MainlineConfig> mainline //
+        /* */, ImmutableList<PgsenderResult<UpcsmFetchRecordSnapshot, SnapshotConfig>> snapshot //
+        /* */)
     {
         if (mainline == null) {
             throw new ArgumentNullException("mainline");
@@ -26,10 +28,12 @@ public class UpcsmReportFetchThread
 
     public final PgsenderResult<MainlineRecord, MainlineConfig> mainline;
 
-    public final ImmutableList<SnapshotResult> snapshot;
+    public final ImmutableList<PgsenderResult<UpcsmFetchRecordSnapshot, SnapshotConfig>> snapshot;
 
     protected UpcsmReportFetchThread //
-        (PgsenderResult<MainlineRecord, MainlineConfig> mainline, ImmutableList<SnapshotResult> snapshot)
+        /* */( PgsenderResult<MainlineRecord, MainlineConfig> mainline
+        /* */, ImmutableList<PgsenderResult<UpcsmFetchRecordSnapshot, SnapshotConfig>> snapshot
+        /* */)
     {
         this.mainline = mainline;
         this.snapshot = snapshot;

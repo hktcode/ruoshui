@@ -18,7 +18,6 @@ import com.hktcode.pgstack.ruoshui.upper.mainline.*;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderResult;
 import com.hktcode.pgstack.ruoshui.upper.snapshot.Snapshot;
 import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotConfig;
-import com.hktcode.pgstack.ruoshui.upper.snapshot.SnapshotResult;
 import org.postgresql.replication.LogSequenceNumber;
 
 import java.util.ArrayList;
@@ -31,7 +30,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class UpcsmThreadMainline extends UpcsmThread
 {
-    public final List<SnapshotResult> sslist = new ArrayList<>();
+    public final List<PgsenderResult<UpcsmFetchRecordSnapshot, SnapshotConfig>> sslist //
+        = new ArrayList<>();
 
     public final TransferQueue<MainlineRecord> tqueue;
 
@@ -88,7 +88,7 @@ public class UpcsmThreadMainline extends UpcsmThread
         thread.start();
         PgsenderResult<MainlineRecord, MainlineConfig> mainline //
             = (PgsenderResult<MainlineRecord, MainlineConfig>)future.get().get(0);
-        ImmutableList<SnapshotResult> snapshot = ImmutableList.copyOf(sslist);
+        ImmutableList<PgsenderResult<UpcsmFetchRecordSnapshot, SnapshotConfig>> snapshot = ImmutableList.copyOf(sslist);
         return UpcsmReportFetchThread.of(mainline, snapshot);
     }
 
@@ -104,7 +104,7 @@ public class UpcsmThreadMainline extends UpcsmThread
         SimpleFutureGet future = holder.get(get);
         PgsenderResult<MainlineRecord, MainlineConfig> mainline //
             = (PgsenderResult<MainlineRecord, MainlineConfig>)future.get().get(0);
-        ImmutableList<SnapshotResult> snapshot = ImmutableList.copyOf(sslist);
+        ImmutableList<PgsenderResult<UpcsmFetchRecordSnapshot, SnapshotConfig>> snapshot = ImmutableList.copyOf(sslist);
         return UpcsmReportFetchThread.of(mainline, snapshot);
     }
 
@@ -120,7 +120,8 @@ public class UpcsmThreadMainline extends UpcsmThread
         SimpleFutureDel future = holder.del(del);
         PgsenderResult<MainlineRecord, MainlineConfig> mainline
             = (PgsenderResult<MainlineRecord, MainlineConfig>)future.get().get(0);
-        ImmutableList<SnapshotResult> snapshot = ImmutableList.copyOf(sslist);
+        ImmutableList<PgsenderResult<UpcsmFetchRecordSnapshot, SnapshotConfig>> snapshot
+            = ImmutableList.copyOf(sslist);
         return UpcsmReportFetchThread.of(mainline, snapshot);
     }
 
@@ -137,7 +138,7 @@ public class UpcsmThreadMainline extends UpcsmThread
         SimpleFuturePst future = holder.pst(pst);
         PgsenderResult<MainlineRecord, MainlineConfig> mainline //
             = (PgsenderResult<MainlineRecord, MainlineConfig>)future.get().get(0);
-        ImmutableList<SnapshotResult> snapshot = ImmutableList.copyOf(sslist);
+        ImmutableList<PgsenderResult<UpcsmFetchRecordSnapshot, SnapshotConfig>> snapshot = ImmutableList.copyOf(sslist);
         return UpcsmReportFetchThread.of(mainline, snapshot);
     }
 

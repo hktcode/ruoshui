@@ -2,7 +2,7 @@
  * Copyright (c) 2019, Huang Ketian.
  */
 
-package com.hktcode.pgstack.ruoshui.upper.snapshot;
+package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
@@ -18,11 +18,11 @@ import java.sql.Statement;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
-public class SnapshotDeputeCreateReplSlot implements Callable<PgReplSlotTuple>
+public class DeputeCreateReplSlotSnapshot implements Callable<PgReplSlotTuple>
 {
-    private static final Logger logger = LoggerFactory.getLogger(SnapshotDeputeCreateReplSlot.class);
+    private static final Logger logger = LoggerFactory.getLogger(DeputeCreateReplSlotSnapshot.class);
 
-    public static SnapshotDeputeCreateReplSlot of(Statement statement, String slotInfor)
+    public static DeputeCreateReplSlotSnapshot of(Statement statement, String slotInfor)
     {
         if (statement == null) {
             throw new ArgumentNullException("statement");
@@ -30,14 +30,14 @@ public class SnapshotDeputeCreateReplSlot implements Callable<PgReplSlotTuple>
         if (slotInfor == null) {
             throw new ArgumentNullException("slotInfor");
         }
-        return new SnapshotDeputeCreateReplSlot(statement, slotInfor);
+        return new DeputeCreateReplSlotSnapshot(statement, slotInfor);
     }
 
     private final Statement statement;
 
     private final String slotInfor;
 
-    private SnapshotDeputeCreateReplSlot(Statement statement, String slotInfor)
+    private DeputeCreateReplSlotSnapshot(Statement statement, String slotInfor)
     {
         this.statement = statement;
         this.slotInfor = slotInfor;

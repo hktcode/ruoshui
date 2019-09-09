@@ -6,6 +6,7 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
+import org.postgresql.core.Utils;
 import org.postgresql.replication.LogSequenceNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,18 +34,27 @@ public class MainlineDeputeCreateReplSlot implements Callable<PgReplSlotTuple>
 
     private final Statement statement;
 
-    private final String sqlscript;
+    private final String slotname;
 
-    private MainlineDeputeCreateReplSlot(Statement statement, String sqlscript)
+    private MainlineDeputeCreateReplSlot(Statement statement, String slotname)
     {
         this.statement = statement;
-        this.sqlscript = sqlscript;
+        this.slotname = slotname;
+    }
+
+    private String buildCreateSlotStatement() throws SQLException
+    {
+        StringBuilder sb = new StringBuilder("CREATE_REPLICATION_SLOT ");
+        Utils.escapeIdentifier(sb, slotname);
+        sb.append(" LOGICAL pgoutput EXPORT_SNAPSHOT");
+        return sb.toString();
     }
 
     @Override
     public PgReplSlotTuple call() throws SQLException
     {
         long starts = System.currentTimeMillis();
+        String sqlscript = this.buildCreateSlotStatement();
         try (ResultSet rs = statement.executeQuery(sqlscript)) {
             long finish = System.currentTimeMillis();
             logger.info("create slot execute query: duration={}", finish - starts);

@@ -11,6 +11,7 @@ import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgsqlRelationMetric;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshotCreateSlot;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshotPauseWorld;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.DeputeCreateReplSlotSnapshot;
 import org.postgresql.jdbc.PgConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +79,7 @@ class SnapshotActionDataReplSlot extends SnapshotActionData
                 }
                 else if (tupleFuture == null) {
                     String slotname = this.config.logicalRepl.slotName;
-                    SnapshotDeputeCreateReplSlot callable = SnapshotDeputeCreateReplSlot.of(s, slotname);
+                    DeputeCreateReplSlotSnapshot callable = DeputeCreateReplSlotSnapshot.of(s, slotname);
                     starts = System.currentTimeMillis();
                     tupleFuture = exesvc.submit(callable);
                 }

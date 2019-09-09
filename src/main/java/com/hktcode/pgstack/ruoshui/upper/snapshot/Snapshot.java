@@ -10,8 +10,10 @@ import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshot;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshotExecThrows;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderAction;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderActionData;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderActionDataRelaList;
 import org.postgresql.jdbc.PgConnection;
-import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +83,8 @@ public class Snapshot implements Runnable
 
     private void runWithInterrupted() throws InterruptedException, ScriptException
     {
-        SnapshotAction action = SnapshotActionDataRelaList.of(config, status, tqueue, System.currentTimeMillis());
+        PgsenderAction<UpcsmFetchRecordSnapshot, SnapshotConfig> action
+            = PgsenderActionDataRelaList.of(config, status, tqueue);
         try (Connection repl = config.srcProperty.replicaConnection()) {
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
             ExecutorService exesvc = Executors.newSingleThreadExecutor();
@@ -90,9 +93,10 @@ public class Snapshot implements Runnable
                 pgdata.setAutoCommit(false);
                 pgdata.setTransactionIsolation(TRANSACTION_REPEATABLE_READ);
                 do {
-                    SnapshotActionData dataAction = (SnapshotActionData)action;
+                    PgsenderActionData<UpcsmFetchRecordSnapshot, SnapshotConfig> dataAction //
+                        = (PgsenderActionData<UpcsmFetchRecordSnapshot, SnapshotConfig>)action;
                     action = dataAction.next(exesvc, pgdata, pgrepl);
-                } while (action instanceof SnapshotActionData);
+                } while (action instanceof PgsenderActionData);
             }
             finally {
                 exesvc.shutdown();
