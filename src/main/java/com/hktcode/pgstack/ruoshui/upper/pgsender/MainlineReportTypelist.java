@@ -6,15 +6,14 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class PgsenderReportSizeDiff
+public class MainlineReportTypelist
 {
-    static <R, C extends PgsenderConfig<R, C>>  //
-    PgsenderReportSizeDiff of(PgsenderActionDataSizeDiff<R, C> action, long finish)
+    static MainlineReportTypelist of(MainlineActionDataTypelist action, long finish)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderReportSizeDiff(action, finish);
+        return new MainlineReportTypelist(action, finish);
     }
 
     public final long totalMillis;
@@ -25,15 +24,20 @@ public class PgsenderReportSizeDiff
 
     public final long rsnextCount;
 
-    public final long newRelalist;
+    public final long offerCounts;
 
-    private <R, C extends PgsenderConfig<R, C>>
-    PgsenderReportSizeDiff(PgsenderActionDataSizeDiff<R, C> action, long finish)
+    public final long offerMillis;
+
+    public final long recordCount;
+
+    private MainlineReportTypelist(MainlineActionDataTypelist action, long finish)
     {
         this.totalMillis = finish - action.actionStart;
         this.rsgetCounts = action.rsgetCounts;
         this.rsgetMillis = action.rsgetMillis;
         this.rsnextCount = action.rsnextCount;
-        this.newRelalist = action.rsnextCount;
+        this.offerCounts = action.offerCounts;
+        this.offerMillis = action.offerMillis;
+        this.recordCount = action.recordCount;
     }
 }

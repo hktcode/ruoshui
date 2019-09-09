@@ -6,7 +6,7 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.google.common.collect.ImmutableList;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.mainline.MainlineConfig;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.MainlineConfig;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderResult;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.SnapshotConfig;
 

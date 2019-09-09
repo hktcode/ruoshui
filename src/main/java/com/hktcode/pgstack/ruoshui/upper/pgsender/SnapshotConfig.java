@@ -16,7 +16,6 @@ import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshotCreate
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshotLogicalMsg;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshotPauseWorld;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgSnapshotFilter;
-import com.hktcode.pgstack.ruoshui.upper.mainline.PgLockMode;
 
 import java.sql.Statement;
 import java.util.concurrent.Callable;
