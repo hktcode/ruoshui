@@ -46,7 +46,7 @@ class PgsenderActionDataRelaLock<R, C extends PgsenderConfig<R, C>> //
     }
 
     @Override
-    public PgsenderAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
+    public PgsenderAction<R, C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws SQLException, InterruptedException
     {
         if (exesvc == null) {

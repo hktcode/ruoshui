@@ -12,7 +12,6 @@ import com.hktcode.pgjdbc.PgReplRelation;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgsqlRelationMetric;
 import org.postgresql.jdbc.PgConnection;
 
-import javax.script.ScriptException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -56,7 +55,7 @@ class PgsenderActionDataSsBegins<R, C extends PgsenderConfig<R, C>> //
 
     @Override
     public PgsenderAction<R, C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
-        throws InterruptedException, ScriptException
+        throws InterruptedException
     {
         long lsn = this.replSlot.createTuple.consistentPoint;
         List<PgReplRelation> list = new ArrayList<>(this.relationLst.size());

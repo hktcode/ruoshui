@@ -12,7 +12,6 @@ import com.hktcode.pgjdbc.PgReplRelation;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgsqlRelationMetric;
 import org.postgresql.jdbc.PgConnection;
 
-import javax.script.ScriptException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -80,7 +79,7 @@ public class PgsenderActionDataSsFinish<R, C extends PgsenderConfig<R, C>> //
 
     @Override
     public PgsenderAction<R, C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl)
-        throws InterruptedException, ScriptException
+        throws InterruptedException
     {
         if (exesvc == null) {
             throw new ArgumentNullException("exesvc");

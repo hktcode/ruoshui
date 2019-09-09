@@ -11,7 +11,6 @@ import com.hktcode.pgjdbc.LogicalEndRelationMsg;
 import com.hktcode.pgstack.ruoshui.pgsql.snapshot.PgsqlRelationMetric;
 import org.postgresql.jdbc.PgConnection;
 
-import javax.script.ScriptException;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 
@@ -65,7 +64,7 @@ public class PgsenderActionDataSrFinish<R, C extends PgsenderConfig<R, C>> //
 
     @Override
     public PgsenderAction<R, C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
-        throws InterruptedException, ScriptException
+        throws InterruptedException
     {
         long lsn = this.replSlot.createTuple.consistentPoint;
         LogicalEndRelationMsg msg //
