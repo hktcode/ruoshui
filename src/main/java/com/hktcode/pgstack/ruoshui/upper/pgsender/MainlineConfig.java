@@ -168,7 +168,7 @@ public class MainlineConfig extends PgsenderConfig<MainlineRecord, MainlineConfi
     public PgsenderAction<MainlineRecord, MainlineConfig> //
     afterSnapshot(PgsenderActionDataSsFinish<MainlineRecord, MainlineConfig> action)
     {
-        return MainlineActionDataTypelistSnapshot.of(action);
+        return PgsenderActionDataTypelistSnapshot.of(action);
     }
 
     @Override
@@ -186,6 +186,6 @@ public class MainlineConfig extends PgsenderConfig<MainlineRecord, MainlineConfi
         if (statement == null) {
             throw new ArgumentNullException("statement");
         }
-        return MainlineDeputeCreateReplSlot.of(statement, logicalRepl.slotName);
+        return DeputeCreateReplSlotMainline.of(statement, logicalRepl.slotName);
     }
 }

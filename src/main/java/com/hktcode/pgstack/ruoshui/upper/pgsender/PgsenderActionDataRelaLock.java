@@ -83,7 +83,7 @@ class PgsenderActionDataRelaLock<R, C extends PgsenderConfig<R, C>> //
                     relation = iter.next();
                     String sql = this.config.lockStatement(relation.relationInfo, pgdata);
                     logger.info("lock relation: sql={}", sql);
-                    Callable<Boolean> callable = MainlineDeputeLockRelation.of(s, sql);
+                    Callable<Boolean> callable = DeputeLockRelationMainline.of(s, sql);
                     starts = System.currentTimeMillis();
                     executeFuture = exesvc.submit(callable);
                 }

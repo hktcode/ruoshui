@@ -124,11 +124,11 @@ public class PgsenderActionDataRelaList<R, C extends PgsenderConfig<R, C>> //
             Boolean next = null;
             // TODO: 其实不需要这个统计.
             long nextstarts = System.currentTimeMillis();
-            MainlineDeputeExecuteQuery q = MainlineDeputeExecuteQuery.of(ps);
+            DeputeExecuteQueryMainline q = DeputeExecuteQueryMainline.of(ps);
             this.statusInfor = "doingtask: executeQuery";
             Future<ResultSet> rsFuture = exesvc.submit(q);
             Future<Boolean> nextFuture = null;
-            MainlineDeputeResultSetNext rsDepute = null;
+            DeputeResultSetNextMainline rsDepute = null;
             RelationBuilder[] builder = new RelationBuilder[] { null };
             while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
                 if (rs == null) {
@@ -140,7 +140,7 @@ public class PgsenderActionDataRelaList<R, C extends PgsenderConfig<R, C>> //
                     this.maxnextTime = duration;
                     nextstarts = System.currentTimeMillis();
                     this.statusInfor = "doingtask: resultSet";
-                    rsDepute = MainlineDeputeResultSetNext.of(rs);
+                    rsDepute = DeputeResultSetNextMainline.of(rs);
                     rs.setFetchDirection(ResultSet.FETCH_FORWARD);
                     rs.setFetchSize(this.config.rsFetchsize);
                     nextFuture = exesvc.submit(rsDepute);

@@ -94,14 +94,14 @@ class PgsenderActionDataTupleval<R, C extends PgsenderConfig<R, C>> //
             R record = null;
             ResultSet rs = null;
             Boolean next = null;
-            Future<ResultSet> rsFuture = exesvc.submit(MainlineDeputeExecuteQuery.of(ps));
+            Future<ResultSet> rsFuture = exesvc.submit(DeputeExecuteQueryMainline.of(ps));
             Future<Boolean> nextFuture = null;
-            MainlineDeputeResultSetNext rsDepute = null;
+            DeputeResultSetNextMainline rsDepute = null;
             while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
                 if (rs == null) {
                     rs = this.pollFromFuture(rsFuture);
                 } else if (rsDepute == null) {
-                    rsDepute = MainlineDeputeResultSetNext.of(rs);
+                    rsDepute = DeputeResultSetNextMainline.of(rs);
                 } else if (record != null) {
                     record = this.send(record);
                 } else if (nextFuture == null) {

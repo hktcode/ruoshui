@@ -151,7 +151,7 @@ public class UpcsmThreadMainline extends UpcsmThread
         SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(params, phaser);
         SimpleFuturePst future = holder.pst(pst);
         PgsenderResult mainline = (PgsenderResult)future.get().get(0);
-        if (!(mainline instanceof MainlineResultRunSnapshot)) {
+        if (!(mainline instanceof PgsenderResultRunSnapshot)) {
             return this;
         }
         TransferQueue<UpcsmFetchRecordSnapshot> q = new LinkedTransferQueue<>();

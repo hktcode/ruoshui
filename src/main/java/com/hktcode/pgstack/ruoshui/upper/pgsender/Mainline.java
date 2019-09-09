@@ -82,7 +82,7 @@ public class Mainline implements Runnable
         if (config.getSnapshot) {
             action = PgsenderActionDataRelaList.of(config, status, tqueue);
         } else {
-            action = MainlineActionDataTypelistStraight.of(config, status, tqueue);
+            action = PgsenderActionDataTypelistStraight.of(config, status, tqueue);
         }
         try (Connection repl = config.srcProperty.replicaConnection()) {
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
@@ -100,8 +100,8 @@ public class Mainline implements Runnable
             finally {
                 exesvc.shutdown();
             }
-            while (action instanceof MainlineActionRepl) {
-                action = ((MainlineActionRepl) action).next(pgrepl);
+            while (action instanceof PgsenderActionRepl) {
+                action = ((PgsenderActionRepl) action).next(pgrepl);
             }
             logger.info("mainline completes");
         }

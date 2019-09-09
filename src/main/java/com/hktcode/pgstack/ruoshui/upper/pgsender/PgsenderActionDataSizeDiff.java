@@ -81,16 +81,16 @@ public class PgsenderActionDataSizeDiff<R, C extends PgsenderConfig<R, C>> //
         try (PreparedStatement ps = this.config.queryRelalist(pgdata)) {
             ResultSet rs = null;
             Boolean next = null;
-            Future<ResultSet> rsFuture = exesvc.submit(MainlineDeputeExecuteQuery.of(ps));
+            Future<ResultSet> rsFuture = exesvc.submit(DeputeExecuteQueryMainline.of(ps));
             Future<Boolean> nextFuture = null;
-            MainlineDeputeResultSetNext rsDepute = null;
+            DeputeResultSetNextMainline rsDepute = null;
             RelationBuilder[] builder = new RelationBuilder[] { null };
             while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
                 if (rs == null) {
                     rs = this.pollFromFuture(rsFuture);
                 }
                 else if (nextFuture == null) {
-                    rsDepute = MainlineDeputeResultSetNext.of(rs);
+                    rsDepute = DeputeResultSetNextMainline.of(rs);
                     nextFuture = exesvc.submit(rsDepute);
                 }
                 else if (next == null) {
