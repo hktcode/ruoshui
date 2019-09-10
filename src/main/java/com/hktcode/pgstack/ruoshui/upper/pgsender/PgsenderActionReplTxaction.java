@@ -7,8 +7,6 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
-import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
-import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecordNormal;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
 import org.postgresql.replication.PGReplicationStream;
@@ -34,10 +32,10 @@ abstract class PgsenderActionReplTxaction extends PgsenderActionRepl
     }
 
     @Override
-    public PgsenderAction<MainlineRecord, MainlineConfig>
+    public PgsenderAction<PgRecord, MainlineConfig>
     next(PgConnection pgrepl) throws SQLException, InterruptedException
     {
-        MainlineRecord r = null;
+        PgRecord r = null;
         this.statusInfor = "start logical replication stream";
         try (PGReplicationStream slt = this.config.logicalRepl.start(pgrepl)) {
             while (!(this.newStatus(this) instanceof SimpleStatusInnerEnd)) {
@@ -58,7 +56,7 @@ abstract class PgsenderActionReplTxaction extends PgsenderActionRepl
         return PgsenderActionTerminateEnd.of(this.config, this.tqueue, this.status, this.toEndMetrics());
     }
 
-    private MainlineRecordNormal poll(PGReplicationStream s)
+    private PgRecordLogicalMsg poll(PGReplicationStream s)
         throws SQLException, InterruptedException
     {
         ByteBuffer msg = s.readPending();
@@ -79,14 +77,14 @@ abstract class PgsenderActionReplTxaction extends PgsenderActionRepl
             ++this.recordCount;
             long key = s.getLastReceiveLSN().asLong();
             LogicalMsg val = LogicalMsg.ofLogicalWal(msg);
-            return MainlineRecordNormal.of(key, val);
+            return PgRecordLogicalMsg.of(key, val);
         }
     }
 
     public abstract PgsenderMetricRunTxaction complete();
 
     @Override
-    public PgsenderResultRun<MainlineRecord, MainlineConfig> pst(LogSequenceNumber lsn)
+    public PgsenderResultRun<PgRecord, MainlineConfig> pst(LogSequenceNumber lsn)
     {
         if (lsn == null) {
             throw new ArgumentNullException("lsn");

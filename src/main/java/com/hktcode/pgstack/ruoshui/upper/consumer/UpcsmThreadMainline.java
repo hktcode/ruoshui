@@ -27,17 +27,17 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class UpcsmThreadMainline extends UpcsmThread
 {
-    public final List<PgsenderResult<UpcsmFetchRecordSnapshot, SnapshotConfig>> sslist //
+    public final List<PgsenderResult<com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecord, SnapshotConfig>> sslist //
         = new ArrayList<>();
 
-    public final TransferQueue<MainlineRecord> tqueue;
+    public final TransferQueue<PgRecord> tqueue;
 
     public static UpcsmThreadMainline of(MainlineConfig config)
     {
         if (config == null) {
             throw new ArgumentNullException("thread");
         }
-        TransferQueue<MainlineRecord> tqueue = new LinkedTransferQueue<>();
+        TransferQueue<PgRecord> tqueue = new LinkedTransferQueue<>();
         SimpleMethodPut[] put = new SimpleMethodPut[] {
             SimpleMethodPutParamsDefault.of()
         };
@@ -54,9 +54,9 @@ public class UpcsmThreadMainline extends UpcsmThread
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        MainlineRecord record = this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);
+        PgRecord record = this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);
         if (record != null) {
-            return record.toUpcsmRecord();
+            return record.toRecord(action, this);
         }
         else if (this.thread.isAlive()) {
             return null;
@@ -68,8 +68,8 @@ public class UpcsmThreadMainline extends UpcsmThread
     }
 
     private UpcsmThreadMainline //
-        /* */( Thread thread //
-        /* */, TransferQueue<MainlineRecord> tqueue //
+        /* */(Thread thread //
+        /* */, TransferQueue<PgRecord> tqueue //
         /* */, AtomicReference<SimpleStatus> status //
         /* */) //
     {
@@ -83,9 +83,9 @@ public class UpcsmThreadMainline extends UpcsmThread
         SimpleHolder holder = SimpleHolder.of(status);
         SimpleFuturePut future = holder.put();
         thread.start();
-        PgsenderResult<MainlineRecord, MainlineConfig> mainline //
-            = (PgsenderResult<MainlineRecord, MainlineConfig>)future.get().get(0);
-        ImmutableList<PgsenderResult<UpcsmFetchRecordSnapshot, SnapshotConfig>> snapshot = ImmutableList.copyOf(sslist);
+        PgsenderResult<PgRecord, MainlineConfig> mainline //
+            = (PgsenderResult<PgRecord, MainlineConfig>)future.get().get(0);
+        ImmutableList<PgsenderResult<com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecord, SnapshotConfig>> snapshot = ImmutableList.copyOf(sslist);
         return UpcsmReportFetchThread.of(mainline, snapshot);
     }
 
@@ -99,9 +99,9 @@ public class UpcsmThreadMainline extends UpcsmThread
         Phaser phaser = new Phaser(2);
         SimpleStatusOuterGet get = SimpleStatusOuterGet.of(params, phaser);
         SimpleFutureGet future = holder.get(get);
-        PgsenderResult<MainlineRecord, MainlineConfig> mainline //
-            = (PgsenderResult<MainlineRecord, MainlineConfig>)future.get().get(0);
-        ImmutableList<PgsenderResult<UpcsmFetchRecordSnapshot, SnapshotConfig>> snapshot = ImmutableList.copyOf(sslist);
+        PgsenderResult<PgRecord, MainlineConfig> mainline //
+            = (PgsenderResult<PgRecord, MainlineConfig>)future.get().get(0);
+        ImmutableList<PgsenderResult<com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecord, SnapshotConfig>> snapshot = ImmutableList.copyOf(sslist);
         return UpcsmReportFetchThread.of(mainline, snapshot);
     }
 
@@ -115,9 +115,9 @@ public class UpcsmThreadMainline extends UpcsmThread
         Phaser phaser = new Phaser(2);
         SimpleStatusOuterDel del = SimpleStatusOuterDel.of(params, phaser);
         SimpleFutureDel future = holder.del(del);
-        PgsenderResult<MainlineRecord, MainlineConfig> mainline
-            = (PgsenderResult<MainlineRecord, MainlineConfig>)future.get().get(0);
-        ImmutableList<PgsenderResult<UpcsmFetchRecordSnapshot, SnapshotConfig>> snapshot
+        PgsenderResult<PgRecord, MainlineConfig> mainline
+            = (PgsenderResult<PgRecord, MainlineConfig>)future.get().get(0);
+        ImmutableList<PgsenderResult<com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecord, SnapshotConfig>> snapshot
             = ImmutableList.copyOf(sslist);
         return UpcsmReportFetchThread.of(mainline, snapshot);
     }
@@ -133,9 +133,9 @@ public class UpcsmThreadMainline extends UpcsmThread
         Phaser phaser = new Phaser(2);
         SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(params, phaser);
         SimpleFuturePst future = holder.pst(pst);
-        PgsenderResult<MainlineRecord, MainlineConfig> mainline //
-            = (PgsenderResult<MainlineRecord, MainlineConfig>)future.get().get(0);
-        ImmutableList<PgsenderResult<UpcsmFetchRecordSnapshot, SnapshotConfig>> snapshot = ImmutableList.copyOf(sslist);
+        PgsenderResult<PgRecord, MainlineConfig> mainline //
+            = (PgsenderResult<PgRecord, MainlineConfig>)future.get().get(0);
+        ImmutableList<PgsenderResult<com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecord, SnapshotConfig>> snapshot = ImmutableList.copyOf(sslist);
         return UpcsmReportFetchThread.of(mainline, snapshot);
     }
 
@@ -154,7 +154,7 @@ public class UpcsmThreadMainline extends UpcsmThread
         if (!(mainline instanceof PgsenderResultRunSnapshot)) {
             return this;
         }
-        TransferQueue<UpcsmFetchRecordSnapshot> q = new LinkedTransferQueue<>();
+        TransferQueue<com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecord> q = new LinkedTransferQueue<>();
         SimpleMethodPut[] put = new SimpleMethodPut[] {
             SimpleMethodPutParamsDefault.of()
         };

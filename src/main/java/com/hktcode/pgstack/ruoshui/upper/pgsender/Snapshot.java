@@ -8,7 +8,6 @@ import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshot;
 import org.postgresql.jdbc.PgConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +28,7 @@ public class Snapshot implements Runnable
     public static Snapshot of
         /* */( SnapshotConfig config //
         /* */, AtomicReference<SimpleStatus> status
-        /* */, TransferQueue<UpcsmFetchRecordSnapshot> tqueue
+        /* */, TransferQueue<PgRecord> tqueue
         /* */)
     {
         if (config == null) {
@@ -49,12 +48,12 @@ public class Snapshot implements Runnable
 
     private final AtomicReference<SimpleStatus> status;
 
-    private final TransferQueue<UpcsmFetchRecordSnapshot> tqueue;
+    private final TransferQueue<PgRecord> tqueue;
 
     private Snapshot //
         /* */( SnapshotConfig config //
         /* */, AtomicReference<SimpleStatus> status
-        /* */, TransferQueue<UpcsmFetchRecordSnapshot> tqueue
+        /* */, TransferQueue<PgRecord> tqueue
         /* */)
     {
         this.config = config;
@@ -79,7 +78,7 @@ public class Snapshot implements Runnable
 
     private void runWithInterrupted() throws InterruptedException, ScriptException
     {
-        PgsenderAction<UpcsmFetchRecordSnapshot, SnapshotConfig> action
+        PgsenderAction<PgRecord, SnapshotConfig> action
             = PgsenderActionDataRelaList.of(config, status, tqueue);
         try (Connection repl = config.srcProperty.replicaConnection()) {
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
@@ -89,8 +88,8 @@ public class Snapshot implements Runnable
                 pgdata.setAutoCommit(false);
                 pgdata.setTransactionIsolation(TRANSACTION_REPEATABLE_READ);
                 do {
-                    PgsenderActionData<UpcsmFetchRecordSnapshot, SnapshotConfig> dataAction //
-                        = (PgsenderActionData<UpcsmFetchRecordSnapshot, SnapshotConfig>)action;
+                    PgsenderActionData<PgRecord, SnapshotConfig> dataAction //
+                        = (PgsenderActionData<PgRecord, SnapshotConfig>)action;
                     action = dataAction.next(exesvc, pgdata, pgrepl);
                 } while (action instanceof PgsenderActionData);
             }
@@ -116,7 +115,7 @@ public class Snapshot implements Runnable
         catch (Exception ex) {
             logger.error("snapshot throws exception: ", ex);
             action = action.next(ex);
-            UpcsmFetchRecordSnapshot r //
+            PgRecord r //
                 = PgRecordExecThrows.of(ex);
             do {
                 r = action.send(r);

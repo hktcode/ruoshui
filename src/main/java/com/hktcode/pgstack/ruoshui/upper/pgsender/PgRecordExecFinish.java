@@ -6,10 +6,9 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmActionRun;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshot;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmThreadSnapshot;
 
-public class PgRecordExecFinish implements UpcsmFetchRecordSnapshot
+public class PgRecordExecFinish implements PgRecord
 {
     public static PgRecordExecFinish of()
     {

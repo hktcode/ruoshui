@@ -7,10 +7,10 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmActionRun;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshot;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmThreadMainline;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmThreadSnapshot;
 
-public class PgRecordLogicalMsg implements UpcsmFetchRecordSnapshot
+public class PgRecordLogicalMsg implements PgRecord
 {
     public static PgRecordLogicalMsg of(long lsn, LogicalMsg msg)
     {
@@ -40,5 +40,17 @@ public class PgRecordLogicalMsg implements UpcsmFetchRecordSnapshot
             throw new ArgumentNullException("thread");
         }
         return UpperRecordConsumer.of(lsn, msg);
+    }
+
+    @Override
+    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmThreadMainline thread)
+    {
+        if (action == null) {
+            throw new ArgumentNullException("action");
+        }
+        if (thread == null) {
+            throw new ArgumentNullException("thread");
+        }
+        return UpperRecordConsumer.of(this.lsn, msg);
     }
 }

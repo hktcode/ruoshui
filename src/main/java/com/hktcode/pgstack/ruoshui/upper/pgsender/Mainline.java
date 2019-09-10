@@ -9,8 +9,6 @@ import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
-import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecordThrows;
 import org.postgresql.jdbc.PgConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +28,7 @@ public class Mainline implements Runnable
     public static Mainline of //
         /* */(MainlineConfig config //
         /* */, AtomicReference<SimpleStatus> status //
-        /* */, TransferQueue<MainlineRecord> tqueue //
+        /* */, TransferQueue<PgRecord> tqueue //
         /* */)
     {
         if (config == null) {
@@ -49,12 +47,12 @@ public class Mainline implements Runnable
 
     public final AtomicReference<SimpleStatus> status;
 
-    public final TransferQueue<MainlineRecord> tqueue;
+    public final TransferQueue<PgRecord> tqueue;
 
     private Mainline //
-        /* */( MainlineConfig config //
+        /* */(MainlineConfig config //
         /* */, AtomicReference<SimpleStatus> status //
-        /* */, TransferQueue<MainlineRecord> tqueue //
+        /* */, TransferQueue<PgRecord> tqueue //
         /* */)
     {
         this.config = config;
@@ -78,7 +76,7 @@ public class Mainline implements Runnable
 
     private void runWithInterrupted() throws InterruptedException
     {
-        PgsenderAction<MainlineRecord, MainlineConfig> action;
+        PgsenderAction<PgRecord, MainlineConfig> action;
         if (config.getSnapshot) {
             action = PgsenderActionDataRelaList.of(config, status, tqueue);
         } else {
@@ -92,8 +90,8 @@ public class Mainline implements Runnable
                 pgdata.setAutoCommit(false);
                 pgdata.setTransactionIsolation(TRANSACTION_REPEATABLE_READ);
                 do {
-                    PgsenderActionData<MainlineRecord, MainlineConfig>
-                        dataAction = (PgsenderActionData<MainlineRecord, MainlineConfig>)action;
+                    PgsenderActionData<PgRecord, MainlineConfig>
+                        dataAction = (PgsenderActionData<PgRecord, MainlineConfig>)action;
                     action = dataAction.next(exesvc, pgdata, pgrepl);
                 } while (action instanceof PgsenderActionData);
             }
@@ -111,7 +109,7 @@ public class Mainline implements Runnable
         catch (Exception ex) {
             logger.error("mainline throws exception: ", ex);
             action = action.next(ex);
-            MainlineRecord r = MainlineRecordThrows.of();
+            PgRecord r = PgRecordExecThrows.of(ex);
             do {
                 r = action.send(r);
             } while (r != null);

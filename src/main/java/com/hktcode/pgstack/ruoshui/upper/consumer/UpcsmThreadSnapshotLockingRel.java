@@ -9,6 +9,7 @@ import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecordPauseWorld;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecordExecThrows;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecordExecFinish;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,9 +20,9 @@ import java.util.concurrent.atomic.AtomicReference;
 public class UpcsmThreadSnapshotLockingRel extends UpcsmThreadSnapshot
 {
     public static UpcsmThreadSnapshotLockingRel of //
-        /* */( UpcsmThreadMainline mlxact //
+        /* */(UpcsmThreadMainline mlxact //
         /* */, Thread thread //
-        /* */, TransferQueue<UpcsmFetchRecordSnapshot> tqueue //
+        /* */, TransferQueue<PgRecord> tqueue //
         /* */, AtomicReference<SimpleStatus> status //
         /* */) //
     {
@@ -41,9 +42,9 @@ public class UpcsmThreadSnapshotLockingRel extends UpcsmThreadSnapshot
     }
 
     private UpcsmThreadSnapshotLockingRel
-        /* */( UpcsmThreadMainline mlxact //
+        /* */(UpcsmThreadMainline mlxact //
         /* */, Thread thread //
-        /* */, TransferQueue<UpcsmFetchRecordSnapshot> tqueue //
+        /* */, TransferQueue<PgRecord> tqueue //
         /* */, AtomicReference<SimpleStatus> status //
         /* */) //
     {
@@ -56,7 +57,7 @@ public class UpcsmThreadSnapshotLockingRel extends UpcsmThreadSnapshot
     public UpperRecordConsumer poll(long timeout, UpcsmActionRun action) //
         throws InterruptedException
     {
-        UpcsmFetchRecordSnapshot record = this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);
+        PgRecord record = this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);
         if (   (record instanceof PgRecordPauseWorld)
             || (record instanceof PgRecordExecThrows)
             || (record instanceof PgRecordExecFinish)) {

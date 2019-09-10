@@ -6,7 +6,6 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
 
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
@@ -14,9 +13,9 @@ import java.util.concurrent.atomic.AtomicReference;
 class PgsenderActionDataTypelistStraight extends PgsenderActionDataTypelist
 {
     static PgsenderActionDataTypelistStraight of
-        /* */( MainlineConfig config //
+        /* */(MainlineConfig config //
         /* */, AtomicReference<SimpleStatus> status //
-        /* */, TransferQueue<MainlineRecord> tqueue //
+        /* */, TransferQueue<PgRecord> tqueue //
         /* */)
     {
         if (config == null) {
@@ -32,9 +31,9 @@ class PgsenderActionDataTypelistStraight extends PgsenderActionDataTypelist
     }
 
     private PgsenderActionDataTypelistStraight
-        /* */( MainlineConfig config //
+        /* */(MainlineConfig config //
         /* */, AtomicReference<SimpleStatus> status //
-        /* */, TransferQueue<MainlineRecord> tqueue //
+        /* */, TransferQueue<PgRecord> tqueue //
         /* */)
     {
         super(config, status, tqueue);

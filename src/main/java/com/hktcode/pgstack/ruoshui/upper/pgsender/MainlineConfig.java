@@ -12,8 +12,6 @@ import com.hktcode.pgstack.ruoshui.pgsql.LogicalReplConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplRelationName;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
-import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
-import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecordNormal;
 import org.postgresql.jdbc.PgConnection;
 
 import javax.script.ScriptException;
@@ -28,7 +26,7 @@ import java.util.concurrent.Callable;
 import static com.hktcode.bgsimple.triple.TripleConfig.DEFALUT_WAIT_TIMEOUT;
 import static com.hktcode.bgsimple.triple.TripleConfig.DEFAULT_LOG_DURATION;
 
-public class MainlineConfig extends PgsenderConfig<MainlineRecord, MainlineConfig>
+public class MainlineConfig extends PgsenderConfig<PgRecord, MainlineConfig>
 {
     private static final String TYPELIST_SQL = "" //
         + "\n select \"t\".    \"oid\"::int8 as \"datatype\" " //
@@ -162,19 +160,19 @@ public class MainlineConfig extends PgsenderConfig<MainlineRecord, MainlineConfi
     }
 
     @Override
-    public PgsenderAction<MainlineRecord, MainlineConfig> //
-    afterSnapshot(PgsenderActionDataSsFinish<MainlineRecord, MainlineConfig> action)
+    public PgsenderAction<PgRecord, MainlineConfig> //
+    afterSnapshot(PgsenderActionDataSsFinish<PgRecord, MainlineConfig> action)
     {
         return PgsenderActionDataTypelistSnapshot.of(action);
     }
 
     @Override
-    public MainlineRecord createMessage(long lsn, LogicalMsg msg)
+    public PgRecord createMessage(long lsn, LogicalMsg msg)
     {
         if (msg == null) {
             throw new ArgumentNullException("msg");
         }
-        return MainlineRecordNormal.of(lsn, msg);
+        return PgRecordLogicalMsg.of(lsn, msg);
     }
 
     @Override

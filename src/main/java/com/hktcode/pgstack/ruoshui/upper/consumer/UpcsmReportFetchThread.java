@@ -7,14 +7,15 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.MainlineConfig;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecord;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderResult;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.SnapshotConfig;
 
 public class UpcsmReportFetchThread
 {
     public static UpcsmReportFetchThread of //
-        /* */( PgsenderResult<MainlineRecord, MainlineConfig> mainline //
-        /* */, ImmutableList<PgsenderResult<UpcsmFetchRecordSnapshot, SnapshotConfig>> snapshot //
+        /* */(PgsenderResult<PgRecord, MainlineConfig> mainline //
+        /* */, ImmutableList<PgsenderResult<com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecord, SnapshotConfig>> snapshot //
         /* */)
     {
         if (mainline == null) {
@@ -26,13 +27,13 @@ public class UpcsmReportFetchThread
         return new UpcsmReportFetchThread(mainline, snapshot);
     }
 
-    public final PgsenderResult<MainlineRecord, MainlineConfig> mainline;
+    public final PgsenderResult<PgRecord, MainlineConfig> mainline;
 
-    public final ImmutableList<PgsenderResult<UpcsmFetchRecordSnapshot, SnapshotConfig>> snapshot;
+    public final ImmutableList<PgsenderResult<com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecord, SnapshotConfig>> snapshot;
 
     protected UpcsmReportFetchThread //
-        /* */( PgsenderResult<MainlineRecord, MainlineConfig> mainline
-        /* */, ImmutableList<PgsenderResult<UpcsmFetchRecordSnapshot, SnapshotConfig>> snapshot
+        /* */( PgsenderResult<PgRecord, MainlineConfig> mainline
+        /* */, ImmutableList<PgsenderResult<com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecord, SnapshotConfig>> snapshot
         /* */)
     {
         this.mainline = mainline;

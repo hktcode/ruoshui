@@ -7,11 +7,10 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmActionRun;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshot;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmThreadSnapshot;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmThreadSnapshotUntilPoint;
 
-public class PgRecordCreateSlot implements UpcsmFetchRecordSnapshot
+public class PgRecordCreateSlot implements PgRecord
 {
     public static PgRecordCreateSlot of(PgReplSlotTuple slotTuple)
     {

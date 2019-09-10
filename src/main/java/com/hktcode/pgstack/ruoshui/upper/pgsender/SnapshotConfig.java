@@ -11,12 +11,11 @@ import com.hktcode.pgstack.ruoshui.pgsql.LogicalReplConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplRelationName;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshot;
 
 import java.sql.Statement;
 import java.util.concurrent.Callable;
 
-public class SnapshotConfig extends PgsenderConfig<UpcsmFetchRecordSnapshot, SnapshotConfig>
+public class SnapshotConfig extends PgsenderConfig<PgRecord, SnapshotConfig>
 {
     public static SnapshotConfig of //
         /* */( PgConnectionProperty srcProperty //
@@ -68,7 +67,7 @@ public class SnapshotConfig extends PgsenderConfig<UpcsmFetchRecordSnapshot, Sna
     }
 
     @Override
-    public UpcsmFetchRecordSnapshot createMessage(long lsn, LogicalMsg msg)
+    public PgRecord createMessage(long lsn, LogicalMsg msg)
     {
         return PgRecordLogicalMsg.of(lsn, msg);
     }

@@ -8,6 +8,7 @@ import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecordExecThrows;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecordExecFinish;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecordCreateSlot;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ public class UpcsmThreadSnapshotCreateSlot extends UpcsmThreadSnapshot
     public UpperRecordConsumer poll(long timeout, UpcsmActionRun action)
         throws InterruptedException
     {
-        UpcsmFetchRecordSnapshot record = this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);
+        PgRecord record = this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);
         if (   (record instanceof PgRecordCreateSlot)
             || (record instanceof PgRecordExecThrows)
             || (record instanceof PgRecordExecFinish)

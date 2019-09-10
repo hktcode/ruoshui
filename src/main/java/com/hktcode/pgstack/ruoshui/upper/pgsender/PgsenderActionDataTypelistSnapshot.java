@@ -5,12 +5,11 @@
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
 
 class PgsenderActionDataTypelistSnapshot extends PgsenderActionDataTypelist
 {
     static PgsenderActionDataTypelistSnapshot //
-    of(PgsenderActionDataSsFinish<MainlineRecord, MainlineConfig> action)
+    of(PgsenderActionDataSsFinish<PgRecord, MainlineConfig> action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -33,7 +32,7 @@ class PgsenderActionDataTypelistSnapshot extends PgsenderActionDataTypelist
     public final PgsenderReportSsFinish ssfinish;
 
     private PgsenderActionDataTypelistSnapshot
-        (PgsenderActionDataSsFinish<MainlineRecord, MainlineConfig> action)
+        (PgsenderActionDataSsFinish<PgRecord, MainlineConfig> action)
     {
         super(action);
         this.relalist = action.relalist;

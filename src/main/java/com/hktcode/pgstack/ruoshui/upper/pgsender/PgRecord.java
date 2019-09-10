@@ -1,13 +1,17 @@
 /*
  * Copyright (c) 2019, Huang Ketian.
  */
-package com.hktcode.pgstack.ruoshui.upper.consumer;
+package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.lang.exception.NeverHappenAssertionError;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmActionRun;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecord;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmThreadMainline;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmThreadSnapshot;
 
-public interface UpcsmFetchRecordSnapshot extends UpcsmFetchRecord
+public interface PgRecord
 {
     default UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmThreadSnapshot thread)
     {

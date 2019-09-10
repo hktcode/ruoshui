@@ -6,14 +6,13 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.bgsimple.tqueue.TqueueAction;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
 import org.postgresql.jdbc.PgConnection;
 
 import java.sql.SQLException;
 
 abstract class PgsenderActionRepl //
-    extends TqueueAction<PgsenderAction<MainlineRecord, MainlineConfig>, MainlineConfig, MainlineRecord> //
-    implements PgsenderAction<MainlineRecord, MainlineConfig> //
+    extends TqueueAction<PgsenderAction<PgRecord, MainlineConfig>, MainlineConfig, PgRecord> //
+    implements PgsenderAction<PgRecord, MainlineConfig> //
 {
     public final long actionStart;
 
@@ -21,20 +20,20 @@ abstract class PgsenderActionRepl //
 
     public long fetchMillis = 0;
 
-    protected PgsenderActionRepl(PgsenderActionData<MainlineRecord, MainlineConfig> action, long actionStart)
+    protected PgsenderActionRepl(PgsenderActionData<PgRecord, MainlineConfig> action, long actionStart)
     {
         super(action.config, action.tqueue, action.status);
         this.actionStart = actionStart;
         this.logDatetime = action.logDatetime;
     }
 
-    abstract PgsenderAction<MainlineRecord, MainlineConfig> next(PgConnection pgrepl) //
+    abstract PgsenderAction<PgRecord, MainlineConfig> next(PgConnection pgrepl) //
         throws SQLException, InterruptedException;
 
     public abstract PgsenderMetricRun toRunMetrics();
 
     @Override
-    public PgsenderResultRun<MainlineRecord, MainlineConfig> get()
+    public PgsenderResultRun<PgRecord, MainlineConfig> get()
     {
         MainlineConfig config = this.config;
         PgsenderMetricRun metric = this.toRunMetrics();
@@ -42,7 +41,7 @@ abstract class PgsenderActionRepl //
     }
 
     @Override
-    public PgsenderResultEnd<MainlineRecord, MainlineConfig, PgsenderMetricEnd> del()
+    public PgsenderResultEnd<PgRecord, MainlineConfig, PgsenderMetricEnd> del()
     {
         MainlineConfig config = this.config;
         PgsenderMetricEnd metric = this.toEndMetrics();
@@ -50,7 +49,7 @@ abstract class PgsenderActionRepl //
     }
 
     @Override
-    public PgsenderActionThrowsErrors<MainlineRecord, MainlineConfig>
+    public PgsenderActionThrowsErrors<PgRecord, MainlineConfig>
     next(Throwable throwsError)
     {
         if (throwsError == null) {

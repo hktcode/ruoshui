@@ -8,8 +8,6 @@ import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalDatatypeInfMsg;
-import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
-import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecordNormal;
 import org.postgresql.jdbc.PgConnection;
 
 import java.sql.PreparedStatement;
@@ -20,26 +18,26 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-abstract class PgsenderActionDataTypelist extends PgsenderActionData<MainlineRecord, MainlineConfig>
+abstract class PgsenderActionDataTypelist extends PgsenderActionData<PgRecord, MainlineConfig>
 {
     PgsenderActionDataTypelist
-        /* */( MainlineConfig config //
+        /* */(MainlineConfig config //
         /* */, AtomicReference<SimpleStatus> status //
-        /* */, TransferQueue<MainlineRecord> tqueue //
+        /* */, TransferQueue<PgRecord> tqueue //
         /* */)
     {
         super(config, status, tqueue, System.currentTimeMillis());
         this.logDatetime = super.actionStart;
     }
 
-    PgsenderActionDataTypelist(PgsenderActionDataSsFinish<MainlineRecord, MainlineConfig> action)
+    PgsenderActionDataTypelist(PgsenderActionDataSsFinish<PgRecord, MainlineConfig> action)
     {
         super(action, System.currentTimeMillis());
         this.logDatetime = action.logDatetime;
     }
 
     @Override
-    public PgsenderAction<MainlineRecord, MainlineConfig> //
+    public PgsenderAction<PgRecord, MainlineConfig> //
     next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws SQLException, InterruptedException
     {
@@ -53,7 +51,7 @@ abstract class PgsenderActionDataTypelist extends PgsenderActionData<MainlineRec
             throw new ArgumentNullException("pgrepl");
         }
         try (PreparedStatement ps = this.config.queryTypelist(pgdata)) {
-            MainlineRecord r = null;
+            PgRecord r = null;
             this.statusInfor = "query data types";
             ResultSet rs = null;
             Boolean next = null;
@@ -80,7 +78,7 @@ abstract class PgsenderActionDataTypelist extends PgsenderActionData<MainlineRec
                     String p = rs.getString("tpschema");
                     String n = rs.getString("typename");
                     LogicalDatatypeInfMsg m = LogicalDatatypeInfMsg.of(d, p, n);
-                    r = MainlineRecordNormal.of(0L, m);
+                    r = PgRecordLogicalMsg.of(0L, m);
                     rs.setFetchSize(this.config.rsFetchsize);
                     nextFuture = exesvc.submit(rsDepute);
                     next = null;

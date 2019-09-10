@@ -5,9 +5,8 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.bgsimple.method.SimpleMethodPstParams;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.consumer.MainlineRecord;
 
-public class MainlineSnapshotPstParams implements SimpleMethodPstParams<PgsenderAction<MainlineRecord, MainlineConfig>>
+public class MainlineSnapshotPstParams implements SimpleMethodPstParams<PgsenderAction<PgRecord, MainlineConfig>>
 {
     public static MainlineSnapshotPstParams of(SnapshotConfig config)
     {
@@ -18,7 +17,7 @@ public class MainlineSnapshotPstParams implements SimpleMethodPstParams<Pgsender
     }
 
     @Override
-    public PgsenderResult<MainlineRecord, MainlineConfig> run(PgsenderAction<MainlineRecord, MainlineConfig> action)
+    public PgsenderResult<PgRecord, MainlineConfig> run(PgsenderAction<PgRecord, MainlineConfig> action)
         throws InterruptedException
     {
         if (action == null) {

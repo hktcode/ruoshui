@@ -8,6 +8,7 @@ import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecordLogicalMsg;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecordExecThrows;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecordExecFinish;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,7 @@ public class UpcsmThreadSnapshotSelectData extends UpcsmThreadSnapshot
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        UpcsmFetchRecordSnapshot r = this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);
+        PgRecord r = this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);
         if (   (r instanceof PgRecordLogicalMsg)
             || (r instanceof PgRecordExecFinish)
             || (r instanceof PgRecordExecThrows)) {
