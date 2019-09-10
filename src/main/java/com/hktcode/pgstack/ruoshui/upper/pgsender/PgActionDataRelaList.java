@@ -224,14 +224,14 @@ public class PgActionDataRelaList extends PgActionData
     }
 
     @Override
-    public PgsenderMetricRunRelaList toRunMetrics()
+    public PgMetricRunRelaList toRunMetrics()
     {
-        return PgsenderMetricRunRelaList.of(this);
+        return PgMetricRunRelaList.of(this);
     }
 
     @Override
-    public PgsenderMetricEndRelaList toEndMetrics()
+    public PgMetricEndRelaList toEndMetrics()
     {
-        return PgsenderMetricEndRelaList.of(this);
+        return PgMetricEndRelaList.of(this);
     }
 }

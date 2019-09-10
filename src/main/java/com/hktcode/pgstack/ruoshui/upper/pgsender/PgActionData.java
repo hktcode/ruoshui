@@ -98,7 +98,7 @@ public abstract class PgActionData extends PgAction
         }
     }
 
-    public abstract PgsenderMetricRun toRunMetrics();
+    public abstract PgMetricRun toRunMetrics();
 
     @Override
     public PgsenderResult get()
@@ -107,7 +107,7 @@ public abstract class PgActionData extends PgAction
     }
 
     @Override
-    public PgsenderResultEnd<PgsenderMetricEnd> del()
+    public PgsenderResultEnd<PgMetricEnd> del()
     {
         return PgsenderResultEnd.of(this.config, this.toEndMetrics());
     }

@@ -48,15 +48,15 @@ class PgActionDataTypelistSnapshot extends PgActionDataTypelist
     }
 
     @Override
-    public PgsenderMetricRunTypelistSnapshot toRunMetrics()
+    public PgMetricRunTypelistSnapshot toRunMetrics()
     {
-        return PgsenderMetricRunTypelistSnapshot.of(this);
+        return PgMetricRunTypelistSnapshot.of(this);
     }
 
     @Override
-    public PgsenderMetricEndTypelistSnapshot toEndMetrics()
+    public PgMetricEndTypelistSnapshot toEndMetrics()
     {
-        return PgsenderMetricEndTypelistSnapshot.of(this);
+        return PgMetricEndTypelistSnapshot.of(this);
     }
 }
 

@@ -68,5 +68,5 @@ public abstract class PgAction //
         return PgActionThrowsErrors.of(this, throwsError);
     }
 
-    public abstract PgsenderMetricEnd toEndMetrics();
+    public abstract PgMetricEnd toEndMetrics();
 }

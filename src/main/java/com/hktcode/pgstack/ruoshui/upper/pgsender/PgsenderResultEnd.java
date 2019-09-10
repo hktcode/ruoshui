@@ -7,10 +7,10 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class PgsenderResultEnd<E extends PgsenderMetricEnd> //
+public class PgsenderResultEnd<E extends PgMetricEnd> //
     implements PgsenderResult, SimpleMethodAllResultEnd<PgAction>
 {
-    public static <E extends PgsenderMetricEnd> //
+    public static <E extends PgMetricEnd> //
     PgsenderResultEnd<E> of(PgConfig config, E metric)
     {
         if (config == null) {

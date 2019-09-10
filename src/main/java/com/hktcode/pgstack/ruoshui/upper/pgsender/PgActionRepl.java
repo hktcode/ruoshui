@@ -26,19 +26,19 @@ abstract class PgActionRepl extends PgAction
     abstract PgAction next(PgConnection pgrepl) //
         throws SQLException, InterruptedException;
 
-    public abstract PgsenderMetricRun toRunMetrics();
+    public abstract PgMetricRun toRunMetrics();
 
     @Override
     public PgsenderResultRun get()
     {
-        PgsenderMetricRun metric = this.toRunMetrics();
+        PgMetricRun metric = this.toRunMetrics();
         return PgsenderResultRun.of(this.config, metric);
     }
 
     @Override
-    public PgsenderResultEnd<PgsenderMetricEnd> del()
+    public PgsenderResultEnd<PgMetricEnd> del()
     {
-        PgsenderMetricEnd metric = this.toEndMetrics();
+        PgMetricEnd metric = this.toEndMetrics();
         return PgsenderResultEnd.of(this.config, metric);
     }
 }

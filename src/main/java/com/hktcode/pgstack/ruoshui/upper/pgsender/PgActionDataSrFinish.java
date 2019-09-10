@@ -82,14 +82,14 @@ public class PgActionDataSrFinish extends PgActionData
     }
 
     @Override
-    public PgsenderMetricRunTupleval toRunMetrics()
+    public PgMetricRunTupleval toRunMetrics()
     {
-        return PgsenderMetricRunTupleval.of(this);
+        return PgMetricRunTupleval.of(this);
     }
 
     @Override
-    public PgsenderMetricEndTupleval toEndMetrics()
+    public PgMetricEndTupleval toEndMetrics()
     {
-        return PgsenderMetricEndTupleval.of(this);
+        return PgMetricEndTupleval.of(this);
     }
 }

@@ -16,7 +16,7 @@ public class PgActionTerminateEnd extends PgAction
         return new PgActionTerminateEnd(action);
     }
 
-    public final PgsenderMetricEnd metric;
+    public final PgMetricEnd metric;
 
     private PgActionTerminateEnd(PgAction action)
     {
@@ -25,19 +25,19 @@ public class PgActionTerminateEnd extends PgAction
     }
 
     @Override
-    public PgsenderMetricEnd toEndMetrics()
+    public PgMetricEnd toEndMetrics()
     {
         return this.metric;
     }
 
     @Override
-    public PgsenderResultEnd<PgsenderMetricEnd> get()
+    public PgsenderResultEnd<PgMetricEnd> get()
     {
         return PgsenderResultEnd.of(this.config, this.metric);
     }
 
     @Override
-    public PgsenderResultEnd<PgsenderMetricEnd> del()
+    public PgsenderResultEnd<PgMetricEnd> del()
     {
         return PgsenderResultEnd.of(this.config, this.metric);
     }

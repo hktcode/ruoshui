@@ -45,15 +45,15 @@ class PgActionDataTypelistStraight extends PgActionDataTypelist
     }
 
     @Override
-    public PgsenderMetricRunTypelistStraight toRunMetrics()
+    public PgMetricRunTypelistStraight toRunMetrics()
     {
-        return PgsenderMetricRunTypelistStraight.of(this);
+        return PgMetricRunTypelistStraight.of(this);
     }
 
     @Override
-    public PgsenderMetricEndTypelistStraight toEndMetrics()
+    public PgMetricEndTypelistStraight toEndMetrics()
     {
-        return PgsenderMetricEndTypelistStraight.of(this);
+        return PgMetricEndTypelistStraight.of(this);
     }
 }
 

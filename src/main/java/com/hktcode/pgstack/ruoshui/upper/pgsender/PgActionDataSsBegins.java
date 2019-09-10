@@ -77,14 +77,14 @@ class PgActionDataSsBegins extends PgActionData
     }
 
     @Override
-    public PgsenderMetricRunSsbegins toRunMetrics()
+    public PgMetricRunSsbegins toRunMetrics()
     {
-        return PgsenderMetricRunSsbegins.of(this);
+        return PgMetricRunSsbegins.of(this);
     }
 
     @Override
-    public PgsenderMetricEndSsbegins toEndMetrics()
+    public PgMetricEndSsbegins toEndMetrics()
     {
-        return PgsenderMetricEndSsbegins.of(this);
+        return PgMetricEndSsbegins.of(this);
     }
 }

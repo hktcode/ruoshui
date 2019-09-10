@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderResultRunSnapshot extends PgsenderResultRun
 {
-    static PgsenderResultRunSnapshot of(MainlineConfig config, PgsenderMetricRun metric)
+    static PgsenderResultRunSnapshot of(MainlineConfig config, PgMetricRun metric)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -19,7 +19,7 @@ public class PgsenderResultRunSnapshot extends PgsenderResultRun
         return new PgsenderResultRunSnapshot(config, metric);
     }
 
-    private PgsenderResultRunSnapshot(MainlineConfig config, PgsenderMetricRun metric)
+    private PgsenderResultRunSnapshot(MainlineConfig config, PgMetricRun metric)
     {
         super(config, metric);
     }

@@ -148,14 +148,14 @@ public class PgActionDataSizeDiff extends PgActionData
     }
 
     @Override
-    public PgsenderMetricRunSizeDiff toRunMetrics()
+    public PgMetricRunSizeDiff toRunMetrics()
     {
-        return PgsenderMetricRunSizeDiff.of(this);
+        return PgMetricRunSizeDiff.of(this);
     }
 
     @Override
-    public PgsenderMetricEndSizeDiff toEndMetrics()
+    public PgMetricEndSizeDiff toEndMetrics()
     {
-        return PgsenderMetricEndSizeDiff.of(this);
+        return PgMetricEndSizeDiff.of(this);
     }
 }

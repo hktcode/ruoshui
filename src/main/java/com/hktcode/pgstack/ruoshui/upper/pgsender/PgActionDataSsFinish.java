@@ -103,14 +103,14 @@ public class PgActionDataSsFinish extends PgActionData
     }
 
     @Override
-    public PgsenderMetricRunSsFinish toRunMetrics()
+    public PgMetricRunSsFinish toRunMetrics()
     {
-        return PgsenderMetricRunSsFinish.of(this);
+        return PgMetricRunSsFinish.of(this);
     }
 
     @Override
-    public PgsenderMetricEndSsFinish toEndMetrics()
+    public PgMetricEndSsFinish toEndMetrics()
     {
-        return PgsenderMetricEndSsFinish.of(this);
+        return PgMetricEndSsFinish.of(this);
     }
 }

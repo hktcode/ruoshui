@@ -22,14 +22,14 @@ class PgActionReplTxactionStraight extends PgActionReplTxaction
     }
 
     @Override
-    public PgsenderMetricRunTxactionStraight toRunMetrics()
+    public PgMetricRunTxactionStraight toRunMetrics()
     {
-        return PgsenderMetricRunTxactionStraight.of(this);
+        return PgMetricRunTxactionStraight.of(this);
     }
 
     @Override
-    public PgsenderMetricEndTxactionStraight toEndMetrics()
+    public PgMetricEndTxactionStraight toEndMetrics()
     {
-        return PgsenderMetricEndTxactionStraight.of(this);
+        return PgMetricEndTxactionStraight.of(this);
     }
 }

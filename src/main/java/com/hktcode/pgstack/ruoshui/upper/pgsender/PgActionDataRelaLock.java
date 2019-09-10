@@ -93,14 +93,14 @@ class PgActionDataRelaLock extends PgActionData
     }
 
     @Override
-    public PgsenderMetricRunRelaLock toRunMetrics()
+    public PgMetricRunRelaLock toRunMetrics()
     {
-        return PgsenderMetricRunRelaLock.of(this);
+        return PgMetricRunRelaLock.of(this);
     }
 
     @Override
-    public PgsenderMetricEndRelaLock toEndMetrics()
+    public PgMetricEndRelaLock toEndMetrics()
     {
-        return PgsenderMetricEndRelaLock.of(this);
+        return PgMetricEndRelaLock.of(this);
     }
 }

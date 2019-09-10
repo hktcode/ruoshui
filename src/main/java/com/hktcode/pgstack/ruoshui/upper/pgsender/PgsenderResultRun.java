@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderResultRun implements PgsenderResult
 {
-    static PgsenderResultRun of(PgConfig config, PgsenderMetricRun metric)
+    static PgsenderResultRun of(PgConfig config, PgMetricRun metric)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -21,9 +21,9 @@ public class PgsenderResultRun implements PgsenderResult
 
     public final PgConfig config;
 
-    public final PgsenderMetricRun metric;
+    public final PgMetricRun metric;
 
-    PgsenderResultRun(PgConfig config, PgsenderMetricRun metric)
+    PgsenderResultRun(PgConfig config, PgMetricRun metric)
     {
         this.config = config;
         this.metric = metric;

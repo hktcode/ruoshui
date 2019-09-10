@@ -103,14 +103,14 @@ class PgActionDataReplSlot extends PgActionData
     }
 
     @Override
-    public PgsenderMetricRunReplSlot toRunMetrics()
+    public PgMetricRunReplSlot toRunMetrics()
     {
-        return PgsenderMetricRunReplSlot.of(this);
+        return PgMetricRunReplSlot.of(this);
     }
 
     @Override
-    public PgsenderMetricEndReplSlot toEndMetrics()
+    public PgMetricEndReplSlot toEndMetrics()
     {
-        return PgsenderMetricEndReplSlot.of(this);
+        return PgMetricEndReplSlot.of(this);
     }
 }

@@ -25,10 +25,10 @@ public class PgActionThrowsErrors extends PgAction
         this.metric = action.toEndMetrics().toErrMetrics(throwsError);
     }
 
-    public final PgsenderMetricErr metric;
+    public final PgMetricErr metric;
 
     @Override
-    public PgsenderMetricEnd toEndMetrics()
+    public PgMetricEnd toEndMetrics()
     {
         return this.metric;
     }
