@@ -7,6 +7,8 @@ Ruoshui分成五大模块，分别是UPPER（上游）、AMONG（中游）、LOW
 4. LADLE（一瓢）项目消费Kafka消息，分发到不同的topic中。
 5. DRINK（饮用）项目消费Kafka消息，进行计算，写入外部存储中。
 
+当前项目开发仅仅开发了UPPER（上游）模块。
+
 根据分布式理论，从PostgreSQL中接收消息写入到Kafka中可能会出现重复生产消息的情况。
 将UPPER（上游）项目中的消息进行去重，这是AMONG（中游）项目存在的意义之一。
 这也是UPPER（上游）项目只支持向只有一个PARTITION的TOPIC写入消息的原因。

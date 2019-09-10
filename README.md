@@ -18,8 +18,9 @@ Ruoshui是一个基于PostgreSQL和Apache Kafka的流式处理框架，在Postgr
 
 ### 命令
 
+本项目使用maven构建，maven在构建时会自动从maven中央库中下载缺失的依赖，因此运行之前，请保证网络通畅。
+以下命令中假设环境变量```RUOSHUI_SRC_HOME```中保存了存放代码的路径：
 ```bash
-export RUOSHUI_SRC_HOME=. # the directory for storge the ruoshui code
 git clone https://github.com/hktcode/ruoshui.git $RUOSHUI_SRC_HOME
 cd $RUOSHUI_SRC_HOME
 mvn clean package
@@ -77,6 +78,7 @@ Accept: application/json
 { "consumer":                // 消费PostgreSQL逻辑复制流消息和产生快照的相关配置。  
   { "src_property":          // PostgreSQL的JDBC连接配置，参见下面的注解1。
     { "PGPORT": 5432         // PostgreSQL Server的端口信息，默认为5432
+    , "PGDBNAME": "postgres" // PostgreSQL中的数据库名称，默认为postgres。
     , "PGHOST": "localhost"  // PostgreSQL的主机地址，默认为localhost
     , "user": "postgres"     // 连接到PostgreSQL的用户名，默认为postgres
     , "password":            // 用户名的密码，默认为无
@@ -87,7 +89,8 @@ Accept: application/json
     , "start_position": 0              // 开始的wal位置，0表示由服务器控制，最好不要使用此参数，默认值为0
     , "publication_names": "ruoshui" // 逗号分隔的publiation名称，参考下面的注解3，默认为ruoshui.
     }
-  , "ini_snapshot": {} // 如果此属性存在，流复制开始前会获取快照，否则不获取。该字段支持快照的相关配置，目前尚未文档化
+  , "get_snapshot": true // 是否从PostgreSQL获取初始快照，如果此属性为true，流复制开始前会获取快照，否则不获取
+  , "locking_mode": "" // TODO:
   }
 , "producer":                                  // 写入Kafka者相关配置 
   { "kfk_property":                            // Kafka生产者相关配置，参考下面的注解4

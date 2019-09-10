@@ -12,6 +12,9 @@ properties:
           PGPORT: { "type": "integer", "default": 5432 }
           user: { "type":  "string", "default": "postgres"  }
           password: { "type": "string" }
+      typelist_sql: { "type": "string" } # TODO: default
+      tuple_select: { "type": object } # TODO: template
+      relation_sql: { "type": "string" } # TODO: default
       logical_repl:
         type: object
         properties:
@@ -29,24 +32,21 @@ properties:
             default: "0/0"
             pattern: "[0-9A-Fa-f]{1,8}/[0-9A-Fa-f]{1,8}"
           publication_names: { "type": "array" } # TODO:
-      get_snapshot:
-        type: boolean
-        default: true
-      select_props: { "type": object } # TODO:
-      tuple_select: { "type": object } # TODO:
+      get_snapshot: { type: boolean, default: true } # TODO:
       rs_fetchsize:
         type: integer
         default: 128
         minimum: 0
         maximum: 2147483647
       standby_skip: { "type": "boolean", "default": true }
-      # program_code:
-      #   oneOf:
-      #     - type: string
-      #     - type: object
-      #       properties:
-      #       engine_name: { type: string } #TODO:
-      #       script_text: { type: string }
+      where_script:
+        oneOf:
+          - type: string
+          - type: object
+            properties:
+            engine_name: { type: string } #TODO:
+            script_text: { type: string }
+      locking_mode: { "type": "string" }
       wait_timeout: { "type": "integer", "default": 100 } # TODO:
       log_duration: { "type": "integer", "default": 30000 } # TODO:
   junction:
@@ -65,7 +65,7 @@ properties:
           bootstrap.servers:
             type: string
             default: "localhost:9092"
-      target_topic: { type: string, "default": "ruoshui" } #TODO:
+      target_topic: { type: string, "default": "ruoshui-upper" } #TODO:
       partition_no: { type: integer, default: 0, minimum: 0, maximum: 2147483647 }
       wait_timeout: { type: integer, default: 100 } # TODO:
       log_duration: { type: integer, default: 30000 } # TODO:
