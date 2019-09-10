@@ -8,8 +8,8 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderReportSsFinish
 {
-    public static <R, C extends PgsenderConfig> PgsenderReportSsFinish //
-    of(PgsenderActionDataSsFinish<R, C> action, long finish)
+    public static <C extends PgsenderConfig> PgsenderReportSsFinish //
+    of(PgsenderActionDataSsFinish<C> action, long finish)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -25,8 +25,8 @@ public class PgsenderReportSsFinish
 
     public final long recordCount;
 
-    private <R, C extends PgsenderConfig>
-    PgsenderReportSsFinish(PgsenderActionDataSsFinish<R, C> action, long finish)
+    private <C extends PgsenderConfig>
+    PgsenderReportSsFinish(PgsenderActionDataSsFinish<C> action, long finish)
     {
         this.totalMillis = finish - action.actionStart;
         this.offerCounts = action.offerCounts;

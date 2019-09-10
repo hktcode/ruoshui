@@ -8,8 +8,8 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderReportReplSlot
 {
-    static <R, C extends PgsenderConfig>
-    PgsenderReportReplSlot of(PgsenderActionDataReplSlot<R, C> action, long finish)
+    static <C extends PgsenderConfig>
+    PgsenderReportReplSlot of(PgsenderActionDataReplSlot<C> action, long finish)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -38,8 +38,8 @@ public class PgsenderReportReplSlot
 
     public final long sltDuration;
 
-    protected <R, C extends PgsenderConfig> //
-    PgsenderReportReplSlot(PgsenderActionDataReplSlot<R, C> action, long finish)
+    protected <C extends PgsenderConfig> //
+    PgsenderReportReplSlot(PgsenderActionDataReplSlot<C> action, long finish)
     {
         this.totalMillis = finish - action.actionStart;
         this.rsgetCounts = action.rsgetCounts;

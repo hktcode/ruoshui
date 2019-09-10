@@ -14,11 +14,11 @@ import org.postgresql.jdbc.PgConnection;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 
-class PgsenderActionDataSrBegins<R, C extends PgsenderConfig> //
-    extends PgsenderActionData<R, C>
+class PgsenderActionDataSrBegins<C extends PgsenderConfig> //
+    extends PgsenderActionData<C>
 {
-    static <R, C extends PgsenderConfig> //
-    PgsenderActionDataSrBegins<R, C> of(PgsenderActionDataSsBegins<R, C> action)
+    static <C extends PgsenderConfig> //
+    PgsenderActionDataSrBegins<C> of(PgsenderActionDataSsBegins<C> action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -26,8 +26,8 @@ class PgsenderActionDataSrBegins<R, C extends PgsenderConfig> //
         return new PgsenderActionDataSrBegins<>(action);
     }
 
-    static <R, C extends PgsenderConfig> //
-    PgsenderActionDataSrBegins<R, C> of(PgsenderActionDataSrFinish<R, C> action)
+    static <C extends PgsenderConfig> //
+    PgsenderActionDataSrBegins<C> of(PgsenderActionDataSrFinish<C> action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -51,7 +51,7 @@ class PgsenderActionDataSrBegins<R, C extends PgsenderConfig> //
 
     final PgsqlRelationMetric curRelation;
 
-    private PgsenderActionDataSrBegins(PgsenderActionDataSsBegins<R, C> action)
+    private PgsenderActionDataSrBegins(PgsenderActionDataSsBegins<C> action)
     {
         super(action, System.currentTimeMillis());
         this.relalist = action.relalist;
@@ -65,7 +65,7 @@ class PgsenderActionDataSrBegins<R, C extends PgsenderConfig> //
         this.logDatetime = action.logDatetime;
     }
 
-    private PgsenderActionDataSrBegins(PgsenderActionDataSrFinish<R, C> action) //
+    private PgsenderActionDataSrBegins(PgsenderActionDataSrFinish<C> action) //
     {
         super(action, action.actionStart);
         this.relalist = action.relalist;
@@ -86,7 +86,7 @@ class PgsenderActionDataSrBegins<R, C extends PgsenderConfig> //
     }
 
     @Override
-    public PgsenderAction<R, C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
+    public PgsenderAction<C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws InterruptedException
     {
         PgReplRelation r = this.curRelation.relationInfo;

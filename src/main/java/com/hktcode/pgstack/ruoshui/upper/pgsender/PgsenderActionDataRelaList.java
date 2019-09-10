@@ -24,11 +24,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class PgsenderActionDataRelaList<R, C extends PgsenderConfig> //
-    extends PgsenderActionData<R, C>
+public class PgsenderActionDataRelaList<C extends PgsenderConfig> //
+    extends PgsenderActionData<C>
 {
-    public static <R, C extends PgsenderConfig> //
-    PgsenderActionDataRelaList<R, C> of
+    public static <C extends PgsenderConfig> //
+    PgsenderActionDataRelaList<C> of
         /* */( C config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<PgRecord> tqueue //
@@ -46,8 +46,8 @@ public class PgsenderActionDataRelaList<R, C extends PgsenderConfig> //
         return new PgsenderActionDataRelaList<>(config, status, tqueue);
     }
 
-    static <R, C extends PgsenderConfig> //
-    PgsenderActionDataRelaList<R, C> of(PgsenderActionDataRelaLock<R, C> action)
+    static <C extends PgsenderConfig> //
+    PgsenderActionDataRelaList<C> of(PgsenderActionDataRelaLock<C> action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -55,8 +55,8 @@ public class PgsenderActionDataRelaList<R, C extends PgsenderConfig> //
         return new PgsenderActionDataRelaList<>(action);
     }
 
-    static <R, C extends PgsenderConfig>
-    PgsenderActionDataRelaList<R, C> of(PgsenderActionDataSizeDiff<R, C> action)
+    static <C extends PgsenderConfig>
+    PgsenderActionDataRelaList<C> of(PgsenderActionDataSizeDiff<C> action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -77,7 +77,7 @@ public class PgsenderActionDataRelaList<R, C extends PgsenderConfig> //
         this.logDatetime = super.actionStart;
     }
 
-    private PgsenderActionDataRelaList(PgsenderActionDataRelaLock<R, C> action)
+    private PgsenderActionDataRelaList(PgsenderActionDataRelaLock<C> action)
     {
         super(action, System.currentTimeMillis());
         this.retryReason = ImmutableList.<String>builder() //
@@ -86,7 +86,7 @@ public class PgsenderActionDataRelaList<R, C extends PgsenderConfig> //
         this.logDatetime = action.logDatetime;
     }
 
-    private PgsenderActionDataRelaList(PgsenderActionDataSizeDiff<R, C> action)
+    private PgsenderActionDataRelaList(PgsenderActionDataSizeDiff<C> action)
     {
         super(action, System.currentTimeMillis());
         this.retryReason = ImmutableList.<String>builder() //
@@ -106,7 +106,7 @@ public class PgsenderActionDataRelaList<R, C extends PgsenderConfig> //
     public final List<PgsqlRelationMetric> relationLst = new ArrayList<>();
 
     @Override
-    public PgsenderAction<R, C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
+    public PgsenderAction<C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws SQLException, ScriptException, InterruptedException
     {
         if (exesvc == null) {

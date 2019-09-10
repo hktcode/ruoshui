@@ -6,7 +6,7 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class PgsenderResultRunSnapshot extends PgsenderResultRun<PgRecord, MainlineConfig> //
+public class PgsenderResultRunSnapshot extends PgsenderResultRun<MainlineConfig> //
 {
     public static PgsenderResultRunSnapshot of(MainlineConfig config, PgsenderMetricRun metric)
     {

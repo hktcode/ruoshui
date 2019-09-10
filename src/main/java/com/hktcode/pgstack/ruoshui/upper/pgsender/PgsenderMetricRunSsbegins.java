@@ -8,8 +8,8 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderMetricRunSsbegins implements PgsenderMetricRun
 {
-    static <R, C extends PgsenderConfig> //
-    PgsenderMetricRunSsbegins of(PgsenderActionDataSsBegins<R, C> action)
+    static <C extends PgsenderConfig> //
+    PgsenderMetricRunSsbegins of(PgsenderActionDataSsBegins<C> action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -17,8 +17,8 @@ public class PgsenderMetricRunSsbegins implements PgsenderMetricRun
         return new PgsenderMetricRunSsbegins(action);
     }
 
-    private <R, C extends PgsenderConfig> //
-    PgsenderMetricRunSsbegins(PgsenderActionDataSsBegins<R, C> action)
+    private <C extends PgsenderConfig> //
+    PgsenderMetricRunSsbegins(PgsenderActionDataSsBegins<C> action)
     {
         long finish = System.currentTimeMillis();
         this.relalist = action.relalist;

@@ -8,8 +8,8 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderMetricEndTupleval implements PgsenderMetricEnd
 {
-    static <R, C extends PgsenderConfig> //
-    PgsenderMetricEndTupleval of(PgsenderActionDataTupleval<R, C> action)
+    static <C extends PgsenderConfig> //
+    PgsenderMetricEndTupleval of(PgsenderActionDataTupleval<C> action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -17,8 +17,8 @@ public class PgsenderMetricEndTupleval implements PgsenderMetricEnd
         return new PgsenderMetricEndTupleval(action);
     }
 
-    static <R, C extends PgsenderConfig> //
-    PgsenderMetricEndTupleval of(PgsenderActionDataSrBegins<R, C> action)
+    static <C extends PgsenderConfig> //
+    PgsenderMetricEndTupleval of(PgsenderActionDataSrBegins<C> action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -26,8 +26,8 @@ public class PgsenderMetricEndTupleval implements PgsenderMetricEnd
         return new PgsenderMetricEndTupleval(action);
     }
 
-    static <R, C extends PgsenderConfig> //
-    PgsenderMetricEndTupleval of(PgsenderActionDataSrFinish<R, C> action)
+    static <C extends PgsenderConfig> //
+    PgsenderMetricEndTupleval of(PgsenderActionDataSrFinish<C> action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -35,8 +35,8 @@ public class PgsenderMetricEndTupleval implements PgsenderMetricEnd
         return new PgsenderMetricEndTupleval(action);
     }
 
-    private <R, C extends PgsenderConfig>
-    PgsenderMetricEndTupleval(PgsenderActionDataTupleval<R, C> action)
+    private <C extends PgsenderConfig>
+    PgsenderMetricEndTupleval(PgsenderActionDataTupleval<C> action)
     {
         long finish = System.currentTimeMillis();
         this.relalist = action.relalist;
@@ -48,8 +48,8 @@ public class PgsenderMetricEndTupleval implements PgsenderMetricEnd
         this.complete = PgsenderReportComplete.of(finish);
     }
 
-    private <R, C extends PgsenderConfig>
-    PgsenderMetricEndTupleval(PgsenderActionDataSrBegins<R, C> action)
+    private <C extends PgsenderConfig>
+    PgsenderMetricEndTupleval(PgsenderActionDataSrBegins<C> action)
     {
         long finish = System.currentTimeMillis();
         this.relalist = action.relalist;
@@ -61,8 +61,8 @@ public class PgsenderMetricEndTupleval implements PgsenderMetricEnd
         this.complete = PgsenderReportComplete.of(finish);
     }
 
-    private <R, C extends PgsenderConfig> //
-    PgsenderMetricEndTupleval(PgsenderActionDataSrFinish<R, C> action)
+    private <C extends PgsenderConfig> //
+    PgsenderMetricEndTupleval(PgsenderActionDataSrFinish<C> action)
     {
         long finish = System.currentTimeMillis();
         this.relalist = action.relalist;

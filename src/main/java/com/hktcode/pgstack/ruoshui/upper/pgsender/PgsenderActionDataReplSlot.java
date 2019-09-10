@@ -18,13 +18,13 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-class PgsenderActionDataReplSlot<R, C extends PgsenderConfig> //
-    extends PgsenderActionData<R, C>
+class PgsenderActionDataReplSlot<C extends PgsenderConfig> //
+    extends PgsenderActionData<C>
 {
     private static final Logger logger = LoggerFactory.getLogger(PgsenderActionDataReplSlot.class);
 
-    static <R, C extends PgsenderConfig>
-    PgsenderActionDataReplSlot<R, C> of(PgsenderActionDataRelaLock<R, C> action)
+    static <C extends PgsenderConfig>
+    PgsenderActionDataReplSlot<C> of(PgsenderActionDataRelaLock<C> action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -42,7 +42,7 @@ class PgsenderActionDataReplSlot<R, C extends PgsenderConfig> //
 
     PgReplSlotTuple[] createTuple = new PgReplSlotTuple[0];
 
-    private PgsenderActionDataReplSlot(PgsenderActionDataRelaLock<R, C> action)
+    private PgsenderActionDataReplSlot(PgsenderActionDataRelaLock<C> action)
     {
         super(action, System.currentTimeMillis());
         this.relalist = action.relalist;
@@ -52,7 +52,7 @@ class PgsenderActionDataReplSlot<R, C extends PgsenderConfig> //
     }
 
     @Override
-    public PgsenderAction<R, C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl)
+    public PgsenderAction<C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl)
         throws SQLException, InterruptedException
     {
         if (exesvc == null) {

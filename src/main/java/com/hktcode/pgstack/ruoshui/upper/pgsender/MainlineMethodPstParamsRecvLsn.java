@@ -8,7 +8,7 @@ import com.hktcode.bgsimple.method.SimpleMethodPst;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.replication.LogSequenceNumber;
 
-public class MainlineMethodPstParamsRecvLsn implements SimpleMethodPst<PgsenderAction<PgRecord, MainlineConfig>>
+public class MainlineMethodPstParamsRecvLsn implements SimpleMethodPst<PgsenderAction<MainlineConfig>>
 {
     public static MainlineMethodPstParamsRecvLsn of(LogSequenceNumber receiveLsn)
     {
@@ -26,7 +26,7 @@ public class MainlineMethodPstParamsRecvLsn implements SimpleMethodPst<PgsenderA
     }
 
     @Override
-    public PgsenderResult<PgRecord, MainlineConfig> run(PgsenderAction<PgRecord, MainlineConfig> action)
+    public PgsenderResult<MainlineConfig> run(PgsenderAction<MainlineConfig> action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");

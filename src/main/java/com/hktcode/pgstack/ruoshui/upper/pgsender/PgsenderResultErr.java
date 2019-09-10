@@ -7,11 +7,11 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class PgsenderResultErr<R, C extends PgsenderConfig> //
-    extends PgsenderResultEnd<R, C, PgsenderMetricErr>
+public class PgsenderResultErr<C extends PgsenderConfig> //
+    extends PgsenderResultEnd<C, PgsenderMetricErr>
 {
-    public static <R, C extends PgsenderConfig> //
-    PgsenderResultErr<R, C> of(C config, PgsenderMetricErr metric)
+    public static <C extends PgsenderConfig> //
+    PgsenderResultErr<C> of(C config, PgsenderMetricErr metric)
     {
         if (config == null) {
             throw new ArgumentNullException("config");

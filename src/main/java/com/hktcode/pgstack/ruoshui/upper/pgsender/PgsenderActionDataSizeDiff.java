@@ -22,11 +22,11 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-public class PgsenderActionDataSizeDiff<R, C extends PgsenderConfig> //
-    extends PgsenderActionData<R, C>
+public class PgsenderActionDataSizeDiff<C extends PgsenderConfig> //
+    extends PgsenderActionData<C>
 {
-    static <R, C extends PgsenderConfig>
-    PgsenderActionDataSizeDiff<R, C> of(PgsenderActionDataReplSlot<R, C> action)
+    static <C extends PgsenderConfig>
+    PgsenderActionDataSizeDiff<C> of(PgsenderActionDataReplSlot<C> action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -46,7 +46,7 @@ public class PgsenderActionDataSizeDiff<R, C extends PgsenderConfig> //
 
     private final List<PgsqlRelationMetric> newRelalist;
 
-    private PgsenderActionDataSizeDiff(PgsenderActionDataReplSlot<R, C> action)
+    private PgsenderActionDataSizeDiff(PgsenderActionDataReplSlot<C> action)
     {
         super(action, System.currentTimeMillis());
         this.relalist = action.relalist;
@@ -58,7 +58,7 @@ public class PgsenderActionDataSizeDiff<R, C extends PgsenderConfig> //
     }
 
     @Override
-    public PgsenderAction<R, C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
+    public PgsenderAction<C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws SQLException, ScriptException, InterruptedException
     {
         if (exesvc == null) {

@@ -16,11 +16,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-class PgsenderActionDataSsBegins<R, C extends PgsenderConfig> //
-    extends PgsenderActionData<R, C>
+class PgsenderActionDataSsBegins<C extends PgsenderConfig> //
+    extends PgsenderActionData<C>
 {
-    static <R, C extends PgsenderConfig>
-    PgsenderActionDataSsBegins<R, C> of(PgsenderActionDataSizeDiff<R, C> action)
+    static <C extends PgsenderConfig>
+    PgsenderActionDataSsBegins<C> of(PgsenderActionDataSizeDiff<C> action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -40,7 +40,7 @@ class PgsenderActionDataSsBegins<R, C extends PgsenderConfig> //
 
     final Iterator<PgsqlRelationMetric> relIterator;
 
-    private PgsenderActionDataSsBegins(PgsenderActionDataSizeDiff<R, C> action)
+    private PgsenderActionDataSsBegins(PgsenderActionDataSizeDiff<C> action)
     {
         super(action, System.currentTimeMillis());
         this.relalist = action.relalist;
@@ -53,7 +53,7 @@ class PgsenderActionDataSsBegins<R, C extends PgsenderConfig> //
     }
 
     @Override
-    public PgsenderAction<R, C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
+    public PgsenderAction<C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws InterruptedException
     {
         long lsn = this.replSlot.createTuple.consistentPoint;

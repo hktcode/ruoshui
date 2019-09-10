@@ -78,7 +78,7 @@ public class Snapshot implements Runnable
 
     private void runWithInterrupted() throws InterruptedException, ScriptException
     {
-        PgsenderAction<PgRecord, SnapshotConfig> action
+        PgsenderAction<SnapshotConfig> action
             = PgsenderActionDataRelaList.of(config, status, tqueue);
         try (Connection repl = config.srcProperty.replicaConnection()) {
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
@@ -88,8 +88,8 @@ public class Snapshot implements Runnable
                 pgdata.setAutoCommit(false);
                 pgdata.setTransactionIsolation(TRANSACTION_REPEATABLE_READ);
                 do {
-                    PgsenderActionData<PgRecord, SnapshotConfig> dataAction //
-                        = (PgsenderActionData<PgRecord, SnapshotConfig>)action;
+                    PgsenderActionData<SnapshotConfig> dataAction //
+                        = (PgsenderActionData<SnapshotConfig>)action;
                     action = dataAction.next(exesvc, pgdata, pgrepl);
                 } while (action instanceof PgsenderActionData);
             }

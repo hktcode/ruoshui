@@ -11,12 +11,12 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class PgsenderActionTerminateEnd<R, C extends PgsenderConfig> //
-    extends TqueueAction<PgsenderAction<R, C>, C, PgRecord> //
-    implements PgsenderAction<R, C>
+public class PgsenderActionTerminateEnd<C extends PgsenderConfig> //
+    extends TqueueAction<PgsenderAction<C>, C, PgRecord> //
+    implements PgsenderAction<C>
 {
-    public static <R, C extends PgsenderConfig>
-    PgsenderActionTerminateEnd<R, C> of(PgsenderActionData<R, C> action)
+    public static <C extends PgsenderConfig>
+    PgsenderActionTerminateEnd<C> of(PgsenderActionData<C> action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -24,8 +24,8 @@ public class PgsenderActionTerminateEnd<R, C extends PgsenderConfig> //
         return new PgsenderActionTerminateEnd<>(action);
     }
 
-    public static <R, C extends PgsenderConfig>
-    PgsenderActionTerminateEnd<R, C> of //
+    public static <C extends PgsenderConfig>
+    PgsenderActionTerminateEnd<C> of //
         /* */( C config //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */, AtomicReference<SimpleStatus> status //
@@ -49,7 +49,7 @@ public class PgsenderActionTerminateEnd<R, C extends PgsenderConfig> //
 
     public final PgsenderMetricEnd metric;
 
-    private PgsenderActionTerminateEnd(PgsenderActionData<R, C> action)
+    private PgsenderActionTerminateEnd(PgsenderActionData<C> action)
     {
         super(action.config, action.tqueue, action.status);
         this.metric = action.toEndMetrics();
@@ -67,7 +67,7 @@ public class PgsenderActionTerminateEnd<R, C extends PgsenderConfig> //
     }
 
     @Override
-    public PgsenderActionThrowsErrors<R, C> next(Throwable throwsError)
+    public PgsenderActionThrowsErrors<C> next(Throwable throwsError)
     {
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
@@ -82,13 +82,13 @@ public class PgsenderActionTerminateEnd<R, C extends PgsenderConfig> //
     }
 
     @Override
-    public PgsenderResultEnd<R, C, PgsenderMetricEnd> get()
+    public PgsenderResultEnd<C, PgsenderMetricEnd> get()
     {
         return PgsenderResultEnd.of(this.config, this.metric);
     }
 
     @Override
-    public PgsenderResultEnd<R, C, PgsenderMetricEnd> del()
+    public PgsenderResultEnd<C, PgsenderMetricEnd> del()
     {
         return PgsenderResultEnd.of(this.config, this.metric);
     }

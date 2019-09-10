@@ -18,13 +18,13 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-class PgsenderActionDataRelaLock<R, C extends PgsenderConfig> //
-    extends PgsenderActionData<R, C>
+class PgsenderActionDataRelaLock<C extends PgsenderConfig> //
+    extends PgsenderActionData<C>
 {
     private static final Logger logger = LoggerFactory.getLogger(PgsenderActionDataRelaLock.class);
 
-    static <R, C extends PgsenderConfig>  //
-    PgsenderActionDataRelaLock<R, C> of(PgsenderActionDataRelaList<R, C> action)
+    static <C extends PgsenderConfig>  //
+    PgsenderActionDataRelaLock<C> of(PgsenderActionDataRelaList<C> action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -36,7 +36,7 @@ class PgsenderActionDataRelaLock<R, C extends PgsenderConfig> //
 
     public final ImmutableList<PgsqlRelationMetric> relationLst;
 
-    private PgsenderActionDataRelaLock(PgsenderActionDataRelaList<R, C> action)
+    private PgsenderActionDataRelaLock(PgsenderActionDataRelaList<C> action)
     {
         super(action, System.currentTimeMillis());
         this.relalist = PgsenderReportRelaList.of(action, this.actionStart);
@@ -45,7 +45,7 @@ class PgsenderActionDataRelaLock<R, C extends PgsenderConfig> //
     }
 
     @Override
-    public PgsenderAction<R, C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
+    public PgsenderAction<C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws SQLException, InterruptedException
     {
         if (exesvc == null) {

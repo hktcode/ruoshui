@@ -14,8 +14,8 @@ import com.hktcode.pgstack.ruoshui.upper.pgsender.SnapshotConfig;
 public class UpcsmReportFetchThread
 {
     public static UpcsmReportFetchThread of //
-        /* */(PgsenderResult<PgRecord, MainlineConfig> mainline //
-        /* */, ImmutableList<PgsenderResult<com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecord, SnapshotConfig>> snapshot //
+        /* */(PgsenderResult<MainlineConfig> mainline //
+        /* */, ImmutableList<PgsenderResult<SnapshotConfig>> snapshot //
         /* */)
     {
         if (mainline == null) {
@@ -27,13 +27,13 @@ public class UpcsmReportFetchThread
         return new UpcsmReportFetchThread(mainline, snapshot);
     }
 
-    public final PgsenderResult<PgRecord, MainlineConfig> mainline;
+    public final PgsenderResult<MainlineConfig> mainline;
 
-    public final ImmutableList<PgsenderResult<com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecord, SnapshotConfig>> snapshot;
+    public final ImmutableList<PgsenderResult<SnapshotConfig>> snapshot;
 
     protected UpcsmReportFetchThread //
-        /* */( PgsenderResult<PgRecord, MainlineConfig> mainline
-        /* */, ImmutableList<PgsenderResult<com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecord, SnapshotConfig>> snapshot
+        /* */( PgsenderResult<MainlineConfig> mainline
+        /* */, ImmutableList<PgsenderResult<SnapshotConfig>> snapshot
         /* */)
     {
         this.mainline = mainline;

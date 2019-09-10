@@ -15,11 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-public class PgsenderActionDataSsFinish<R, C extends PgsenderConfig> //
-    extends PgsenderActionData<R, C>
+public class PgsenderActionDataSsFinish<C extends PgsenderConfig> //
+    extends PgsenderActionData<C>
 {
-    static <R, C extends PgsenderConfig> //
-    PgsenderActionDataSsFinish<R, C> of(PgsenderActionDataSrFinish<R, C> action)
+    static <C extends PgsenderConfig> //
+    PgsenderActionDataSsFinish<C> of(PgsenderActionDataSrFinish<C> action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -27,8 +27,8 @@ public class PgsenderActionDataSsFinish<R, C extends PgsenderConfig> //
         return new PgsenderActionDataSsFinish<>(action);
     }
 
-    static <R, C extends PgsenderConfig> //
-    PgsenderActionDataSsFinish<R, C> of(PgsenderActionDataSsBegins<R, C> action)
+    static <C extends PgsenderConfig> //
+    PgsenderActionDataSsFinish<C> of(PgsenderActionDataSsBegins<C> action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -50,7 +50,7 @@ public class PgsenderActionDataSsFinish<R, C extends PgsenderConfig> //
 
     public final ImmutableList<PgsqlRelationMetric> relationLst;
 
-    private PgsenderActionDataSsFinish(PgsenderActionDataSsBegins<R, C> action)
+    private PgsenderActionDataSsFinish(PgsenderActionDataSsBegins<C> action)
     {
         super(action, System.currentTimeMillis());
         this.relalist = action.relalist;
@@ -63,7 +63,7 @@ public class PgsenderActionDataSsFinish<R, C extends PgsenderConfig> //
         this.logDatetime = action.logDatetime;
     }
 
-    private PgsenderActionDataSsFinish(PgsenderActionDataSrFinish<R, C> action)
+    private PgsenderActionDataSsFinish(PgsenderActionDataSrFinish<C> action)
     {
         super(action, System.currentTimeMillis());
         this.relalist = action.relalist;
@@ -77,7 +77,7 @@ public class PgsenderActionDataSsFinish<R, C extends PgsenderConfig> //
     }
 
     @Override
-    public PgsenderAction<R, C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl)
+    public PgsenderAction<C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl)
         throws InterruptedException
     {
         if (exesvc == null) {

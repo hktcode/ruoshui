@@ -8,29 +8,29 @@ import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.replication.LogSequenceNumber;
 
-public interface PgsenderAction<R, C extends PgsenderConfig> //
-    extends BgWorker<PgsenderAction<R, C>>
+public interface PgsenderAction<C extends PgsenderConfig> //
+    extends BgWorker<PgsenderAction<C>>
 {
     @Override
-    default PgsenderResult<R, C> pst()
+    default PgsenderResult<C> pst()
     {
         return this.get();
     }
 
     @Override
-    default PgsenderResult<R, C> put()
+    default PgsenderResult<C> put()
     {
         return this.get();
     }
 
     @Override
-    PgsenderResult<R, C> get();
+    PgsenderResult<C> get();
 
     @Override
     @SuppressWarnings("unchecked")
     PgsenderResultEnd del();
 
-    default PgsenderResult<R, C> pst(LogSequenceNumber lsn)
+    default PgsenderResult<C> pst(LogSequenceNumber lsn)
     {
         if (lsn == null) {
             throw new ArgumentNullException("lsn");
@@ -38,7 +38,7 @@ public interface PgsenderAction<R, C extends PgsenderConfig> //
         return this.get();
     }
 
-    default PgsenderResult<R, C> pst(SnapshotConfig config)
+    default PgsenderResult<C> pst(SnapshotConfig config)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -46,7 +46,7 @@ public interface PgsenderAction<R, C extends PgsenderConfig> //
         return this.get();
     }
 
-    PgsenderActionThrowsErrors<R, C> next(Throwable throwsError);
+    PgsenderActionThrowsErrors<C> next(Throwable throwsError);
 
     PgRecord send(PgRecord record) throws InterruptedException;
 

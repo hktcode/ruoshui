@@ -8,8 +8,8 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderMetricRunRelaLock implements PgsenderMetricRun
 {
-    static <R, C extends PgsenderConfig>
-    PgsenderMetricRunRelaLock of(PgsenderActionDataRelaLock<R, C> action)
+    static <C extends PgsenderConfig>
+    PgsenderMetricRunRelaLock of(PgsenderActionDataRelaLock<C> action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -17,8 +17,8 @@ public class PgsenderMetricRunRelaLock implements PgsenderMetricRun
         return new PgsenderMetricRunRelaLock(action);
     }
 
-    private <R, C extends PgsenderConfig>
-    PgsenderMetricRunRelaLock(PgsenderActionDataRelaLock<R, C> action)
+    private <C extends PgsenderConfig>
+    PgsenderMetricRunRelaLock(PgsenderActionDataRelaLock<C> action)
     {
         long finish = System.currentTimeMillis();
         this.relalist = action.relalist;

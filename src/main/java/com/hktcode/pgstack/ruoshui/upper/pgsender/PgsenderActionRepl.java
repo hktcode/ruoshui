@@ -11,8 +11,8 @@ import org.postgresql.jdbc.PgConnection;
 import java.sql.SQLException;
 
 abstract class PgsenderActionRepl //
-    extends TqueueAction<PgsenderAction<PgRecord, MainlineConfig>, MainlineConfig, PgRecord> //
-    implements PgsenderAction<PgRecord, MainlineConfig> //
+    extends TqueueAction<PgsenderAction<MainlineConfig>, MainlineConfig, PgRecord> //
+    implements PgsenderAction<MainlineConfig> //
 {
     public final long actionStart;
 
@@ -20,20 +20,20 @@ abstract class PgsenderActionRepl //
 
     public long fetchMillis = 0;
 
-    protected PgsenderActionRepl(PgsenderActionData<PgRecord, MainlineConfig> action, long actionStart)
+    protected PgsenderActionRepl(PgsenderActionData<MainlineConfig> action, long actionStart)
     {
         super(action.config, action.tqueue, action.status);
         this.actionStart = actionStart;
         this.logDatetime = action.logDatetime;
     }
 
-    abstract PgsenderAction<PgRecord, MainlineConfig> next(PgConnection pgrepl) //
+    abstract PgsenderAction<MainlineConfig> next(PgConnection pgrepl) //
         throws SQLException, InterruptedException;
 
     public abstract PgsenderMetricRun toRunMetrics();
 
     @Override
-    public PgsenderResultRun<PgRecord, MainlineConfig> get()
+    public PgsenderResultRun<MainlineConfig> get()
     {
         MainlineConfig config = this.config;
         PgsenderMetricRun metric = this.toRunMetrics();
@@ -41,7 +41,7 @@ abstract class PgsenderActionRepl //
     }
 
     @Override
-    public PgsenderResultEnd<PgRecord, MainlineConfig, PgsenderMetricEnd> del()
+    public PgsenderResultEnd<MainlineConfig, PgsenderMetricEnd> del()
     {
         MainlineConfig config = this.config;
         PgsenderMetricEnd metric = this.toEndMetrics();
@@ -49,7 +49,7 @@ abstract class PgsenderActionRepl //
     }
 
     @Override
-    public PgsenderActionThrowsErrors<PgRecord, MainlineConfig>
+    public PgsenderActionThrowsErrors<MainlineConfig>
     next(Throwable throwsError)
     {
         if (throwsError == null) {

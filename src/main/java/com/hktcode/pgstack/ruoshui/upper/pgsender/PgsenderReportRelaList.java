@@ -31,8 +31,8 @@ public class PgsenderReportRelaList
             /* */);
     }
 
-    public static <R, C extends PgsenderConfig>
-    PgsenderReportRelaList of(PgsenderActionDataRelaList<R, C> action, long finish)
+    public static <C extends PgsenderConfig>
+    PgsenderReportRelaList of(PgsenderActionDataRelaList<C> action, long finish)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -52,8 +52,8 @@ public class PgsenderReportRelaList
 
     public final ImmutableList<String> retryReason;
 
-    private <R, C extends PgsenderConfig> //
-    PgsenderReportRelaList(PgsenderActionDataRelaList<R, C> action, long finish)
+    private <C extends PgsenderConfig> //
+    PgsenderReportRelaList(PgsenderActionDataRelaList<C> action, long finish)
     {
         this.totalMillis = finish - action.actionStart;
         this.rsgetCounts = action.rsgetCounts;
