@@ -7,8 +7,8 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmActionRun;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmThreadMainline;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmThreadSnapshot;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmSenderMainline;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmSenderSnapshot;
 
 public class PgRecordLogicalMsg implements PgRecord
 {
@@ -31,7 +31,7 @@ public class PgRecordLogicalMsg implements PgRecord
     }
 
     @Override
-    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmThreadSnapshot thread)
+    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmSenderSnapshot thread)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -43,7 +43,7 @@ public class PgRecordLogicalMsg implements PgRecord
     }
 
     @Override
-    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmThreadMainline thread)
+    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmSenderMainline thread)
     {
         if (action == null) {
             throw new ArgumentNullException("action");

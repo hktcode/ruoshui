@@ -11,7 +11,7 @@ public class UpcsmActionErr //
     extends SimpleWorker<UpcsmAction> implements UpcsmAction
 {
     public static UpcsmActionErr of //
-        (UpcsmActionRun action, UpcsmReportFetchThread fetchThread, Throwable throwsError)
+        (UpcsmActionRun action, UpcsmReportSender fetchThread, Throwable throwsError)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -40,7 +40,7 @@ public class UpcsmActionErr //
     public final UpcsmMetricErr metric;
 
     private UpcsmActionErr //
-        (UpcsmActionRun action, UpcsmReportFetchThread fetchThread, Throwable throwsError)
+        (UpcsmActionRun action, UpcsmReportSender fetchThread, Throwable throwsError)
     {
         super(action.status, 0);
         this.metric = UpcsmMetricErr.of(action, fetchThread, throwsError);

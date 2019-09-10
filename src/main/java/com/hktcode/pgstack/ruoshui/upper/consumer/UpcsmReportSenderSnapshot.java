@@ -8,9 +8,9 @@ import com.google.common.collect.ImmutableList;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgResult;
 
-public class UpcsmReportFetchThreadSnapshot extends UpcsmReportFetchThread
+public class UpcsmReportSenderSnapshot extends UpcsmReportSender
 {
-    public static UpcsmReportFetchThreadSnapshot of //
+    public static UpcsmReportSenderSnapshot of //
         /* */(PgResult mainline //
         /* */, ImmutableList<PgResult> snapshot //
         /* */)
@@ -21,10 +21,10 @@ public class UpcsmReportFetchThreadSnapshot extends UpcsmReportFetchThread
         if (snapshot == null) {
             throw new ArgumentNullException("snapshot");
         }
-        return new UpcsmReportFetchThreadSnapshot(mainline, snapshot);
+        return new UpcsmReportSenderSnapshot(mainline, snapshot);
     }
 
-    private UpcsmReportFetchThreadSnapshot //
+    private UpcsmReportSenderSnapshot //
         /* */(PgResult mainline //
         /* */, ImmutableList<PgResult> snapshot //
         /* */)

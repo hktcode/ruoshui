@@ -64,7 +64,7 @@ public class UpcsmActionRun //
 
     public String statusInfor = "";
 
-    public UpcsmThread fetchThread;
+    public UpcsmSender fetchThread;
 
     public UpcsmAction next() throws InterruptedException, ExecutionException, ScriptException
     {
@@ -140,13 +140,13 @@ public class UpcsmActionRun //
         this.config = config;
         this.comein = comein;
         this.actionStart = System.currentTimeMillis();
-        this.fetchThread = UpcsmThreadMainline.of(config);
+        this.fetchThread = UpcsmSenderMainline.of(config);
     }
 
     @Override
     public UpcsmResult put() throws InterruptedException
     {
-        UpcsmReportFetchThread fetchThreadReport = this.fetchThread.put();
+        UpcsmReportSender fetchThreadReport = this.fetchThread.put();
         UpcsmMetricRun metric = UpcsmMetricRun.of(this, fetchThreadReport);
         return UpcsmResultRun.of(metric);
     }
@@ -154,7 +154,7 @@ public class UpcsmActionRun //
     @Override
     public UpcsmResultRun get() throws InterruptedException
     {
-        UpcsmReportFetchThread fetchThreadReport = this.fetchThread.get();
+        UpcsmReportSender fetchThreadReport = this.fetchThread.get();
         UpcsmMetricRun metric = UpcsmMetricRun.of(this, fetchThreadReport);
         return UpcsmResultRun.of(metric);
     }
@@ -162,7 +162,7 @@ public class UpcsmActionRun //
     @Override
     public UpcsmResultEnd del() throws InterruptedException
     {
-        UpcsmReportFetchThread fetchThreadReport = this.fetchThread.del();
+        UpcsmReportSender fetchThreadReport = this.fetchThread.del();
         UpcsmMetricEnd metric = UpcsmMetricEnd.of(this, fetchThreadReport);
         return UpcsmResultEnd.of(metric);
     }
@@ -173,7 +173,7 @@ public class UpcsmActionRun //
         if (lsn == null) {
             throw new ArgumentNullException("lsn");
         }
-        UpcsmReportFetchThread fetchThreadReport = this.fetchThread.pst(lsn);
+        UpcsmReportSender fetchThreadReport = this.fetchThread.pst(lsn);
         UpcsmMetricRun metric = UpcsmMetricRun.of(this, fetchThreadReport);
         return UpcsmResultRun.of(metric);
     }
@@ -186,13 +186,13 @@ public class UpcsmActionRun //
             throw new ArgumentNullException("params");
         }
         SnapshotConfig config = params.toConfig(this.config);
-        UpcsmThread oldThread = this.fetchThread;
-        UpcsmThread newThread = this.fetchThread.pst(config);
+        UpcsmSender oldThread = this.fetchThread;
+        UpcsmSender newThread = this.fetchThread.pst(config);
         if (oldThread == newThread) {
             return this.get();
         }
         this.fetchThread = newThread;
-        UpcsmReportFetchThread fetchThreadReport =  this.fetchThread.put();
+        UpcsmReportSender fetchThreadReport =  this.fetchThread.put();
         UpcsmMetricRun metric = UpcsmMetricRun.of(this, fetchThreadReport);
         return UpcsmResultRun.of(metric);
     }

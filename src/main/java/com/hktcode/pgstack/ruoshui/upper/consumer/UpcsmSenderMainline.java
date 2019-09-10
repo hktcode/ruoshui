@@ -25,13 +25,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class UpcsmThreadMainline extends UpcsmThread
+public class UpcsmSenderMainline extends UpcsmSender
 {
     public final List<PgResult> sslist = new ArrayList<>();
 
     public final TransferQueue<PgRecord> tqueue;
 
-    public static UpcsmThreadMainline of(MainlineConfig config)
+    public static UpcsmSenderMainline of(MainlineConfig config)
     {
         if (config == null) {
             throw new ArgumentNullException("thread");
@@ -43,7 +43,7 @@ public class UpcsmThreadMainline extends UpcsmThread
         SimpleStatusOuterPut s = SimpleStatusOuterPut.of(put, new Phaser(2));
         AtomicReference<SimpleStatus> status = new AtomicReference<>(s);
         Thread thread = new Thread(Mainline.of(config, status, tqueue));
-        return new UpcsmThreadMainline(thread, tqueue, status);
+        return new UpcsmSenderMainline(thread, tqueue, status);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class UpcsmThreadMainline extends UpcsmThread
         }
     }
 
-    private UpcsmThreadMainline //
+    private UpcsmSenderMainline //
         /* */(Thread thread //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */, AtomicReference<SimpleStatus> status //
@@ -77,18 +77,18 @@ public class UpcsmThreadMainline extends UpcsmThread
     }
 
     @Override
-    public UpcsmReportFetchThread put() throws InterruptedException
+    public UpcsmReportSender put() throws InterruptedException
     {
         SimpleHolder holder = SimpleHolder.of(status);
         SimpleFuturePut future = holder.put();
         thread.start();
         PgResult mainline = (PgResult)future.get().get(0);
         ImmutableList<PgResult> snapshot = ImmutableList.copyOf(sslist);
-        return UpcsmReportFetchThread.of(mainline, snapshot);
+        return UpcsmReportSender.of(mainline, snapshot);
     }
 
     @Override
-    public UpcsmReportFetchThread get() throws InterruptedException
+    public UpcsmReportSender get() throws InterruptedException
     {
         SimpleHolder holder = SimpleHolder.of(status);
         SimpleMethodGet[] params = new SimpleMethodGet[] {
@@ -99,11 +99,11 @@ public class UpcsmThreadMainline extends UpcsmThread
         SimpleFutureGet future = holder.get(get);
         PgResult mainline = (PgResult)future.get().get(0);
         ImmutableList<PgResult> snapshot = ImmutableList.copyOf(sslist);
-        return UpcsmReportFetchThread.of(mainline, snapshot);
+        return UpcsmReportSender.of(mainline, snapshot);
     }
 
     @Override
-    public UpcsmReportFetchThread del() throws InterruptedException
+    public UpcsmReportSender del() throws InterruptedException
     {
         SimpleHolder holder = SimpleHolder.of(status);
         SimpleMethodDel[] params = new SimpleMethodDel[] {
@@ -114,11 +114,11 @@ public class UpcsmThreadMainline extends UpcsmThread
         SimpleFutureDel future = holder.del(del);
         PgResult mainline = (PgResult)future.get().get(0);
         ImmutableList<PgResult> snapshot = ImmutableList.copyOf(sslist);
-        return UpcsmReportFetchThread.of(mainline, snapshot);
+        return UpcsmReportSender.of(mainline, snapshot);
     }
 
     @Override
-    public UpcsmReportFetchThread pst(LogSequenceNumber lsn) //
+    public UpcsmReportSender pst(LogSequenceNumber lsn) //
         throws InterruptedException
     {
         SimpleHolder holder = SimpleHolder.of(status);
@@ -130,11 +130,11 @@ public class UpcsmThreadMainline extends UpcsmThread
         SimpleFuturePst future = holder.pst(pst);
         PgResult mainline = (PgResult)future.get().get(0);
         ImmutableList<PgResult> snapshot = ImmutableList.copyOf(sslist);
-        return UpcsmReportFetchThread.of(mainline, snapshot);
+        return UpcsmReportSender.of(mainline, snapshot);
     }
 
     @Override
-    public UpcsmThread pst(SnapshotConfig config) //
+    public UpcsmSender pst(SnapshotConfig config) //
         throws InterruptedException
     {
         SimpleHolder holder = SimpleHolder.of(status);
@@ -155,6 +155,6 @@ public class UpcsmThreadMainline extends UpcsmThread
         SimpleStatusOuterPut s = SimpleStatusOuterPut.of(put, new Phaser(2));
         AtomicReference<SimpleStatus> status = new AtomicReference<>(s);
         Thread thread = new Thread(Snapshot.of(config, status, q));
-        return UpcsmThreadSnapshotLockingRel.of(this, thread, q, status);
+        return UpcsmSenderSnapshotLockingRel.of(this, thread, q, status);
     }
 }

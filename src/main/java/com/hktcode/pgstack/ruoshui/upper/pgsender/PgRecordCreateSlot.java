@@ -7,8 +7,8 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmActionRun;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmThreadSnapshot;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmThreadSnapshotUntilPoint;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmSenderSnapshot;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmSenderSnapshotUntilPoint;
 
 public class PgRecordCreateSlot implements PgRecord
 {
@@ -28,7 +28,7 @@ public class PgRecordCreateSlot implements PgRecord
     }
 
     @Override
-    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmThreadSnapshot thread)
+    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmSenderSnapshot thread)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -36,7 +36,7 @@ public class PgRecordCreateSlot implements PgRecord
         if (thread == null) {
             throw new ArgumentNullException("thread");
         }
-        action.fetchThread = UpcsmThreadSnapshotUntilPoint.of(thread, slotTuple);
+        action.fetchThread = UpcsmSenderSnapshotUntilPoint.of(thread, slotTuple);
         return null;
     }
 }

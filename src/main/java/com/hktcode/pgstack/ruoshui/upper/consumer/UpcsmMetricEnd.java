@@ -9,7 +9,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 public class UpcsmMetricEnd
 {
     public static UpcsmMetricEnd of //
-    (UpcsmActionRun action, UpcsmReportFetchThread fetchThread) //
+    (UpcsmActionRun action, UpcsmReportSender fetchThread) //
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -34,12 +34,12 @@ public class UpcsmMetricEnd
 
     public final long totalMillis;
 
-    public final UpcsmReportFetchThread fetchThread;
+    public final UpcsmReportSender fetchThread;
 
     public final String statusInfor;
 
     private UpcsmMetricEnd //
-    (UpcsmActionRun action, UpcsmReportFetchThread fetchThread) //
+    (UpcsmActionRun action, UpcsmReportSender fetchThread) //
     {
         long finish = System.currentTimeMillis();
         this.actionStart = action.actionStart;

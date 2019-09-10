@@ -22,45 +22,49 @@ import java.util.concurrent.Phaser;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class UpcsmThreadSnapshot extends UpcsmThread
+public abstract class UpcsmSenderSnapshot extends UpcsmSender
 {
+    public final UpcsmSenderMainline mlxact;
+
     protected final TransferQueue<PgRecord> tqueue;
 
-    protected UpcsmThreadSnapshot(UpcsmThreadSnapshot thread)
+    protected UpcsmSenderSnapshot(UpcsmSenderSnapshot thread)
     {
-        super(thread.mlxact, thread.thread, thread.status);
+        super(thread.thread, thread.status);
+        this.mlxact = thread.mlxact;
         this.tqueue = thread.tqueue;
     }
 
-    protected UpcsmThreadSnapshot
-        /* */( UpcsmThreadMainline mlxact
+    protected UpcsmSenderSnapshot
+        /* */( UpcsmSenderMainline mlxact
         /* */, Thread thread
         /* */, TransferQueue<PgRecord> tqueue
         /* */, AtomicReference<SimpleStatus> status
         /* */)
     {
-        super(mlxact, thread, status);
+        super(thread, status);
+        this.mlxact = mlxact;
         this.tqueue = tqueue;
     }
 
     @Override
-    public UpcsmReportFetchThread put() throws InterruptedException
+    public UpcsmReportSender put() throws InterruptedException
     {
         SimpleHolder holder = SimpleHolder.of(status);
         SimpleFuturePut future = holder.put();
         thread.start();
-        UpcsmReportFetchThread ml = this.mlxact.get();
+        UpcsmReportSender ml = this.mlxact.get();
         PgResult snapshot = (PgResult)future.get().get(0);
         ImmutableList<PgResult> list = ImmutableList
             .<PgResult>builder() //
             .addAll(ml.snapshot) //
             .add(snapshot) //
             .build();
-        return UpcsmReportFetchThread.of(ml.mainline, list);
+        return UpcsmReportSender.of(ml.mainline, list);
     }
 
     @Override
-    public UpcsmReportFetchThread get() throws InterruptedException
+    public UpcsmReportSender get() throws InterruptedException
     {
         SimpleHolder holder = SimpleHolder.of(status);
         SimpleMethodGet[] params = new SimpleMethodGet[] {
@@ -69,18 +73,18 @@ public abstract class UpcsmThreadSnapshot extends UpcsmThread
         Phaser phaser = new Phaser(2);
         SimpleStatusOuterGet get = SimpleStatusOuterGet.of(params, phaser);
         SimpleFutureGet future = holder.get(get);
-        UpcsmReportFetchThread ml = this.mlxact.get();
+        UpcsmReportSender ml = this.mlxact.get();
         PgResult snapshot = (PgResult)future.get().get(0);
         ImmutableList<PgResult> list = ImmutableList
             .<PgResult>builder() //
             .addAll(ml.snapshot) //
             .add(snapshot) //
             .build();
-        return UpcsmReportFetchThread.of(ml.mainline, list);
+        return UpcsmReportSender.of(ml.mainline, list);
     }
 
     @Override
-    public UpcsmReportFetchThread del() throws InterruptedException
+    public UpcsmReportSender del() throws InterruptedException
     {
         SimpleHolder holder = SimpleHolder.of(status);
         SimpleMethodDel[] params = new SimpleMethodDel[] {
@@ -89,18 +93,18 @@ public abstract class UpcsmThreadSnapshot extends UpcsmThread
         Phaser phaser = new Phaser(2);
         SimpleStatusOuterDel del = SimpleStatusOuterDel.of(params, phaser);
         SimpleFutureDel future = holder.del(del);
-        UpcsmReportFetchThread ml = this.mlxact.del();
+        UpcsmReportSender ml = this.mlxact.del();
         PgResult snapshot = (PgResult)future.get().get(0);
         ImmutableList<PgResult> list = ImmutableList
             .<PgResult>builder() //
             .addAll(ml.snapshot) //
             .add(snapshot) //
             .build();
-        return UpcsmReportFetchThread.of(ml.mainline, list);
+        return UpcsmReportSender.of(ml.mainline, list);
     }
 
     @Override
-    public UpcsmReportFetchThread pst(LogSequenceNumber lsn) //
+    public UpcsmReportSender pst(LogSequenceNumber lsn) //
         throws InterruptedException
     {
         SimpleHolder holder = SimpleHolder.of(status);
@@ -110,13 +114,13 @@ public abstract class UpcsmThreadSnapshot extends UpcsmThread
         Phaser phaser = new Phaser(2);
         SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(params, phaser);
         SimpleFuturePst future = holder.pst(pst);
-        UpcsmReportFetchThread ml = this.mlxact.pst(lsn);
+        UpcsmReportSender ml = this.mlxact.pst(lsn);
         PgResult snapshot = (PgResult)future.get().get(0);
         ImmutableList<PgResult> list = ImmutableList
             .<PgResult>builder() //
             .addAll(ml.snapshot) //
             .add(snapshot) //
             .build();
-        return UpcsmReportFetchThread.of(ml.mainline, list);
+        return UpcsmReportSender.of(ml.mainline, list);
     }
 }

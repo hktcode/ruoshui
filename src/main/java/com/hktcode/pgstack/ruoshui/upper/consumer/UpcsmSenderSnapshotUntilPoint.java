@@ -10,13 +10,13 @@ import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UpcsmThreadSnapshotUntilPoint extends UpcsmThreadSnapshot
+public class UpcsmSenderSnapshotUntilPoint extends UpcsmSenderSnapshot
 {
     private static final Logger logger //
-        = LoggerFactory.getLogger(UpcsmThreadSnapshotUntilPoint.class);
+        = LoggerFactory.getLogger(UpcsmSenderSnapshotUntilPoint.class);
 
-    public static UpcsmThreadSnapshotUntilPoint of
-        /* */( UpcsmThreadSnapshot snapshot //
+    public static UpcsmSenderSnapshotUntilPoint of
+        /* */(UpcsmSenderSnapshot snapshot //
         /* */, PgReplSlotTuple slttuple //
         /* */) //
     {
@@ -26,17 +26,17 @@ public class UpcsmThreadSnapshotUntilPoint extends UpcsmThreadSnapshot
         if (slttuple == null) {
             throw new ArgumentNullException("slttuple");
         }
-        return new UpcsmThreadSnapshotUntilPoint(snapshot, slttuple);
+        return new UpcsmSenderSnapshotUntilPoint(snapshot, slttuple);
     }
 
     private final PgReplSlotTuple slot;
 
-    private UpcsmThreadSnapshotUntilPoint //
-        /* */( UpcsmThreadSnapshot snapshot //
+    private UpcsmSenderSnapshotUntilPoint //
+        /* */( UpcsmSenderSnapshot snapshot //
         /* */, PgReplSlotTuple slttuple //
         /* */) //
     {
-        super(snapshot.mlxact, snapshot.thread, snapshot.tqueue, snapshot.status);
+        super(snapshot);
         this.slot = slttuple;
     }
 
@@ -49,7 +49,7 @@ public class UpcsmThreadSnapshotUntilPoint extends UpcsmThreadSnapshot
             if (record.msg instanceof LogicalTxactBeginsMsg) {
                 LogicalTxactBeginsMsg beginsMsg = (LogicalTxactBeginsMsg)record.msg;
                 if (Long.compareUnsigned(beginsMsg.lsnofcmt, slot.consistentPoint) > 0) {
-                    action.fetchThread = UpcsmThreadSnapshotSelectData.of(this, record);
+                    action.fetchThread = UpcsmSenderSnapshotSelectData.of(this, record);
                     return null;
                 }
             }

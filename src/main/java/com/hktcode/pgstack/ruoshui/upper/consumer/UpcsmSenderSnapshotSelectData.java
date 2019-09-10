@@ -14,13 +14,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
-public class UpcsmThreadSnapshotSelectData extends UpcsmThreadSnapshot
+public class UpcsmSenderSnapshotSelectData extends UpcsmSenderSnapshot
 {
     private static final Logger logger //
-        = LoggerFactory.getLogger(UpcsmThreadSnapshotSelectData.class);
+        = LoggerFactory.getLogger(UpcsmSenderSnapshotSelectData.class);
 
-    public static UpcsmThreadSnapshotSelectData of
-        /* */(UpcsmThreadSnapshot thread //
+    public static UpcsmSenderSnapshotSelectData of
+        /* */(UpcsmSenderSnapshot thread //
         /* */, UpperRecordConsumer record //
         /* */) //
     {
@@ -30,13 +30,13 @@ public class UpcsmThreadSnapshotSelectData extends UpcsmThreadSnapshot
         if (record == null) {
             throw new ArgumentNullException("record");
         }
-        return new UpcsmThreadSnapshotSelectData(thread, record);
+        return new UpcsmSenderSnapshotSelectData(thread, record);
     }
 
     private final UpperRecordConsumer record;
 
-    private UpcsmThreadSnapshotSelectData
-        /* */(UpcsmThreadSnapshot thread //
+    private UpcsmSenderSnapshotSelectData
+        /* */(UpcsmSenderSnapshot thread //
         /* */, UpperRecordConsumer record //
         /* */) //
     {

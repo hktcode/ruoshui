@@ -14,22 +14,22 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
-public class UpcsmThreadSnapshotCreateSlot extends UpcsmThreadSnapshot
+public class UpcsmSenderSnapshotCreateSlot extends UpcsmSenderSnapshot
 {
-    public static UpcsmThreadSnapshotCreateSlot of(UpcsmThreadSnapshot snapshot)
+    public static UpcsmSenderSnapshotCreateSlot of(UpcsmSenderSnapshot snapshot)
     {
         if (snapshot == null) {
             throw new ArgumentNullException("snapshot");
         }
-        return new UpcsmThreadSnapshotCreateSlot(snapshot);
+        return new UpcsmSenderSnapshotCreateSlot(snapshot);
     }
 
-    private UpcsmThreadSnapshotCreateSlot(UpcsmThreadSnapshot snapshot)
+    private UpcsmSenderSnapshotCreateSlot(UpcsmSenderSnapshot snapshot)
     {
         super(snapshot);
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(UpcsmThreadSnapshotCreateSlot.class);
+    private static final Logger logger = LoggerFactory.getLogger(UpcsmSenderSnapshotCreateSlot.class);
 
     @Override
     public UpperRecordConsumer poll(long timeout, UpcsmActionRun action)

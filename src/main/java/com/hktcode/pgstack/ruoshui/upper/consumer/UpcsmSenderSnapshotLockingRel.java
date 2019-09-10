@@ -17,10 +17,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class UpcsmThreadSnapshotLockingRel extends UpcsmThreadSnapshot
+public class UpcsmSenderSnapshotLockingRel extends UpcsmSenderSnapshot
 {
-    public static UpcsmThreadSnapshotLockingRel of //
-        /* */(UpcsmThreadMainline mlxact //
+    public static UpcsmSenderSnapshotLockingRel of //
+        /* */( UpcsmSenderMainline mlxact //
         /* */, Thread thread //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */, AtomicReference<SimpleStatus> status //
@@ -38,11 +38,11 @@ public class UpcsmThreadSnapshotLockingRel extends UpcsmThreadSnapshot
         if (status == null) {
             throw new ArgumentNullException("status");
         }
-        return new UpcsmThreadSnapshotLockingRel(mlxact, thread, tqueue, status);
+        return new UpcsmSenderSnapshotLockingRel(mlxact, thread, tqueue, status);
     }
 
-    private UpcsmThreadSnapshotLockingRel
-        /* */(UpcsmThreadMainline mlxact //
+    private UpcsmSenderSnapshotLockingRel
+        /* */( UpcsmSenderMainline mlxact //
         /* */, Thread thread //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */, AtomicReference<SimpleStatus> status //
@@ -51,7 +51,7 @@ public class UpcsmThreadSnapshotLockingRel extends UpcsmThreadSnapshot
         super(mlxact, thread, tqueue, status);
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(UpcsmThreadSnapshotLockingRel.class);
+    private static final Logger logger = LoggerFactory.getLogger(UpcsmSenderSnapshotLockingRel.class);
 
     @Override
     public UpperRecordConsumer poll(long timeout, UpcsmActionRun action) //

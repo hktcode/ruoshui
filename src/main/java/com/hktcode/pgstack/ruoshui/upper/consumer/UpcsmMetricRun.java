@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class UpcsmMetricRun
 {
-    public static UpcsmMetricRun of(UpcsmActionRun action, UpcsmReportFetchThread fetchThread)
+    public static UpcsmMetricRun of(UpcsmActionRun action, UpcsmReportSender fetchThread)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -31,11 +31,11 @@ public class UpcsmMetricRun
 
     public final long offerMillis;
 
-    public final UpcsmReportFetchThread fetchThread;
+    public final UpcsmReportSender fetchThread;
 
     public final String statusInfor;
 
-    private UpcsmMetricRun(UpcsmActionRun action, UpcsmReportFetchThread fetchThread)
+    private UpcsmMetricRun(UpcsmActionRun action, UpcsmReportSender fetchThread)
     {
         this.actionStart = action.actionStart;
         this.recordCount = action.recordCount;

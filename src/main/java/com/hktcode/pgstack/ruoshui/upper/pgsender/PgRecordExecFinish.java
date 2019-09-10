@@ -6,7 +6,7 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmActionRun;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmThreadSnapshot;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmSenderSnapshot;
 
 public class PgRecordExecFinish implements PgRecord
 {
@@ -16,7 +16,7 @@ public class PgRecordExecFinish implements PgRecord
     }
 
     @Override
-    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmThreadSnapshot thread)
+    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmSenderSnapshot thread)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
