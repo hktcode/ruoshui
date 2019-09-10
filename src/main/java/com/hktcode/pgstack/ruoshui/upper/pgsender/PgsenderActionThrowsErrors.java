@@ -4,22 +4,11 @@
 
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
-import com.hktcode.bgsimple.status.SimpleStatus;
-import com.hktcode.bgsimple.tqueue.TqueueAction;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-import java.util.concurrent.TransferQueue;
-import java.util.concurrent.atomic.AtomicReference;
-
-public class PgsenderActionThrowsErrors
-    extends TqueueAction<PgsenderAction, PgsenderConfig, PgRecord> //
-    implements PgsenderAction //
+public class PgsenderActionThrowsErrors extends PgsenderAction
 {
-    public static  //
-    PgsenderActionThrowsErrors of //
-        /* */( PgsenderActionData action //
-        /* */, Throwable throwsError //
-        /* */)
+    public static PgsenderActionThrowsErrors of(PgsenderAction action, Throwable throwsError)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -30,83 +19,13 @@ public class PgsenderActionThrowsErrors
         return new PgsenderActionThrowsErrors(action, throwsError);
     }
 
-    public static  //
-    PgsenderActionThrowsErrors of //
-        /* */( PgsenderActionTerminateEnd action //
-        /* */, Throwable throwsError //
-        /* */)
-    {
-        if (action == null) {
-            throw new ArgumentNullException("action");
-        }
-        if (throwsError == null) {
-            throw new ArgumentNullException("throwsError");
-        }
-        return new PgsenderActionThrowsErrors(action, throwsError);
-    }
-
-    public static
-    PgsenderActionThrowsErrors of //
-        /* */( PgsenderConfig config //
-        /* */, TransferQueue<PgRecord> tqueue //
-        /* */, AtomicReference<SimpleStatus> status //
-        /* */, PgsenderMetricErr metric
-        /* */)
-    {
-        if (config == null) {
-            throw new ArgumentNullException("config");
-        }
-        if (tqueue == null) {
-            throw new ArgumentNullException("tqueue");
-        }
-        if (status == null) {
-            throw new ArgumentNullException("status");
-        }
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
-        return new PgsenderActionThrowsErrors(config, tqueue, status, metric);
-    }
-
-    private PgsenderActionThrowsErrors //
-        /* */( PgsenderActionData action //
-        /* */, Throwable throwsError //
-        /* */)
+    private PgsenderActionThrowsErrors(PgsenderAction action, Throwable throwsError)
     {
         super(action.config, action.tqueue, action.status);
         this.metric = action.toEndMetrics().toErrMetrics(throwsError);
-    }
-
-    private PgsenderActionThrowsErrors //
-        /* */( PgsenderActionTerminateEnd action //
-        /* */, Throwable throwsError //
-        /* */)
-    {
-        super(action.config, action.tqueue, action.status);
-        this.metric = action.toEndMetrics().toErrMetrics(throwsError);
-    }
-
-    private PgsenderActionThrowsErrors
-        /* */( PgsenderConfig config //
-        /* */, TransferQueue<PgRecord> tqueue //
-        /* */, AtomicReference<SimpleStatus> status //
-        /* */, PgsenderMetricErr metric
-        /* */)
-    {
-        super(config, tqueue, status);
-        this.metric = metric;
     }
 
     public final PgsenderMetricErr metric;
-
-    @Override
-    public PgsenderActionThrowsErrors next(Throwable throwsError)
-    {
-        if (throwsError == null) {
-            throw new ArgumentNullException("throwsError");
-        }
-        return this;
-    }
 
     @Override
     public PgsenderMetricEnd toEndMetrics()

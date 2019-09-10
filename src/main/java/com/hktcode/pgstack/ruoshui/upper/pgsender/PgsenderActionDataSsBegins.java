@@ -16,11 +16,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-class PgsenderActionDataSsBegins //
-    extends PgsenderActionData
+class PgsenderActionDataSsBegins extends PgsenderActionData
 {
-    static
-    PgsenderActionDataSsBegins of(PgsenderActionDataSizeDiff action)
+    static PgsenderActionDataSsBegins of(PgsenderActionDataSizeDiff action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");

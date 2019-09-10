@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 abstract class PgsenderActionDataTypelist extends PgsenderActionData
 {
     PgsenderActionDataTypelist
-        /* */(MainlineConfig config //
+        /* */( MainlineConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */)

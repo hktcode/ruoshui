@@ -4,15 +4,11 @@
 
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
-import com.hktcode.bgsimple.tqueue.TqueueAction;
-import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.jdbc.PgConnection;
 
 import java.sql.SQLException;
 
-abstract class PgsenderActionRepl //
-    extends TqueueAction<PgsenderAction, PgsenderConfig, PgRecord> //
-    implements PgsenderAction //
+abstract class PgsenderActionRepl extends PgsenderAction
 {
     public final long actionStart;
 
@@ -44,19 +40,5 @@ abstract class PgsenderActionRepl //
     {
         PgsenderMetricEnd metric = this.toEndMetrics();
         return PgsenderResultEnd.of(this.config, metric);
-    }
-
-    @Override
-    public PgsenderActionThrowsErrors next(Throwable throwsError)
-    {
-        if (throwsError == null) {
-            throw new ArgumentNullException("throwsError");
-        }
-        return PgsenderActionThrowsErrors.of //
-            /* */( this.config //
-            /* */, this.tqueue //
-            /* */, this.status //
-            /* */, this.toEndMetrics().toErrMetrics(throwsError) //
-            /* */);
     }
 }

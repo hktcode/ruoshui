@@ -18,13 +18,11 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-class PgsenderActionDataReplSlot //
-    extends PgsenderActionData
+class PgsenderActionDataReplSlot extends PgsenderActionData
 {
     private static final Logger logger = LoggerFactory.getLogger(PgsenderActionDataReplSlot.class);
 
-    static
-    PgsenderActionDataReplSlot of(PgsenderActionDataRelaLock action)
+    static PgsenderActionDataReplSlot of(PgsenderActionDataRelaLock action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");

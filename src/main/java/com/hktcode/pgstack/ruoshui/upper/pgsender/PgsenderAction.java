@@ -5,30 +5,46 @@
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.bgsimple.BgWorker;
+import com.hktcode.bgsimple.status.SimpleStatus;
+import com.hktcode.bgsimple.tqueue.TqueueAction;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.replication.LogSequenceNumber;
 
-public interface PgsenderAction extends BgWorker<PgsenderAction>
+import java.util.concurrent.TransferQueue;
+import java.util.concurrent.atomic.AtomicReference;
+
+public abstract class PgsenderAction //
+    extends TqueueAction<PgsenderAction, PgsenderConfig, PgRecord> //
+    implements BgWorker<PgsenderAction> //
 {
+    protected PgsenderAction //
+        /* */( PgsenderConfig config //
+        /* */, TransferQueue<PgRecord> tqueue //
+        /* */, AtomicReference<SimpleStatus> status //
+        /* */)
+    {
+        super(config, tqueue, status);
+    }
+
     @Override
-    default PgsenderResult pst()
+    public PgsenderResult pst()
     {
         return this.get();
     }
 
     @Override
-    default PgsenderResult put()
+    public PgsenderResult put()
     {
         return this.get();
     }
 
     @Override
-    PgsenderResult get();
+    public abstract PgsenderResult get();
 
     @Override
-    PgsenderResultEnd del();
+    public abstract PgsenderResultEnd del();
 
-    default PgsenderResult pst(LogSequenceNumber lsn)
+    public PgsenderResult pst(LogSequenceNumber lsn)
     {
         if (lsn == null) {
             throw new ArgumentNullException("lsn");
@@ -36,7 +52,7 @@ public interface PgsenderAction extends BgWorker<PgsenderAction>
         return this.get();
     }
 
-    default PgsenderResult pst(SnapshotConfig config)
+    public PgsenderResult pst(SnapshotConfig config)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -44,9 +60,13 @@ public interface PgsenderAction extends BgWorker<PgsenderAction>
         return this.get();
     }
 
-    PgsenderActionThrowsErrors next(Throwable throwsError);
+    public PgsenderActionThrowsErrors next(Throwable throwsError)
+    {
+        if (throwsError == null) {
+            throw new ArgumentNullException("throwsError");
+        }
+        return PgsenderActionThrowsErrors.of(this, throwsError);
+    }
 
-    PgRecord send(PgRecord record) throws InterruptedException;
-
-    PgsenderMetricEnd toEndMetrics();
+    public abstract PgsenderMetricEnd toEndMetrics();
 }

@@ -13,11 +13,9 @@ import org.postgresql.jdbc.PgConnection;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 
-public class PgsenderActionDataSrFinish //
-    extends PgsenderActionData
+public class PgsenderActionDataSrFinish extends PgsenderActionData
 {
-    static  //
-    PgsenderActionDataSrFinish of(PgsenderActionDataTupleval action)
+    static PgsenderActionDataSrFinish of(PgsenderActionDataTupleval action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");

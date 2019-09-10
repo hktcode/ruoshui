@@ -15,11 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-public class PgsenderActionDataSsFinish //
-    extends PgsenderActionData
+public class PgsenderActionDataSsFinish extends PgsenderActionData
 {
-    static  //
-    PgsenderActionDataSsFinish of(PgsenderActionDataSrFinish action)
+    static PgsenderActionDataSsFinish of(PgsenderActionDataSrFinish action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -27,8 +25,7 @@ public class PgsenderActionDataSsFinish //
         return new PgsenderActionDataSsFinish(action);
     }
 
-    static  //
-    PgsenderActionDataSsFinish of(PgsenderActionDataSsBegins action)
+    static PgsenderActionDataSsFinish of(PgsenderActionDataSsBegins action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");

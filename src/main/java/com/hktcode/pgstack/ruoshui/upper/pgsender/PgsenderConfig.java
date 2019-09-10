@@ -116,13 +116,13 @@ public abstract class PgsenderConfig extends TqueueConfig
         + "\n               on \"t\".\"typnamespace\" = \"n\".\"oid\" " //
         + "\n ";
 
-    public PreparedStatement queryTypelist(PgConnection pgdata) //
+    public PreparedStatement queryTypelist(PgConnection pgdata)
         throws SQLException
     {
         if (pgdata == null) {
             throw new ArgumentNullException("pgdata");
         }
-        return prepStatement(pgdata, typelistSql);
+        return preparedStatement(pgdata, typelistSql);
     }
 
     public PreparedStatement queryTupleval(PgConnection pgdata, PgReplRelation relation)
@@ -133,10 +133,10 @@ public abstract class PgsenderConfig extends TqueueConfig
         if (sql == null) {
             sql = buildSelect(pgdata, relation);
         }
-        return prepStatement(pgdata, sql);
+        return preparedStatement(pgdata, sql);
     }
 
-    protected PreparedStatement prepStatement(PgConnection pg, String sql)
+    private PreparedStatement preparedStatement(PgConnection pg, String sql) //
         throws SQLException
     {
         if (pg == null) {
@@ -184,22 +184,15 @@ public abstract class PgsenderConfig extends TqueueConfig
         return sb.toString();
     }
 
-    public PreparedStatement queryRelalist(Connection connection)
+    public PreparedStatement queryRelalist(PgConnection pgdata) //
         throws SQLException
     {
         ArrayNode arrayNode = new ArrayNode(JsonNodeFactory.instance);
         for (String name : this.logicalRepl.publicationNames) {
             arrayNode.add(name);
         }
-        PreparedStatement ps = connection.prepareStatement
-            /* */( relationSql //
-                /* */, ResultSet.TYPE_FORWARD_ONLY //
-                /* */, ResultSet.CONCUR_READ_ONLY //
-                /* */, ResultSet.CLOSE_CURSORS_AT_COMMIT //
-                /* */);
+        PreparedStatement ps = this.preparedStatement(pgdata, relationSql);
         try {
-            ps.setFetchDirection(ResultSet.FETCH_FORWARD);
-            ps.setFetchSize(this.rsFetchsize);
             ps.setString(1, arrayNode.toString());
             return ps;
         }

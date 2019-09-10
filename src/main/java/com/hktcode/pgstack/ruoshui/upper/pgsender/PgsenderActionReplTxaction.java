@@ -53,35 +53,31 @@ abstract class PgsenderActionReplTxaction extends PgsenderActionRepl
             }
         }
         this.statusInfor = "send txation finish record.";
-        return PgsenderActionTerminateEnd.of(this.config, this.tqueue, this.status, this.toEndMetrics());
+        return PgsenderActionTerminateEnd.of(this);
     }
 
-    private PgRecordLogicalMsg poll(PGReplicationStream s)
+    private PgRecordLogicalMsg poll(PGReplicationStream s) //
         throws SQLException, InterruptedException
     {
         ByteBuffer msg = s.readPending();
         ++this.fetchCounts;
-        if (msg == null) {
-            long waitTimeout = this.config.waitTimeout;
-            long logDuration = this.config.logDuration;
-            Thread.sleep(waitTimeout);
-            this.fetchMillis += waitTimeout;
-            long currMillis = System.currentTimeMillis();
-            if (currMillis - this.logDatetime >= logDuration) {
-                logger.info("readPending() returns null: waitTimeout={}, logDuration={}", waitTimeout, logDuration);
-                this.logDatetime = currMillis;
-            }
-            return null;
-        }
-        else {
+        if (msg != null) {
             ++this.recordCount;
             long key = s.getLastReceiveLSN().asLong();
             LogicalMsg val = LogicalMsg.ofLogicalWal(msg);
             return PgRecordLogicalMsg.of(key, val);
         }
+        long waitTimeout = this.config.waitTimeout;
+        long logDuration = this.config.logDuration;
+        Thread.sleep(waitTimeout);
+        this.fetchMillis += waitTimeout;
+        long currMillis = System.currentTimeMillis();
+        if (currMillis - this.logDatetime >= logDuration) {
+            logger.info("readPending() returns null: waitTimeout={}, logDuration={}", waitTimeout, logDuration);
+            this.logDatetime = currMillis;
+        }
+        return null;
     }
-
-    public abstract PgsenderMetricRunTxaction complete();
 
     @Override
     public PgsenderResultRun pst(LogSequenceNumber lsn)

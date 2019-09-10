@@ -42,11 +42,6 @@ class PgsenderActionReplTxactionSnapshot extends PgsenderActionReplTxaction
         this.ssfinish = action.ssfinish;
     }
 
-    public PgsenderMetricRunTxactionSnapshot complete()
-    {
-        return PgsenderMetricRunTxactionSnapshot.of(this);
-    }
-
     @Override
     public PgsenderMetricRunTxactionSnapshot toRunMetrics()
     {

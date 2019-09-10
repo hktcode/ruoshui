@@ -8,8 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderReportRelaLock
 {
-    static  //
-    PgsenderReportRelaLock of(PgsenderActionDataRelaLock action, long finish)
+    static PgsenderReportRelaLock of(PgsenderActionDataRelaLock action, long finish)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -25,8 +24,7 @@ public class PgsenderReportRelaLock
 
     public final long rsnextCount;
 
-    private
-    PgsenderReportRelaLock(PgsenderActionDataRelaLock action, long finish)
+    private PgsenderReportRelaLock(PgsenderActionDataRelaLock action, long finish)
     {
         this.totalMillis = finish - action.actionStart;
         this.rsgetCounts = action.rsgetCounts;

@@ -22,8 +22,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-public class PgsenderActionDataSizeDiff //
-    extends PgsenderActionData
+public class PgsenderActionDataSizeDiff extends PgsenderActionData
 {
     static
     PgsenderActionDataSizeDiff of(PgsenderActionDataReplSlot action)

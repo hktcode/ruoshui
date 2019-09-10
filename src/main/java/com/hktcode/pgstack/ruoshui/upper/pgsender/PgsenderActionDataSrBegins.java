@@ -14,11 +14,9 @@ import org.postgresql.jdbc.PgConnection;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 
-class PgsenderActionDataSrBegins //
-    extends PgsenderActionData
+class PgsenderActionDataSrBegins extends PgsenderActionData
 {
-    static  //
-    PgsenderActionDataSrBegins of(PgsenderActionDataSsBegins action)
+    static PgsenderActionDataSrBegins of(PgsenderActionDataSsBegins action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -26,8 +24,7 @@ class PgsenderActionDataSrBegins //
         return new PgsenderActionDataSrBegins(action);
     }
 
-    static  //
-    PgsenderActionDataSrBegins of(PgsenderActionDataSrFinish action)
+    static PgsenderActionDataSrBegins of(PgsenderActionDataSrFinish action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -65,7 +62,7 @@ class PgsenderActionDataSrBegins //
         this.logDatetime = action.logDatetime;
     }
 
-    private PgsenderActionDataSrBegins(PgsenderActionDataSrFinish action) //
+    private PgsenderActionDataSrBegins(PgsenderActionDataSrFinish action)
     {
         super(action, action.actionStart);
         this.relalist = action.relalist;

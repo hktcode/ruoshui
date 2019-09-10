@@ -21,11 +21,6 @@ class PgsenderActionReplTxactionStraight extends PgsenderActionReplTxaction
         super(action);
     }
 
-    public PgsenderMetricRunTxactionStraight complete()
-    {
-        return PgsenderMetricRunTxactionStraight.of(this);
-    }
-
     @Override
     public PgsenderMetricRunTxactionStraight toRunMetrics()
     {
@@ -38,4 +33,3 @@ class PgsenderActionReplTxactionStraight extends PgsenderActionReplTxaction
         return PgsenderMetricEndTxactionStraight.of(this);
     }
 }
-

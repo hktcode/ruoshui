@@ -70,16 +70,13 @@ public class Snapshot implements Runnable
         catch (InterruptedException ex) {
             logger.error("should not be interrupted by other thread.");
             Thread.currentThread().interrupt();
-        } catch (ScriptException e) {
-            logger.error("should never happen", e);
         }
         logger.info("snapshot finish.");
     }
 
-    private void runWithInterrupted() throws InterruptedException, ScriptException
+    private void runWithInterrupted() throws InterruptedException
     {
-        PgsenderAction action
-            = PgsenderActionDataRelaList.of(config, status, tqueue);
+        PgsenderAction action = PgsenderActionDataRelaList.of(config, status, tqueue);
         try (Connection repl = config.srcProperty.replicaConnection()) {
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
             ExecutorService exesvc = Executors.newSingleThreadExecutor();

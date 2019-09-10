@@ -24,11 +24,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class PgsenderActionDataRelaList //
-    extends PgsenderActionData
+public class PgsenderActionDataRelaList extends PgsenderActionData
 {
-    public static  //
-    PgsenderActionDataRelaList of
+    public static PgsenderActionDataRelaList of //
         /* */( PgsenderConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<PgRecord> tqueue //
@@ -46,8 +44,7 @@ public class PgsenderActionDataRelaList //
         return new PgsenderActionDataRelaList(config, status, tqueue);
     }
 
-    static  //
-    PgsenderActionDataRelaList of(PgsenderActionDataRelaLock action)
+    static PgsenderActionDataRelaList of(PgsenderActionDataRelaLock action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -55,8 +52,7 @@ public class PgsenderActionDataRelaList //
         return new PgsenderActionDataRelaList(action);
     }
 
-    static
-    PgsenderActionDataRelaList of(PgsenderActionDataSizeDiff action)
+    static PgsenderActionDataRelaList of(PgsenderActionDataSizeDiff action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");

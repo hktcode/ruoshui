@@ -5,8 +5,6 @@
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.bgsimple.status.SimpleStatus;
-import com.hktcode.bgsimple.tqueue.TqueueAction;
-import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.lang.exception.NeverHappenAssertionError;
 import org.postgresql.jdbc.PgConnection;
 import org.slf4j.Logger;
@@ -17,9 +15,7 @@ import java.sql.SQLException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class PgsenderActionData //
-    extends TqueueAction<PgsenderAction, PgsenderConfig, PgRecord> //
-    implements PgsenderAction //
+public abstract class PgsenderActionData extends PgsenderAction
 {
     private static final Logger logger = LoggerFactory.getLogger(PgsenderActionData.class);
 
@@ -100,15 +96,6 @@ public abstract class PgsenderActionData //
                 throw new NeverHappenAssertionError(cause);
             }
         }
-    }
-
-    @Override
-    public PgsenderActionThrowsErrors next(Throwable throwsError)
-    {
-        if (throwsError == null) {
-            throw new ArgumentNullException("throwsError");
-        }
-        return PgsenderActionThrowsErrors.of(this, throwsError);
     }
 
     public abstract PgsenderMetricRun toRunMetrics();

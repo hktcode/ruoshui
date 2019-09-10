@@ -26,11 +26,9 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-class PgsenderActionDataTupleval //
-    extends PgsenderActionData
+class PgsenderActionDataTupleval extends PgsenderActionData
 {
-    static
-    PgsenderActionDataTupleval of(PgsenderActionDataSrBegins action)
+    static PgsenderActionDataTupleval of(PgsenderActionDataSrBegins action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");

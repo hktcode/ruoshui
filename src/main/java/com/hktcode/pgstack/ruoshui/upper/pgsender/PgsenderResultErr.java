@@ -4,7 +4,6 @@
 
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
-import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderResultErr extends PgsenderResultEnd<PgsenderMetricErr>

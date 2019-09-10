@@ -9,30 +9,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderReportRelaList
 {
-    public static PgsenderReportRelaList of //
-        /* */( long totalMillis //
-        /* */, long rsgetCounts //
-        /* */, long rsgetMillis //
-        /* */, long rsnextCount //
-        /* */, long relationLst //
-        /* */, ImmutableList<String> retryReason //
-        /* */) //
-    {
-        if (retryReason == null) {
-            throw new ArgumentNullException("retryReason");
-        }
-        return new PgsenderReportRelaList //
-            /* */( totalMillis //
-            /* */, rsgetCounts //
-            /* */, rsgetMillis //
-            /* */, rsnextCount //
-            /* */, relationLst //
-            /* */, retryReason //
-            /* */);
-    }
-
-    public static
-    PgsenderReportRelaList of(PgsenderActionDataRelaList action, long finish)
+    public static PgsenderReportRelaList of(PgsenderActionDataRelaList action, long finish)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -52,8 +29,7 @@ public class PgsenderReportRelaList
 
     public final ImmutableList<String> retryReason;
 
-    private  //
-    PgsenderReportRelaList(PgsenderActionDataRelaList action, long finish)
+    private PgsenderReportRelaList(PgsenderActionDataRelaList action, long finish)
     {
         this.totalMillis = finish - action.actionStart;
         this.rsgetCounts = action.rsgetCounts;
@@ -61,22 +37,5 @@ public class PgsenderReportRelaList
         this.rsnextCount = action.rsnextCount;
         this.retryReason = action.retryReason;
         this.relationLst = action.relationLst.size();
-    }
-
-    private PgsenderReportRelaList //
-        /* */( long totalMillis //
-        /* */, long rsgetCounts //
-        /* */, long rsgetMillis //
-        /* */, long rsnextCount //
-        /* */, long relationLst //
-        /* */, ImmutableList<String> retryReason //
-        /* */) //
-    {
-        this.totalMillis = totalMillis;
-        this.rsgetCounts = rsgetCounts;
-        this.rsgetMillis = rsgetMillis;
-        this.rsnextCount = rsnextCount;
-        this.retryReason = retryReason;
-        this.relationLst = relationLst;
     }
 }

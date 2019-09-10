@@ -8,8 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderMetricErrRelaList implements PgsenderMetricErr
 {
-    static PgsenderMetricErrRelaList //
-    of(PgsenderMetricEndRelaList metric, Throwable throwerr)
+    static PgsenderMetricErrRelaList of(PgsenderMetricEndRelaList metric, Throwable throwerr)
     {
         if (metric == null) {
             throw new ArgumentNullException("metric");
@@ -20,8 +19,7 @@ public class PgsenderMetricErrRelaList implements PgsenderMetricErr
         return new PgsenderMetricErrRelaList(metric, throwerr);
     }
 
-    private PgsenderMetricErrRelaList //
-        (PgsenderMetricEndRelaList metric, Throwable throwerr)
+    private PgsenderMetricErrRelaList(PgsenderMetricEndRelaList metric, Throwable throwerr)
     {
         long finish = System.currentTimeMillis();
         this.relalist = metric.relalist;

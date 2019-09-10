@@ -8,7 +8,6 @@ import com.hktcode.pgjdbc.PgReplRelation;
 
 import javax.script.ScriptException;
 
-
 /**
  * 快照关系过滤器.
  */
