@@ -15,10 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-public class PgsenderActionDataSsFinish<R, C extends PgsenderConfig<R, C>> //
+public class PgsenderActionDataSsFinish<R, C extends PgsenderConfig> //
     extends PgsenderActionData<R, C>
 {
-    static <R, C extends PgsenderConfig<R, C>> //
+    static <R, C extends PgsenderConfig> //
     PgsenderActionDataSsFinish<R, C> of(PgsenderActionDataSrFinish<R, C> action)
     {
         if (action == null) {
@@ -27,7 +27,7 @@ public class PgsenderActionDataSsFinish<R, C extends PgsenderConfig<R, C>> //
         return new PgsenderActionDataSsFinish<>(action);
     }
 
-    static <R, C extends PgsenderConfig<R, C>> //
+    static <R, C extends PgsenderConfig> //
     PgsenderActionDataSsFinish<R, C> of(PgsenderActionDataSsBegins<R, C> action)
     {
         if (action == null) {
@@ -96,7 +96,7 @@ public class PgsenderActionDataSsFinish<R, C extends PgsenderConfig<R, C>> //
         }
         ImmutableList<PgReplRelation> l = ImmutableList.copyOf(list);
         LogicalEndSnapshotMsg msg = LogicalEndSnapshotMsg.of(l);
-        R record = this.config.createMessage(lsn, msg);
+        PgRecord record = this.config.createMessage(lsn, msg);
         while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
             if ((record = this.send(record)) == null) {
                 return this.config.afterSnapshot(this);

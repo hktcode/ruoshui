@@ -13,10 +13,10 @@ import org.postgresql.jdbc.PgConnection;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 
-public class PgsenderActionDataSrFinish<R, C extends PgsenderConfig<R, C>> //
+public class PgsenderActionDataSrFinish<R, C extends PgsenderConfig> //
     extends PgsenderActionData<R, C>
 {
-    static <R, C extends PgsenderConfig<R, C>> //
+    static <R, C extends PgsenderConfig> //
     PgsenderActionDataSrFinish<R, C> of(PgsenderActionDataTupleval<R, C> action)
     {
         if (action == null) {
@@ -68,7 +68,7 @@ public class PgsenderActionDataSrFinish<R, C extends PgsenderConfig<R, C>> //
         long lsn = this.replSlot.createTuple.consistentPoint;
         LogicalEndRelationMsg msg //
             = LogicalEndRelationMsg.of(this.curRelation.relationInfo);
-        R record = this.config.createMessage(lsn, msg);
+        PgRecord record = this.config.createMessage(lsn, msg);
         while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
             if (record != null) {
                 record = this.send(record);

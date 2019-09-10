@@ -11,11 +11,11 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class PgsenderActionTerminateEnd<R, C extends PgsenderConfig<R, C>> //
-    extends TqueueAction<PgsenderAction<R, C>, C, R> //
+public class PgsenderActionTerminateEnd<R, C extends PgsenderConfig> //
+    extends TqueueAction<PgsenderAction<R, C>, C, PgRecord> //
     implements PgsenderAction<R, C>
 {
-    public static <R, C extends PgsenderConfig<R, C>>
+    public static <R, C extends PgsenderConfig>
     PgsenderActionTerminateEnd<R, C> of(PgsenderActionData<R, C> action)
     {
         if (action == null) {
@@ -24,10 +24,10 @@ public class PgsenderActionTerminateEnd<R, C extends PgsenderConfig<R, C>> //
         return new PgsenderActionTerminateEnd<>(action);
     }
 
-    public static <R, C extends PgsenderConfig<R, C>>
+    public static <R, C extends PgsenderConfig>
     PgsenderActionTerminateEnd<R, C> of //
         /* */( C config //
-        /* */, TransferQueue<R> tqueue //
+        /* */, TransferQueue<PgRecord> tqueue //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, PgsenderMetricEnd metric //
         /* */)
@@ -57,7 +57,7 @@ public class PgsenderActionTerminateEnd<R, C extends PgsenderConfig<R, C>> //
 
     private PgsenderActionTerminateEnd //
         /* */( C config //
-        /* */, TransferQueue<R> tqueue //
+        /* */, TransferQueue<PgRecord> tqueue //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, PgsenderMetricEnd metric //
         /* */)

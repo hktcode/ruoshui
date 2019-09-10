@@ -26,10 +26,10 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-class PgsenderActionDataTupleval<R, C extends PgsenderConfig<R, C>> //
+class PgsenderActionDataTupleval<R, C extends PgsenderConfig> //
     extends PgsenderActionData<R, C>
 {
-    static <R, C extends PgsenderConfig<R, C>>
+    static <R, C extends PgsenderConfig>
     PgsenderActionDataTupleval<R, C> of(PgsenderActionDataSrBegins<R, C> action)
     {
         if (action == null) {
@@ -90,7 +90,7 @@ class PgsenderActionDataTupleval<R, C extends PgsenderConfig<R, C>> //
         PgReplRelation r = this.curRelation.relationInfo;
         final long lsn = this.replSlot.createTuple.consistentPoint;
         try (PreparedStatement ps = this.config.queryTupleval(pgdata, r)) {
-            R record = null;
+            PgRecord record = null;
             ResultSet rs = null;
             Boolean next = null;
             Future<ResultSet> rsFuture = exesvc.submit(DeputeExecuteQueryMainline.of(ps));

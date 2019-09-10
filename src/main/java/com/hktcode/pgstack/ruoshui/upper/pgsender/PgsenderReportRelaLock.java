@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderReportRelaLock
 {
-    static <R, C extends PgsenderConfig<R, C>> //
+    static <R, C extends PgsenderConfig> //
     PgsenderReportRelaLock of(PgsenderActionDataRelaLock<R, C> action, long finish)
     {
         if (action == null) {
@@ -25,7 +25,7 @@ public class PgsenderReportRelaLock
 
     public final long rsnextCount;
 
-    private <R, C extends PgsenderConfig<R, C>>
+    private <R, C extends PgsenderConfig>
     PgsenderReportRelaLock(PgsenderActionDataRelaLock<R, C> action, long finish)
     {
         this.totalMillis = finish - action.actionStart;

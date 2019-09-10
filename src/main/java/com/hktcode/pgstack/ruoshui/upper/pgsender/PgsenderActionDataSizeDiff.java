@@ -22,10 +22,10 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-public class PgsenderActionDataSizeDiff<R, C extends PgsenderConfig<R, C>> //
+public class PgsenderActionDataSizeDiff<R, C extends PgsenderConfig> //
     extends PgsenderActionData<R, C>
 {
-    static <R, C extends PgsenderConfig<R, C>>
+    static <R, C extends PgsenderConfig>
     PgsenderActionDataSizeDiff<R, C> of(PgsenderActionDataReplSlot<R, C> action)
     {
         if (action == null) {

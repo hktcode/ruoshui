@@ -24,14 +24,14 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class PgsenderActionDataRelaList<R, C extends PgsenderConfig<R, C>> //
+public class PgsenderActionDataRelaList<R, C extends PgsenderConfig> //
     extends PgsenderActionData<R, C>
 {
-    public static <R, C extends PgsenderConfig<R, C>> //
+    public static <R, C extends PgsenderConfig> //
     PgsenderActionDataRelaList<R, C> of
         /* */( C config //
         /* */, AtomicReference<SimpleStatus> status //
-        /* */, TransferQueue<R> tqueue //
+        /* */, TransferQueue<PgRecord> tqueue //
         /* */)
     {
         if (config == null) {
@@ -46,7 +46,7 @@ public class PgsenderActionDataRelaList<R, C extends PgsenderConfig<R, C>> //
         return new PgsenderActionDataRelaList<>(config, status, tqueue);
     }
 
-    static <R, C extends PgsenderConfig<R, C>> //
+    static <R, C extends PgsenderConfig> //
     PgsenderActionDataRelaList<R, C> of(PgsenderActionDataRelaLock<R, C> action)
     {
         if (action == null) {
@@ -55,7 +55,7 @@ public class PgsenderActionDataRelaList<R, C extends PgsenderConfig<R, C>> //
         return new PgsenderActionDataRelaList<>(action);
     }
 
-    static <R, C extends PgsenderConfig<R, C>>
+    static <R, C extends PgsenderConfig>
     PgsenderActionDataRelaList<R, C> of(PgsenderActionDataSizeDiff<R, C> action)
     {
         if (action == null) {
@@ -69,7 +69,7 @@ public class PgsenderActionDataRelaList<R, C extends PgsenderConfig<R, C>> //
     private PgsenderActionDataRelaList
         /* */( C config //
         /* */, AtomicReference<SimpleStatus> status //
-        /* */, TransferQueue<R> tqueue //
+        /* */, TransferQueue<PgRecord> tqueue //
         /* */)
     {
         super(config, status, tqueue, System.currentTimeMillis());

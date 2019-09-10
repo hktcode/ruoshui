@@ -26,7 +26,7 @@ import java.util.concurrent.Callable;
 import static com.hktcode.bgsimple.triple.TripleConfig.DEFALUT_WAIT_TIMEOUT;
 import static com.hktcode.bgsimple.triple.TripleConfig.DEFAULT_LOG_DURATION;
 
-public class MainlineConfig extends PgsenderConfig<PgRecord, MainlineConfig>
+public class MainlineConfig extends PgsenderConfig
 {
     private static final String TYPELIST_SQL = "" //
         + "\n select \"t\".    \"oid\"::int8 as \"datatype\" " //
@@ -160,14 +160,13 @@ public class MainlineConfig extends PgsenderConfig<PgRecord, MainlineConfig>
     }
 
     @Override
-    public PgsenderAction<PgRecord, MainlineConfig> //
-    afterSnapshot(PgsenderActionDataSsFinish<PgRecord, MainlineConfig> action)
+    public PgsenderAction afterSnapshot(PgsenderActionDataSsFinish action)
     {
         return PgsenderActionDataTypelistSnapshot.of(action);
     }
 
     @Override
-    public PgRecord createMessage(long lsn, LogicalMsg msg)
+    public PgRecordLogicalMsg createMessage(long lsn, LogicalMsg msg)
     {
         if (msg == null) {
             throw new ArgumentNullException("msg");

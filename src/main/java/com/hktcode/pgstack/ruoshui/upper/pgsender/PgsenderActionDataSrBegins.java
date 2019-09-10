@@ -14,10 +14,10 @@ import org.postgresql.jdbc.PgConnection;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 
-class PgsenderActionDataSrBegins<R, C extends PgsenderConfig<R, C>> //
+class PgsenderActionDataSrBegins<R, C extends PgsenderConfig> //
     extends PgsenderActionData<R, C>
 {
-    static <R, C extends PgsenderConfig<R, C>> //
+    static <R, C extends PgsenderConfig> //
     PgsenderActionDataSrBegins<R, C> of(PgsenderActionDataSsBegins<R, C> action)
     {
         if (action == null) {
@@ -26,7 +26,7 @@ class PgsenderActionDataSrBegins<R, C extends PgsenderConfig<R, C>> //
         return new PgsenderActionDataSrBegins<>(action);
     }
 
-    static <R, C extends PgsenderConfig<R, C>> //
+    static <R, C extends PgsenderConfig> //
     PgsenderActionDataSrBegins<R, C> of(PgsenderActionDataSrFinish<R, C> action)
     {
         if (action == null) {
@@ -92,7 +92,7 @@ class PgsenderActionDataSrBegins<R, C extends PgsenderConfig<R, C>> //
         PgReplRelation r = this.curRelation.relationInfo;
         long lsn = this.replSlot.createTuple.consistentPoint;
         LogicalBegRelationMsg msg = LogicalBegRelationMsg.of(r);
-        R record = this.config.createMessage(lsn, msg);
+        PgRecord record = this.config.createMessage(lsn, msg);
         while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
             if ((record = this.send(record)) == null) {
                 return PgsenderActionDataTupleval.of(this);

@@ -18,12 +18,12 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-class PgsenderActionDataReplSlot<R, C extends PgsenderConfig<R, C>> //
+class PgsenderActionDataReplSlot<R, C extends PgsenderConfig> //
     extends PgsenderActionData<R, C>
 {
     private static final Logger logger = LoggerFactory.getLogger(PgsenderActionDataReplSlot.class);
 
-    static <R, C extends PgsenderConfig<R, C>>
+    static <R, C extends PgsenderConfig>
     PgsenderActionDataReplSlot<R, C> of(PgsenderActionDataRelaLock<R, C> action)
     {
         if (action == null) {
@@ -66,9 +66,9 @@ class PgsenderActionDataReplSlot<R, C extends PgsenderConfig<R, C>> //
         }
         long starts = System.currentTimeMillis();
         try(Statement s = pgrepl.createStatement()) {
-            R pauseWorldRecord = this.config.pauseWorldMsg();
+            PgRecord pauseWorldRecord = this.config.pauseWorldMsg();
             Future<PgReplSlotTuple> tupleFuture = null;
-            R createSlotRecord = null;
+            PgRecord createSlotRecord = null;
             PgReplSlotTuple tuple = null;
             while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
                 if (pauseWorldRecord != null) {

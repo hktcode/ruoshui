@@ -14,7 +14,7 @@ public class PgsenderReportTupleval
         return new PgsenderReportTupleval();
     }
 
-    static <R, C extends PgsenderConfig<R, C>>
+    static <R, C extends PgsenderConfig>
     PgsenderReportTupleval of(PgsenderActionDataSrBegins<R, C> action, long finish)
     {
         if (action == null) {
@@ -23,7 +23,7 @@ public class PgsenderReportTupleval
         return new PgsenderReportTupleval(action, finish);
     }
 
-    static <R, C extends PgsenderConfig<R, C>> //
+    static <R, C extends PgsenderConfig> //
     PgsenderReportTupleval of(PgsenderActionDataTupleval<R, C> action, long finish)
     {
         if (action == null) {
@@ -32,7 +32,7 @@ public class PgsenderReportTupleval
         return new PgsenderReportTupleval(action, finish);
     }
 
-    static <R, C extends PgsenderConfig<R, C>> //
+    static <R, C extends PgsenderConfig> //
     PgsenderReportTupleval of(PgsenderActionDataSrFinish<R, C> action, long finish)
     {
         if (action == null) {
@@ -66,7 +66,7 @@ public class PgsenderReportTupleval
         this.recordCount = 0;
     }
 
-    private <R, C extends PgsenderConfig<R, C>> //
+    private <R, C extends PgsenderConfig> //
     PgsenderReportTupleval(PgsenderActionDataSrBegins<R, C> action, long finish)
     {
         this.totalMillis = finish - action.actionStart;
@@ -78,7 +78,7 @@ public class PgsenderReportTupleval
         this.recordCount = action.recordCount;
     }
 
-    private <R, C extends PgsenderConfig<R, C>> //
+    private <R, C extends PgsenderConfig> //
     PgsenderReportTupleval(PgsenderActionDataTupleval<R, C> action, long finish)
     {
         this.totalMillis = finish - action.actionStart;
@@ -90,7 +90,7 @@ public class PgsenderReportTupleval
         this.recordCount = action.recordCount;
     }
 
-    private <R, C extends PgsenderConfig<R, C>> //
+    private <R, C extends PgsenderConfig> //
     PgsenderReportTupleval(PgsenderActionDataSrFinish<R, C> action, long finish)
     {
         this.totalMillis = finish - action.actionStart;

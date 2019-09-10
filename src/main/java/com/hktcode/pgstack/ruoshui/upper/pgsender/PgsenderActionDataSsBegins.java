@@ -16,10 +16,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-class PgsenderActionDataSsBegins<R, C extends PgsenderConfig<R, C>> //
+class PgsenderActionDataSsBegins<R, C extends PgsenderConfig> //
     extends PgsenderActionData<R, C>
 {
-    static <R, C extends PgsenderConfig<R, C>>
+    static <R, C extends PgsenderConfig>
     PgsenderActionDataSsBegins<R, C> of(PgsenderActionDataSizeDiff<R, C> action)
     {
         if (action == null) {
@@ -63,7 +63,7 @@ class PgsenderActionDataSsBegins<R, C extends PgsenderConfig<R, C>> //
         }
         ImmutableList<PgReplRelation> l = ImmutableList.copyOf(list);
         LogicalBegSnapshotMsg msg = LogicalBegSnapshotMsg.of(l);
-        R record = this.config.createMessage(lsn, msg);
+        PgRecord record = this.config.createMessage(lsn, msg);
         while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
             if (record != null) {
                 record = this.send(record);

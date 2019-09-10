@@ -8,7 +8,7 @@ import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.replication.LogSequenceNumber;
 
-public interface PgsenderAction<R, C extends PgsenderConfig<R, C>> //
+public interface PgsenderAction<R, C extends PgsenderConfig> //
     extends BgWorker<PgsenderAction<R, C>>
 {
     @Override
@@ -48,7 +48,7 @@ public interface PgsenderAction<R, C extends PgsenderConfig<R, C>> //
 
     PgsenderActionThrowsErrors<R, C> next(Throwable throwsError);
 
-    R send(R record) throws InterruptedException;
+    PgRecord send(PgRecord record) throws InterruptedException;
 
     PgsenderMetricEnd toEndMetrics();
 }

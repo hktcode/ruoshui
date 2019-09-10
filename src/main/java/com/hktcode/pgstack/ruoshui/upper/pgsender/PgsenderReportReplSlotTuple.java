@@ -9,7 +9,7 @@ import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 
 public class PgsenderReportReplSlotTuple extends PgsenderReportReplSlot
 {
-    static <R, C extends PgsenderConfig<R, C>>
+    static <R, C extends PgsenderConfig>
     PgsenderReportReplSlotTuple of(PgsenderActionDataReplSlot<R, C> action, long finish)
     {
         if (action == null) {
@@ -20,7 +20,7 @@ public class PgsenderReportReplSlotTuple extends PgsenderReportReplSlot
 
     public final PgReplSlotTuple createTuple;
 
-    private <R, C extends PgsenderConfig<R, C>> //
+    private <R, C extends PgsenderConfig> //
     PgsenderReportReplSlotTuple(PgsenderActionDataReplSlot<R, C> action, long finish)
     {
         super(action, finish);

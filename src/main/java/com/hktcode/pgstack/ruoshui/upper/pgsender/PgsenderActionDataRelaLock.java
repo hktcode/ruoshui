@@ -18,12 +18,12 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-class PgsenderActionDataRelaLock<R, C extends PgsenderConfig<R, C>> //
+class PgsenderActionDataRelaLock<R, C extends PgsenderConfig> //
     extends PgsenderActionData<R, C>
 {
     private static final Logger logger = LoggerFactory.getLogger(PgsenderActionDataRelaLock.class);
 
-    static <R, C extends PgsenderConfig<R, C>>  //
+    static <R, C extends PgsenderConfig>  //
     PgsenderActionDataRelaLock<R, C> of(PgsenderActionDataRelaList<R, C> action)
     {
         if (action == null) {

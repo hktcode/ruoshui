@@ -11,11 +11,11 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class PgsenderActionThrowsErrors<R, C extends PgsenderConfig<R, C>>
-    extends TqueueAction<PgsenderAction<R, C>, C, R> //
+public class PgsenderActionThrowsErrors<R, C extends PgsenderConfig>
+    extends TqueueAction<PgsenderAction<R, C>, C, PgRecord> //
     implements PgsenderAction<R, C> //
 {
-    public static <R, C extends PgsenderConfig<R, C>> //
+    public static <R, C extends PgsenderConfig> //
     PgsenderActionThrowsErrors<R, C> of //
         /* */( PgsenderActionData<R, C> action //
         /* */, Throwable throwsError //
@@ -30,7 +30,7 @@ public class PgsenderActionThrowsErrors<R, C extends PgsenderConfig<R, C>>
         return new PgsenderActionThrowsErrors<>(action, throwsError);
     }
 
-    public static <R, C extends PgsenderConfig<R, C>> //
+    public static <R, C extends PgsenderConfig> //
     PgsenderActionThrowsErrors<R, C> of //
         /* */( PgsenderActionTerminateEnd<R, C> action //
         /* */, Throwable throwsError //
@@ -45,10 +45,10 @@ public class PgsenderActionThrowsErrors<R, C extends PgsenderConfig<R, C>>
         return new PgsenderActionThrowsErrors<>(action, throwsError);
     }
 
-    public static <R, C extends PgsenderConfig<R, C>>
+    public static <R, C extends PgsenderConfig>
     PgsenderActionThrowsErrors<R, C> of //
         /* */( C config //
-        /* */, TransferQueue<R> tqueue //
+        /* */, TransferQueue<PgRecord> tqueue //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, PgsenderMetricErr metric
         /* */)
@@ -88,7 +88,7 @@ public class PgsenderActionThrowsErrors<R, C extends PgsenderConfig<R, C>>
 
     private PgsenderActionThrowsErrors
         /* */( C config //
-        /* */, TransferQueue<R> tqueue //
+        /* */, TransferQueue<PgRecord> tqueue //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, PgsenderMetricErr metric
         /* */)

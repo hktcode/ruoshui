@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderReportReplSlot
 {
-    static <R, C extends PgsenderConfig<R, C>>
+    static <R, C extends PgsenderConfig>
     PgsenderReportReplSlot of(PgsenderActionDataReplSlot<R, C> action, long finish)
     {
         if (action == null) {
@@ -38,7 +38,7 @@ public class PgsenderReportReplSlot
 
     public final long sltDuration;
 
-    protected <R, C extends PgsenderConfig<R, C>> //
+    protected <R, C extends PgsenderConfig> //
     PgsenderReportReplSlot(PgsenderActionDataReplSlot<R, C> action, long finish)
     {
         this.totalMillis = finish - action.actionStart;

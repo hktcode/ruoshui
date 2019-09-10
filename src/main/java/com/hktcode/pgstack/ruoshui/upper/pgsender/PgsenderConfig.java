@@ -21,7 +21,7 @@ import javax.script.ScriptException;
 import java.sql.*;
 import java.util.concurrent.Callable;
 
-public abstract class PgsenderConfig<R, C extends PgsenderConfig<R, C>> extends TqueueConfig
+public abstract class PgsenderConfig extends TqueueConfig
 {
     /**
      * 默认的{@link ResultSet#setFetchSize(int)}值.
@@ -246,21 +246,27 @@ public abstract class PgsenderConfig<R, C extends PgsenderConfig<R, C>> extends 
         this.logicalRepl = logicalRepl;
     }
 
-    public PgsenderAction<R, C> afterSnapshot(PgsenderActionDataSsFinish<R, C> action)
+    public PgsenderAction afterSnapshot(PgsenderActionDataSsFinish action)
     {
         return PgsenderActionTerminateEnd.of(action);
     }
 
-    public abstract R createMessage(long lsn, LogicalMsg msg);
+    public PgRecordLogicalMsg createMessage(long lsn, LogicalMsg msg)
+    {
+        if (msg == null) {
+            throw new ArgumentNullException("msg");
+        }
+        return PgRecordLogicalMsg.of(lsn, msg);
+    }
 
     public abstract Callable<PgReplSlotTuple> newCreateSlot(Statement statement);
 
-    public R pauseWorldMsg()
+    public PgRecordPauseWorld pauseWorldMsg()
     {
         return null; // TODO
     }
 
-    public R createSlotMsg(PgReplSlotTuple tuple)
+    public PgRecordCreateSlot createSlotMsg(PgReplSlotTuple tuple)
     {
         if (tuple == null) {
             throw new ArgumentNullException("tuple");

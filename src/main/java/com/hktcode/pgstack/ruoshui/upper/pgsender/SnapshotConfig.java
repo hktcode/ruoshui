@@ -15,7 +15,7 @@ import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 import java.sql.Statement;
 import java.util.concurrent.Callable;
 
-public class SnapshotConfig extends PgsenderConfig<PgRecord, SnapshotConfig>
+public class SnapshotConfig extends PgsenderConfig
 {
     public static SnapshotConfig of //
         /* */( PgConnectionProperty srcProperty //
@@ -64,12 +64,6 @@ public class SnapshotConfig extends PgsenderConfig<PgRecord, SnapshotConfig>
         /* */) //
     {
         super(srcProperty, relationSql, whereScript, lockingMode, logicalRepl, tupleSelect);
-    }
-
-    @Override
-    public PgRecord createMessage(long lsn, LogicalMsg msg)
-    {
-        return PgRecordLogicalMsg.of(lsn, msg);
     }
 
     @Override

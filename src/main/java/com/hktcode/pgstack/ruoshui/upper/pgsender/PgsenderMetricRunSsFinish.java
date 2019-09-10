@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderMetricRunSsFinish implements PgsenderMetricRun
 {
-    static <R, C extends PgsenderConfig<R, C>> //
+    static <R, C extends PgsenderConfig> //
     PgsenderMetricRunSsFinish of(PgsenderActionDataSsFinish<R, C> action)
     {
         if (action == null) {
@@ -17,7 +17,7 @@ public class PgsenderMetricRunSsFinish implements PgsenderMetricRun
         return new PgsenderMetricRunSsFinish(action);
     }
 
-    private <R, C extends PgsenderConfig<R, C>> //
+    private <R, C extends PgsenderConfig> //
     PgsenderMetricRunSsFinish(PgsenderActionDataSsFinish<R, C> action)
     {
         long finish = System.currentTimeMillis();

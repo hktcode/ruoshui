@@ -17,8 +17,8 @@ import java.sql.SQLException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class PgsenderActionData<R, C extends PgsenderConfig<R, C>> //
-    extends TqueueAction<PgsenderAction<R, C>, C, R> //
+public abstract class PgsenderActionData<R, C extends PgsenderConfig> //
+    extends TqueueAction<PgsenderAction<R, C>, C, PgRecord> //
     implements PgsenderAction<R, C> //
 {
     private static final Logger logger = LoggerFactory.getLogger(PgsenderActionData.class);
@@ -42,7 +42,7 @@ public abstract class PgsenderActionData<R, C extends PgsenderConfig<R, C>> //
     protected PgsenderActionData //
         /* */( C config //
         /* */, AtomicReference<SimpleStatus> status //
-        /* */, TransferQueue<R> tqueue //
+        /* */, TransferQueue<PgRecord> tqueue //
         /* */, long actionStart //
         /* */) //
     {

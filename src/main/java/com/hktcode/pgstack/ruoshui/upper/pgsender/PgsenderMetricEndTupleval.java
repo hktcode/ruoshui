@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderMetricEndTupleval implements PgsenderMetricEnd
 {
-    static <R, C extends PgsenderConfig<R, C>> //
+    static <R, C extends PgsenderConfig> //
     PgsenderMetricEndTupleval of(PgsenderActionDataTupleval<R, C> action)
     {
         if (action == null) {
@@ -17,7 +17,7 @@ public class PgsenderMetricEndTupleval implements PgsenderMetricEnd
         return new PgsenderMetricEndTupleval(action);
     }
 
-    static <R, C extends PgsenderConfig<R, C>> //
+    static <R, C extends PgsenderConfig> //
     PgsenderMetricEndTupleval of(PgsenderActionDataSrBegins<R, C> action)
     {
         if (action == null) {
@@ -26,7 +26,7 @@ public class PgsenderMetricEndTupleval implements PgsenderMetricEnd
         return new PgsenderMetricEndTupleval(action);
     }
 
-    static <R, C extends PgsenderConfig<R, C>> //
+    static <R, C extends PgsenderConfig> //
     PgsenderMetricEndTupleval of(PgsenderActionDataSrFinish<R, C> action)
     {
         if (action == null) {
@@ -35,7 +35,7 @@ public class PgsenderMetricEndTupleval implements PgsenderMetricEnd
         return new PgsenderMetricEndTupleval(action);
     }
 
-    private <R, C extends PgsenderConfig<R, C>>
+    private <R, C extends PgsenderConfig>
     PgsenderMetricEndTupleval(PgsenderActionDataTupleval<R, C> action)
     {
         long finish = System.currentTimeMillis();
@@ -48,7 +48,7 @@ public class PgsenderMetricEndTupleval implements PgsenderMetricEnd
         this.complete = PgsenderReportComplete.of(finish);
     }
 
-    private <R, C extends PgsenderConfig<R, C>>
+    private <R, C extends PgsenderConfig>
     PgsenderMetricEndTupleval(PgsenderActionDataSrBegins<R, C> action)
     {
         long finish = System.currentTimeMillis();
@@ -61,7 +61,7 @@ public class PgsenderMetricEndTupleval implements PgsenderMetricEnd
         this.complete = PgsenderReportComplete.of(finish);
     }
 
-    private <R, C extends PgsenderConfig<R, C>> //
+    private <R, C extends PgsenderConfig> //
     PgsenderMetricEndTupleval(PgsenderActionDataSrFinish<R, C> action)
     {
         long finish = System.currentTimeMillis();
