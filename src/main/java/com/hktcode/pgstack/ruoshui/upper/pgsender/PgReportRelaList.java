@@ -7,14 +7,14 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class PgsenderReportRelaList
+public class PgReportRelaList
 {
-    public static PgsenderReportRelaList of(PgActionDataRelaList action, long finish)
+    public static PgReportRelaList of(PgActionDataRelaList action, long finish)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderReportRelaList(action, finish);
+        return new PgReportRelaList(action, finish);
     }
 
     public final long totalMillis;
@@ -29,7 +29,7 @@ public class PgsenderReportRelaList
 
     public final ImmutableList<String> retryReason;
 
-    private PgsenderReportRelaList(PgActionDataRelaList action, long finish)
+    private PgReportRelaList(PgActionDataRelaList action, long finish)
     {
         this.totalMillis = finish - action.actionStart;
         this.rsgetCounts = action.rsgetCounts;

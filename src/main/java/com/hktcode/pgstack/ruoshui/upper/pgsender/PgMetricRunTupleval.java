@@ -40,7 +40,7 @@ public class PgMetricRunTupleval implements PgMetricRun
         this.replslot = action.replSlot;
         this.sizediff = action.sizeDiff;
         this.ssbegins = action.ssbegins;
-        this.tupleval = PgsenderReportTupleval.of(action, finish);
+        this.tupleval = PgReportTupleval.of(action, finish);
     }
 
     private PgMetricRunTupleval(PgActionDataSrBegins action)
@@ -51,7 +51,7 @@ public class PgMetricRunTupleval implements PgMetricRun
         this.replslot = action.replSlot;
         this.sizediff = action.sizeDiff;
         this.ssbegins = action.ssbegins;
-        this.tupleval = PgsenderReportTupleval.of(action, finish);
+        this.tupleval = PgReportTupleval.of(action, finish);
     }
 
     private PgMetricRunTupleval(PgActionDataSrFinish action)
@@ -62,18 +62,18 @@ public class PgMetricRunTupleval implements PgMetricRun
         this.replslot = action.replSlot;
         this.sizediff = action.sizeDiff;
         this.ssbegins = action.ssbegins;
-        this.tupleval = PgsenderReportTupleval.of(action, finish);
+        this.tupleval = PgReportTupleval.of(action, finish);
     }
 
-    public final PgsenderReportRelaList relalist;
+    public final PgReportRelaList relalist;
 
-    public final PgsenderReportRelaLock relalock;
+    public final PgReportRelaLock relalock;
 
-    public final PgsenderReportReplSlot replslot;
+    public final PgReportReplSlot replslot;
 
-    public final PgsenderReportSizeDiff sizediff;
+    public final PgReportSizeDiff sizediff;
 
-    public final PgsenderReportSsBegins ssbegins;
+    public final PgReportSsBegins ssbegins;
 
-    public final PgsenderReportTupleval tupleval;
+    public final PgReportTupleval tupleval;
 }

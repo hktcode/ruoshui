@@ -11,12 +11,12 @@ public abstract class PgMetricErrTxaction implements PgMetricErr
         long finish = System.currentTimeMillis();
         this.typelist = action.typelist;
         this.txaction = action.txaction;
-        this.throwerr = PgsenderReportThrowErr.of(finish, throwerr);
+        this.throwerr = PgReportThrowErr.of(finish, throwerr);
     }
 
-    public final PgsenderReportTypelist typelist;
+    public final PgReportTypelist typelist;
 
-    public final PgsenderReportTxaction txaction;
+    public final PgReportTxaction txaction;
 
-    public final PgsenderReportThrowErr throwerr;
+    public final PgReportThrowErr throwerr;
 }

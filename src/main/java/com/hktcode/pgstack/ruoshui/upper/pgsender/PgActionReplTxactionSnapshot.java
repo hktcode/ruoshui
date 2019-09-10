@@ -16,19 +16,19 @@ class PgActionReplTxactionSnapshot extends PgActionReplTxaction
         return new PgActionReplTxactionSnapshot(action);
     }
 
-    public final PgsenderReportRelaList relalist;
+    public final PgReportRelaList relalist;
 
-    public final PgsenderReportRelaLock relaLock;
+    public final PgReportRelaLock relaLock;
 
-    public final PgsenderReportReplSlot replSlot;
+    public final PgReportReplSlot replSlot;
 
-    public final PgsenderReportSizeDiff sizeDiff;
+    public final PgReportSizeDiff sizeDiff;
 
-    public final PgsenderReportSsBegins ssBegins;
+    public final PgReportSsBegins ssBegins;
 
-    public final PgsenderReportTupleval tupleval;
+    public final PgReportTupleval tupleval;
 
-    public final PgsenderReportSsFinish ssfinish;
+    public final PgReportSsFinish ssfinish;
 
     private PgActionReplTxactionSnapshot(PgActionDataTypelistSnapshot action)
     {

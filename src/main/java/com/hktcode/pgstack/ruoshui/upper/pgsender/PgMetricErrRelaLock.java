@@ -24,12 +24,12 @@ public class PgMetricErrRelaLock implements PgMetricErr
         long finish = System.currentTimeMillis();
         this.relalist = metric.relalist;
         this.relalock = metric.relalock;
-        this.throwerr = PgsenderReportThrowErr.of(finish, throwerr);
+        this.throwerr = PgReportThrowErr.of(finish, throwerr);
     }
 
-    public final PgsenderReportRelaList relalist;
+    public final PgReportRelaList relalist;
 
-    public final PgsenderReportRelaLock relalock;
+    public final PgReportRelaLock relalock;
 
-    public final PgsenderReportThrowErr throwerr;
+    public final PgReportThrowErr throwerr;
 }

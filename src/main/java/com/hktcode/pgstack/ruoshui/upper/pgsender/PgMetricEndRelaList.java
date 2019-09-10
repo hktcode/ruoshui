@@ -19,13 +19,13 @@ public class PgMetricEndRelaList implements PgMetricEnd
     private PgMetricEndRelaList(PgActionDataRelaList action)
     {
         long finish = System.currentTimeMillis();
-        this.relalist = PgsenderReportRelaList.of(action, finish);
-        this.complete = PgsenderReportComplete.of(finish);
+        this.relalist = PgReportRelaList.of(action, finish);
+        this.complete = PgReportComplete.of(finish);
     }
 
-    public final PgsenderReportRelaList relalist;
+    public final PgReportRelaList relalist;
 
-    public final PgsenderReportComplete complete;
+    public final PgReportComplete complete;
 
     @Override
     public PgMetricErrRelaList toErrMetrics(Throwable throwerr)

@@ -26,13 +26,13 @@ class PgActionDataSsBegins extends PgActionData
         return new PgActionDataSsBegins(action);
     }
 
-    public final PgsenderReportRelaList relalist;
+    public final PgReportRelaList relalist;
 
-    public final PgsenderReportRelaLock relaLock;
+    public final PgReportRelaLock relaLock;
 
-    public final PgsenderReportReplSlotTuple replSlot;
+    public final PgReportReplSlotTuple replSlot;
 
-    public final PgsenderReportSizeDiff sizeDiff;
+    public final PgReportSizeDiff sizeDiff;
 
     public final ImmutableList<PgsqlRelationMetric> relationLst;
 
@@ -44,7 +44,7 @@ class PgActionDataSsBegins extends PgActionData
         this.relalist = action.relalist;
         this.relaLock = action.relaLock;
         this.replSlot = action.replSlot;
-        this.sizeDiff = PgsenderReportSizeDiff.of(action, this.actionStart);
+        this.sizeDiff = PgReportSizeDiff.of(action, this.actionStart);
         this.relationLst = action.oldRelalist;
         this.relIterator = this.relationLst.iterator();
         this.logDatetime = action.logDatetime;

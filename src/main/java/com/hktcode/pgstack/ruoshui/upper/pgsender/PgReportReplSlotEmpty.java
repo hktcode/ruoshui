@@ -6,17 +6,17 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class PgsenderReportReplSlotEmpty extends PgsenderReportReplSlot
+public class PgReportReplSlotEmpty extends PgReportReplSlot
 {
-    static PgsenderReportReplSlotEmpty of(PgActionDataReplSlot action, long finish)
+    static PgReportReplSlotEmpty of(PgActionDataReplSlot action, long finish)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderReportReplSlotEmpty(action, finish);
+        return new PgReportReplSlotEmpty(action, finish);
     }
 
-    private PgsenderReportReplSlotEmpty(PgActionDataReplSlot action, long finish)
+    private PgReportReplSlotEmpty(PgActionDataReplSlot action, long finish)
     {
         super(action, finish);
     }

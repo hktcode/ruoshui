@@ -10,13 +10,13 @@ public abstract class PgMetricEndTxaction implements PgMetricEnd
     {
         long finish = System.currentTimeMillis();
         this.typelist = action.typelist;
-        this.txaction = PgsenderReportTxaction.of(action, finish);
-        this.complete = PgsenderReportComplete.of(finish);
+        this.txaction = PgReportTxaction.of(action, finish);
+        this.complete = PgReportComplete.of(finish);
     }
 
-    public final PgsenderReportTypelist typelist;
+    public final PgReportTypelist typelist;
 
-    public final PgsenderReportTxaction txaction;
+    public final PgReportTxaction txaction;
 
-    public final PgsenderReportComplete complete;
+    public final PgReportComplete complete;
 }

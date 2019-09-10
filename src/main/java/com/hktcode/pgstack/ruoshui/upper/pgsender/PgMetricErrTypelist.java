@@ -10,10 +10,10 @@ public abstract class PgMetricErrTypelist implements PgMetricErr
     {
         long finish = System.currentTimeMillis();
         this.typelist = metric.typelist;
-        this.throwerr = PgsenderReportThrowErr.of(finish, throwerr);
+        this.throwerr = PgReportThrowErr.of(finish, throwerr);
     }
 
-    public final PgsenderReportTypelist typelist;
+    public final PgReportTypelist typelist;
 
-    public final PgsenderReportThrowErr throwerr;
+    public final PgReportThrowErr throwerr;
 }

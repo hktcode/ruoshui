@@ -30,9 +30,9 @@ class PgActionDataReplSlot extends PgActionData
         return new PgActionDataReplSlot(action);
     }
 
-    public final PgsenderReportRelaList relalist;
+    public final PgReportRelaList relalist;
 
-    public final PgsenderReportRelaLock relaLock;
+    public final PgReportRelaLock relaLock;
 
     public final ImmutableList<PgsqlRelationMetric> relationLst;
 
@@ -44,7 +44,7 @@ class PgActionDataReplSlot extends PgActionData
     {
         super(action, System.currentTimeMillis());
         this.relalist = action.relalist;
-        this.relaLock = PgsenderReportRelaLock.of(action, this.actionStart);
+        this.relaLock = PgReportRelaLock.of(action, this.actionStart);
         this.relationLst = action.relationLst;
         this.logDatetime = action.logDatetime;
     }

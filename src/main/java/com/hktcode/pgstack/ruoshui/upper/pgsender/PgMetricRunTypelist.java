@@ -9,8 +9,8 @@ public abstract class PgMetricRunTypelist implements PgMetricRun
     protected PgMetricRunTypelist(PgActionDataTypelist action)
     {
         long finish = System.currentTimeMillis();
-        this.typelist = PgsenderReportTypelist.of(action, finish);
+        this.typelist = PgReportTypelist.of(action, finish);
     }
 
-    public final PgsenderReportTypelist typelist;
+    public final PgReportTypelist typelist;
 }

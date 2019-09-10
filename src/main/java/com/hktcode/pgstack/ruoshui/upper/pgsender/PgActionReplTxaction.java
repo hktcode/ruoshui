@@ -20,14 +20,14 @@ abstract class PgActionReplTxaction extends PgActionRepl
 {
     private static final Logger logger = LoggerFactory.getLogger(PgActionReplTxaction.class);
 
-    public final PgsenderReportTypelist typelist;
+    public final PgReportTypelist typelist;
 
     public LogSequenceNumber txactionLsn = LogSequenceNumber.INVALID_LSN;
 
     protected PgActionReplTxaction(PgActionDataTypelist action)
     {
         super(action, System.currentTimeMillis());
-        this.typelist = PgsenderReportTypelist.of(action, this.actionStart);
+        this.typelist = PgReportTypelist.of(action, this.actionStart);
         this.logDatetime = action.logDatetime;
     }
 

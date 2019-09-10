@@ -21,17 +21,17 @@ public class PgMetricEndReplSlot implements PgMetricEnd
         long finish = System.currentTimeMillis();
         this.relalist = action.relalist;
         this.relalock = action.relaLock;
-        this.replslot = PgsenderReportReplSlot.of(action, finish);
-        this.complete = PgsenderReportComplete.of(finish);
+        this.replslot = PgReportReplSlot.of(action, finish);
+        this.complete = PgReportComplete.of(finish);
     }
 
-    public final PgsenderReportRelaList relalist;
+    public final PgReportRelaList relalist;
 
-    public final PgsenderReportRelaLock relalock;
+    public final PgReportRelaLock relalock;
 
-    public final PgsenderReportReplSlot replslot;
+    public final PgReportReplSlot replslot;
 
-    public final PgsenderReportComplete complete;
+    public final PgReportComplete complete;
 
     @Override
     public PgMetricErrReplSlot toErrMetrics(Throwable throwerr)

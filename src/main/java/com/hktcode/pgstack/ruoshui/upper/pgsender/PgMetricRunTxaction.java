@@ -10,10 +10,10 @@ public abstract class PgMetricRunTxaction implements PgMetricRun
     {
         long finish = System.currentTimeMillis();
         this.typelist = action.typelist;
-        this.txaction = PgsenderReportTxaction.of(action, finish);
+        this.txaction = PgReportTxaction.of(action, finish);
     }
 
-    public final PgsenderReportTypelist typelist;
+    public final PgReportTypelist typelist;
 
-    public final PgsenderReportTxaction txaction;
+    public final PgReportTxaction txaction;
 }

@@ -22,14 +22,14 @@ public class PgMetricRunSizeDiff implements PgMetricRun
         this.relalist = action.relalist;
         this.relalock = action.relaLock;
         this.replslot = action.replSlot;
-        this.sizediff = PgsenderReportSizeDiff.of(action, finish);
+        this.sizediff = PgReportSizeDiff.of(action, finish);
     }
 
-    public final PgsenderReportRelaList relalist;
+    public final PgReportRelaList relalist;
 
-    public final PgsenderReportRelaLock relalock;
+    public final PgReportRelaLock relalock;
 
-    public final PgsenderReportReplSlot replslot;
+    public final PgReportReplSlot replslot;
 
-    public final PgsenderReportSizeDiff sizediff;
+    public final PgReportSizeDiff sizediff;
 }

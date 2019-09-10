@@ -23,21 +23,21 @@ public class PgMetricEndSsbegins implements PgMetricEnd
         this.relalock = action.relaLock;
         this.replslot = action.replSlot;
         this.sizediff = action.sizeDiff;
-        this.ssbegins = PgsenderReportSsBegins.of(action, finish);
-        this.complete = PgsenderReportComplete.of(finish);
+        this.ssbegins = PgReportSsBegins.of(action, finish);
+        this.complete = PgReportComplete.of(finish);
     }
 
-    public final PgsenderReportRelaList relalist;
+    public final PgReportRelaList relalist;
 
-    public final PgsenderReportRelaLock relalock;
+    public final PgReportRelaLock relalock;
 
-    public final PgsenderReportReplSlot replslot;
+    public final PgReportReplSlot replslot;
 
-    public final PgsenderReportSizeDiff sizediff;
+    public final PgReportSizeDiff sizediff;
 
-    public final PgsenderReportSsBegins ssbegins;
+    public final PgReportSsBegins ssbegins;
 
-    public final PgsenderReportComplete complete;
+    public final PgReportComplete complete;
 
     @Override
     public PgMetricErrSsbegins toErrMetrics(Throwable throwerr)

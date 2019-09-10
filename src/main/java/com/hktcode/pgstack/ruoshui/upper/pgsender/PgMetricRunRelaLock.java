@@ -20,10 +20,10 @@ public class PgMetricRunRelaLock implements PgMetricRun
     {
         long finish = System.currentTimeMillis();
         this.relalist = action.relalist;
-        this.relalock = PgsenderReportRelaLock.of(action, finish);
+        this.relalock = PgReportRelaLock.of(action, finish);
     }
 
-    public final PgsenderReportRelaList relalist;
+    public final PgReportRelaList relalist;
 
-    public final PgsenderReportRelaLock relalock;
+    public final PgReportRelaLock relalock;
 }

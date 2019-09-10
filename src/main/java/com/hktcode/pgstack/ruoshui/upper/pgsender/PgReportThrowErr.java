@@ -6,21 +6,21 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class PgsenderReportThrowErr
+public class PgReportThrowErr
 {
-    public static PgsenderReportThrowErr of(long actionStart, Throwable throwsError)
+    public static PgReportThrowErr of(long actionStart, Throwable throwsError)
     {
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
         }
-        return new PgsenderReportThrowErr(actionStart, throwsError);
+        return new PgReportThrowErr(actionStart, throwsError);
     }
 
     public final long actionStart;
 
     public final Throwable throwsError;
 
-    private PgsenderReportThrowErr(long actionStart, Throwable throwsError)
+    private PgReportThrowErr(long actionStart, Throwable throwsError)
     {
         this.actionStart = actionStart;
         this.throwsError = throwsError;

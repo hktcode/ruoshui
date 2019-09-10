@@ -21,12 +21,12 @@ public class PgMetricRunReplSlot implements PgMetricRun
         long finish = System.currentTimeMillis();
         this.relalist = action.relalist;
         this.relalock = action.relaLock;
-        this.replslot = PgsenderReportReplSlot.of(action, finish);
+        this.replslot = PgReportReplSlot.of(action, finish);
     }
 
-    public final PgsenderReportRelaList relalist;
+    public final PgReportRelaList relalist;
 
-    public final PgsenderReportRelaLock relalock;
+    public final PgReportRelaLock relalock;
 
-    public final PgsenderReportReplSlot replslot;
+    public final PgReportReplSlot replslot;
 }

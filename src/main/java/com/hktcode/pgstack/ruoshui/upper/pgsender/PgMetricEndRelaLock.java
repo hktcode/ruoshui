@@ -20,15 +20,15 @@ public class PgMetricEndRelaLock implements PgMetricEnd
     {
         long finish = System.currentTimeMillis();
         this.relalist = action.relalist;
-        this.relalock = PgsenderReportRelaLock.of(action, finish);
-        this.complete = PgsenderReportComplete.of(finish);
+        this.relalock = PgReportRelaLock.of(action, finish);
+        this.complete = PgReportComplete.of(finish);
     }
 
-    public final PgsenderReportRelaList relalist;
+    public final PgReportRelaList relalist;
 
-    public final PgsenderReportRelaLock relalock;
+    public final PgReportRelaLock relalock;
 
-    public final PgsenderReportComplete complete;
+    public final PgReportComplete complete;
 
     @Override
     public PgMetricErrRelaLock toErrMetrics(Throwable throwerr)

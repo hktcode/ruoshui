@@ -23,16 +23,16 @@ public class PgMetricRunSsbegins implements PgMetricRun
         this.relalock = action.relaLock;
         this.replslot = action.replSlot;
         this.sizediff = action.sizeDiff;
-        this.ssbegins = PgsenderReportSsBegins.of(action, finish);
+        this.ssbegins = PgReportSsBegins.of(action, finish);
     }
 
-    public final PgsenderReportRelaList relalist;
+    public final PgReportRelaList relalist;
 
-    public final PgsenderReportRelaLock relalock;
+    public final PgReportRelaLock relalock;
 
-    public final PgsenderReportReplSlot replslot;
+    public final PgReportReplSlot replslot;
 
-    public final PgsenderReportSizeDiff sizediff;
+    public final PgReportSizeDiff sizediff;
 
-    public final PgsenderReportSsBegins ssbegins;
+    public final PgReportSsBegins ssbegins;
 }

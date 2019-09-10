@@ -25,25 +25,25 @@ public class PgMetricEndSsFinish implements PgMetricEnd
         this.sizediff = action.sizeDiff;
         this.ssbegins = action.ssBegins;
         this.tupleval = action.tupleval;
-        this.ssfinish = PgsenderReportSsFinish.of(action, finish);
-        this.complete = PgsenderReportComplete.of(finish);
+        this.ssfinish = PgReportSsFinish.of(action, finish);
+        this.complete = PgReportComplete.of(finish);
     }
 
-    public final PgsenderReportRelaList relalist;
+    public final PgReportRelaList relalist;
 
-    public final PgsenderReportRelaLock relalock;
+    public final PgReportRelaLock relalock;
 
-    public final PgsenderReportReplSlot replslot;
+    public final PgReportReplSlot replslot;
 
-    public final PgsenderReportSizeDiff sizediff;
+    public final PgReportSizeDiff sizediff;
 
-    public final PgsenderReportSsBegins ssbegins;
+    public final PgReportSsBegins ssbegins;
 
-    public final PgsenderReportTupleval tupleval;
+    public final PgReportTupleval tupleval;
 
-    public final PgsenderReportSsFinish ssfinish;
+    public final PgReportSsFinish ssfinish;
 
-    public final PgsenderReportComplete complete;
+    public final PgReportComplete complete;
 
     @Override
     public PgMetricErrSsFinish toErrMetrics(Throwable throwerr)

@@ -33,17 +33,17 @@ public class PgActionDataSsFinish extends PgActionData
         return new PgActionDataSsFinish(action);
     }
 
-    public final PgsenderReportRelaList relalist;
+    public final PgReportRelaList relalist;
 
-    public final PgsenderReportRelaLock relaLock;
+    public final PgReportRelaLock relaLock;
 
-    public final PgsenderReportReplSlotTuple replSlot;
+    public final PgReportReplSlotTuple replSlot;
 
-    public final PgsenderReportSizeDiff sizeDiff;
+    public final PgReportSizeDiff sizeDiff;
 
-    public final PgsenderReportSsBegins ssBegins;
+    public final PgReportSsBegins ssBegins;
 
-    public final PgsenderReportTupleval tupleval;
+    public final PgReportTupleval tupleval;
 
     public final ImmutableList<PgsqlRelationMetric> relationLst;
 
@@ -54,8 +54,8 @@ public class PgActionDataSsFinish extends PgActionData
         this.relaLock = action.relaLock;
         this.replSlot = action.replSlot;
         this.sizeDiff = action.sizeDiff;
-        this.ssBegins = PgsenderReportSsBegins.of(action, this.actionStart);
-        this.tupleval = PgsenderReportTupleval.of();
+        this.ssBegins = PgReportSsBegins.of(action, this.actionStart);
+        this.tupleval = PgReportTupleval.of();
         this.relationLst = action.relationLst;
         this.logDatetime = action.logDatetime;
     }
@@ -68,7 +68,7 @@ public class PgActionDataSsFinish extends PgActionData
         this.replSlot = action.replSlot;
         this.sizeDiff = action.sizeDiff;
         this.ssBegins = action.ssbegins;
-        this.tupleval = PgsenderReportTupleval.of(action, this.actionStart);
+        this.tupleval = PgReportTupleval.of(action, this.actionStart);
         this.relationLst = action.relationLst;
         this.logDatetime = action.logDatetime;
     }

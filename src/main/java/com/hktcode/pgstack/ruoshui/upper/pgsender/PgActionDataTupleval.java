@@ -36,15 +36,15 @@ class PgActionDataTupleval extends PgActionData
         return new PgActionDataTupleval(action);
     }
 
-    public final PgsenderReportRelaList relalist;
+    public final PgReportRelaList relalist;
 
-    public final PgsenderReportRelaLock relaLock;
+    public final PgReportRelaLock relaLock;
 
-    public final PgsenderReportReplSlotTuple replSlot;
+    public final PgReportReplSlotTuple replSlot;
 
-    public final PgsenderReportSizeDiff sizeDiff;
+    public final PgReportSizeDiff sizeDiff;
 
-    public final PgsenderReportSsBegins ssbegins;
+    public final PgReportSsBegins ssbegins;
 
     public final ImmutableList<PgsqlRelationMetric> relationLst;
 

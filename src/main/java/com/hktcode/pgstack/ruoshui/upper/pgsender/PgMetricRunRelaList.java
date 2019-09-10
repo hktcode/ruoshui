@@ -19,8 +19,8 @@ public class PgMetricRunRelaList implements PgMetricRun
     private PgMetricRunRelaList(PgActionDataRelaList action)
     {
         long finish = System.currentTimeMillis();
-        this.relalist = PgsenderReportRelaList.of(action, finish);
+        this.relalist = PgReportRelaList.of(action, finish);
     }
 
-    public final PgsenderReportRelaList relalist;
+    public final PgReportRelaList relalist;
 }

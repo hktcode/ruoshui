@@ -9,11 +9,11 @@ public abstract class PgMetricEndTypelist implements PgMetricEnd
     protected PgMetricEndTypelist(PgActionDataTypelist action)
     {
         long finish = System.currentTimeMillis();
-        this.typelist = PgsenderReportTypelist.of(action, finish);
-        this.complete = PgsenderReportComplete.of(finish);
+        this.typelist = PgReportTypelist.of(action, finish);
+        this.complete = PgReportComplete.of(finish);
     }
 
-    public final PgsenderReportTypelist typelist;
+    public final PgReportTypelist typelist;
 
-    public final PgsenderReportComplete complete;
+    public final PgReportComplete complete;
 }

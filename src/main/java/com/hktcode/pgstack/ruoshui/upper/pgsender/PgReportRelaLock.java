@@ -6,14 +6,14 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class PgsenderReportRelaLock
+public class PgReportRelaLock
 {
-    static PgsenderReportRelaLock of(PgActionDataRelaLock action, long finish)
+    static PgReportRelaLock of(PgActionDataRelaLock action, long finish)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderReportRelaLock(action, finish);
+        return new PgReportRelaLock(action, finish);
     }
 
     public final long totalMillis;
@@ -24,7 +24,7 @@ public class PgsenderReportRelaLock
 
     public final long rsnextCount;
 
-    private PgsenderReportRelaLock(PgActionDataRelaLock action, long finish)
+    private PgReportRelaLock(PgActionDataRelaLock action, long finish)
     {
         this.totalMillis = finish - action.actionStart;
         this.rsgetCounts = action.rsgetCounts;

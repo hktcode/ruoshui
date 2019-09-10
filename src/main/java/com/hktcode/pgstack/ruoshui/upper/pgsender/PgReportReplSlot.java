@@ -6,18 +6,18 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class PgsenderReportReplSlot
+public class PgReportReplSlot
 {
-    static PgsenderReportReplSlot of(PgActionDataReplSlot action, long finish)
+    static PgReportReplSlot of(PgActionDataReplSlot action, long finish)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
         if (action.createTuple.length == 0) {
-            return PgsenderReportReplSlotEmpty.of(action, finish);
+            return PgReportReplSlotEmpty.of(action, finish);
         }
         else {
-            return PgsenderReportReplSlotTuple.of(action, finish);
+            return PgReportReplSlotTuple.of(action, finish);
         }
     }
 
@@ -37,7 +37,7 @@ public class PgsenderReportReplSlot
 
     public final long sltDuration;
 
-    protected PgsenderReportReplSlot(PgActionDataReplSlot action, long finish)
+    protected PgReportReplSlot(PgActionDataReplSlot action, long finish)
     {
         this.totalMillis = finish - action.actionStart;
         this.rsgetCounts = action.rsgetCounts;

@@ -30,14 +30,14 @@ class PgActionDataRelaLock extends PgActionData
         return new PgActionDataRelaLock(action);
     }
 
-    public final PgsenderReportRelaList relalist;
+    public final PgReportRelaList relalist;
 
     public final ImmutableList<PgsqlRelationMetric> relationLst;
 
     private PgActionDataRelaLock(PgActionDataRelaList action)
     {
         super(action, System.currentTimeMillis());
-        this.relalist = PgsenderReportRelaList.of(action, this.actionStart);
+        this.relalist = PgReportRelaList.of(action, this.actionStart);
         this.relationLst = ImmutableList.copyOf(action.relationLst);
         this.logDatetime = action.logDatetime;
     }

@@ -5,23 +5,24 @@
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import org.postgresql.replication.LogSequenceNumber;
 
-public class PgsenderReportTxaction
+public class PgReportTypelist
 {
-    static PgsenderReportTxaction of(PgActionReplTxaction action, long finish)
+    static PgReportTypelist of(PgActionDataTypelist action, long finish)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderReportTxaction(action, finish);
+        return new PgReportTypelist(action, finish);
     }
 
     public final long totalMillis;
 
-    public final long fetchCounts;
+    public final long rsgetCounts;
 
-    public final long fetchMillis;
+    public final long rsgetMillis;
+
+    public final long rsnextCount;
 
     public final long offerCounts;
 
@@ -29,16 +30,14 @@ public class PgsenderReportTxaction
 
     public final long recordCount;
 
-    public final LogSequenceNumber txactionLsn;
-
-    private PgsenderReportTxaction(PgActionReplTxaction action, long finish)
+    private PgReportTypelist(PgActionDataTypelist action, long finish)
     {
         this.totalMillis = finish - action.actionStart;
-        this.fetchCounts = action.fetchCounts;
-        this.fetchMillis = action.fetchMillis;
+        this.rsgetCounts = action.rsgetCounts;
+        this.rsgetMillis = action.rsgetMillis;
+        this.rsnextCount = action.rsnextCount;
         this.offerCounts = action.offerCounts;
         this.offerMillis = action.offerMillis;
         this.recordCount = action.recordCount;
-        this.txactionLsn = action.txactionLsn;
     }
 }

@@ -34,11 +34,11 @@ public class PgActionDataSizeDiff extends PgActionData
 
     private static final Logger logger = LoggerFactory.getLogger(PgActionDataSizeDiff.class);
 
-    public final PgsenderReportRelaList relalist;
+    public final PgReportRelaList relalist;
 
-    public final PgsenderReportRelaLock relaLock;
+    public final PgReportRelaLock relaLock;
 
-    public final PgsenderReportReplSlotTuple replSlot;
+    public final PgReportReplSlotTuple replSlot;
 
     final ImmutableList<PgsqlRelationMetric> oldRelalist;
 
@@ -49,7 +49,7 @@ public class PgActionDataSizeDiff extends PgActionData
         super(action, System.currentTimeMillis());
         this.relalist = action.relalist;
         this.relaLock = action.relaLock;
-        this.replSlot = PgsenderReportReplSlotTuple.of(action, this.actionStart);
+        this.replSlot = PgReportReplSlotTuple.of(action, this.actionStart);
         this.oldRelalist = action.relationLst;
         this.newRelalist = new ArrayList<>();
         this.logDatetime = action.logDatetime;
