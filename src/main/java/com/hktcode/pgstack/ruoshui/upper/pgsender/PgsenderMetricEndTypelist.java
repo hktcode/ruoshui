@@ -6,7 +6,7 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 public abstract class PgsenderMetricEndTypelist implements PgsenderMetricEnd
 {
-    protected PgsenderMetricEndTypelist(PgsenderActionDataTypelist action)
+    protected PgsenderMetricEndTypelist(PgActionDataTypelist action)
     {
         long finish = System.currentTimeMillis();
         this.typelist = PgsenderReportTypelist.of(action, finish);

@@ -8,7 +8,7 @@ import org.postgresql.jdbc.PgConnection;
 
 import java.sql.SQLException;
 
-abstract class PgsenderActionRepl extends PgsenderAction
+abstract class PgActionRepl extends PgAction
 {
     public final long actionStart;
 
@@ -16,14 +16,14 @@ abstract class PgsenderActionRepl extends PgsenderAction
 
     public long fetchMillis = 0;
 
-    protected PgsenderActionRepl(PgsenderActionData action, long actionStart)
+    protected PgActionRepl(PgActionData action, long actionStart)
     {
         super(action.config, action.tqueue, action.status);
         this.actionStart = actionStart;
         this.logDatetime = action.logDatetime;
     }
 
-    abstract PgsenderAction next(PgConnection pgrepl) //
+    abstract PgAction next(PgConnection pgrepl) //
         throws SQLException, InterruptedException;
 
     public abstract PgsenderMetricRun toRunMetrics();

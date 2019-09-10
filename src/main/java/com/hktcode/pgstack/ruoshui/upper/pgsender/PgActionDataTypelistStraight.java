@@ -10,9 +10,9 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-class PgsenderActionDataTypelistStraight extends PgsenderActionDataTypelist
+class PgActionDataTypelistStraight extends PgActionDataTypelist
 {
-    static PgsenderActionDataTypelistStraight of
+    static PgActionDataTypelistStraight of
         /* */( MainlineConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<PgRecord> tqueue //
@@ -27,10 +27,10 @@ class PgsenderActionDataTypelistStraight extends PgsenderActionDataTypelist
         if (tqueue == null) {
             throw new ArgumentNullException("tqueue");
         }
-        return new PgsenderActionDataTypelistStraight(config, status, tqueue);
+        return new PgActionDataTypelistStraight(config, status, tqueue);
     }
 
-    private PgsenderActionDataTypelistStraight
+    private PgActionDataTypelistStraight
         /* */( MainlineConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<PgRecord> tqueue //
@@ -39,9 +39,9 @@ class PgsenderActionDataTypelistStraight extends PgsenderActionDataTypelist
         super(config, status, tqueue);
     }
 
-    public PgsenderActionReplTxactionStraight txaction()
+    public PgActionReplTxactionStraight txaction()
     {
-        return PgsenderActionReplTxactionStraight.of(this);
+        return PgActionReplTxactionStraight.of(this);
     }
 
     @Override

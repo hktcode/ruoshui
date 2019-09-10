@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderReportReplSlotEmpty extends PgsenderReportReplSlot
 {
-    static PgsenderReportReplSlotEmpty of(PgsenderActionDataReplSlot action, long finish)
+    static PgsenderReportReplSlotEmpty of(PgActionDataReplSlot action, long finish)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -16,7 +16,7 @@ public class PgsenderReportReplSlotEmpty extends PgsenderReportReplSlot
         return new PgsenderReportReplSlotEmpty(action, finish);
     }
 
-    private PgsenderReportReplSlotEmpty(PgsenderActionDataReplSlot action, long finish)
+    private PgsenderReportReplSlotEmpty(PgActionDataReplSlot action, long finish)
     {
         super(action, finish);
     }

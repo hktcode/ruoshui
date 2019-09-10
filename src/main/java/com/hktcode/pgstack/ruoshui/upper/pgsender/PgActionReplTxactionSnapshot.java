@@ -6,14 +6,14 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-class PgsenderActionDataTypelistSnapshot extends PgsenderActionDataTypelist
+class PgActionReplTxactionSnapshot extends PgActionReplTxaction
 {
-    static PgsenderActionDataTypelistSnapshot of(PgsenderActionDataSsFinish action)
+    static PgActionReplTxactionSnapshot of(PgActionDataTypelistSnapshot action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderActionDataTypelistSnapshot(action);
+        return new PgActionReplTxactionSnapshot(action);
     }
 
     public final PgsenderReportRelaList relalist;
@@ -30,7 +30,7 @@ class PgsenderActionDataTypelistSnapshot extends PgsenderActionDataTypelist
 
     public final PgsenderReportSsFinish ssfinish;
 
-    private PgsenderActionDataTypelistSnapshot(PgsenderActionDataSsFinish action)
+    private PgActionReplTxactionSnapshot(PgActionDataTypelistSnapshot action)
     {
         super(action);
         this.relalist = action.relalist;
@@ -39,24 +39,19 @@ class PgsenderActionDataTypelistSnapshot extends PgsenderActionDataTypelist
         this.sizeDiff = action.sizeDiff;
         this.ssBegins = action.ssBegins;
         this.tupleval = action.tupleval;
-        this.ssfinish = PgsenderReportSsFinish.of(action, this.actionStart);
-    }
-
-    public PgsenderActionReplTxaction txaction()
-    {
-        return PgsenderActionReplTxactionSnapshot.of(this);
+        this.ssfinish = action.ssfinish;
     }
 
     @Override
-    public PgsenderMetricRunTypelistSnapshot toRunMetrics()
+    public PgsenderMetricRunTxactionSnapshot toRunMetrics()
     {
-        return PgsenderMetricRunTypelistSnapshot.of(this);
+        return PgsenderMetricRunTxactionSnapshot.of(this);
     }
 
     @Override
-    public PgsenderMetricEndTypelistSnapshot toEndMetrics()
+    public PgsenderMetricEndTxactionSnapshot toEndMetrics()
     {
-        return PgsenderMetricEndTypelistSnapshot.of(this);
+        return PgsenderMetricEndTxactionSnapshot.of(this);
     }
 }
 

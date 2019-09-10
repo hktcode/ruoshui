@@ -284,9 +284,9 @@ public abstract class PgsenderConfig extends TqueueConfig
         this.getSnapshot = getSnapshot;
     }
 
-    public PgsenderAction afterSnapshot(PgsenderActionDataSsFinish action)
+    public PgAction afterSnapshot(PgActionDataSsFinish action)
     {
-        return PgsenderActionTerminateEnd.of(action);
+        return PgActionTerminateEnd.of(action);
     }
 
     public PgRecordLogicalMsg createMessage(long lsn, LogicalMsg msg)

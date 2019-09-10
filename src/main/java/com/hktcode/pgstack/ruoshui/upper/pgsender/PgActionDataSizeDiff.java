@@ -22,18 +22,17 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-public class PgsenderActionDataSizeDiff extends PgsenderActionData
+public class PgActionDataSizeDiff extends PgActionData
 {
-    static
-    PgsenderActionDataSizeDiff of(PgsenderActionDataReplSlot action)
+    static PgActionDataSizeDiff of(PgActionDataReplSlot action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderActionDataSizeDiff(action);
+        return new PgActionDataSizeDiff(action);
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(PgsenderActionDataSizeDiff.class);
+    private static final Logger logger = LoggerFactory.getLogger(PgActionDataSizeDiff.class);
 
     public final PgsenderReportRelaList relalist;
 
@@ -45,7 +44,7 @@ public class PgsenderActionDataSizeDiff extends PgsenderActionData
 
     private final List<PgsqlRelationMetric> newRelalist;
 
-    private PgsenderActionDataSizeDiff(PgsenderActionDataReplSlot action)
+    private PgActionDataSizeDiff(PgActionDataReplSlot action)
     {
         super(action, System.currentTimeMillis());
         this.relalist = action.relalist;
@@ -57,7 +56,7 @@ public class PgsenderActionDataSizeDiff extends PgsenderActionData
     }
 
     @Override
-    public PgsenderAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
+    public PgAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws SQLException, ScriptException, InterruptedException
     {
         if (exesvc == null) {
@@ -100,14 +99,14 @@ public class PgsenderActionDataSizeDiff extends PgsenderActionData
                     next = null;
                 }
                 else if (this.build(builder).size() == this.oldRelalist.size()) {
-                    return PgsenderActionDataSsBegins.of(this);
+                    return PgActionDataSsBegins.of(this);
                 }
                 else {
-                    return PgsenderActionDataRelaList.of(this);
+                    return PgActionDataRelaList.of(this);
                 }
             }
         }
-        return PgsenderActionTerminateEnd.of(this);
+        return PgActionTerminateEnd.of(this);
     }
 
     private List<PgsqlRelationMetric> build(RelationBuilder[] builder)

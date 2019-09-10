@@ -132,9 +132,9 @@ public class MainlineConfig extends PgsenderConfig
     }
 
     @Override
-    public PgsenderAction afterSnapshot(PgsenderActionDataSsFinish action)
+    public PgAction afterSnapshot(PgActionDataSsFinish action)
     {
-        return PgsenderActionDataTypelistSnapshot.of(action);
+        return PgActionDataTypelistSnapshot.of(action);
     }
 
     @Override

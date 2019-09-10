@@ -13,11 +13,11 @@ import org.postgresql.replication.LogSequenceNumber;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class PgsenderAction //
-    extends TqueueAction<PgsenderAction, PgsenderConfig, PgRecord> //
-    implements BgWorker<PgsenderAction> //
+public abstract class PgAction //
+    extends TqueueAction<PgAction, PgsenderConfig, PgRecord> //
+    implements BgWorker<PgAction> //
 {
-    protected PgsenderAction //
+    protected PgAction //
         /* */( PgsenderConfig config //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */, AtomicReference<SimpleStatus> status //
@@ -60,12 +60,12 @@ public abstract class PgsenderAction //
         return this.get();
     }
 
-    public PgsenderActionThrowsErrors next(Throwable throwsError)
+    public PgActionThrowsErrors next(Throwable throwsError)
     {
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
         }
-        return PgsenderActionThrowsErrors.of(this, throwsError);
+        return PgActionThrowsErrors.of(this, throwsError);
     }
 
     public abstract PgsenderMetricEnd toEndMetrics();

@@ -76,11 +76,11 @@ public class Mainline implements Runnable
 
     private void runWithInterrupted() throws InterruptedException
     {
-        PgsenderAction action;
+        PgAction action;
         if (config.getSnapshot) {
-            action = PgsenderActionDataRelaList.of(config, status, tqueue);
+            action = PgActionDataRelaList.of(config, status, tqueue);
         } else {
-            action = PgsenderActionDataTypelistStraight.of(config, status, tqueue);
+            action = PgActionDataTypelistStraight.of(config, status, tqueue);
         }
         try (Connection repl = config.srcProperty.replicaConnection()) {
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
@@ -90,16 +90,16 @@ public class Mainline implements Runnable
                 pgdata.setAutoCommit(false);
                 pgdata.setTransactionIsolation(TRANSACTION_REPEATABLE_READ);
                 do {
-                    PgsenderActionData
-                        dataAction = (PgsenderActionData)action;
+                    PgActionData
+                        dataAction = (PgActionData)action;
                     action = dataAction.next(exesvc, pgdata, pgrepl);
-                } while (action instanceof PgsenderActionData);
+                } while (action instanceof PgActionData);
             }
             finally {
                 exesvc.shutdown();
             }
-            while (action instanceof PgsenderActionRepl) {
-                action = ((PgsenderActionRepl) action).next(pgrepl);
+            while (action instanceof PgActionRepl) {
+                action = ((PgActionRepl) action).next(pgrepl);
             }
             logger.info("mainline completes");
         }

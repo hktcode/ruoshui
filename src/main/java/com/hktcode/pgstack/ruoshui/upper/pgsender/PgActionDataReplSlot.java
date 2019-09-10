@@ -18,16 +18,16 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-class PgsenderActionDataReplSlot extends PgsenderActionData
+class PgActionDataReplSlot extends PgActionData
 {
-    private static final Logger logger = LoggerFactory.getLogger(PgsenderActionDataReplSlot.class);
+    private static final Logger logger = LoggerFactory.getLogger(PgActionDataReplSlot.class);
 
-    static PgsenderActionDataReplSlot of(PgsenderActionDataRelaLock action)
+    static PgActionDataReplSlot of(PgActionDataRelaLock action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderActionDataReplSlot(action);
+        return new PgActionDataReplSlot(action);
     }
 
     public final PgsenderReportRelaList relalist;
@@ -40,7 +40,7 @@ class PgsenderActionDataReplSlot extends PgsenderActionData
 
     PgReplSlotTuple[] createTuple = new PgReplSlotTuple[0];
 
-    private PgsenderActionDataReplSlot(PgsenderActionDataRelaLock action)
+    private PgActionDataReplSlot(PgActionDataRelaLock action)
     {
         super(action, System.currentTimeMillis());
         this.relalist = action.relalist;
@@ -50,7 +50,7 @@ class PgsenderActionDataReplSlot extends PgsenderActionData
     }
 
     @Override
-    public PgsenderAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl)
+    public PgAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl)
         throws SQLException, InterruptedException
     {
         if (exesvc == null) {
@@ -95,11 +95,11 @@ class PgsenderActionDataReplSlot extends PgsenderActionData
                     long finish = System.currentTimeMillis();
                     logger.info("send create slot success: duration={}" //
                         , finish - starts);
-                    return PgsenderActionDataSizeDiff.of(this);
+                    return PgActionDataSizeDiff.of(this);
                 }
             }
         }
-        return PgsenderActionTerminateEnd.of(this);
+        return PgActionTerminateEnd.of(this);
     }
 
     @Override

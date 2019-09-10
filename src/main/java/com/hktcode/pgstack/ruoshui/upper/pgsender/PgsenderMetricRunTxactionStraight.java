@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderMetricRunTxactionStraight extends PgsenderMetricRunTxaction
 {
-    static PgsenderMetricRunTxactionStraight of(PgsenderActionReplTxactionStraight action)
+    static PgsenderMetricRunTxactionStraight of(PgActionReplTxactionStraight action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -16,7 +16,7 @@ public class PgsenderMetricRunTxactionStraight extends PgsenderMetricRunTxaction
         return new PgsenderMetricRunTxactionStraight(action);
     }
 
-    private PgsenderMetricRunTxactionStraight(PgsenderActionReplTxactionStraight action)
+    private PgsenderMetricRunTxactionStraight(PgActionReplTxactionStraight action)
     {
         super(action);
     }

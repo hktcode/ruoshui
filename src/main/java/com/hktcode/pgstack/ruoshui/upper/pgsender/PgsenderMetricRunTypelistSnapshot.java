@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderMetricRunTypelistSnapshot extends PgsenderMetricRunTypelist
 {
-    static PgsenderMetricRunTypelistSnapshot of(PgsenderActionDataTypelistSnapshot action)
+    static PgsenderMetricRunTypelistSnapshot of(PgActionDataTypelistSnapshot action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -16,7 +16,7 @@ public class PgsenderMetricRunTypelistSnapshot extends PgsenderMetricRunTypelist
         return new PgsenderMetricRunTypelistSnapshot(action);
     }
 
-    private PgsenderMetricRunTypelistSnapshot(PgsenderActionDataTypelistSnapshot action)
+    private PgsenderMetricRunTypelistSnapshot(PgActionDataTypelistSnapshot action)
     {
         super(action);
         this.relalist = action.relalist;

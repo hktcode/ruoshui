@@ -6,17 +6,17 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-class PgsenderActionReplTxactionStraight extends PgsenderActionReplTxaction
+class PgActionReplTxactionStraight extends PgActionReplTxaction
 {
-    static PgsenderActionReplTxactionStraight of(PgsenderActionDataTypelistStraight action)
+    static PgActionReplTxactionStraight of(PgActionDataTypelistStraight action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderActionReplTxactionStraight(action);
+        return new PgActionReplTxactionStraight(action);
     }
 
-    private PgsenderActionReplTxactionStraight(PgsenderActionDataTypelistStraight action)
+    private PgActionReplTxactionStraight(PgActionDataTypelistStraight action)
     {
         super(action);
     }

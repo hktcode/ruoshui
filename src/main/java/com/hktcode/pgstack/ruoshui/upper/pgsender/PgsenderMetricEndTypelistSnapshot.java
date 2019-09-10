@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderMetricEndTypelistSnapshot extends PgsenderMetricEndTypelist
 {
-    static PgsenderMetricEndTypelistSnapshot of(PgsenderActionDataTypelistSnapshot action)
+    static PgsenderMetricEndTypelistSnapshot of(PgActionDataTypelistSnapshot action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -16,7 +16,7 @@ public class PgsenderMetricEndTypelistSnapshot extends PgsenderMetricEndTypelist
         return new PgsenderMetricEndTypelistSnapshot(action);
     }
 
-    private PgsenderMetricEndTypelistSnapshot(PgsenderActionDataTypelistSnapshot action)
+    private PgsenderMetricEndTypelistSnapshot(PgActionDataTypelistSnapshot action)
     {
         super(action);
         this.relalist = action.relalist;

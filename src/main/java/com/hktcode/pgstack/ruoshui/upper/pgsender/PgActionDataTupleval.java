@@ -26,14 +26,14 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-class PgsenderActionDataTupleval extends PgsenderActionData
+class PgActionDataTupleval extends PgActionData
 {
-    static PgsenderActionDataTupleval of(PgsenderActionDataSrBegins action)
+    static PgActionDataTupleval of(PgActionDataSrBegins action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderActionDataTupleval(action);
+        return new PgActionDataTupleval(action);
     }
 
     public final PgsenderReportRelaList relalist;
@@ -52,7 +52,7 @@ class PgsenderActionDataTupleval extends PgsenderActionData
 
     final PgsqlRelationMetric curRelation;
 
-    private PgsenderActionDataTupleval(PgsenderActionDataSrBegins action) //
+    private PgActionDataTupleval(PgActionDataSrBegins action) //
     {
         super(action, action.actionStart);
         this.relalist = action.relalist;
@@ -73,7 +73,7 @@ class PgsenderActionDataTupleval extends PgsenderActionData
     }
 
     @Override
-    public PgsenderAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
+    public PgAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws SQLException, InterruptedException
     {
         if (exesvc == null) {
@@ -111,11 +111,11 @@ class PgsenderActionDataTupleval extends PgsenderActionData
                     nextFuture = null;
                     next = null;
                 } else {
-                    return PgsenderActionDataSrFinish.of(this);
+                    return PgActionDataSrFinish.of(this);
                 }
             }
         }
-        return PgsenderActionTerminateEnd.of(this);
+        return PgActionTerminateEnd.of(this);
     }
 
     private LogicalCreateTupleMsg build(ResultSet rs) throws SQLException

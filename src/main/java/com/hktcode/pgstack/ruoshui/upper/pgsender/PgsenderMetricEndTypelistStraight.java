@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderMetricEndTypelistStraight extends PgsenderMetricEndTypelist
 {
-    static PgsenderMetricEndTypelistStraight of(PgsenderActionDataTypelistStraight action)
+    static PgsenderMetricEndTypelistStraight of(PgActionDataTypelistStraight action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -16,7 +16,7 @@ public class PgsenderMetricEndTypelistStraight extends PgsenderMetricEndTypelist
         return new PgsenderMetricEndTypelistStraight(action);
     }
 
-    private PgsenderMetricEndTypelistStraight(PgsenderActionDataTypelistStraight action)
+    private PgsenderMetricEndTypelistStraight(PgActionDataTypelistStraight action)
     {
         super(action);
     }

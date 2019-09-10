@@ -4,7 +4,6 @@
 
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderReportTupleval
@@ -14,7 +13,7 @@ public class PgsenderReportTupleval
         return new PgsenderReportTupleval();
     }
 
-    static PgsenderReportTupleval of(PgsenderActionDataSrBegins action, long finish)
+    static PgsenderReportTupleval of(PgActionDataSrBegins action, long finish)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -22,7 +21,7 @@ public class PgsenderReportTupleval
         return new PgsenderReportTupleval(action, finish);
     }
 
-    static PgsenderReportTupleval of(PgsenderActionDataTupleval action, long finish)
+    static PgsenderReportTupleval of(PgActionDataTupleval action, long finish)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -30,7 +29,7 @@ public class PgsenderReportTupleval
         return new PgsenderReportTupleval(action, finish);
     }
 
-    static PgsenderReportTupleval of(PgsenderActionDataSrFinish action, long finish)
+    static PgsenderReportTupleval of(PgActionDataSrFinish action, long finish)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -63,7 +62,7 @@ public class PgsenderReportTupleval
         this.recordCount = 0;
     }
 
-    private PgsenderReportTupleval(PgsenderActionDataSrBegins action, long finish)
+    private PgsenderReportTupleval(PgActionDataSrBegins action, long finish)
     {
         this.totalMillis = finish - action.actionStart;
         this.rsgetCounts = action.rsgetCounts;
@@ -74,7 +73,7 @@ public class PgsenderReportTupleval
         this.recordCount = action.recordCount;
     }
 
-    private PgsenderReportTupleval(PgsenderActionDataTupleval action, long finish)
+    private PgsenderReportTupleval(PgActionDataTupleval action, long finish)
     {
         this.totalMillis = finish - action.actionStart;
         this.rsgetCounts = action.rsgetCounts;
@@ -85,7 +84,7 @@ public class PgsenderReportTupleval
         this.recordCount = action.recordCount;
     }
 
-    private PgsenderReportTupleval(PgsenderActionDataSrFinish action, long finish)
+    private PgsenderReportTupleval(PgActionDataSrFinish action, long finish)
     {
         this.totalMillis = finish - action.actionStart;
         this.rsgetCounts = action.rsgetCounts;

@@ -9,7 +9,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderReportRelaList
 {
-    public static PgsenderReportRelaList of(PgsenderActionDataRelaList action, long finish)
+    public static PgsenderReportRelaList of(PgActionDataRelaList action, long finish)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -29,7 +29,7 @@ public class PgsenderReportRelaList
 
     public final ImmutableList<String> retryReason;
 
-    private PgsenderReportRelaList(PgsenderActionDataRelaList action, long finish)
+    private PgsenderReportRelaList(PgActionDataRelaList action, long finish)
     {
         this.totalMillis = finish - action.actionStart;
         this.rsgetCounts = action.rsgetCounts;

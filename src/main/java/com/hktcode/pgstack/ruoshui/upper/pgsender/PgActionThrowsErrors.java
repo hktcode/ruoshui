@@ -6,9 +6,9 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class PgsenderActionThrowsErrors extends PgsenderAction
+public class PgActionThrowsErrors extends PgAction
 {
-    public static PgsenderActionThrowsErrors of(PgsenderAction action, Throwable throwsError)
+    public static PgActionThrowsErrors of(PgAction action, Throwable throwsError)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -16,10 +16,10 @@ public class PgsenderActionThrowsErrors extends PgsenderAction
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
         }
-        return new PgsenderActionThrowsErrors(action, throwsError);
+        return new PgActionThrowsErrors(action, throwsError);
     }
 
-    private PgsenderActionThrowsErrors(PgsenderAction action, Throwable throwsError)
+    private PgActionThrowsErrors(PgAction action, Throwable throwsError)
     {
         super(action.config, action.tqueue, action.status);
         this.metric = action.toEndMetrics().toErrMetrics(throwsError);

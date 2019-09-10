@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderReportSizeDiff
 {
-    static PgsenderReportSizeDiff of(PgsenderActionDataSizeDiff action, long finish)
+    static PgsenderReportSizeDiff of(PgActionDataSizeDiff action, long finish)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -26,7 +26,7 @@ public class PgsenderReportSizeDiff
 
     public final long newRelalist;
 
-    private PgsenderReportSizeDiff(PgsenderActionDataSizeDiff action, long finish)
+    private PgsenderReportSizeDiff(PgActionDataSizeDiff action, long finish)
     {
         this.totalMillis = finish - action.actionStart;
         this.rsgetCounts = action.rsgetCounts;

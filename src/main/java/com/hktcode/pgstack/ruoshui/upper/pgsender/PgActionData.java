@@ -15,9 +15,9 @@ import java.sql.SQLException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class PgsenderActionData extends PgsenderAction
+public abstract class PgActionData extends PgAction
 {
-    private static final Logger logger = LoggerFactory.getLogger(PgsenderActionData.class);
+    private static final Logger logger = LoggerFactory.getLogger(PgActionData.class);
 
     public final long actionStart;
 
@@ -27,7 +27,7 @@ public abstract class PgsenderActionData extends PgsenderAction
 
     public long rsnextCount = 0;
 
-    protected PgsenderActionData(PgsenderActionData action, long actionStart)
+    protected PgActionData(PgActionData action, long actionStart)
     {
         super(action.config, action.tqueue, action.status);
         this.actionStart = actionStart;
@@ -35,7 +35,7 @@ public abstract class PgsenderActionData extends PgsenderAction
         this.logDatetime = action.logDatetime;
     }
 
-    protected PgsenderActionData //
+    protected PgActionData //
         /* */( PgsenderConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<PgRecord> tqueue //
@@ -46,7 +46,7 @@ public abstract class PgsenderActionData extends PgsenderAction
         this.actionStart = actionStart;
     }
 
-    public abstract PgsenderAction //
+    public abstract PgAction //
     next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws SQLException, InterruptedException, ScriptException;
 

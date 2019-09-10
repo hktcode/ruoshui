@@ -8,7 +8,7 @@ import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderResultEnd<E extends PgsenderMetricEnd> //
-    implements PgsenderResult, SimpleMethodAllResultEnd<PgsenderAction>
+    implements PgsenderResult, SimpleMethodAllResultEnd<PgAction>
 {
     public static <E extends PgsenderMetricEnd> //
     PgsenderResultEnd<E> of(PgsenderConfig config, E metric)

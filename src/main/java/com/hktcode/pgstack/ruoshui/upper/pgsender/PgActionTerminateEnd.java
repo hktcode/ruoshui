@@ -6,19 +6,19 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class PgsenderActionTerminateEnd extends PgsenderAction
+public class PgActionTerminateEnd extends PgAction
 {
-    public static PgsenderActionTerminateEnd of(PgsenderAction action)
+    public static PgActionTerminateEnd of(PgAction action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderActionTerminateEnd(action);
+        return new PgActionTerminateEnd(action);
     }
 
     public final PgsenderMetricEnd metric;
 
-    private PgsenderActionTerminateEnd(PgsenderAction action)
+    private PgActionTerminateEnd(PgAction action)
     {
         super(action.config, action.tqueue, action.status);
         this.metric = action.toEndMetrics();

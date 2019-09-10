@@ -18,9 +18,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-abstract class PgsenderActionDataTypelist extends PgsenderActionData
+abstract class PgActionDataTypelist extends PgActionData
 {
-    PgsenderActionDataTypelist
+    PgActionDataTypelist
         /* */( MainlineConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<PgRecord> tqueue //
@@ -30,14 +30,14 @@ abstract class PgsenderActionDataTypelist extends PgsenderActionData
         this.logDatetime = super.actionStart;
     }
 
-    PgsenderActionDataTypelist(PgsenderActionDataSsFinish action)
+    PgActionDataTypelist(PgActionDataSsFinish action)
     {
         super(action, System.currentTimeMillis());
         this.logDatetime = action.logDatetime;
     }
 
     @Override
-    public PgsenderAction //
+    public PgAction //
     next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws SQLException, InterruptedException
     {
@@ -90,9 +90,9 @@ abstract class PgsenderActionDataTypelist extends PgsenderActionData
             }
         }
         pgdata.commit();
-        return PgsenderActionTerminateEnd.of(this);
+        return PgActionTerminateEnd.of(this);
     }
 
-    public abstract PgsenderActionReplTxaction txaction();
+    public abstract PgActionReplTxaction txaction();
 }
 

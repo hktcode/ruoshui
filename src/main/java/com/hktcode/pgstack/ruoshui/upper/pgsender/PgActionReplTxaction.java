@@ -16,15 +16,15 @@ import org.slf4j.LoggerFactory;
 import java.nio.ByteBuffer;
 import java.sql.SQLException;
 
-abstract class PgsenderActionReplTxaction extends PgsenderActionRepl
+abstract class PgActionReplTxaction extends PgActionRepl
 {
-    private static final Logger logger = LoggerFactory.getLogger(PgsenderActionReplTxaction.class);
+    private static final Logger logger = LoggerFactory.getLogger(PgActionReplTxaction.class);
 
     public final PgsenderReportTypelist typelist;
 
     public LogSequenceNumber txactionLsn = LogSequenceNumber.INVALID_LSN;
 
-    protected PgsenderActionReplTxaction(PgsenderActionDataTypelist action)
+    protected PgActionReplTxaction(PgActionDataTypelist action)
     {
         super(action, System.currentTimeMillis());
         this.typelist = PgsenderReportTypelist.of(action, this.actionStart);
@@ -32,7 +32,7 @@ abstract class PgsenderActionReplTxaction extends PgsenderActionRepl
     }
 
     @Override
-    public PgsenderAction
+    public PgAction
     next(PgConnection pgrepl) throws SQLException, InterruptedException
     {
         PgRecord r = null;
@@ -53,7 +53,7 @@ abstract class PgsenderActionReplTxaction extends PgsenderActionRepl
             }
         }
         this.statusInfor = "send txation finish record.";
-        return PgsenderActionTerminateEnd.of(this);
+        return PgActionTerminateEnd.of(this);
     }
 
     private PgRecordLogicalMsg poll(PGReplicationStream s) //

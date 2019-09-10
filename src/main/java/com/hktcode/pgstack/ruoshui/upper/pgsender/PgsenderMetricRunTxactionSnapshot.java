@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderMetricRunTxactionSnapshot extends PgsenderMetricRunTxaction
 {
-    static PgsenderMetricRunTxactionSnapshot of(PgsenderActionReplTxactionSnapshot action)
+    static PgsenderMetricRunTxactionSnapshot of(PgActionReplTxactionSnapshot action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -16,7 +16,7 @@ public class PgsenderMetricRunTxactionSnapshot extends PgsenderMetricRunTxaction
         return new PgsenderMetricRunTxactionSnapshot(action);
     }
 
-    private PgsenderMetricRunTxactionSnapshot(PgsenderActionReplTxactionSnapshot action)
+    private PgsenderMetricRunTxactionSnapshot(PgActionReplTxactionSnapshot action)
     {
         super(action);
         this.relalist = action.relalist;

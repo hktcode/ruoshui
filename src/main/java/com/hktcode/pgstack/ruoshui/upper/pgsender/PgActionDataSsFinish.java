@@ -15,22 +15,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-public class PgsenderActionDataSsFinish extends PgsenderActionData
+public class PgActionDataSsFinish extends PgActionData
 {
-    static PgsenderActionDataSsFinish of(PgsenderActionDataSrFinish action)
+    static PgActionDataSsFinish of(PgActionDataSrFinish action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderActionDataSsFinish(action);
+        return new PgActionDataSsFinish(action);
     }
 
-    static PgsenderActionDataSsFinish of(PgsenderActionDataSsBegins action)
+    static PgActionDataSsFinish of(PgActionDataSsBegins action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderActionDataSsFinish(action);
+        return new PgActionDataSsFinish(action);
     }
 
     public final PgsenderReportRelaList relalist;
@@ -47,7 +47,7 @@ public class PgsenderActionDataSsFinish extends PgsenderActionData
 
     public final ImmutableList<PgsqlRelationMetric> relationLst;
 
-    private PgsenderActionDataSsFinish(PgsenderActionDataSsBegins action)
+    private PgActionDataSsFinish(PgActionDataSsBegins action)
     {
         super(action, System.currentTimeMillis());
         this.relalist = action.relalist;
@@ -60,7 +60,7 @@ public class PgsenderActionDataSsFinish extends PgsenderActionData
         this.logDatetime = action.logDatetime;
     }
 
-    private PgsenderActionDataSsFinish(PgsenderActionDataSrFinish action)
+    private PgActionDataSsFinish(PgActionDataSrFinish action)
     {
         super(action, System.currentTimeMillis());
         this.relalist = action.relalist;
@@ -74,7 +74,7 @@ public class PgsenderActionDataSsFinish extends PgsenderActionData
     }
 
     @Override
-    public PgsenderAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl)
+    public PgAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl)
         throws InterruptedException
     {
         if (exesvc == null) {
@@ -99,7 +99,7 @@ public class PgsenderActionDataSsFinish extends PgsenderActionData
                 return this.config.afterSnapshot(this);
             }
         }
-        return PgsenderActionTerminateEnd.of(this);
+        return PgActionTerminateEnd.of(this);
     }
 
     @Override

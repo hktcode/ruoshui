@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderReportTypelist
 {
-    static PgsenderReportTypelist of(PgsenderActionDataTypelist action, long finish)
+    static PgsenderReportTypelist of(PgActionDataTypelist action, long finish)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -30,7 +30,7 @@ public class PgsenderReportTypelist
 
     public final long recordCount;
 
-    private PgsenderReportTypelist(PgsenderActionDataTypelist action, long finish)
+    private PgsenderReportTypelist(PgActionDataTypelist action, long finish)
     {
         this.totalMillis = finish - action.actionStart;
         this.rsgetCounts = action.rsgetCounts;

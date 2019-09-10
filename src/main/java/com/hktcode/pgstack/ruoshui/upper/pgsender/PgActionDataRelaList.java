@@ -24,9 +24,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class PgsenderActionDataRelaList extends PgsenderActionData
+public class PgActionDataRelaList extends PgActionData
 {
-    public static PgsenderActionDataRelaList of //
+    public static PgActionDataRelaList of //
         /* */( PgsenderConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<PgRecord> tqueue //
@@ -41,28 +41,28 @@ public class PgsenderActionDataRelaList extends PgsenderActionData
         if (tqueue == null) {
             throw new ArgumentNullException("tqueue");
         }
-        return new PgsenderActionDataRelaList(config, status, tqueue);
+        return new PgActionDataRelaList(config, status, tqueue);
     }
 
-    static PgsenderActionDataRelaList of(PgsenderActionDataRelaLock action)
+    static PgActionDataRelaList of(PgActionDataRelaLock action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderActionDataRelaList(action);
+        return new PgActionDataRelaList(action);
     }
 
-    static PgsenderActionDataRelaList of(PgsenderActionDataSizeDiff action)
+    static PgActionDataRelaList of(PgActionDataSizeDiff action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderActionDataRelaList(action);
+        return new PgActionDataRelaList(action);
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(PgsenderActionDataRelaList.class);
+    private static final Logger logger = LoggerFactory.getLogger(PgActionDataRelaList.class);
 
-    private PgsenderActionDataRelaList
+    private PgActionDataRelaList
         /* */( PgsenderConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<PgRecord> tqueue //
@@ -73,7 +73,7 @@ public class PgsenderActionDataRelaList extends PgsenderActionData
         this.logDatetime = super.actionStart;
     }
 
-    private PgsenderActionDataRelaList(PgsenderActionDataRelaLock action)
+    private PgActionDataRelaList(PgActionDataRelaLock action)
     {
         super(action, System.currentTimeMillis());
         this.retryReason = ImmutableList.<String>builder() //
@@ -82,7 +82,7 @@ public class PgsenderActionDataRelaList extends PgsenderActionData
         this.logDatetime = action.logDatetime;
     }
 
-    private PgsenderActionDataRelaList(PgsenderActionDataSizeDiff action)
+    private PgActionDataRelaList(PgActionDataSizeDiff action)
     {
         super(action, System.currentTimeMillis());
         this.retryReason = ImmutableList.<String>builder() //
@@ -102,7 +102,7 @@ public class PgsenderActionDataRelaList extends PgsenderActionData
     public final List<PgsqlRelationMetric> relationLst = new ArrayList<>();
 
     @Override
-    public PgsenderAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
+    public PgAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws SQLException, ScriptException, InterruptedException
     {
         if (exesvc == null) {
@@ -155,7 +155,7 @@ public class PgsenderActionDataRelaList extends PgsenderActionData
                     this.build(builder, duration);
                     pgdata.commit();
                     this.statusInfor = "completes";
-                    return PgsenderActionDataRelaLock.of(this);
+                    return PgActionDataRelaLock.of(this);
                 }
             }
             pgdata.commit();
@@ -168,7 +168,7 @@ public class PgsenderActionDataRelaList extends PgsenderActionData
             throw ex;
         }
         this.statusInfor = "terminate";
-        return PgsenderActionTerminateEnd.of(this);
+        return PgActionTerminateEnd.of(this);
     }
 
     private void build(RelationBuilder[] builder, long duration)

@@ -18,23 +18,23 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-class PgsenderActionDataRelaLock extends PgsenderActionData
+class PgActionDataRelaLock extends PgActionData
 {
-    private static final Logger logger = LoggerFactory.getLogger(PgsenderActionDataRelaLock.class);
+    private static final Logger logger = LoggerFactory.getLogger(PgActionDataRelaLock.class);
 
-    static PgsenderActionDataRelaLock of(PgsenderActionDataRelaList action)
+    static PgActionDataRelaLock of(PgActionDataRelaList action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderActionDataRelaLock(action);
+        return new PgActionDataRelaLock(action);
     }
 
     public final PgsenderReportRelaList relalist;
 
     public final ImmutableList<PgsqlRelationMetric> relationLst;
 
-    private PgsenderActionDataRelaLock(PgsenderActionDataRelaList action)
+    private PgActionDataRelaLock(PgActionDataRelaList action)
     {
         super(action, System.currentTimeMillis());
         this.relalist = PgsenderReportRelaList.of(action, this.actionStart);
@@ -43,7 +43,7 @@ class PgsenderActionDataRelaLock extends PgsenderActionData
     }
 
     @Override
-    public PgsenderAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
+    public PgAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws SQLException, InterruptedException
     {
         if (exesvc == null) {
@@ -63,7 +63,7 @@ class PgsenderActionDataRelaLock extends PgsenderActionData
             Future<Boolean> executeFuture = null;
             while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
                 if (Boolean.FALSE.equals(success)) {
-                    return PgsenderActionDataRelaList.of(this);
+                    return PgActionDataRelaList.of(this);
                 }
                 else if (Boolean.TRUE.equals(success)) {
                     long finish = System.currentTimeMillis();
@@ -85,11 +85,11 @@ class PgsenderActionDataRelaLock extends PgsenderActionData
                     executeFuture = exesvc.submit(callable);
                 }
                 else {
-                    return PgsenderActionDataReplSlot.of(this);
+                    return PgActionDataReplSlot.of(this);
                 }
             }
         }
-        return PgsenderActionTerminateEnd.of(this);
+        return PgActionTerminateEnd.of(this);
     }
 
     @Override

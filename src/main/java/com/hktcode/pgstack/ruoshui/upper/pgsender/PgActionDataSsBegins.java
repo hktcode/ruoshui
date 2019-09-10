@@ -16,14 +16,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-class PgsenderActionDataSsBegins extends PgsenderActionData
+class PgActionDataSsBegins extends PgActionData
 {
-    static PgsenderActionDataSsBegins of(PgsenderActionDataSizeDiff action)
+    static PgActionDataSsBegins of(PgActionDataSizeDiff action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderActionDataSsBegins(action);
+        return new PgActionDataSsBegins(action);
     }
 
     public final PgsenderReportRelaList relalist;
@@ -38,7 +38,7 @@ class PgsenderActionDataSsBegins extends PgsenderActionData
 
     final Iterator<PgsqlRelationMetric> relIterator;
 
-    private PgsenderActionDataSsBegins(PgsenderActionDataSizeDiff action)
+    private PgActionDataSsBegins(PgActionDataSizeDiff action)
     {
         super(action, System.currentTimeMillis());
         this.relalist = action.relalist;
@@ -51,7 +51,7 @@ class PgsenderActionDataSsBegins extends PgsenderActionData
     }
 
     @Override
-    public PgsenderAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
+    public PgAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws InterruptedException
     {
         long lsn = this.replSlot.createTuple.consistentPoint;
@@ -67,13 +67,13 @@ class PgsenderActionDataSsBegins extends PgsenderActionData
                 record = this.send(record);
             }
             else if (this.relIterator.hasNext()){
-                return PgsenderActionDataSrBegins.of(this);
+                return PgActionDataSrBegins.of(this);
             }
             else {
-                return PgsenderActionDataSsFinish.of(this);
+                return PgActionDataSsFinish.of(this);
             }
         }
-        return PgsenderActionTerminateEnd.of(this);
+        return PgActionTerminateEnd.of(this);
     }
 
     @Override

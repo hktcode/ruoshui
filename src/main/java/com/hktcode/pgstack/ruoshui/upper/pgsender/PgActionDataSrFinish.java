@@ -7,29 +7,20 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgjdbc.LogicalBegRelationMsg;
-import com.hktcode.pgjdbc.PgReplRelation;
+import com.hktcode.pgjdbc.LogicalEndRelationMsg;
 import org.postgresql.jdbc.PgConnection;
 
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 
-class PgsenderActionDataSrBegins extends PgsenderActionData
+public class PgActionDataSrFinish extends PgActionData
 {
-    static PgsenderActionDataSrBegins of(PgsenderActionDataSsBegins action)
+    static PgActionDataSrFinish of(PgActionDataTupleval action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderActionDataSrBegins(action);
-    }
-
-    static PgsenderActionDataSrBegins of(PgsenderActionDataSrFinish action)
-    {
-        if (action == null) {
-            throw new ArgumentNullException("action");
-        }
-        return new PgsenderActionDataSrBegins(action);
+        return new PgActionDataSrFinish(action);
     }
 
     public final PgsenderReportRelaList relalist;
@@ -48,21 +39,7 @@ class PgsenderActionDataSrBegins extends PgsenderActionData
 
     final PgsqlRelationMetric curRelation;
 
-    private PgsenderActionDataSrBegins(PgsenderActionDataSsBegins action)
-    {
-        super(action, System.currentTimeMillis());
-        this.relalist = action.relalist;
-        this.relaLock = action.relaLock;
-        this.replSlot = action.replSlot;
-        this.sizeDiff = action.sizeDiff;
-        this.ssbegins = PgsenderReportSsBegins.of(action, action.actionStart);
-        this.relationLst = action.relationLst;
-        this.relIterator = action.relIterator;
-        this.curRelation = this.relIterator.next();
-        this.logDatetime = action.logDatetime;
-    }
-
-    private PgsenderActionDataSrBegins(PgsenderActionDataSrFinish action)
+    private PgActionDataSrFinish(PgActionDataTupleval action) //
     {
         super(action, action.actionStart);
         this.relalist = action.relalist;
@@ -79,23 +56,29 @@ class PgsenderActionDataSrBegins extends PgsenderActionData
         this.offerCounts = action.offerCounts;
         this.rsnextCount = action.rsnextCount;
         this.recordCount = action.recordCount;
-        this.curRelation = action.relIterator.next();
+        this.curRelation = action.curRelation;
     }
 
     @Override
-    public PgsenderAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
+    public PgAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws InterruptedException
     {
-        PgReplRelation r = this.curRelation.relationInfo;
         long lsn = this.replSlot.createTuple.consistentPoint;
-        LogicalBegRelationMsg msg = LogicalBegRelationMsg.of(r);
+        LogicalEndRelationMsg msg //
+            = LogicalEndRelationMsg.of(this.curRelation.relationInfo);
         PgRecord record = this.config.createMessage(lsn, msg);
         while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
-            if ((record = this.send(record)) == null) {
-                return PgsenderActionDataTupleval.of(this);
+            if (record != null) {
+                record = this.send(record);
+            }
+            else if (this.relIterator.hasNext()) {
+                return PgActionDataSrBegins.of(this);
+            }
+            else {
+                return PgActionDataSsFinish.of(this);
             }
         }
-        return PgsenderActionTerminateEnd.of(this);
+        return PgActionTerminateEnd.of(this);
     }
 
     @Override

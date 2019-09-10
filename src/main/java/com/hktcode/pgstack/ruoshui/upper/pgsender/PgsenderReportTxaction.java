@@ -9,7 +9,7 @@ import org.postgresql.replication.LogSequenceNumber;
 
 public class PgsenderReportTxaction
 {
-    static PgsenderReportTxaction of(PgsenderActionReplTxaction action, long finish)
+    static PgsenderReportTxaction of(PgActionReplTxaction action, long finish)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -31,7 +31,7 @@ public class PgsenderReportTxaction
 
     public final LogSequenceNumber txactionLsn;
 
-    private PgsenderReportTxaction(PgsenderActionReplTxaction action, long finish)
+    private PgsenderReportTxaction(PgActionReplTxaction action, long finish)
     {
         this.totalMillis = finish - action.actionStart;
         this.fetchCounts = action.fetchCounts;

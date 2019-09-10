@@ -6,14 +6,14 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-class PgsenderActionReplTxactionSnapshot extends PgsenderActionReplTxaction
+class PgActionDataTypelistSnapshot extends PgActionDataTypelist
 {
-    static PgsenderActionReplTxactionSnapshot of(PgsenderActionDataTypelistSnapshot action)
+    static PgActionDataTypelistSnapshot of(PgActionDataSsFinish action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderActionReplTxactionSnapshot(action);
+        return new PgActionDataTypelistSnapshot(action);
     }
 
     public final PgsenderReportRelaList relalist;
@@ -30,7 +30,7 @@ class PgsenderActionReplTxactionSnapshot extends PgsenderActionReplTxaction
 
     public final PgsenderReportSsFinish ssfinish;
 
-    private PgsenderActionReplTxactionSnapshot(PgsenderActionDataTypelistSnapshot action)
+    private PgActionDataTypelistSnapshot(PgActionDataSsFinish action)
     {
         super(action);
         this.relalist = action.relalist;
@@ -39,19 +39,24 @@ class PgsenderActionReplTxactionSnapshot extends PgsenderActionReplTxaction
         this.sizeDiff = action.sizeDiff;
         this.ssBegins = action.ssBegins;
         this.tupleval = action.tupleval;
-        this.ssfinish = action.ssfinish;
+        this.ssfinish = PgsenderReportSsFinish.of(action, this.actionStart);
+    }
+
+    public PgActionReplTxaction txaction()
+    {
+        return PgActionReplTxactionSnapshot.of(this);
     }
 
     @Override
-    public PgsenderMetricRunTxactionSnapshot toRunMetrics()
+    public PgsenderMetricRunTypelistSnapshot toRunMetrics()
     {
-        return PgsenderMetricRunTxactionSnapshot.of(this);
+        return PgsenderMetricRunTypelistSnapshot.of(this);
     }
 
     @Override
-    public PgsenderMetricEndTxactionSnapshot toEndMetrics()
+    public PgsenderMetricEndTypelistSnapshot toEndMetrics()
     {
-        return PgsenderMetricEndTxactionSnapshot.of(this);
+        return PgsenderMetricEndTypelistSnapshot.of(this);
     }
 }
 

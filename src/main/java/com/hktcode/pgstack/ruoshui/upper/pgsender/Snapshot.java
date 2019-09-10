@@ -12,7 +12,6 @@ import org.postgresql.jdbc.PgConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.script.ScriptException;
 import java.sql.Connection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -76,7 +75,7 @@ public class Snapshot implements Runnable
 
     private void runWithInterrupted() throws InterruptedException
     {
-        PgsenderAction action = PgsenderActionDataRelaList.of(config, status, tqueue);
+        PgAction action = PgActionDataRelaList.of(config, status, tqueue);
         try (Connection repl = config.srcProperty.replicaConnection()) {
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
             ExecutorService exesvc = Executors.newSingleThreadExecutor();
@@ -85,10 +84,10 @@ public class Snapshot implements Runnable
                 pgdata.setAutoCommit(false);
                 pgdata.setTransactionIsolation(TRANSACTION_REPEATABLE_READ);
                 do {
-                    PgsenderActionData dataAction //
-                        = (PgsenderActionData)action;
+                    PgActionData dataAction //
+                        = (PgActionData)action;
                     action = dataAction.next(exesvc, pgdata, pgrepl);
-                } while (action instanceof PgsenderActionData);
+                } while (action instanceof PgActionData);
             }
             finally {
                 exesvc.shutdown();
