@@ -7,16 +7,12 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgstack.ruoshui.pgsql.LogicalReplConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplRelationName;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
-import org.postgresql.jdbc.PgConnection;
 
 import javax.script.ScriptException;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,15 +24,6 @@ import static com.hktcode.bgsimple.triple.TripleConfig.DEFAULT_LOG_DURATION;
 
 public class MainlineConfig extends PgsenderConfig
 {
-    private static final String TYPELIST_SQL = "" //
-        + "\n select \"t\".    \"oid\"::int8 as \"datatype\" " //
-        + "\n      , \"n\".\"nspname\"::text as \"tpschema\" " //
-        + "\n      , \"t\".\"typname\"::text as \"typename\" " //
-        + "\n  from            \"pg_catalog\".\"pg_type\"      \"t\" " //
-        + "\n       inner join \"pg_catalog\".\"pg_namespace\" \"n\" " //
-        + "\n               on \"t\".\"typnamespace\" = \"n\".\"oid\" " //
-        + "\n ";
-
     public static MainlineConfig ofJsonObject(JsonNode json) //
         throws ScriptException
     {
@@ -46,7 +33,7 @@ public class MainlineConfig extends PgsenderConfig
         JsonNode srcPropertyNode = json.path("src_property");
         PgConnectionProperty srcProperty = PgConnectionProperty.ofJsonObject(srcPropertyNode);
 
-        String typelistSql = json.path("typelist_sql").asText(TYPELIST_SQL);
+        String typelistSql = json.path("typelist_sql").asText(DEFAULT_TYPELIST_SQL);
         JsonNode logicalReplNode = json.path("logical_repl");
         LogicalReplConfig logicalRepl = LogicalReplConfig.of(logicalReplNode);
 

@@ -107,7 +107,7 @@ public abstract class PgsenderConfig extends TqueueConfig
         + "\n ORDER BY \"t\".\"oid\", \"a\".\"attnum\" " //
         + "";
 
-    private static final String DEFAULT_TYPELIST_SQL = "" //
+    public static final String DEFAULT_TYPELIST_SQL = "" //
         + "\n select \"t\".    \"oid\"::int8 as \"datatype\" " //
         + "\n      , \"n\".\"nspname\"::text as \"tpschema\" " //
         + "\n      , \"t\".\"typname\"::text as \"typename\" " //
