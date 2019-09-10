@@ -26,16 +26,16 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-class PgsenderActionDataTupleval<C extends PgsenderConfig> //
-    extends PgsenderActionData<C>
+class PgsenderActionDataTupleval //
+    extends PgsenderActionData
 {
-    static <C extends PgsenderConfig>
-    PgsenderActionDataTupleval<C> of(PgsenderActionDataSrBegins<C> action)
+    static
+    PgsenderActionDataTupleval of(PgsenderActionDataSrBegins action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderActionDataTupleval<>(action);
+        return new PgsenderActionDataTupleval(action);
     }
 
     public final PgsenderReportRelaList relalist;
@@ -54,7 +54,7 @@ class PgsenderActionDataTupleval<C extends PgsenderConfig> //
 
     final PgsqlRelationMetric curRelation;
 
-    private PgsenderActionDataTupleval(PgsenderActionDataSrBegins<C> action) //
+    private PgsenderActionDataTupleval(PgsenderActionDataSrBegins action) //
     {
         super(action, action.actionStart);
         this.relalist = action.relalist;
@@ -75,7 +75,7 @@ class PgsenderActionDataTupleval<C extends PgsenderConfig> //
     }
 
     @Override
-    public PgsenderAction<C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
+    public PgsenderAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws SQLException, InterruptedException
     {
         if (exesvc == null) {

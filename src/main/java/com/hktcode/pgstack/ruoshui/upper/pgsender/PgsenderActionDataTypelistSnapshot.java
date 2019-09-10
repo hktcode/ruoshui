@@ -9,7 +9,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 class PgsenderActionDataTypelistSnapshot extends PgsenderActionDataTypelist
 {
     static PgsenderActionDataTypelistSnapshot //
-    of(PgsenderActionDataSsFinish<MainlineConfig> action)
+    of(PgsenderActionDataSsFinish action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -32,7 +32,7 @@ class PgsenderActionDataTypelistSnapshot extends PgsenderActionDataTypelist
     public final PgsenderReportSsFinish ssfinish;
 
     private PgsenderActionDataTypelistSnapshot
-        (PgsenderActionDataSsFinish<MainlineConfig> action)
+        (PgsenderActionDataSsFinish action)
     {
         super(action);
         this.relalist = action.relalist;

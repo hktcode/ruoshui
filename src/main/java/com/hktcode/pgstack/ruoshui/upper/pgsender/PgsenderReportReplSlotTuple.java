@@ -9,8 +9,8 @@ import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 
 public class PgsenderReportReplSlotTuple extends PgsenderReportReplSlot
 {
-    static <C extends PgsenderConfig>
-    PgsenderReportReplSlotTuple of(PgsenderActionDataReplSlot<C> action, long finish)
+    static
+    PgsenderReportReplSlotTuple of(PgsenderActionDataReplSlot action, long finish)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -20,8 +20,8 @@ public class PgsenderReportReplSlotTuple extends PgsenderReportReplSlot
 
     public final PgReplSlotTuple createTuple;
 
-    private <C extends PgsenderConfig> //
-    PgsenderReportReplSlotTuple(PgsenderActionDataReplSlot<C> action, long finish)
+    private  //
+    PgsenderReportReplSlotTuple(PgsenderActionDataReplSlot action, long finish)
     {
         super(action, finish);
         this.createTuple = action.createTuple[0];

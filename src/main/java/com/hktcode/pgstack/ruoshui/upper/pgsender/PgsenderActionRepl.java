@@ -11,8 +11,8 @@ import org.postgresql.jdbc.PgConnection;
 import java.sql.SQLException;
 
 abstract class PgsenderActionRepl //
-    extends TqueueAction<PgsenderAction<MainlineConfig>, MainlineConfig, PgRecord> //
-    implements PgsenderAction<MainlineConfig> //
+    extends TqueueAction<PgsenderAction, PgsenderConfig, PgRecord> //
+    implements PgsenderAction //
 {
     public final long actionStart;
 
@@ -20,37 +20,34 @@ abstract class PgsenderActionRepl //
 
     public long fetchMillis = 0;
 
-    protected PgsenderActionRepl(PgsenderActionData<MainlineConfig> action, long actionStart)
+    protected PgsenderActionRepl(PgsenderActionData action, long actionStart)
     {
         super(action.config, action.tqueue, action.status);
         this.actionStart = actionStart;
         this.logDatetime = action.logDatetime;
     }
 
-    abstract PgsenderAction<MainlineConfig> next(PgConnection pgrepl) //
+    abstract PgsenderAction next(PgConnection pgrepl) //
         throws SQLException, InterruptedException;
 
     public abstract PgsenderMetricRun toRunMetrics();
 
     @Override
-    public PgsenderResultRun<MainlineConfig> get()
+    public PgsenderResultRun get()
     {
-        MainlineConfig config = this.config;
         PgsenderMetricRun metric = this.toRunMetrics();
-        return PgsenderResultRun.of(config, metric);
+        return PgsenderResultRun.of(this.config, metric);
     }
 
     @Override
-    public PgsenderResultEnd<MainlineConfig, PgsenderMetricEnd> del()
+    public PgsenderResultEnd<PgsenderMetricEnd> del()
     {
-        MainlineConfig config = this.config;
         PgsenderMetricEnd metric = this.toEndMetrics();
-        return PgsenderResultEnd.of(config, metric);
+        return PgsenderResultEnd.of(this.config, metric);
     }
 
     @Override
-    public PgsenderActionThrowsErrors<MainlineConfig>
-    next(Throwable throwsError)
+    public PgsenderActionThrowsErrors next(Throwable throwsError)
     {
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");

@@ -32,7 +32,7 @@ abstract class PgsenderActionReplTxaction extends PgsenderActionRepl
     }
 
     @Override
-    public PgsenderAction<MainlineConfig>
+    public PgsenderAction
     next(PgConnection pgrepl) throws SQLException, InterruptedException
     {
         PgRecord r = null;
@@ -84,7 +84,7 @@ abstract class PgsenderActionReplTxaction extends PgsenderActionRepl
     public abstract PgsenderMetricRunTxaction complete();
 
     @Override
-    public PgsenderResultRun<MainlineConfig> pst(LogSequenceNumber lsn)
+    public PgsenderResultRun pst(LogSequenceNumber lsn)
     {
         if (lsn == null) {
             throw new ArgumentNullException("lsn");
@@ -99,6 +99,6 @@ abstract class PgsenderActionReplTxaction extends PgsenderActionRepl
         if (config == null) {
             throw new ArgumentNullException("config");
         }
-        return PgsenderResultRunSnapshot.of(this.config, this.toRunMetrics());
+        return PgsenderResultRunSnapshot.of((MainlineConfig)this.config, this.toRunMetrics());
     }
 }

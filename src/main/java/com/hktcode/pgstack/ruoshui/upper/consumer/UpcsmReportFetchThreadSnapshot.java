@@ -14,8 +14,8 @@ import com.hktcode.pgstack.ruoshui.upper.pgsender.SnapshotConfig;
 public class UpcsmReportFetchThreadSnapshot extends UpcsmReportFetchThread
 {
     public static UpcsmReportFetchThreadSnapshot of //
-        /* */(PgsenderResult<MainlineConfig> mainline //
-        /* */, ImmutableList<PgsenderResult<SnapshotConfig>> snapshot //
+        /* */(PgsenderResult mainline //
+        /* */, ImmutableList<PgsenderResult> snapshot //
         /* */)
     {
         if (mainline == null) {
@@ -28,8 +28,8 @@ public class UpcsmReportFetchThreadSnapshot extends UpcsmReportFetchThread
     }
 
     private UpcsmReportFetchThreadSnapshot //
-        /* */(PgsenderResult<MainlineConfig> mainline //
-        /* */, ImmutableList<PgsenderResult<SnapshotConfig>> snapshot //
+        /* */(PgsenderResult mainline //
+        /* */, ImmutableList<PgsenderResult> snapshot //
         /* */)
     {
         super(mainline, snapshot);

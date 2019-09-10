@@ -11,13 +11,13 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class PgsenderActionThrowsErrors<C extends PgsenderConfig>
-    extends TqueueAction<PgsenderAction<C>, C, PgRecord> //
-    implements PgsenderAction<C> //
+public class PgsenderActionThrowsErrors
+    extends TqueueAction<PgsenderAction, PgsenderConfig, PgRecord> //
+    implements PgsenderAction //
 {
-    public static <C extends PgsenderConfig> //
-    PgsenderActionThrowsErrors<C> of //
-        /* */( PgsenderActionData<C> action //
+    public static  //
+    PgsenderActionThrowsErrors of //
+        /* */( PgsenderActionData action //
         /* */, Throwable throwsError //
         /* */)
     {
@@ -27,12 +27,12 @@ public class PgsenderActionThrowsErrors<C extends PgsenderConfig>
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
         }
-        return new PgsenderActionThrowsErrors<>(action, throwsError);
+        return new PgsenderActionThrowsErrors(action, throwsError);
     }
 
-    public static <C extends PgsenderConfig> //
-    PgsenderActionThrowsErrors<C> of //
-        /* */( PgsenderActionTerminateEnd<C> action //
+    public static  //
+    PgsenderActionThrowsErrors of //
+        /* */( PgsenderActionTerminateEnd action //
         /* */, Throwable throwsError //
         /* */)
     {
@@ -42,12 +42,12 @@ public class PgsenderActionThrowsErrors<C extends PgsenderConfig>
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
         }
-        return new PgsenderActionThrowsErrors<>(action, throwsError);
+        return new PgsenderActionThrowsErrors(action, throwsError);
     }
 
-    public static <C extends PgsenderConfig>
-    PgsenderActionThrowsErrors<C> of //
-        /* */( C config //
+    public static
+    PgsenderActionThrowsErrors of //
+        /* */( PgsenderConfig config //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, PgsenderMetricErr metric
@@ -65,11 +65,11 @@ public class PgsenderActionThrowsErrors<C extends PgsenderConfig>
         if (metric == null) {
             throw new ArgumentNullException("metric");
         }
-        return new PgsenderActionThrowsErrors<>(config, tqueue, status, metric);
+        return new PgsenderActionThrowsErrors(config, tqueue, status, metric);
     }
 
     private PgsenderActionThrowsErrors //
-        /* */( PgsenderActionData<C> action //
+        /* */( PgsenderActionData action //
         /* */, Throwable throwsError //
         /* */)
     {
@@ -78,7 +78,7 @@ public class PgsenderActionThrowsErrors<C extends PgsenderConfig>
     }
 
     private PgsenderActionThrowsErrors //
-        /* */( PgsenderActionTerminateEnd<C> action //
+        /* */( PgsenderActionTerminateEnd action //
         /* */, Throwable throwsError //
         /* */)
     {
@@ -87,7 +87,7 @@ public class PgsenderActionThrowsErrors<C extends PgsenderConfig>
     }
 
     private PgsenderActionThrowsErrors
-        /* */( C config //
+        /* */( PgsenderConfig config //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, PgsenderMetricErr metric
@@ -100,7 +100,7 @@ public class PgsenderActionThrowsErrors<C extends PgsenderConfig>
     public final PgsenderMetricErr metric;
 
     @Override
-    public PgsenderActionThrowsErrors<C> next(Throwable throwsError)
+    public PgsenderActionThrowsErrors next(Throwable throwsError)
     {
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
@@ -115,13 +115,13 @@ public class PgsenderActionThrowsErrors<C extends PgsenderConfig>
     }
 
     @Override
-    public PgsenderResultErr<C> get()
+    public PgsenderResultErr get()
     {
         return PgsenderResultErr.of(config, metric);
     }
 
     @Override
-    public PgsenderResultErr<C> del()
+    public PgsenderResultErr del()
     {
         return PgsenderResultErr.of(config, metric);
     }

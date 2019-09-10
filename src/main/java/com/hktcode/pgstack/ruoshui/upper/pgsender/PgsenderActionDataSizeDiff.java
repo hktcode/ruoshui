@@ -22,16 +22,16 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-public class PgsenderActionDataSizeDiff<C extends PgsenderConfig> //
-    extends PgsenderActionData<C>
+public class PgsenderActionDataSizeDiff //
+    extends PgsenderActionData
 {
-    static <C extends PgsenderConfig>
-    PgsenderActionDataSizeDiff<C> of(PgsenderActionDataReplSlot<C> action)
+    static
+    PgsenderActionDataSizeDiff of(PgsenderActionDataReplSlot action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderActionDataSizeDiff<>(action);
+        return new PgsenderActionDataSizeDiff(action);
     }
 
     private static final Logger logger = LoggerFactory.getLogger(PgsenderActionDataSizeDiff.class);
@@ -46,7 +46,7 @@ public class PgsenderActionDataSizeDiff<C extends PgsenderConfig> //
 
     private final List<PgsqlRelationMetric> newRelalist;
 
-    private PgsenderActionDataSizeDiff(PgsenderActionDataReplSlot<C> action)
+    private PgsenderActionDataSizeDiff(PgsenderActionDataReplSlot action)
     {
         super(action, System.currentTimeMillis());
         this.relalist = action.relalist;
@@ -58,7 +58,7 @@ public class PgsenderActionDataSizeDiff<C extends PgsenderConfig> //
     }
 
     @Override
-    public PgsenderAction<C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
+    public PgsenderAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws SQLException, ScriptException, InterruptedException
     {
         if (exesvc == null) {

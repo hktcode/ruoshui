@@ -8,8 +8,8 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderMetricRunTupleval implements PgsenderMetricRun
 {
-    static <C extends PgsenderConfig> //
-    PgsenderMetricRunTupleval of(PgsenderActionDataTupleval<C> action)
+    static  //
+    PgsenderMetricRunTupleval of(PgsenderActionDataTupleval action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -17,8 +17,8 @@ public class PgsenderMetricRunTupleval implements PgsenderMetricRun
         return new PgsenderMetricRunTupleval(action);
     }
 
-    static <C extends PgsenderConfig> //
-    PgsenderMetricRunTupleval of(PgsenderActionDataSrBegins<C> action)
+    static  //
+    PgsenderMetricRunTupleval of(PgsenderActionDataSrBegins action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -26,8 +26,8 @@ public class PgsenderMetricRunTupleval implements PgsenderMetricRun
         return new PgsenderMetricRunTupleval(action);
     }
 
-    static <C extends PgsenderConfig>
-    PgsenderMetricRunTupleval of(PgsenderActionDataSrFinish<C> action)
+    static
+    PgsenderMetricRunTupleval of(PgsenderActionDataSrFinish action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -35,8 +35,8 @@ public class PgsenderMetricRunTupleval implements PgsenderMetricRun
         return new PgsenderMetricRunTupleval(action);
     }
 
-    private <C extends PgsenderConfig>
-    PgsenderMetricRunTupleval(PgsenderActionDataTupleval<C> action)
+    private
+    PgsenderMetricRunTupleval(PgsenderActionDataTupleval action)
     {
         long finish = System.currentTimeMillis();
         this.relalist = action.relalist;
@@ -47,8 +47,8 @@ public class PgsenderMetricRunTupleval implements PgsenderMetricRun
         this.tupleval = PgsenderReportTupleval.of(action, finish);
     }
 
-    private <C extends PgsenderConfig>
-    PgsenderMetricRunTupleval(PgsenderActionDataSrBegins<C> action)
+    private
+    PgsenderMetricRunTupleval(PgsenderActionDataSrBegins action)
     {
         long finish = System.currentTimeMillis();
         this.relalist = action.relalist;
@@ -59,8 +59,8 @@ public class PgsenderMetricRunTupleval implements PgsenderMetricRun
         this.tupleval = PgsenderReportTupleval.of(action, finish);
     }
 
-    private <C extends PgsenderConfig>
-    PgsenderMetricRunTupleval(PgsenderActionDataSrFinish<C> action)
+    private
+    PgsenderMetricRunTupleval(PgsenderActionDataSrFinish action)
     {
         long finish = System.currentTimeMillis();
         this.relalist = action.relalist;

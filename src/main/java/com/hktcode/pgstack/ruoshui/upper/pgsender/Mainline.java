@@ -76,7 +76,7 @@ public class Mainline implements Runnable
 
     private void runWithInterrupted() throws InterruptedException
     {
-        PgsenderAction<MainlineConfig> action;
+        PgsenderAction action;
         if (config.getSnapshot) {
             action = PgsenderActionDataRelaList.of(config, status, tqueue);
         } else {
@@ -90,8 +90,8 @@ public class Mainline implements Runnable
                 pgdata.setAutoCommit(false);
                 pgdata.setTransactionIsolation(TRANSACTION_REPEATABLE_READ);
                 do {
-                    PgsenderActionData<MainlineConfig>
-                        dataAction = (PgsenderActionData<MainlineConfig>)action;
+                    PgsenderActionData
+                        dataAction = (PgsenderActionData)action;
                     action = dataAction.next(exesvc, pgdata, pgrepl);
                 } while (action instanceof PgsenderActionData);
             }

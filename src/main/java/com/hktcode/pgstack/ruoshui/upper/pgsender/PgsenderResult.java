@@ -6,7 +6,6 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.bgsimple.method.SimpleMethodAllResult;
 
-public interface PgsenderResult<C extends PgsenderConfig> //
-    extends SimpleMethodAllResult<PgsenderAction<C>>
+public interface PgsenderResult extends SimpleMethodAllResult<PgsenderAction>
 {
 }

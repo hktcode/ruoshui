@@ -8,8 +8,8 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgsenderMetricEndSizeDiff implements PgsenderMetricEnd
 {
-    static <C extends PgsenderConfig>
-    PgsenderMetricEndSizeDiff of(PgsenderActionDataSizeDiff<C> action)
+    static
+    PgsenderMetricEndSizeDiff of(PgsenderActionDataSizeDiff action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -17,8 +17,8 @@ public class PgsenderMetricEndSizeDiff implements PgsenderMetricEnd
         return new PgsenderMetricEndSizeDiff(action);
     }
 
-    private <C extends PgsenderConfig>
-    PgsenderMetricEndSizeDiff(PgsenderActionDataSizeDiff<C> action)
+    private
+    PgsenderMetricEndSizeDiff(PgsenderActionDataSizeDiff action)
     {
         long finish = System.currentTimeMillis();
         this.relalist = action.relalist;

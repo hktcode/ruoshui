@@ -17,9 +17,9 @@ import java.sql.SQLException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class PgsenderActionData<C extends PgsenderConfig> //
-    extends TqueueAction<PgsenderAction<C>, C, PgRecord> //
-    implements PgsenderAction<C> //
+public abstract class PgsenderActionData //
+    extends TqueueAction<PgsenderAction, PgsenderConfig, PgRecord> //
+    implements PgsenderAction //
 {
     private static final Logger logger = LoggerFactory.getLogger(PgsenderActionData.class);
 
@@ -31,7 +31,7 @@ public abstract class PgsenderActionData<C extends PgsenderConfig> //
 
     public long rsnextCount = 0;
 
-    protected PgsenderActionData(PgsenderActionData<C> action, long actionStart)
+    protected PgsenderActionData(PgsenderActionData action, long actionStart)
     {
         super(action.config, action.tqueue, action.status);
         this.actionStart = actionStart;
@@ -40,7 +40,7 @@ public abstract class PgsenderActionData<C extends PgsenderConfig> //
     }
 
     protected PgsenderActionData //
-        /* */( C config //
+        /* */( PgsenderConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */, long actionStart //
@@ -50,7 +50,7 @@ public abstract class PgsenderActionData<C extends PgsenderConfig> //
         this.actionStart = actionStart;
     }
 
-    public abstract PgsenderAction<C> //
+    public abstract PgsenderAction //
     next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws SQLException, InterruptedException, ScriptException;
 
@@ -103,24 +103,24 @@ public abstract class PgsenderActionData<C extends PgsenderConfig> //
     }
 
     @Override
-    public PgsenderActionThrowsErrors<C> next(Throwable throwsError)
+    public PgsenderActionThrowsErrors next(Throwable throwsError)
     {
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
         }
-        return PgsenderActionThrowsErrors.<C>of(this, throwsError);
+        return PgsenderActionThrowsErrors.of(this, throwsError);
     }
 
     public abstract PgsenderMetricRun toRunMetrics();
 
     @Override
-    public PgsenderResult<C> get()
+    public PgsenderResult get()
     {
         return PgsenderResultRun.of(this.config, this.toRunMetrics());
     }
 
     @Override
-    public PgsenderResultEnd<C, PgsenderMetricEnd> del()
+    public PgsenderResultEnd<PgsenderMetricEnd> del()
     {
         return PgsenderResultEnd.of(this.config, this.toEndMetrics());
     }

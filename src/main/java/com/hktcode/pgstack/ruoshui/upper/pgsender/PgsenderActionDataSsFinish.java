@@ -15,25 +15,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-public class PgsenderActionDataSsFinish<C extends PgsenderConfig> //
-    extends PgsenderActionData<C>
+public class PgsenderActionDataSsFinish //
+    extends PgsenderActionData
 {
-    static <C extends PgsenderConfig> //
-    PgsenderActionDataSsFinish<C> of(PgsenderActionDataSrFinish<C> action)
+    static  //
+    PgsenderActionDataSsFinish of(PgsenderActionDataSrFinish action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderActionDataSsFinish<>(action);
+        return new PgsenderActionDataSsFinish(action);
     }
 
-    static <C extends PgsenderConfig> //
-    PgsenderActionDataSsFinish<C> of(PgsenderActionDataSsBegins<C> action)
+    static  //
+    PgsenderActionDataSsFinish of(PgsenderActionDataSsBegins action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderActionDataSsFinish<>(action);
+        return new PgsenderActionDataSsFinish(action);
     }
 
     public final PgsenderReportRelaList relalist;
@@ -50,7 +50,7 @@ public class PgsenderActionDataSsFinish<C extends PgsenderConfig> //
 
     public final ImmutableList<PgsqlRelationMetric> relationLst;
 
-    private PgsenderActionDataSsFinish(PgsenderActionDataSsBegins<C> action)
+    private PgsenderActionDataSsFinish(PgsenderActionDataSsBegins action)
     {
         super(action, System.currentTimeMillis());
         this.relalist = action.relalist;
@@ -63,7 +63,7 @@ public class PgsenderActionDataSsFinish<C extends PgsenderConfig> //
         this.logDatetime = action.logDatetime;
     }
 
-    private PgsenderActionDataSsFinish(PgsenderActionDataSrFinish<C> action)
+    private PgsenderActionDataSsFinish(PgsenderActionDataSrFinish action)
     {
         super(action, System.currentTimeMillis());
         this.relalist = action.relalist;
@@ -77,7 +77,7 @@ public class PgsenderActionDataSsFinish<C extends PgsenderConfig> //
     }
 
     @Override
-    public PgsenderAction<C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl)
+    public PgsenderAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl)
         throws InterruptedException
     {
         if (exesvc == null) {

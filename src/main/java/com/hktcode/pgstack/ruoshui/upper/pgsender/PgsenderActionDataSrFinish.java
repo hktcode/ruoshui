@@ -13,16 +13,16 @@ import org.postgresql.jdbc.PgConnection;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 
-public class PgsenderActionDataSrFinish<C extends PgsenderConfig> //
-    extends PgsenderActionData<C>
+public class PgsenderActionDataSrFinish //
+    extends PgsenderActionData
 {
-    static <C extends PgsenderConfig> //
-    PgsenderActionDataSrFinish<C> of(PgsenderActionDataTupleval<C> action)
+    static  //
+    PgsenderActionDataSrFinish of(PgsenderActionDataTupleval action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgsenderActionDataSrFinish<>(action);
+        return new PgsenderActionDataSrFinish(action);
     }
 
     public final PgsenderReportRelaList relalist;
@@ -41,7 +41,7 @@ public class PgsenderActionDataSrFinish<C extends PgsenderConfig> //
 
     final PgsqlRelationMetric curRelation;
 
-    private PgsenderActionDataSrFinish(PgsenderActionDataTupleval<C> action) //
+    private PgsenderActionDataSrFinish(PgsenderActionDataTupleval action) //
     {
         super(action, action.actionStart);
         this.relalist = action.relalist;
@@ -62,7 +62,7 @@ public class PgsenderActionDataSrFinish<C extends PgsenderConfig> //
     }
 
     @Override
-    public PgsenderAction<C> next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
+    public PgsenderAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws InterruptedException
     {
         long lsn = this.replSlot.createTuple.consistentPoint;
