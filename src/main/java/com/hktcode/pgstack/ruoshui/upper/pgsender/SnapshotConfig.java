@@ -12,9 +12,6 @@ import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplRelationName;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshot;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshotCreateSlot;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshotLogicalMsg;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshotPauseWorld;
 
 import java.sql.Statement;
 import java.util.concurrent.Callable;
@@ -73,7 +70,7 @@ public class SnapshotConfig extends PgsenderConfig<UpcsmFetchRecordSnapshot, Sna
     @Override
     public UpcsmFetchRecordSnapshot createMessage(long lsn, LogicalMsg msg)
     {
-        return UpcsmFetchRecordSnapshotLogicalMsg.of(lsn, msg);
+        return PgRecordLogicalMsg.of(lsn, msg);
     }
 
     @Override
@@ -86,17 +83,17 @@ public class SnapshotConfig extends PgsenderConfig<UpcsmFetchRecordSnapshot, Sna
     }
 
     @Override
-    public UpcsmFetchRecordSnapshotPauseWorld pauseWorldMsg()
+    public PgRecordPauseWorld pauseWorldMsg()
     {
-        return UpcsmFetchRecordSnapshotPauseWorld.of();
+        return PgRecordPauseWorld.of();
     }
 
     @Override
-    public UpcsmFetchRecordSnapshotCreateSlot createSlotMsg(PgReplSlotTuple tuple)
+    public PgRecordCreateSlot createSlotMsg(PgReplSlotTuple tuple)
     {
         if (tuple == null) {
             throw new ArgumentNullException("tuple");
         }
-        return UpcsmFetchRecordSnapshotCreateSlot.of(tuple);
+        return PgRecordCreateSlot.of(tuple);
     }
 }

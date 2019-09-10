@@ -13,9 +13,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class UpcsmThread
 {
-    protected final UpcsmThreadMainline mlxact;
+    public final UpcsmThreadMainline mlxact;
 
-    protected final Thread thread;
+    public final Thread thread;
 
     protected final AtomicReference<SimpleStatus> status;
 

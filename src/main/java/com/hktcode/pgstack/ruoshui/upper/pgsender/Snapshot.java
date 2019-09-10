@@ -9,7 +9,6 @@ import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshot;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmFetchRecordSnapshotExecThrows;
 import org.postgresql.jdbc.PgConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,7 +117,7 @@ public class Snapshot implements Runnable
             logger.error("snapshot throws exception: ", ex);
             action = action.next(ex);
             UpcsmFetchRecordSnapshot r //
-                = UpcsmFetchRecordSnapshotExecThrows.of(ex);
+                = PgRecordExecThrows.of(ex);
             do {
                 r = action.send(r);
             } while (r != null);

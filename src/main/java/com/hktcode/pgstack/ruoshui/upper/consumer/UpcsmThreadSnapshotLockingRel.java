@@ -6,6 +6,9 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecordPauseWorld;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecordExecThrows;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecordExecFinish;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,9 +57,9 @@ public class UpcsmThreadSnapshotLockingRel extends UpcsmThreadSnapshot
         throws InterruptedException
     {
         UpcsmFetchRecordSnapshot record = this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);
-        if (   (record instanceof UpcsmFetchRecordSnapshotPauseWorld)
-            || (record instanceof UpcsmFetchRecordSnapshotExecThrows)
-            || (record instanceof UpcsmFetchRecordSnapshotExecFinish)) {
+        if (   (record instanceof PgRecordPauseWorld)
+            || (record instanceof PgRecordExecThrows)
+            || (record instanceof PgRecordExecFinish)) {
             return record.toRecord(action, this);
         }
         else if (this.thread.isAlive()) {

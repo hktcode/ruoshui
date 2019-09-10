@@ -5,6 +5,9 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecordLogicalMsg;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecordExecThrows;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecordExecFinish;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,9 +51,9 @@ public class UpcsmThreadSnapshotSelectData extends UpcsmThreadSnapshot
             throw new ArgumentNullException("action");
         }
         UpcsmFetchRecordSnapshot r = this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);
-        if (   (r instanceof UpcsmFetchRecordSnapshotLogicalMsg)
-            || (r instanceof UpcsmFetchRecordSnapshotExecFinish)
-            || (r instanceof UpcsmFetchRecordSnapshotExecThrows)) {
+        if (   (r instanceof PgRecordLogicalMsg)
+            || (r instanceof PgRecordExecFinish)
+            || (r instanceof PgRecordExecThrows)) {
             UpperRecordConsumer result = r.toRecord(action, this);
             return action.fetchThread == mlxact ? this.record : result;
         }

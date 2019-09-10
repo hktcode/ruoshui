@@ -6,6 +6,11 @@ package com.hktcode.lang.exception;
 
 public class NeverHappenAssertionError extends AssertionError
 {
+    public NeverHappenAssertionError()
+    {
+        super("");
+    }
+
     public NeverHappenAssertionError(String message)
     {
         super(message);

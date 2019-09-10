@@ -5,6 +5,9 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecordExecThrows;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecordExecFinish;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecordCreateSlot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,9 +35,9 @@ public class UpcsmThreadSnapshotCreateSlot extends UpcsmThreadSnapshot
         throws InterruptedException
     {
         UpcsmFetchRecordSnapshot record = this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);
-        if (   (record instanceof UpcsmFetchRecordSnapshotCreateSlot)
-            || (record instanceof UpcsmFetchRecordSnapshotExecThrows)
-            || (record instanceof UpcsmFetchRecordSnapshotExecFinish)
+        if (   (record instanceof PgRecordCreateSlot)
+            || (record instanceof PgRecordExecThrows)
+            || (record instanceof PgRecordExecFinish)
         ) {
             return record.toRecord(action, this);
         }
