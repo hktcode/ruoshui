@@ -130,11 +130,7 @@ public class MainlineConfig extends PgsenderConfig
         return new MainlineConfig(srcProperty, typelistSql, relationSql, whereScript, lockingMode, logicalRepl, tupleSelect, getSnapshot);
     }
 
-    public final String typelistSql;
-
-    public final boolean getSnapshot;
-
-    private MainlineConfig //
+    private MainlineConfig
         /* */( PgConnectionProperty srcProperty //
         /* */, String typelistSql //
         /* */, String relationSql //
@@ -145,33 +141,13 @@ public class MainlineConfig extends PgsenderConfig
         /* */, boolean getSnapshot //
         /* */) //
     {
-        super(srcProperty, relationSql, whereScript, lockingMode, logicalRepl, tupleSelect);
-        this.typelistSql = typelistSql;
-        this.getSnapshot = getSnapshot;
-    }
-
-    public PreparedStatement queryTypelist(PgConnection pgdata) //
-        throws SQLException
-    {
-        if (pgdata == null) {
-            throw new ArgumentNullException("pgdata");
-        }
-        return prepStatement(pgdata, typelistSql);
+        super(srcProperty, relationSql, whereScript, lockingMode, logicalRepl, tupleSelect, typelistSql, getSnapshot);
     }
 
     @Override
     public PgsenderAction afterSnapshot(PgsenderActionDataSsFinish action)
     {
         return PgsenderActionDataTypelistSnapshot.of(action);
-    }
-
-    @Override
-    public PgRecordLogicalMsg createMessage(long lsn, LogicalMsg msg)
-    {
-        if (msg == null) {
-            throw new ArgumentNullException("msg");
-        }
-        return PgRecordLogicalMsg.of(lsn, msg);
     }
 
     @Override

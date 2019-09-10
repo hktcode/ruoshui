@@ -107,6 +107,24 @@ public abstract class PgsenderConfig extends TqueueConfig
         + "\n ORDER BY \"t\".\"oid\", \"a\".\"attnum\" " //
         + "";
 
+    private static final String DEFAULT_TYPELIST_SQL = "" //
+        + "\n select \"t\".    \"oid\"::int8 as \"datatype\" " //
+        + "\n      , \"n\".\"nspname\"::text as \"tpschema\" " //
+        + "\n      , \"t\".\"typname\"::text as \"typename\" " //
+        + "\n  from            \"pg_catalog\".\"pg_type\"      \"t\" " //
+        + "\n       inner join \"pg_catalog\".\"pg_namespace\" \"n\" " //
+        + "\n               on \"t\".\"typnamespace\" = \"n\".\"oid\" " //
+        + "\n ";
+
+    public PreparedStatement queryTypelist(PgConnection pgdata) //
+        throws SQLException
+    {
+        if (pgdata == null) {
+            throw new ArgumentNullException("pgdata");
+        }
+        return prepStatement(pgdata, typelistSql);
+    }
+
     public PreparedStatement queryTupleval(PgConnection pgdata, PgReplRelation relation)
         throws SQLException
     {
@@ -229,6 +247,10 @@ public abstract class PgsenderConfig extends TqueueConfig
 
     public int rsFetchsize = DEFAULT_RS_FETCHSIZE;
 
+    public final String typelistSql;
+
+    public final boolean getSnapshot;
+
     protected PgsenderConfig //
         /* */( PgConnectionProperty srcProperty //
         /* */, String relationSql //
@@ -244,6 +266,29 @@ public abstract class PgsenderConfig extends TqueueConfig
         this.lockingMode = lockingMode;
         this.tupleSelect = tupleSelect;
         this.logicalRepl = logicalRepl;
+        this.typelistSql = DEFAULT_TYPELIST_SQL;
+        this.getSnapshot = true;
+    }
+
+    protected PgsenderConfig //
+        /* */( PgConnectionProperty srcProperty //
+        /* */, String relationSql //
+        /* */, PgSnapshotFilter whereScript //
+        /* */, PgLockMode lockingMode //
+        /* */, LogicalReplConfig logicalRepl //
+        /* */, ImmutableMap<PgReplRelationName, String> tupleSelect //
+        /* */, String typelistSql //
+        /* */, boolean getSnapshot //
+        /* */) //
+    {
+        this.srcProperty = srcProperty;
+        this.relationSql = relationSql;
+        this.whereScript = whereScript;
+        this.lockingMode = lockingMode;
+        this.tupleSelect = tupleSelect;
+        this.logicalRepl = logicalRepl;
+        this.typelistSql = typelistSql;
+        this.getSnapshot = getSnapshot;
     }
 
     public PgsenderAction afterSnapshot(PgsenderActionDataSsFinish action)
