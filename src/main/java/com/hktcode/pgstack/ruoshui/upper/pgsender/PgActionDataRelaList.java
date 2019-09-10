@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class PgActionDataRelaList extends PgActionData
 {
     public static PgActionDataRelaList of //
-        /* */( PgsenderConfig config //
+        /* */(PgConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */)
@@ -63,7 +63,7 @@ public class PgActionDataRelaList extends PgActionData
     private static final Logger logger = LoggerFactory.getLogger(PgActionDataRelaList.class);
 
     private PgActionDataRelaList
-        /* */( PgsenderConfig config //
+        /* */(PgConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */)

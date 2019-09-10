@@ -11,7 +11,7 @@ public class PgsenderResultEnd<E extends PgsenderMetricEnd> //
     implements PgsenderResult, SimpleMethodAllResultEnd<PgAction>
 {
     public static <E extends PgsenderMetricEnd> //
-    PgsenderResultEnd<E> of(PgsenderConfig config, E metric)
+    PgsenderResultEnd<E> of(PgConfig config, E metric)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -22,11 +22,11 @@ public class PgsenderResultEnd<E extends PgsenderMetricEnd> //
         return new PgsenderResultEnd<>(config, metric);
     }
 
-    public final PgsenderConfig config;
+    public final PgConfig config;
 
     public final E metric;
 
-    protected PgsenderResultEnd(PgsenderConfig config, E metric)
+    protected PgsenderResultEnd(PgConfig config, E metric)
     {
         this.config = config;
         this.metric = metric;

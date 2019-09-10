@@ -14,11 +14,11 @@ import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class PgAction //
-    extends TqueueAction<PgAction, PgsenderConfig, PgRecord> //
+    extends TqueueAction<PgAction, PgConfig, PgRecord> //
     implements BgWorker<PgAction> //
 {
     protected PgAction //
-        /* */( PgsenderConfig config //
+        /* */(PgConfig config //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */, AtomicReference<SimpleStatus> status //
         /* */)

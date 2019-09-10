@@ -36,7 +36,7 @@ public abstract class PgActionData extends PgAction
     }
 
     protected PgActionData //
-        /* */( PgsenderConfig config //
+        /* */(PgConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */, long actionStart //

@@ -21,7 +21,7 @@ import javax.script.ScriptException;
 import java.sql.*;
 import java.util.concurrent.Callable;
 
-public abstract class PgsenderConfig extends TqueueConfig
+public abstract class PgConfig extends TqueueConfig
 {
     /**
      * 默认的{@link ResultSet#setFetchSize(int)}值.
@@ -244,7 +244,7 @@ public abstract class PgsenderConfig extends TqueueConfig
 
     public final boolean getSnapshot;
 
-    protected PgsenderConfig //
+    protected PgConfig //
         /* */( PgConnectionProperty srcProperty //
         /* */, String relationSql //
         /* */, PgSnapshotFilter whereScript //
@@ -263,7 +263,7 @@ public abstract class PgsenderConfig extends TqueueConfig
         this.getSnapshot = true;
     }
 
-    protected PgsenderConfig //
+    protected PgConfig //
         /* */( PgConnectionProperty srcProperty //
         /* */, String relationSql //
         /* */, PgSnapshotFilter whereScript //

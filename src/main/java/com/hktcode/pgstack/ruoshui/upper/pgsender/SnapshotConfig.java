@@ -14,7 +14,7 @@ import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 import java.sql.Statement;
 import java.util.concurrent.Callable;
 
-public class SnapshotConfig extends PgsenderConfig
+public class SnapshotConfig extends PgConfig
 {
     public static SnapshotConfig of //
         /* */( PgConnectionProperty srcProperty //

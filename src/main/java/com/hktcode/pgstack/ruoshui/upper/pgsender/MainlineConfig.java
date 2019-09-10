@@ -22,7 +22,7 @@ import java.util.concurrent.Callable;
 import static com.hktcode.bgsimple.triple.TripleConfig.DEFALUT_WAIT_TIMEOUT;
 import static com.hktcode.bgsimple.triple.TripleConfig.DEFAULT_LOG_DURATION;
 
-public class MainlineConfig extends PgsenderConfig
+public class MainlineConfig extends PgConfig
 {
     public static MainlineConfig ofJsonObject(JsonNode json) //
         throws ScriptException
