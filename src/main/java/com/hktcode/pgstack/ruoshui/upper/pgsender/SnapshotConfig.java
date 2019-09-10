@@ -17,9 +17,9 @@ import java.util.concurrent.Callable;
 public class SnapshotConfig extends PgConfig
 {
     public static SnapshotConfig of //
-        /* */( PgConnectionProperty srcProperty //
+        /* */(PgConnectionProperty srcProperty //
         /* */, String relationSql //
-        /* */, PgSnapshotFilter whereScript //
+        /* */, PgFilter whereScript //
         /* */, PgLockMode lockingMode //
         /* */, LogicalReplConfig logicalRepl //
         /* */, ImmutableMap<PgReplRelationName, String> tupleSelect //
@@ -54,9 +54,9 @@ public class SnapshotConfig extends PgConfig
     }
 
     private SnapshotConfig //
-        /* */( PgConnectionProperty srcProperty //
+        /* */(PgConnectionProperty srcProperty //
         /* */, String relationSql //
-        /* */, PgSnapshotFilter whereScript //
+        /* */, PgFilter whereScript //
         /* */, PgLockMode lockingMode //
         /* */, LogicalReplConfig logicalRepl //
         /* */, ImmutableMap<PgReplRelationName, String> tupleSelect //

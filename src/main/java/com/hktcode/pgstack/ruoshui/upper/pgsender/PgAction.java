@@ -27,24 +27,24 @@ public abstract class PgAction //
     }
 
     @Override
-    public PgsenderResult pst()
+    public PgResult pst()
     {
         return this.get();
     }
 
     @Override
-    public PgsenderResult put()
+    public PgResult put()
     {
         return this.get();
     }
 
     @Override
-    public abstract PgsenderResult get();
+    public abstract PgResult get();
 
     @Override
-    public abstract PgsenderResultEnd del();
+    public abstract PgResultEnd del();
 
-    public PgsenderResult pst(LogSequenceNumber lsn)
+    public PgResult pst(LogSequenceNumber lsn)
     {
         if (lsn == null) {
             throw new ArgumentNullException("lsn");
@@ -52,7 +52,7 @@ public abstract class PgAction //
         return this.get();
     }
 
-    public PgsenderResult pst(SnapshotConfig config)
+    public PgResult pst(SnapshotConfig config)
     {
         if (config == null) {
             throw new ArgumentNullException("config");

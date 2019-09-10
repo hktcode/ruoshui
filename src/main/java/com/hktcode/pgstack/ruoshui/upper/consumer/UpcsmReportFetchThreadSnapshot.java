@@ -6,16 +6,13 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.google.common.collect.ImmutableList;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.MainlineConfig;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecord;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderResult;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.SnapshotConfig;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgResult;
 
 public class UpcsmReportFetchThreadSnapshot extends UpcsmReportFetchThread
 {
     public static UpcsmReportFetchThreadSnapshot of //
-        /* */(PgsenderResult mainline //
-        /* */, ImmutableList<PgsenderResult> snapshot //
+        /* */(PgResult mainline //
+        /* */, ImmutableList<PgResult> snapshot //
         /* */)
     {
         if (mainline == null) {
@@ -28,8 +25,8 @@ public class UpcsmReportFetchThreadSnapshot extends UpcsmReportFetchThread
     }
 
     private UpcsmReportFetchThreadSnapshot //
-        /* */(PgsenderResult mainline //
-        /* */, ImmutableList<PgsenderResult> snapshot //
+        /* */(PgResult mainline //
+        /* */, ImmutableList<PgResult> snapshot //
         /* */)
     {
         super(mainline, snapshot);

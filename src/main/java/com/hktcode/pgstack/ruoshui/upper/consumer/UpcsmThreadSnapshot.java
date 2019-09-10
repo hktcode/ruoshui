@@ -15,7 +15,7 @@ import com.hktcode.bgsimple.status.SimpleStatusOuterDel;
 import com.hktcode.bgsimple.status.SimpleStatusOuterGet;
 import com.hktcode.bgsimple.status.SimpleStatusOuterPst;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecord;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.PgsenderResult;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgResult;
 import org.postgresql.replication.LogSequenceNumber;
 
 import java.util.concurrent.Phaser;
@@ -50,9 +50,9 @@ public abstract class UpcsmThreadSnapshot extends UpcsmThread
         SimpleFuturePut future = holder.put();
         thread.start();
         UpcsmReportFetchThread ml = this.mlxact.get();
-        PgsenderResult snapshot = (PgsenderResult)future.get().get(0);
-        ImmutableList<PgsenderResult> list = ImmutableList
-            .<PgsenderResult>builder() //
+        PgResult snapshot = (PgResult)future.get().get(0);
+        ImmutableList<PgResult> list = ImmutableList
+            .<PgResult>builder() //
             .addAll(ml.snapshot) //
             .add(snapshot) //
             .build();
@@ -70,9 +70,9 @@ public abstract class UpcsmThreadSnapshot extends UpcsmThread
         SimpleStatusOuterGet get = SimpleStatusOuterGet.of(params, phaser);
         SimpleFutureGet future = holder.get(get);
         UpcsmReportFetchThread ml = this.mlxact.get();
-        PgsenderResult snapshot = (PgsenderResult)future.get().get(0);
-        ImmutableList<PgsenderResult> list = ImmutableList
-            .<PgsenderResult>builder() //
+        PgResult snapshot = (PgResult)future.get().get(0);
+        ImmutableList<PgResult> list = ImmutableList
+            .<PgResult>builder() //
             .addAll(ml.snapshot) //
             .add(snapshot) //
             .build();
@@ -90,9 +90,9 @@ public abstract class UpcsmThreadSnapshot extends UpcsmThread
         SimpleStatusOuterDel del = SimpleStatusOuterDel.of(params, phaser);
         SimpleFutureDel future = holder.del(del);
         UpcsmReportFetchThread ml = this.mlxact.del();
-        PgsenderResult snapshot = (PgsenderResult)future.get().get(0);
-        ImmutableList<PgsenderResult> list = ImmutableList
-            .<PgsenderResult>builder() //
+        PgResult snapshot = (PgResult)future.get().get(0);
+        ImmutableList<PgResult> list = ImmutableList
+            .<PgResult>builder() //
             .addAll(ml.snapshot) //
             .add(snapshot) //
             .build();
@@ -111,9 +111,9 @@ public abstract class UpcsmThreadSnapshot extends UpcsmThread
         SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(params, phaser);
         SimpleFuturePst future = holder.pst(pst);
         UpcsmReportFetchThread ml = this.mlxact.pst(lsn);
-        PgsenderResult snapshot = (PgsenderResult)future.get().get(0);
-        ImmutableList<PgsenderResult> list = ImmutableList
-            .<PgsenderResult>builder() //
+        PgResult snapshot = (PgResult)future.get().get(0);
+        ImmutableList<PgResult> list = ImmutableList
+            .<PgResult>builder() //
             .addAll(ml.snapshot) //
             .add(snapshot) //
             .build();

@@ -232,7 +232,7 @@ public abstract class PgConfig extends TqueueConfig
 
     public final String relationSql;
 
-    public final PgSnapshotFilter whereScript;
+    public final PgFilter whereScript;
 
     public final PgLockMode lockingMode;
 
@@ -245,9 +245,9 @@ public abstract class PgConfig extends TqueueConfig
     public final boolean getSnapshot;
 
     protected PgConfig //
-        /* */( PgConnectionProperty srcProperty //
+        /* */(PgConnectionProperty srcProperty //
         /* */, String relationSql //
-        /* */, PgSnapshotFilter whereScript //
+        /* */, PgFilter whereScript //
         /* */, PgLockMode lockingMode //
         /* */, LogicalReplConfig logicalRepl //
         /* */, ImmutableMap<PgReplRelationName, String> tupleSelect //
@@ -264,9 +264,9 @@ public abstract class PgConfig extends TqueueConfig
     }
 
     protected PgConfig //
-        /* */( PgConnectionProperty srcProperty //
+        /* */(PgConnectionProperty srcProperty //
         /* */, String relationSql //
-        /* */, PgSnapshotFilter whereScript //
+        /* */, PgFilter whereScript //
         /* */, PgLockMode lockingMode //
         /* */, LogicalReplConfig logicalRepl //
         /* */, ImmutableMap<PgReplRelationName, String> tupleSelect //

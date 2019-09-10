@@ -29,16 +29,16 @@ abstract class PgActionRepl extends PgAction
     public abstract PgMetricRun toRunMetrics();
 
     @Override
-    public PgsenderResultRun get()
+    public PgResultNormal get()
     {
         PgMetricRun metric = this.toRunMetrics();
-        return PgsenderResultRun.of(this.config, metric);
+        return PgResultNormal.of(this.config, metric);
     }
 
     @Override
-    public PgsenderResultEnd<PgMetricEnd> del()
+    public PgResultFinish del()
     {
         PgMetricEnd metric = this.toEndMetrics();
-        return PgsenderResultEnd.of(this.config, metric);
+        return PgResultFinish.of(this.config, metric);
     }
 }

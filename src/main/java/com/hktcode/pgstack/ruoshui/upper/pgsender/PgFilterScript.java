@@ -15,28 +15,28 @@ import javax.script.ScriptException;
 /**
  * 通过外部提供的脚本实现过滤.
  */
-public class PgSnapshotFilterScript implements PgSnapshotFilter
+public class PgFilterScript implements PgFilter
 {
-    private static final Logger logger = LoggerFactory.getLogger(PgSnapshotFilterScript.class);
+    private static final Logger logger = LoggerFactory.getLogger(PgFilterScript.class);
 
     /**
-     * 根据json串获取{@link PgSnapshotFilterScript}对象.
+     * 根据json串获取{@link PgFilterScript}对象.
      *
      * @param json 表示json字符串的{@link JsonNode}对象.
      *
-     * @return 根据{@code json}构建的{@link PgSnapshotFilterScript}对象.
+     * @return 根据{@code json}构建的{@link PgFilterScript}对象.
      *
      * @throws ScriptException 如果构建脚本时抛出异常.
      * @throws ArgumentNullException if {@code json} is {@code null}.
      */
-    public static PgSnapshotFilterScript of(JsonNode json) //
+    public static PgFilterScript of(JsonNode json) //
         throws ScriptException
     {
         if (json == null) {
             throw new ArgumentNullException("json");
         }
         BasicScript script = BasicScript.ofJsonObject(json);
-        return new PgSnapshotFilterScript(script);
+        return new PgFilterScript(script);
     }
 
     /**
@@ -63,7 +63,7 @@ public class PgSnapshotFilterScript implements PgSnapshotFilter
      *
      * @param script 内部脚本对象.
      */
-    private PgSnapshotFilterScript(BasicScript script)
+    private PgFilterScript(BasicScript script)
     {
         this.script = script;
     }

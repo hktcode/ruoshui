@@ -17,7 +17,7 @@ public class MainlineSnapshotPstParams implements SimpleMethodPstParams<PgAction
     }
 
     @Override
-    public PgsenderResult run(PgAction action)
+    public PgResult run(PgAction action)
         throws InterruptedException
     {
         if (action == null) {

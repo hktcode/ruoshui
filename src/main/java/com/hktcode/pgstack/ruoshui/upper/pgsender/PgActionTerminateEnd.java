@@ -31,14 +31,14 @@ public class PgActionTerminateEnd extends PgAction
     }
 
     @Override
-    public PgsenderResultEnd<PgMetricEnd> get()
+    public PgResultFinish get()
     {
-        return PgsenderResultEnd.of(this.config, this.metric);
+        return PgResultFinish.of(this.config, this.metric);
     }
 
     @Override
-    public PgsenderResultEnd<PgMetricEnd> del()
+    public PgResultFinish del()
     {
-        return PgsenderResultEnd.of(this.config, this.metric);
+        return this.get();
     }
 }

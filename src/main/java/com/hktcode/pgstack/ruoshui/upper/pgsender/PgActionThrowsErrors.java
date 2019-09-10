@@ -34,14 +34,14 @@ public class PgActionThrowsErrors extends PgAction
     }
 
     @Override
-    public PgsenderResultErr get()
+    public PgResultThrows get()
     {
-        return PgsenderResultErr.of(config, metric);
+        return PgResultThrows.of(config, metric);
     }
 
     @Override
-    public PgsenderResultErr del()
+    public PgResultThrows del()
     {
-        return PgsenderResultErr.of(config, metric);
+        return PgResultThrows.of(config, metric);
     }
 }

@@ -101,14 +101,14 @@ public abstract class PgActionData extends PgAction
     public abstract PgMetricRun toRunMetrics();
 
     @Override
-    public PgsenderResult get()
+    public PgResult get()
     {
-        return PgsenderResultRun.of(this.config, this.toRunMetrics());
+        return PgResultNormal.of(this.config, this.toRunMetrics());
     }
 
     @Override
-    public PgsenderResultEnd<PgMetricEnd> del()
+    public PgResultFinish del()
     {
-        return PgsenderResultEnd.of(this.config, this.toEndMetrics());
+        return PgResultFinish.of(this.config, this.toEndMetrics());
     }
 }

@@ -80,7 +80,7 @@ abstract class PgActionReplTxaction extends PgActionRepl
     }
 
     @Override
-    public PgsenderResultRun pst(LogSequenceNumber lsn)
+    public PgResultNormal pst(LogSequenceNumber lsn)
     {
         if (lsn == null) {
             throw new ArgumentNullException("lsn");
@@ -90,11 +90,11 @@ abstract class PgActionReplTxaction extends PgActionRepl
     }
 
     @Override
-    public PgsenderResultRunSnapshot pst(SnapshotConfig config)
+    public PgResultNormalSnapshot pst(SnapshotConfig config)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
         }
-        return PgsenderResultRunSnapshot.of((MainlineConfig)this.config, this.toRunMetrics());
+        return PgResultNormalSnapshot.of(this.config, this.toRunMetrics());
     }
 }

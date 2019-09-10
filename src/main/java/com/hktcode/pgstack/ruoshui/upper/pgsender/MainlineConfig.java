@@ -54,11 +54,11 @@ public class MainlineConfig extends PgConfig
             map.put(relationName, e.getValue().asText());
         }
         ImmutableMap<PgReplRelationName, String> tupleSelect = ImmutableMap.copyOf(map);
-        PgSnapshotFilter whereScript;
+        PgFilter whereScript;
         if (whereScriptNode.isMissingNode()) {
-            whereScript = PgSnapshotFilterDefault.of();
+            whereScript = PgFilterDefault.of();
         } else {
-            whereScript = PgSnapshotFilterScript.of(whereScriptNode);
+            whereScript = PgFilterScript.of(whereScriptNode);
         }
         String lockingModeText = json.path("locking_mode").asText("SHARE_UPDATE_EXCLUSIVE");
         PgLockMode lockingMode = PgLockMode.valueOf(lockingModeText);
@@ -83,10 +83,10 @@ public class MainlineConfig extends PgConfig
     }
 
     static MainlineConfig of //
-        /* */( PgConnectionProperty srcProperty //
+        /* */(PgConnectionProperty srcProperty //
         /* */, String typelistSql //
         /* */, String relationSql //
-        /* */, PgSnapshotFilter whereScript //
+        /* */, PgFilter whereScript //
         /* */, PgLockMode lockingMode //
         /* */, LogicalReplConfig logicalRepl //
         /* */, ImmutableMap<PgReplRelationName, String> tupleSelect //
@@ -118,10 +118,10 @@ public class MainlineConfig extends PgConfig
     }
 
     private MainlineConfig
-        /* */( PgConnectionProperty srcProperty //
+        /* */(PgConnectionProperty srcProperty //
         /* */, String typelistSql //
         /* */, String relationSql //
-        /* */, PgSnapshotFilter whereScript //
+        /* */, PgFilter whereScript //
         /* */, PgLockMode lockingMode //
         /* */, LogicalReplConfig logicalRepl //
         /* */, ImmutableMap<PgReplRelationName, String> tupleSelect //

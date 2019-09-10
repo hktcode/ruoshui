@@ -9,22 +9,22 @@ import com.hktcode.pgjdbc.PgReplRelation;
 /**
  * 默认快照过滤器，对所有关系都返回{@code true}，不过滤任何关系.
  */
-public class PgSnapshotFilterDefault implements PgSnapshotFilter
+public class PgFilterDefault implements PgFilter
 {
     /**
-     * Obtain a {@link PgSnapshotFilterDefault} Object.
+     * Obtain a {@link PgFilterDefault} Object.
      *
-     * @return a {@link PgSnapshotFilterDefault} Object.
+     * @return a {@link PgFilterDefault} Object.
      */
-    public static PgSnapshotFilterDefault of()
+    public static PgFilterDefault of()
     {
-        return new PgSnapshotFilterDefault();
+        return new PgFilterDefault();
     }
 
     /**
      * constructor.
      */
-    private PgSnapshotFilterDefault()
+    private PgFilterDefault()
     {
     }
 

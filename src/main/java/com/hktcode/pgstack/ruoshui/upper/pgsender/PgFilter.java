@@ -11,7 +11,7 @@ import javax.script.ScriptException;
 /**
  * 快照关系过滤器.
  */
-public interface PgSnapshotFilter
+public interface PgFilter
 {
     /**
      * 过滤指定关系.

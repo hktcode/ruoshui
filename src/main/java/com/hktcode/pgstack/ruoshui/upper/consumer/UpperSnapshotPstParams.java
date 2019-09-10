@@ -10,9 +10,9 @@ import com.hktcode.bgsimple.method.SimpleMethodPstResult;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplRelationName;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.PgSnapshotFilter;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.PgSnapshotFilterDefault;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.PgSnapshotFilterScript;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgFilter;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgFilterDefault;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgFilterScript;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.MainlineConfig;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgLockMode;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.SnapshotConfig;
@@ -42,11 +42,11 @@ public class UpperSnapshotPstParams implements SimpleMethodPstParams<UpcsmAction
         ImmutableMap<PgReplRelationName, String> tupleSelect = ImmutableMap.copyOf(map);
 
         JsonNode whereScriptNode = json.path("where_script");
-        PgSnapshotFilter whereScript;
+        PgFilter whereScript;
         if (whereScriptNode.isMissingNode()) {
-            whereScript = PgSnapshotFilterDefault.of();
+            whereScript = PgFilterDefault.of();
         } else {
-            whereScript = PgSnapshotFilterScript.of(whereScriptNode);
+            whereScript = PgFilterScript.of(whereScriptNode);
         }
 
         String relationSql = json.path("relation_sql").asText("");
@@ -88,7 +88,7 @@ public class UpperSnapshotPstParams implements SimpleMethodPstParams<UpcsmAction
 
     public final String relationSql;
 
-    public final PgSnapshotFilter whereScript;
+    public final PgFilter whereScript;
 
     public final PgLockMode lockingMode;
 
@@ -128,7 +128,7 @@ public class UpperSnapshotPstParams implements SimpleMethodPstParams<UpcsmAction
 
         String rel = "".equals(relationSql) ? mainline.relationSql : relationSql;
 
-        PgSnapshotFilter whr = whereScript instanceof PgSnapshotFilterDefault ? mainline.whereScript : whereScript;
+        PgFilter whr = whereScript instanceof PgFilterDefault ? mainline.whereScript : whereScript;
 
         PgLockMode lck = lockingMode == PgLockMode.NULL_LOCK ?
             mainline.lockingMode : lockingMode;
@@ -146,7 +146,7 @@ public class UpperSnapshotPstParams implements SimpleMethodPstParams<UpcsmAction
         /* */( ImmutableMap<String, String> srcProperty
         /* */, ImmutableMap<PgReplRelationName, String> tupleSelect
         /* */, String relationSql
-        /* */, PgSnapshotFilter whereScript
+        /* */, PgFilter whereScript
         /* */, PgLockMode lockingMode
         /* */, int rsFetchsize
         /* */, long waitTimeout

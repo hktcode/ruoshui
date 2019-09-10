@@ -6,9 +6,9 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class PgsenderResultErr extends PgsenderResultEnd<PgMetricErr>
+public class PgResultNormalSnapshot extends PgResultNormal
 {
-    public static PgsenderResultErr of(PgConfig config, PgMetricErr metric)
+    static PgResultNormalSnapshot of(PgConfig config, PgMetricRun metric)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -16,10 +16,10 @@ public class PgsenderResultErr extends PgsenderResultEnd<PgMetricErr>
         if (metric == null) {
             throw new ArgumentNullException("metric");
         }
-        return new PgsenderResultErr(config, metric);
+        return new PgResultNormalSnapshot(config, metric);
     }
 
-    private PgsenderResultErr(PgConfig config, PgMetricErr metric)
+    private PgResultNormalSnapshot(PgConfig config, PgMetricRun metric)
     {
         super(config, metric);
     }

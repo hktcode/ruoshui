@@ -26,7 +26,7 @@ public class MainlineMethodPstParamsRecvLsn implements SimpleMethodPst<PgAction>
     }
 
     @Override
-    public PgsenderResult run(PgAction action)
+    public PgResult run(PgAction action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");

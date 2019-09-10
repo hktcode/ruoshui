@@ -4,14 +4,11 @@
 
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
-import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class PgsenderResultEnd<E extends PgMetricEnd> //
-    implements PgsenderResult, SimpleMethodAllResultEnd<PgAction>
+public class PgResultNormal implements PgResult
 {
-    public static <E extends PgMetricEnd> //
-    PgsenderResultEnd<E> of(PgConfig config, E metric)
+    static PgResultNormal of(PgConfig config, PgMetricRun metric)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -19,14 +16,14 @@ public class PgsenderResultEnd<E extends PgMetricEnd> //
         if (metric == null) {
             throw new ArgumentNullException("metric");
         }
-        return new PgsenderResultEnd<>(config, metric);
+        return new PgResultNormal(config, metric);
     }
 
     public final PgConfig config;
 
-    public final E metric;
+    public final PgMetricRun metric;
 
-    protected PgsenderResultEnd(PgConfig config, E metric)
+    PgResultNormal(PgConfig config, PgMetricRun metric)
     {
         this.config = config;
         this.metric = metric;
