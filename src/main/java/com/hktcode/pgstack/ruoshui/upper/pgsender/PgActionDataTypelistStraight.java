@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicReference;
 class PgActionDataTypelistStraight extends PgActionDataTypelist
 {
     static PgActionDataTypelistStraight of
-        /* */( MainlineConfig config //
+        /* */(PgConfigMainline config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */)
@@ -31,7 +31,7 @@ class PgActionDataTypelistStraight extends PgActionDataTypelist
     }
 
     private PgActionDataTypelistStraight
-        /* */( MainlineConfig config //
+        /* */(PgConfigMainline config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */)

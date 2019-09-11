@@ -5,12 +5,10 @@ package com.hktcode.pgstack.ruoshui.pgsql;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
-import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Objects;
 
 /**
@@ -47,45 +45,34 @@ public class PgReplSlotTuple
      *
      * TODO: maybe a {@code LogicalReplicationSlotCreator} is good.
      *
-     * @param connection the connection to PostgreSQL server.
-     * @param sql the {@code CREATE_REPLICATION_SLOT LOGICAL} statement.
+     * @param resultSet the resultSet from {@code CREATE_REPLICATION_SLOT LOGICAL} statement.
      *
      * @return a PgReplSlotTuple Object.
      *
      * @throws SQLException if execute the {@code sql} wrong.
      * @throws ArgumentNullException if {@code connection} or {@code sql} is {@code null}.
      */
-    public static PgReplSlotTuple of(PgConnection connection, String sql) //
+    public static PgReplSlotTuple of(ResultSet resultSet) //
         throws SQLException
     {
-        if (connection == null) {
-            throw new ArgumentNullException("connection");
+        if (resultSet == null) {
+            throw new ArgumentNullException("resultSet");
         }
-        if (sql == null) {
-            throw new ArgumentNullException("sql");
+        // NOTE:XXX: 此处需要处理null问题么？需要处理rs返回多条记录的问题么？
+        String slotName = resultSet.getString("slot_name");
+        String snapshotName = resultSet.getString("snapshot_name");
+        String outputPlugin = resultSet.getString("output_plugin");
+        String consistentPointTxt = resultSet.getString("consistent_point");
+        LogSequenceNumber consistentPoint = LogSequenceNumber.INVALID_LSN;
+        if (consistentPointTxt != null) {
+            consistentPoint = LogSequenceNumber.valueOf(consistentPointTxt);
         }
-        try (Statement s = connection.createStatement();
-             ResultSet rs = s.executeQuery(sql)) {
-            if (!rs.next()) {
-                // the CREATE REPLICATION SLOT statement only has one tuple
-                throw new RuntimeException(); // TODO:
-            }
-            // NOTE:XXX: 此处需要处理null问题么？需要处理rs返回多条记录的问题么？
-            String slotName = rs.getString("slot_name");
-            String snapshotName = rs.getString("snapshot_name");
-            String outputPlugin = rs.getString("output_plugin");
-            String consistentPointTxt = rs.getString("consistent_point");
-            LogSequenceNumber consistentPoint = LogSequenceNumber.INVALID_LSN;
-            if (consistentPointTxt != null) {
-                consistentPoint = LogSequenceNumber.valueOf(consistentPointTxt);
-            }
-            return new PgReplSlotTuple //
-                /* */( slotName //
-                /* */, consistentPoint.asLong() //
-                /* */, Objects.toString(snapshotName, "") //
-                /* */, Objects.toString(outputPlugin, "") //
-                /* */);
-        }
+        return new PgReplSlotTuple //
+            /* */( slotName //
+            /* */, consistentPoint.asLong() //
+            /* */, Objects.toString(snapshotName, "") //
+            /* */, Objects.toString(outputPlugin, "") //
+            /* */);
     }
 
     /**
@@ -123,7 +110,7 @@ public class PgReplSlotTuple
      * @param outputPlugin The name of the output plugin used by the newly-created replication slot.
      */
     private PgReplSlotTuple //
-        /* */( String slotName //
+    /* */( String slotName //
         /* */, long consistentPoint //
         /* */, String snapshotName //
         /* */, String outputPlugin //

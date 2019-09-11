@@ -90,7 +90,7 @@ abstract class PgActionReplTxaction extends PgActionRepl
     }
 
     @Override
-    public PgResultNormalSnapshot pst(SnapshotConfig config)
+    public PgResultNormalSnapshot pst(PgConfigSnapshot config)
     {
         if (config == null) {
             throw new ArgumentNullException("config");

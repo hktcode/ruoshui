@@ -5,6 +5,7 @@
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.google.common.collect.ImmutableMap;
+import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.LogicalReplConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
@@ -13,10 +14,12 @@ import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 
 import java.sql.Statement;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TransferQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class SnapshotConfig extends PgConfig
+public class PgConfigSnapshot extends PgConfig
 {
-    public static SnapshotConfig of //
+    public static PgConfigSnapshot of //
         /* */(PgConnectionProperty srcProperty //
         /* */, String relationSql //
         /* */, PgFilter whereScript //
@@ -43,7 +46,7 @@ public class SnapshotConfig extends PgConfig
         if (tupleSelect == null) {
             throw new ArgumentNullException("tupleSelect");
         }
-        return new SnapshotConfig //
+        return new PgConfigSnapshot //
             /* */( srcProperty //
             /* */, relationSql //
             /* */, whereScript //
@@ -53,7 +56,7 @@ public class SnapshotConfig extends PgConfig
             /* */);
     }
 
-    private SnapshotConfig //
+    private PgConfigSnapshot //
         /* */(PgConnectionProperty srcProperty //
         /* */, String relationSql //
         /* */, PgFilter whereScript //
@@ -66,12 +69,18 @@ public class SnapshotConfig extends PgConfig
     }
 
     @Override
-    public Callable<PgReplSlotTuple> newCreateSlot(Statement statement)
+    public PgDeputeCreateSlotSnapshot newCreateSlot(Statement statement)
     {
         if (statement == null) {
             throw new ArgumentNullException("statement");
         }
-        return DeputeCreateReplSlotSnapshot.of(statement, logicalRepl.slotName);
+        return PgDeputeCreateSlotSnapshot.of(statement, logicalRepl.slotName);
+    }
+
+    @Override
+    public PgAction createsAction(AtomicReference<SimpleStatus> status, TransferQueue<PgRecord> tqueue)
+    {
+        return PgActionDataRelaList.of(this, status, tqueue);
     }
 
     @Override

@@ -9,24 +9,19 @@ import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.google.common.collect.ImmutableList;
-import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgjdbc.LogicalCreateTupleMsg;
-import com.hktcode.pgjdbc.PgReplAttribute;
-import com.hktcode.pgjdbc.PgReplComponent;
-import com.hktcode.pgjdbc.PgReplRelation;
+import com.hktcode.pgjdbc.*;
 import org.postgresql.jdbc.PgConnection;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
-class PgActionDataTupleval extends PgActionData
+class PgActionDataTupleval extends PgActionDataQuerySql
 {
     static PgActionDataTupleval of(PgActionDataSrBegins action)
     {
@@ -73,53 +68,10 @@ class PgActionDataTupleval extends PgActionData
     }
 
     @Override
-    public PgAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
-        throws SQLException, InterruptedException
+    PgRecord build(ResultSet rs) //
+        throws SQLException
     {
-        if (exesvc == null) {
-            throw new ArgumentNullException("exesvc");
-        }
-        if (pgdata == null) {
-            throw new ArgumentNullException("pgdata");
-        }
-        if (pgrepl == null) {
-            throw new ArgumentNullException("pgrepl");
-        }
-        PgReplRelation r = this.curRelation.relationInfo;
         final long lsn = this.replSlot.createTuple.consistentPoint;
-        try (PreparedStatement ps = this.config.queryTupleval(pgdata, r)) {
-            PgRecord record = null;
-            ResultSet rs = null;
-            Boolean next = null;
-            Future<ResultSet> rsFuture = exesvc.submit(DeputeExecuteQueryMainline.of(ps));
-            Future<Boolean> nextFuture = null;
-            DeputeResultSetNextMainline rsDepute = null;
-            while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
-                if (rs == null) {
-                    rs = this.pollFromFuture(rsFuture);
-                } else if (rsDepute == null) {
-                    rsDepute = DeputeResultSetNextMainline.of(rs);
-                } else if (record != null) {
-                    record = this.send(record);
-                } else if (nextFuture == null) {
-                    nextFuture = exesvc.submit(rsDepute);
-                } else if (next == null) {
-                    next = this.pollFromFuture(nextFuture);
-                } else if (next) {
-                    LogicalCreateTupleMsg msg = this.build(rs);
-                    record = this.config.createMessage(lsn, msg);
-                    nextFuture = null;
-                    next = null;
-                } else {
-                    return PgActionDataSrFinish.of(this);
-                }
-            }
-        }
-        return PgActionTerminateEnd.of(this);
-    }
-
-    private LogicalCreateTupleMsg build(ResultSet rs) throws SQLException
-    {
         PgReplRelation relation = this.curRelation.relationInfo;
         final JsonNode oldvalue = MissingNode.getInstance();
         ++this.curRelation.tuplevalSize;
@@ -129,7 +81,22 @@ class PgActionDataTupleval extends PgActionData
             JsonNode newvalue = (v == null ? NullNode.getInstance() : TextNode.valueOf(v));
             tuple.add(PgReplComponent.of(attr, oldvalue, newvalue));
         }
-        return LogicalCreateTupleMsg.of(relation, ImmutableList.copyOf(tuple));
+        LogicalMsg msg = LogicalCreateTupleMsg.of(relation, ImmutableList.copyOf(tuple));
+        return this.config.createMessage(lsn, msg);
+    }
+
+    @Override
+    PgAction complete(Connection pgdata)
+    {
+        return PgActionDataSrFinish.of(this);
+    }
+
+    @Override
+    PgDeputeSelectData createDepute(PgConnection pgdata, PgConnection pgrepl) //
+        throws SQLException
+    {
+        PgReplRelation r = this.curRelation.relationInfo;
+        return PgDeputeSelectData.of(this.config.queryTupleval(pgdata, r));
     }
 
     @Override

@@ -54,5 +54,16 @@ public class DeputeLockRelationMainline implements Callable<Boolean>
             }
             throw ex;
         }
+        // catch (PSQLException ex) {
+        //     String sqlState = ex.getSQLState();
+        //     ImmutableList<String> cancelStates //
+        //         = ImmutableList.of("57014", "55000", "08006");
+        //     if (cancelStates.contains(sqlState)) {
+        //         // 如果是被Connection取消，属于业务范畴
+        //         logger.info("statement was canceled: ", ex);
+        //         return;
+        //     }
+        //     throw ex;
+        // }
     }
 }

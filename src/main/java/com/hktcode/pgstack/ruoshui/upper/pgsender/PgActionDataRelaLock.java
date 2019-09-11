@@ -38,7 +38,7 @@ class PgActionDataRelaLock extends PgActionData
     {
         super(action, System.currentTimeMillis());
         this.relalist = PgReportRelaList.of(action, this.actionStart);
-        this.relationLst = ImmutableList.copyOf(action.relationLst);
+        this.relationLst = ImmutableList.copyOf(action.newRelalist);
         this.logDatetime = action.logDatetime;
     }
 

@@ -9,8 +9,8 @@ import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.MainlineConfig;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.SnapshotConfig;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgConfigMainline;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgConfigSnapshot;
 import org.postgresql.replication.LogSequenceNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +27,7 @@ public class UpcsmActionRun //
     private static final Logger logger = LoggerFactory.getLogger(UpcsmActionRun.class);
 
     public static UpcsmActionRun of //
-        /* */(MainlineConfig config //
+        /* */(PgConfigMainline config //
         /* */, BlockingQueue<UpperRecordConsumer> comein //
         /* */, AtomicReference<SimpleStatus> status //
         /* */)
@@ -44,7 +44,7 @@ public class UpcsmActionRun //
         return new UpcsmActionRun(config, comein, status);
     }
 
-    public final MainlineConfig config;
+    public final PgConfigMainline config;
 
     private final BlockingQueue<UpperRecordConsumer> comein;
 
@@ -131,7 +131,7 @@ public class UpcsmActionRun //
     }
 
     private UpcsmActionRun //
-        /* */(MainlineConfig config //
+        /* */(PgConfigMainline config //
         /* */, BlockingQueue<UpperRecordConsumer> comein //
         /* */, AtomicReference<SimpleStatus> status //
         /* */)
@@ -185,7 +185,7 @@ public class UpcsmActionRun //
         if (params == null) {
             throw new ArgumentNullException("params");
         }
-        SnapshotConfig config = params.toConfig(this.config);
+        PgConfigSnapshot config = params.toConfig(this.config);
         UpcsmSender oldThread = this.fetchThread;
         UpcsmSender newThread = this.fetchThread.pst(config);
         if (oldThread == newThread) {

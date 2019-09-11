@@ -11,7 +11,7 @@ import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.MainlineConfig;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgConfigMainline;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +25,7 @@ public class Upcsm implements Runnable
     private static final Logger logger = LoggerFactory.getLogger(Upcsm.class);
 
     public static Upcsm of //
-        /* */(MainlineConfig config //
+        /* */(PgConfigMainline config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, BlockingQueue<UpperRecordConsumer> comein //
         /* */)
@@ -42,14 +42,14 @@ public class Upcsm implements Runnable
         return new Upcsm(config, comein, status);
     }
 
-    private final MainlineConfig config;
+    private final PgConfigMainline config;
 
     private final BlockingQueue<UpperRecordConsumer> comein;
 
     private final AtomicReference<SimpleStatus> status;
 
     private Upcsm //
-        /* */(MainlineConfig config //
+        /* */(PgConfigMainline config //
         /* */, BlockingQueue<UpperRecordConsumer> comein //
         /* */, AtomicReference<SimpleStatus> status //
         /* */)

@@ -1,0 +1,84 @@
+/*
+ * Copyright (c) 2019, Huang Ketian.
+ */
+
+package com.hktcode.pgstack.ruoshui.upper.pgsender;
+
+import com.hktcode.bgsimple.status.SimpleStatus;
+import com.hktcode.pgjdbc.PgReplAttribute;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.script.ScriptException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TransferQueue;
+import java.util.concurrent.atomic.AtomicReference;
+
+abstract class PgActionDataQueryRel extends PgActionDataQuerySql
+{
+    private static final Logger logger = LoggerFactory.getLogger(PgActionDataQueryRel.class);
+
+    PgActionDataQueryRel
+        /* */( PgConfig config //
+        /* */, AtomicReference<SimpleStatus> status //
+        /* */, TransferQueue<PgRecord> tqueue //
+        /* */)
+    {
+        super(config, status, tqueue);
+        this.logDatetime = super.actionStart;
+    }
+
+    PgActionDataQueryRel(PgActionData action, long actionStart)
+    {
+        super(action, actionStart);
+        this.logDatetime = action.logDatetime;
+    }
+
+    final List<PgsqlRelationMetric> newRelalist = new ArrayList<>();
+
+    RelationBuilder[] relaBuilder = new RelationBuilder[0];
+
+    @Override
+    PgRecord build(ResultSet rs) //
+        throws SQLException, ScriptException
+    {
+        long relident = rs.getLong("relident");
+        long attflags = rs.getLong("attflags");
+        String attrname = rs.getString("attrname");
+        long datatype = rs.getLong("datatype");
+        long attypmod = rs.getLong("attypmod");
+        String tpschema = rs.getString("tpschema");
+        String typename = rs.getString("typename");
+        if (this.relaBuilder.length == 0) {
+            String dbschema = rs.getString("dbschema");
+            String relation = rs.getString("relation");
+            long replchar = rs.getLong("replchar");
+            this.relaBuilder = new RelationBuilder[] {
+                RelationBuilder.of(relident, dbschema, relation, replchar)
+            };
+        } else if (this.relaBuilder[0].metadata.relident != relident) {
+            PgsqlRelationMetric r = this.relaBuilder[0].builder();
+            if (this.config.whereRelalist(r.relationInfo)) {
+                this.newRelalist.add(r);
+            }
+            String dbschema = rs.getString("dbschema");
+            String relation = rs.getString("relation");
+            long replchar = rs.getLong("replchar");
+            this.relaBuilder[0] = RelationBuilder.of(relident, dbschema, relation, replchar);
+        }
+        PgReplAttribute attr = PgReplAttribute.of //
+            /* */( attrname //
+            /* */, tpschema //
+            /* */, typename //
+            /* */, -1 //
+            /* */, attflags //
+            /* */, datatype //
+            /* */, attypmod //
+            /* */);
+        this.relaBuilder[0].attrlist.add(attr);
+        return null;
+    }
+}

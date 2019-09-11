@@ -21,12 +21,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static java.sql.Connection.TRANSACTION_REPEATABLE_READ;
 
-public class Mainline implements Runnable
+public class PgThread implements Runnable
 {
-    private static final Logger logger = LoggerFactory.getLogger(Mainline.class);
+    private static final Logger logger = LoggerFactory.getLogger(PgThread.class);
 
-    public static Mainline of //
-        /* */(MainlineConfig config //
+    public static PgThread of //
+        /* */( PgConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */)
@@ -40,17 +40,17 @@ public class Mainline implements Runnable
         if (tqueue == null) {
             throw new ArgumentNullException("tqueue");
         }
-        return new Mainline(config, status, tqueue);
+        return new PgThread(config, status, tqueue);
     }
 
-    public final MainlineConfig config;
+    public final PgConfig config;
 
     public final AtomicReference<SimpleStatus> status;
 
     public final TransferQueue<PgRecord> tqueue;
 
-    private Mainline //
-        /* */(MainlineConfig config //
+    private PgThread //
+        /* */( PgConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */)
@@ -63,7 +63,7 @@ public class Mainline implements Runnable
     @Override
     public void run()
     {
-        logger.info("mainline starts.");
+        logger.info("pgsender starts.");
         try {
             this.runWithInterrupted();
         }
@@ -71,17 +71,12 @@ public class Mainline implements Runnable
             logger.error("should not be interrupted by other thread.");
             Thread.currentThread().interrupt();
         }
-        logger.info("mainline finish.");
+        logger.info("pgsender finish.");
     }
 
     private void runWithInterrupted() throws InterruptedException
     {
-        PgAction action;
-        if (config.getSnapshot) {
-            action = PgActionDataRelaList.of(config, status, tqueue);
-        } else {
-            action = PgActionDataTypelistStraight.of(config, status, tqueue);
-        }
+        PgAction action = this.config.createsAction(status, tqueue);
         try (Connection repl = config.srcProperty.replicaConnection()) {
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
             ExecutorService exesvc = Executors.newSingleThreadExecutor();
@@ -101,25 +96,31 @@ public class Mainline implements Runnable
             while (action instanceof PgActionRepl) {
                 action = ((PgActionRepl) action).next(pgrepl);
             }
-            logger.info("mainline completes");
+            SimpleStatusInner o;
+            SimpleStatusInnerEnd f;
+            do {
+                o = action.newStatus(action);
+                f = SimpleStatusInnerEnd.of(ImmutableList.of(action.del()));
+            } while (!this.status.compareAndSet(o, f));
+            logger.info("pgsender completes");
         }
         catch (InterruptedException ex) {
             throw ex;
         }
         catch (Exception ex) {
-            logger.error("mainline throws exception: ", ex);
+            logger.error("pgsender throws exception: ", ex);
             action = action.next(ex);
+            SimpleStatusInner o;
+            SimpleStatusInnerEnd f;
+            do {
+                o = action.newStatus(action);
+                f = SimpleStatusInnerEnd.of(ImmutableList.of(action.del()));
+            } while (!this.status.compareAndSet(o, f));
             PgRecord r = PgRecordExecThrows.of(ex);
             do {
                 r = action.send(r);
             } while (r != null);
+            logger.info("pgsender terminate");
         }
-        SimpleStatusInner o;
-        SimpleStatusInnerEnd f;
-        do {
-            o = action.newStatus(action);
-            f = SimpleStatusInnerEnd.of(ImmutableList.of(action.del()));
-        } while (!this.status.compareAndSet(o, f));
-        logger.info("mainline terminate");
     }
 }

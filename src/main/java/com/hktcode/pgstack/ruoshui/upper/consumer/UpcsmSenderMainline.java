@@ -31,7 +31,7 @@ public class UpcsmSenderMainline extends UpcsmSender
 
     public final TransferQueue<PgRecord> tqueue;
 
-    public static UpcsmSenderMainline of(MainlineConfig config)
+    public static UpcsmSenderMainline of(PgConfigMainline config)
     {
         if (config == null) {
             throw new ArgumentNullException("thread");
@@ -42,7 +42,7 @@ public class UpcsmSenderMainline extends UpcsmSender
         };
         SimpleStatusOuterPut s = SimpleStatusOuterPut.of(put, new Phaser(2));
         AtomicReference<SimpleStatus> status = new AtomicReference<>(s);
-        Thread thread = new Thread(Mainline.of(config, status, tqueue));
+        Thread thread = new Thread(PgThread.of(config, status, tqueue));
         return new UpcsmSenderMainline(thread, tqueue, status);
     }
 
@@ -134,7 +134,7 @@ public class UpcsmSenderMainline extends UpcsmSender
     }
 
     @Override
-    public UpcsmSender pst(SnapshotConfig config) //
+    public UpcsmSender pst(PgConfigSnapshot config) //
         throws InterruptedException
     {
         SimpleHolder holder = SimpleHolder.of(status);
@@ -154,7 +154,7 @@ public class UpcsmSenderMainline extends UpcsmSender
         };
         SimpleStatusOuterPut s = SimpleStatusOuterPut.of(put, new Phaser(2));
         AtomicReference<SimpleStatus> status = new AtomicReference<>(s);
-        Thread thread = new Thread(Snapshot.of(config, status, q));
+        Thread thread = new Thread(PgThread.of(config, status, q));
         return UpcsmSenderSnapshotLockingRel.of(this, thread, q, status);
     }
 }

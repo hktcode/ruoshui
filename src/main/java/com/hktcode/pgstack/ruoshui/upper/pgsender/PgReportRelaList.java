@@ -36,6 +36,6 @@ public class PgReportRelaList
         this.rsgetMillis = action.rsgetMillis;
         this.rsnextCount = action.rsnextCount;
         this.retryReason = action.retryReason;
-        this.relationLst = action.relationLst.size();
+        this.relationLst = action.newRelalist.size();
     }
 }

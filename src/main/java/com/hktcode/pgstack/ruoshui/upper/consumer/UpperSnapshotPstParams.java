@@ -13,9 +13,9 @@ import com.hktcode.pgstack.ruoshui.pgsql.PgReplRelationName;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgFilter;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgFilterDefault;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgFilterScript;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.MainlineConfig;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgConfigMainline;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgLockMode;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.SnapshotConfig;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgConfigSnapshot;
 
 import javax.script.ScriptException;
 import java.util.HashMap;
@@ -108,7 +108,7 @@ public class UpperSnapshotPstParams implements SimpleMethodPstParams<UpcsmAction
         return action.pst(this);
     }
 
-    public SnapshotConfig toConfig(MainlineConfig mainline)
+    public PgConfigSnapshot toConfig(PgConfigMainline mainline)
     {
         if (mainline == null) {
             throw new ArgumentNullException("mainline");
@@ -133,7 +133,7 @@ public class UpperSnapshotPstParams implements SimpleMethodPstParams<UpcsmAction
         PgLockMode lck = lockingMode == PgLockMode.NULL_LOCK ?
             mainline.lockingMode : lockingMode;
 
-        SnapshotConfig result = SnapshotConfig.of(src, rel, whr, lck, mainline.logicalRepl, tpl);
+        PgConfigSnapshot result = PgConfigSnapshot.of(src, rel, whr, lck, mainline.logicalRepl, tpl);
 
         result.rsFetchsize = (rsFetchsize == -1 ? mainline.rsFetchsize : rsFetchsize);
         result.waitTimeout = (waitTimeout == -1 ? mainline.waitTimeout : waitTimeout);

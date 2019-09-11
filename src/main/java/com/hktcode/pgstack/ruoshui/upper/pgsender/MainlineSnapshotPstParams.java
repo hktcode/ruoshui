@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class MainlineSnapshotPstParams implements SimpleMethodPstParams<PgAction>
 {
-    public static MainlineSnapshotPstParams of(SnapshotConfig config)
+    public static MainlineSnapshotPstParams of(PgConfigSnapshot config)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -26,9 +26,9 @@ public class MainlineSnapshotPstParams implements SimpleMethodPstParams<PgAction
         return action.pst(config);
     }
 
-    private final SnapshotConfig config;
+    private final PgConfigSnapshot config;
 
-    private MainlineSnapshotPstParams(SnapshotConfig config)
+    private MainlineSnapshotPstParams(PgConfigSnapshot config)
     {
         this.config = config;
     }

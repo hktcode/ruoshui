@@ -6,6 +6,7 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
+import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.LogicalReplConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
@@ -18,13 +19,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TransferQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.hktcode.bgsimple.triple.TripleConfig.DEFALUT_WAIT_TIMEOUT;
 import static com.hktcode.bgsimple.triple.TripleConfig.DEFAULT_LOG_DURATION;
 
-public class MainlineConfig extends PgConfig
+public class PgConfigMainline extends PgConfig
 {
-    public static MainlineConfig ofJsonObject(JsonNode json) //
+    public static PgConfigMainline ofJsonObject(JsonNode json) //
         throws ScriptException
     {
         if (json == null) {
@@ -63,7 +66,7 @@ public class MainlineConfig extends PgConfig
         String lockingModeText = json.path("locking_mode").asText("SHARE_UPDATE_EXCLUSIVE");
         PgLockMode lockingMode = PgLockMode.valueOf(lockingModeText);
         boolean getSnapshot = json.path("get_snapshot").asBoolean(true);
-        MainlineConfig result = MainlineConfig.of
+        PgConfigMainline result = PgConfigMainline.of
             /* */( srcProperty //
                 /* */, typelistSql //
                 /* */, relationSql //
@@ -82,7 +85,7 @@ public class MainlineConfig extends PgConfig
         return result;
     }
 
-    static MainlineConfig of //
+    static PgConfigMainline of //
         /* */(PgConnectionProperty srcProperty //
         /* */, String typelistSql //
         /* */, String relationSql //
@@ -114,10 +117,10 @@ public class MainlineConfig extends PgConfig
         if (tupleSelect == null) {
             throw new ArgumentNullException("tupleSelect");
         }
-        return new MainlineConfig(srcProperty, typelistSql, relationSql, whereScript, lockingMode, logicalRepl, tupleSelect, getSnapshot);
+        return new PgConfigMainline(srcProperty, typelistSql, relationSql, whereScript, lockingMode, logicalRepl, tupleSelect, getSnapshot);
     }
 
-    private MainlineConfig
+    private PgConfigMainline
         /* */(PgConnectionProperty srcProperty //
         /* */, String typelistSql //
         /* */, String relationSql //
@@ -138,11 +141,21 @@ public class MainlineConfig extends PgConfig
     }
 
     @Override
-    public Callable<PgReplSlotTuple> newCreateSlot(Statement statement)
+    public PgDeputeCreateSlotMainline newCreateSlot(Statement statement)
     {
         if (statement == null) {
             throw new ArgumentNullException("statement");
         }
-        return DeputeCreateReplSlotMainline.of(statement, logicalRepl.slotName);
+        return PgDeputeCreateSlotMainline.of(statement, logicalRepl.slotName);
+    }
+
+    @Override
+    public PgAction createsAction(AtomicReference<SimpleStatus> status, TransferQueue<PgRecord> tqueue)
+    {
+        if (this.getSnapshot) {
+            return PgActionDataRelaList.of(this, status, tqueue);
+        } else {
+            return PgActionDataTypelistStraight.of(this, status, tqueue);
+        }
     }
 }

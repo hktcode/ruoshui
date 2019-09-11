@@ -39,13 +39,13 @@ properties:
         minimum: 0
         maximum: 2147483647
       standby_skip: { "type": "boolean", "default": true }
-      where_script:
-        oneOf:
-          - type: string
-          - type: object
-            properties:
-            engine_name: { type: string } #TODO:
-            script_text: { type: string }
+      # where_script:
+      #   oneOf:
+      #     - type: string
+      #     - type: object
+      #       properties:
+      #       engine_name: { type: string } #TODO:
+      #       script_text: { type: string }
       locking_mode: { "type": "string" }
       wait_timeout: { "type": "integer", "default": 100 } # TODO:
       log_duration: { "type": "integer", "default": 30000 } # TODO:

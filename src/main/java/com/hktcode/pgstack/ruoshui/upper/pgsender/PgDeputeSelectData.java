@@ -9,21 +9,20 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.concurrent.Callable;
 
-public class DeputeExecuteQueryMainline implements Callable<ResultSet>
+public class PgDeputeSelectData implements PgDeputeStatement
 {
-    public static DeputeExecuteQueryMainline of(PreparedStatement statement)
+    public static PgDeputeSelectData of(PreparedStatement statement)
     {
         if (statement == null) {
             throw new ArgumentNullException("statement");
         }
-        return new DeputeExecuteQueryMainline(statement);
+        return new PgDeputeSelectData(statement);
     }
 
-    private final PreparedStatement statement;
+    protected PreparedStatement statement;
 
-    private DeputeExecuteQueryMainline(PreparedStatement statement)
+    private PgDeputeSelectData(PreparedStatement statement)
     {
         this.statement = statement;
     }
@@ -31,6 +30,12 @@ public class DeputeExecuteQueryMainline implements Callable<ResultSet>
     @Override
     public ResultSet call() throws SQLException
     {
-        return statement.executeQuery();
+        return this.statement.executeQuery();
+    }
+
+    @Override
+    public void close() throws SQLException
+    {
+        this.statement.close();
     }
 }

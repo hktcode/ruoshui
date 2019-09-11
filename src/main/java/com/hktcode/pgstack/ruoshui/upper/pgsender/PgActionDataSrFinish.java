@@ -5,15 +5,12 @@
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.google.common.collect.ImmutableList;
-import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalEndRelationMsg;
-import org.postgresql.jdbc.PgConnection;
 
 import java.util.Iterator;
-import java.util.concurrent.ExecutorService;
 
-public class PgActionDataSrFinish extends PgActionData
+class PgActionDataSrFinish extends PgActionDataOfferMsg
 {
     static PgActionDataSrFinish of(PgActionDataTupleval action)
     {
@@ -60,25 +57,23 @@ public class PgActionDataSrFinish extends PgActionData
     }
 
     @Override
-    public PgAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
-        throws InterruptedException
+    PgRecord createRecord()
     {
         long lsn = this.replSlot.createTuple.consistentPoint;
         LogicalEndRelationMsg msg //
             = LogicalEndRelationMsg.of(this.curRelation.relationInfo);
-        PgRecord record = this.config.createMessage(lsn, msg);
-        while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
-            if (record != null) {
-                record = this.send(record);
-            }
-            else if (this.relIterator.hasNext()) {
-                return PgActionDataSrBegins.of(this);
-            }
-            else {
-                return PgActionDataSsFinish.of(this);
-            }
+        return this.config.createMessage(lsn, msg);
+    }
+
+    @Override
+    PgAction complete()
+    {
+        if (this.relIterator.hasNext()) {
+            return PgActionDataSrBegins.of(this);
         }
-        return PgActionTerminateEnd.of(this);
+        else {
+            return PgActionDataSsFinish.of(this);
+        }
     }
 
     @Override

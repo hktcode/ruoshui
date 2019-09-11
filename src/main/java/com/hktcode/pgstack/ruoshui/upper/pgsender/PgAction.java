@@ -52,7 +52,7 @@ public abstract class PgAction //
         return this.get();
     }
 
-    public PgResult pst(SnapshotConfig config)
+    public PgResult pst(PgConfigSnapshot config)
     {
         if (config == null) {
             throw new ArgumentNullException("config");

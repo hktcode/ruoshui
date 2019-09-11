@@ -5,17 +5,12 @@
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.google.common.collect.ImmutableList;
-import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalEndSnapshotMsg;
+import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgjdbc.PgReplRelation;
-import org.postgresql.jdbc.PgConnection;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-
-public class PgActionDataSsFinish extends PgActionData
+class PgActionDataSsFinish extends PgActionDataSnapshot
 {
     static PgActionDataSsFinish of(PgActionDataSrFinish action)
     {
@@ -33,73 +28,36 @@ public class PgActionDataSsFinish extends PgActionData
         return new PgActionDataSsFinish(action);
     }
 
-    public final PgReportRelaList relalist;
-
-    public final PgReportRelaLock relaLock;
-
-    public final PgReportReplSlotTuple replSlot;
-
-    public final PgReportSizeDiff sizeDiff;
-
     public final PgReportSsBegins ssBegins;
 
     public final PgReportTupleval tupleval;
 
-    public final ImmutableList<PgsqlRelationMetric> relationLst;
-
     private PgActionDataSsFinish(PgActionDataSsBegins action)
     {
-        super(action, System.currentTimeMillis());
-        this.relalist = action.relalist;
-        this.relaLock = action.relaLock;
-        this.replSlot = action.replSlot;
-        this.sizeDiff = action.sizeDiff;
+        super(action);
         this.ssBegins = PgReportSsBegins.of(action, this.actionStart);
         this.tupleval = PgReportTupleval.of();
-        this.relationLst = action.relationLst;
         this.logDatetime = action.logDatetime;
     }
 
     private PgActionDataSsFinish(PgActionDataSrFinish action)
     {
-        super(action, System.currentTimeMillis());
-        this.relalist = action.relalist;
-        this.relaLock = action.relaLock;
-        this.replSlot = action.replSlot;
-        this.sizeDiff = action.sizeDiff;
+        super(action);
         this.ssBegins = action.ssbegins;
         this.tupleval = PgReportTupleval.of(action, this.actionStart);
-        this.relationLst = action.relationLst;
         this.logDatetime = action.logDatetime;
     }
 
     @Override
-    public PgAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl)
-        throws InterruptedException
+    LogicalMsg createMsg(ImmutableList<PgReplRelation> list)
     {
-        if (exesvc == null) {
-            throw new ArgumentNullException("exesvc");
-        }
-        if (pgdata == null) {
-            throw new ArgumentNullException("pgdata");
-        }
-        if (pgrepl == null) {
-            throw new ArgumentNullException("pgrepl");
-        }
-        long lsn = this.replSlot.createTuple.consistentPoint;
-        List<PgReplRelation> list = new ArrayList<>(this.relationLst.size());
-        for(PgsqlRelationMetric m : this.relationLst) {
-            list.add(m.relationInfo);
-        }
-        ImmutableList<PgReplRelation> l = ImmutableList.copyOf(list);
-        LogicalEndSnapshotMsg msg = LogicalEndSnapshotMsg.of(l);
-        PgRecord record = this.config.createMessage(lsn, msg);
-        while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
-            if ((record = this.send(record)) == null) {
-                return this.config.afterSnapshot(this);
-            }
-        }
-        return PgActionTerminateEnd.of(this);
+        return LogicalEndSnapshotMsg.of(list);
+    }
+
+    @Override
+    PgAction complete()
+    {
+        return this.config.afterSnapshot(this);
     }
 
     @Override

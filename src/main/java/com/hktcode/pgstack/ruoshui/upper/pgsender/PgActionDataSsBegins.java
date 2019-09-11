@@ -5,18 +5,14 @@
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.google.common.collect.ImmutableList;
-import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalBegSnapshotMsg;
+import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgjdbc.PgReplRelation;
-import org.postgresql.jdbc.PgConnection;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
 
-class PgActionDataSsBegins extends PgActionData
+class PgActionDataSsBegins extends PgActionDataSnapshot
 {
     static PgActionDataSsBegins of(PgActionDataSizeDiff action)
     {
@@ -26,54 +22,30 @@ class PgActionDataSsBegins extends PgActionData
         return new PgActionDataSsBegins(action);
     }
 
-    public final PgReportRelaList relalist;
-
-    public final PgReportRelaLock relaLock;
-
-    public final PgReportReplSlotTuple replSlot;
-
-    public final PgReportSizeDiff sizeDiff;
-
-    public final ImmutableList<PgsqlRelationMetric> relationLst;
-
     final Iterator<PgsqlRelationMetric> relIterator;
 
     private PgActionDataSsBegins(PgActionDataSizeDiff action)
     {
-        super(action, System.currentTimeMillis());
-        this.relalist = action.relalist;
-        this.relaLock = action.relaLock;
-        this.replSlot = action.replSlot;
-        this.sizeDiff = PgReportSizeDiff.of(action, this.actionStart);
-        this.relationLst = action.oldRelalist;
+        super(action);
         this.relIterator = this.relationLst.iterator();
         this.logDatetime = action.logDatetime;
     }
 
     @Override
-    public PgAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
-        throws InterruptedException
+    LogicalMsg createMsg(ImmutableList<PgReplRelation> list)
     {
-        long lsn = this.replSlot.createTuple.consistentPoint;
-        List<PgReplRelation> list = new ArrayList<>(this.relationLst.size());
-        for(PgsqlRelationMetric m : this.relationLst) {
-            list.add(m.relationInfo);
+        return LogicalBegSnapshotMsg.of(list);
+    }
+
+    @Override
+    PgAction complete()
+    {
+        if (this.relIterator.hasNext()){
+            return PgActionDataSrBegins.of(this);
         }
-        ImmutableList<PgReplRelation> l = ImmutableList.copyOf(list);
-        LogicalBegSnapshotMsg msg = LogicalBegSnapshotMsg.of(l);
-        PgRecord record = this.config.createMessage(lsn, msg);
-        while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
-            if (record != null) {
-                record = this.send(record);
-            }
-            else if (this.relIterator.hasNext()){
-                return PgActionDataSrBegins.of(this);
-            }
-            else {
-                return PgActionDataSsFinish.of(this);
-            }
+        else {
+            return PgActionDataSsFinish.of(this);
         }
-        return PgActionTerminateEnd.of(this);
     }
 
     @Override

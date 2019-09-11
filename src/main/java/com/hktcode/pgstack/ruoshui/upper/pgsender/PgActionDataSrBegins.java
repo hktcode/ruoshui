@@ -14,7 +14,7 @@ import org.postgresql.jdbc.PgConnection;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 
-class PgActionDataSrBegins extends PgActionData
+class PgActionDataSrBegins extends PgActionDataOfferMsg
 {
     static PgActionDataSrBegins of(PgActionDataSsBegins action)
     {
@@ -83,19 +83,18 @@ class PgActionDataSrBegins extends PgActionData
     }
 
     @Override
-    public PgAction next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
-        throws InterruptedException
+    PgRecord createRecord()
     {
         PgReplRelation r = this.curRelation.relationInfo;
         long lsn = this.replSlot.createTuple.consistentPoint;
         LogicalBegRelationMsg msg = LogicalBegRelationMsg.of(r);
-        PgRecord record = this.config.createMessage(lsn, msg);
-        while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
-            if ((record = this.send(record)) == null) {
-                return PgActionDataTupleval.of(this);
-            }
-        }
-        return PgActionTerminateEnd.of(this);
+        return this.config.createMessage(lsn, msg);
+    }
+
+    @Override
+    PgAction complete()
+    {
+        return PgActionDataTupleval.of(this);
     }
 
     @Override

@@ -7,6 +7,7 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.google.common.collect.ImmutableMap;
+import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.tqueue.TqueueConfig;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
@@ -20,6 +21,8 @@ import org.postgresql.jdbc.PgConnection;
 import javax.script.ScriptException;
 import java.sql.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TransferQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class PgConfig extends TqueueConfig
 {
@@ -297,7 +300,9 @@ public abstract class PgConfig extends TqueueConfig
         return PgRecordLogicalMsg.of(lsn, msg);
     }
 
-    public abstract Callable<PgReplSlotTuple> newCreateSlot(Statement statement);
+    public abstract PgDeputeCreateSlot newCreateSlot(Statement statement);
+
+    public abstract PgAction createsAction(AtomicReference<SimpleStatus> status, TransferQueue<PgRecord> tqueue);
 
     public PgRecordPauseWorld pauseWorldMsg()
     {
