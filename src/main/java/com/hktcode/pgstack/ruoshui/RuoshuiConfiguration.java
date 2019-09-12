@@ -24,17 +24,6 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 public class RuoshuiConfiguration
 {
     /**
-     * Json Schema验证异常的处理器.
-     *
-     * @return JacksonExcpetionHandler对象.
-     */
-    @Bean
-    public JacksonExceptionHandler jsonExceptionHandler()
-    {
-        return new JacksonExceptionHandler();
-    }
-
-    /**
      * 序列化反序列化的{@code ObjectMapper}对象.
      *
      * 添加了{@link LogSequenceNumber}序列化类，所以没有采用Spring Boot默认的方法。
