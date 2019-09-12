@@ -56,13 +56,13 @@ class PgActionDataReplSlot extends PgActionDataQuerySql
         PgReplSlotTuple tuple = PgReplSlotTuple.of(rs);
         logger.info("create slot success: tuple={}", tuple);
         this.createTuple = new PgReplSlotTuple[] { tuple };
-        return this.config.createSlotMsg(tuple);
+        return PgRecordCreateSlot.of(tuple);
     }
 
     @Override
     PgRecord initRecord()
     {
-        return this.config.pauseWorldMsg();
+        return PgRecordPauseWorld.of();
     }
 
     @Override

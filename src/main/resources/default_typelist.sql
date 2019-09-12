@@ -1,0 +1,6 @@
+ select "t".    "oid"::int8 as "datatype"
+      , "n"."nspname"::text as "tpschema"
+      , "t"."typname"::text as "typename"
+  from            "pg_catalog"."pg_type"      "t"
+       inner join "pg_catalog"."pg_namespace" "n"
+               on "t"."typnamespace" = "n"."oid"

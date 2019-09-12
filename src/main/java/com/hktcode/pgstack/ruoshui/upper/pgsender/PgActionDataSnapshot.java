@@ -66,7 +66,7 @@ abstract class PgActionDataSnapshot extends PgActionDataOfferMsg
         }
         ImmutableList<PgReplRelation> l = ImmutableList.copyOf(list);
         LogicalMsg msg = this.createMsg(l);
-        return this.config.createMessage(lsn, msg);
+        return PgRecordLogicalMsg.of(lsn, msg);
     }
 
     abstract LogicalMsg createMsg(ImmutableList<PgReplRelation> list);

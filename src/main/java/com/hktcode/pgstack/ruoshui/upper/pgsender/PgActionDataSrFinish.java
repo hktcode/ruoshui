@@ -62,7 +62,7 @@ class PgActionDataSrFinish extends PgActionDataOfferMsg
         long lsn = this.replSlot.createTuple.consistentPoint;
         LogicalEndRelationMsg msg //
             = LogicalEndRelationMsg.of(this.curRelation.relationInfo);
-        return this.config.createMessage(lsn, msg);
+        return PgRecordLogicalMsg.of(lsn, msg);
     }
 
     @Override

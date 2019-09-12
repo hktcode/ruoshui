@@ -17,7 +17,6 @@ import com.hktcode.pgstack.ruoshui.upper.UpperRecordProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.script.ScriptException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.atomic.AtomicReference;
@@ -69,7 +68,7 @@ public class Upjct implements Runnable
         this.status = status;
     }
 
-    public void runWithInterrupted() throws InterruptedException, ScriptException
+    public void runWithInterrupted() throws InterruptedException
     {
         UpjctAction action = UpjctActionRun.of(config, comein, getout, status);
         try {
@@ -136,8 +135,6 @@ public class Upjct implements Runnable
         } catch (InterruptedException e) {
             logger.error("should never happen", e);
             Thread.currentThread().interrupt();
-        } catch (ScriptException e) {
-            logger.error("should never happen", e);
         }
     }
 }

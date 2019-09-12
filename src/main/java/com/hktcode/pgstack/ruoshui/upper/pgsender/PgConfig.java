@@ -11,15 +11,16 @@ import com.google.common.collect.ImmutableMap;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.tqueue.TqueueConfig;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgjdbc.PgReplRelation;
 import com.hktcode.pgstack.ruoshui.pgsql.LogicalReplConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplRelationName;
-import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 import org.postgresql.jdbc.PgConnection;
 
 import javax.script.ScriptException;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -46,98 +47,55 @@ public abstract class PgConfig extends TqueueConfig
         }
         return ImmutableMap.copyOf(map);
     }
+
     /**
      * 默认的{@link ResultSet#setFetchSize(int)}值.
      */
-    public static final int DEFAULT_RS_FETCHSIZE = 10240;
+    static final int DEFAULT_RS_FETCHSIZE = 10240;
 
-    public static final String DEFAULT_RELATION_SQL = "" //
-        + "\n WITH \"publication\" as " //
-        + "\n ( select \"p\".\"puballtables\" " //
-        + "\n        , \"p\".\"oid\" " //
-        + "\n   from            \"pg_catalog\".\"pg_publication\" p " //
-        + "\n  WHERE ?::jsonb ?? p.pubname " //
-        + "\n ) " //
-        + "\n SELECT                                            \"t\".\"oid\"::int8 as \"relident\" " //
-        + "\n      ,                                        \"n\".\"nspname\"::text as \"dbschema\" " //
-        + "\n      ,                                        \"t\".\"relname\"::text as \"relation\" " //
-        + "\n      ,                        \"ascii\"(\"t\".\"relreplident\")::int8 as \"replchar\" " //
-        + "\n      , (case when \"k\".\"conrelid\" is null then 0 else 1 end)::int8 as \"attflags\" " //
-        + "\n      ,                                              \"a\".\"attname\" as \"attrname\" " //
-        + "\n      ,                                       \"a\".\"atttypid\"::int8 as \"datatype\" " //
-        + "\n      ,                                      \"a\".\"atttypmod\"::int8 as \"attypmod\" " //
-        + "\n      ,                                             \"tn\".\"nspname\" as \"tpschema\" " //
-        + "\n      ,                                              \"y\".\"typname\" as \"typename\" " //
-        + "\n FROM            ( SELECT \"t\".\"oid\" " //
-        + "\n                        , \"t\".\"relname\" " //
-        + "\n                        , \"t\".\"relnamespace\" " //
-        + "\n                        , \"t\".\"relreplident\" " //
-        + "\n                        , \"t\".\"relpersistence\" " //
-        + "\n                        , \"t\".\"relkind\" " //
-        + "\n                   FROM  \"pg_catalog\".\"pg_class\" \"t\" " //
-        + "\n                   WHERE EXISTS (SELECT * FROM \"publication\" WHERE puballtables) " //
-        + "\n                   UNION " //
-        + "\n                   SELECT \"t\".\"oid\" " //
-        + "\n                        , \"t\".\"relname\" " //
-        + "\n                        , \"t\".\"relnamespace\" " //
-        + "\n                        , \"t\".\"relreplident\" " //
-        + "\n                        , \"t\".\"relpersistence\" " //
-        + "\n                        , \"t\".\"relkind\" " //
-        + "\n                   FROM            \"publication\" \"a\" " //
-        + "\n                        INNER JOIN \"pg_catalog\".\"pg_publication_rel\" \"r\" " //
-        + "\n                                ON \"a\".\"oid\" = \"r\".\"prpubid\" " //
-        + "\n                        INNER JOIN \"pg_catalog\".\"pg_class\"       \"t\" " //
-        + "\n                                ON \"r\".\"prrelid\" = \"t\".\"oid\" " //
-        + "\n                   WHERE     NOT EXISTS (SELECT * FROM \"publication\" WHERE puballtables) " //
-        + "\n                         and NOT \"a\".\"puballtables\" " //
-        + "\n                 ) t " //
-        + "\n      INNER JOIN \"pg_catalog\".\"pg_namespace\" \"n\" " //
-        + "\n              ON \"t\".\"relnamespace\" = \"n\".\"oid\" " //
-        + "\n      INNER JOIN \"pg_catalog\".\"pg_attribute\" a " //
-        + "\n              ON \"t\".\"oid\" = \"a\".\"attrelid\" " //
-        + "\n      INNER JOIN \"pg_catalog\".\"pg_type\" y " //
-        + "\n              ON \"a\".\"atttypid\" = \"y\".\"oid\" " //
-        + "\n      INNER JOIN \"pg_catalog\".\"pg_namespace\" tn " //
-        + "\n              ON \"y\".\"typnamespace\" = tn.\"oid\" " //
-        + "\n       LEFT JOIN ( select     \"c\".\"conrelid\" as \"conrelid\" " //
-        + "\n                        , \"unnest\"(\"conkey\") as \"conkey\" " //
-        + "\n                   from            \"pg_catalog\".\"pg_constraint\" c " //
-        + "\n                        inner join ( select \"c\".\"conrelid\" as \"conrelid\" " //
-        + "\n                                          , \"min\"(\"c\".\"oid\") as \"oid\" " //
-        + "\n                                     from            \"pg_catalog\".\"pg_constraint\" \"c\" " //
-        + "\n                                          inner join ( select \"conrelid\" as \"conrelid\" " //
-        + "\n                                                            , max(\"contype\") as \"contype\" " //
-        + "\n                                                       from \"pg_catalog\".\"pg_constraint\" " //
-        + "\n                                                       where     \"contype\" in ('p', 'u') " //
-        + "\n                                                             and \"conrelid\" <> 0 " //
-        + "\n                                                       group by \"conrelid\" " //
-        + "\n                                                     ) m " //
-        + "\n                                                  on     m.\"conrelid\" = c.\"conrelid\" " //
-        + "\n                                                     and m.\"contype\" = c.\"contype\" " //
-        + "\n                                     group by c.\"conrelid\" " //
-        + "\n                                   ) m " //
-        + "\n                                on m.\"oid\" = c.\"oid\" " //
-        + "\n                 ) k " //
-        + "\n              on     a.\"attrelid\" = k.\"conrelid\" " //
-        + "\n                 and a.\"attnum\" = k.\"conkey\" " //
-        + "\n WHERE     \"t\".\"relpersistence\" = 'p' " //
-        + "\n       and \"t\".\"relkind\" in ('r', 'p') " //
-        + "\n       and \"n\".\"nspname\" not in ('information_schema', 'pg_catalog') " //
-        + "\n       and \"n\".\"nspname\" not like 'pg_temp%' " //
-        + "\n       and \"n\".\"nspname\" not like 'pg_toast%' " //
-        + "\n       and not \"a\".\"attisdropped\" " //
-        + "\n       and \"a\".\"attnum\" > 0 " //
-        + "\n ORDER BY \"t\".\"oid\", \"a\".\"attnum\" " //
-        + "";
+    static final String DEFAULT_RELATION_SQL;
 
-    public static final String DEFAULT_TYPELIST_SQL = "" //
-        + "\n select \"t\".    \"oid\"::int8 as \"datatype\" " //
-        + "\n      , \"n\".\"nspname\"::text as \"tpschema\" " //
-        + "\n      , \"t\".\"typname\"::text as \"typename\" " //
-        + "\n  from            \"pg_catalog\".\"pg_type\"      \"t\" " //
-        + "\n       inner join \"pg_catalog\".\"pg_namespace\" \"n\" " //
-        + "\n               on \"t\".\"typnamespace\" = \"n\".\"oid\" " //
-        + "\n ";
+    static final String DEFAULT_TYPELIST_SQL;
+
+    static {
+        DEFAULT_TYPELIST_SQL = getResourceFileAsString("/default_typelist.sql");
+        DEFAULT_RELATION_SQL = getResourceFileAsString("/default_relalist.sql");
+    }
+
+    /**
+     * Reads given resource file as a string.
+     *
+     * modify from
+     * https://stackoverflow.com/questions/6068197/utils-to-read-resource-text-file-to-string-java
+     *
+     * @param fileName path to the resource file
+     * @return the file's contents
+     * @throws UncheckedIOException if read fails for any reason
+     */
+    private static String getResourceFileAsString(String fileName) //
+    {
+        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        try (InputStream is = classLoader.getResourceAsStream(fileName)) {
+            if (is == null) {
+                throw new RuntimeException();
+            }
+            StringBuilder builder = new StringBuilder();
+            Charset utf8 = StandardCharsets.UTF_8;
+            try (InputStreamReader isr = new InputStreamReader(is, utf8);
+                 BufferedReader reader = new BufferedReader(isr)) {
+                int length = 1024;
+                char[] buffer = new char[length];
+                int readlength;
+                while ((readlength = reader.read(buffer)) != -1) {
+                    builder.append(buffer, 0, readlength);
+                }
+                return builder.toString();
+            }
+        }
+        catch (IOException ex) {
+            throw new UncheckedIOException(ex);
+        }
+    }
 
     public PreparedStatement queryTypelist(PgConnection pgdata)
         throws SQLException
@@ -169,7 +127,7 @@ public abstract class PgConfig extends TqueueConfig
             throw new ArgumentNullException("sql");
         }
         PreparedStatement ps = pg.prepareStatement //
-                /* */( sql //
+            /* */( sql //
                 /* */, ResultSet.TYPE_FORWARD_ONLY //
                 /* */, ResultSet.CONCUR_READ_ONLY //
                 /* */, ResultSet.CLOSE_CURSORS_AT_COMMIT //
@@ -268,7 +226,7 @@ public abstract class PgConfig extends TqueueConfig
     public final boolean getSnapshot;
 
     protected PgConfig //
-        /* */(PgConnectionProperty srcProperty //
+        /* */( PgConnectionProperty srcProperty //
         /* */, String relationSql //
         /* */, PgFilter whereScript //
         /* */, PgLockMode lockingMode //
@@ -287,7 +245,7 @@ public abstract class PgConfig extends TqueueConfig
     }
 
     protected PgConfig //
-        /* */(PgConnectionProperty srcProperty //
+        /* */( PgConnectionProperty srcProperty //
         /* */, String relationSql //
         /* */, PgFilter whereScript //
         /* */, PgLockMode lockingMode //
@@ -309,28 +267,7 @@ public abstract class PgConfig extends TqueueConfig
 
     public abstract PgAction afterSnapshot(PgActionDataSsFinish action);
 
-    public PgRecordLogicalMsg createMessage(long lsn, LogicalMsg msg)
-    {
-        if (msg == null) {
-            throw new ArgumentNullException("msg");
-        }
-        return PgRecordLogicalMsg.of(lsn, msg);
-    }
-
     public abstract PgDeputeCreateSlot newCreateSlot(Statement statement);
 
     public abstract PgAction createsAction(AtomicReference<SimpleStatus> status, TransferQueue<PgRecord> tqueue);
-
-    public PgRecordPauseWorld pauseWorldMsg()
-    {
-        return null; // TODO
-    }
-
-    public PgRecordCreateSlot createSlotMsg(PgReplSlotTuple tuple)
-    {
-        if (tuple == null) {
-            throw new ArgumentNullException("tuple");
-        }
-        return null; // TODO:
-    }
 }

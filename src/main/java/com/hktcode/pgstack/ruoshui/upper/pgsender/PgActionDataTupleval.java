@@ -81,7 +81,7 @@ class PgActionDataTupleval extends PgActionDataQuerySql
             tuple.add(PgReplComponent.of(attr, oldvalue, newvalue));
         }
         LogicalMsg msg = LogicalCreateTupleMsg.of(relation, ImmutableList.copyOf(tuple));
-        return this.config.createMessage(lsn, msg);
+        return PgRecordLogicalMsg.of(lsn, msg);
     }
 
     @Override

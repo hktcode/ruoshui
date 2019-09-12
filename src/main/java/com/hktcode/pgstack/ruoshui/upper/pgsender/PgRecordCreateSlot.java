@@ -4,12 +4,10 @@
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.lang.exception.NeverHappenAssertionError;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmActionRun;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmSenderSnapshot;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmSenderSnapshotSimpleData;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmSenderSnapshotUntilPoint;
+import com.hktcode.pgstack.ruoshui.upper.consumer.*;
 
 public class PgRecordCreateSlot implements PgRecord
 {
@@ -38,6 +36,18 @@ public class PgRecordCreateSlot implements PgRecord
             throw new ArgumentNullException("thread");
         }
         action.fetchThread = UpcsmSenderSnapshotUntilPoint.of(sender, slotTuple);
+        return null;
+    }
+
+    @Override
+    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmSenderMainline sender)
+    {
+        if (action == null) {
+            throw new ArgumentNullException("action");
+        }
+        if (sender == null) {
+            throw new ArgumentNullException("sender");
+        }
         return null;
     }
 }

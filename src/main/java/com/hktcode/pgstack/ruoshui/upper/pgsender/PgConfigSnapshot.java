@@ -84,21 +84,6 @@ public class PgConfigSnapshot extends PgConfig
     }
 
     @Override
-    public PgRecordPauseWorld pauseWorldMsg()
-    {
-        return PgRecordPauseWorld.of();
-    }
-
-    @Override
-    public PgRecordCreateSlot createSlotMsg(PgReplSlotTuple tuple)
-    {
-        if (tuple == null) {
-            throw new ArgumentNullException("tuple");
-        }
-        return PgRecordCreateSlot.of(tuple);
-    }
-
-    @Override
     public PgAction afterSnapshot(PgActionDataSsFinish action)
     {
         return PgActionDataSsReturn.of(action);

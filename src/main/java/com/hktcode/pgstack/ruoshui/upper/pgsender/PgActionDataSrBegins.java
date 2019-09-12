@@ -85,7 +85,7 @@ class PgActionDataSrBegins extends PgActionDataOfferMsg
         PgReplRelation r = this.curRelation.relationInfo;
         long lsn = this.replSlot.createTuple.consistentPoint;
         LogicalBegRelationMsg msg = LogicalBegRelationMsg.of(r);
-        return this.config.createMessage(lsn, msg);
+        return PgRecordLogicalMsg.of(lsn, msg);
     }
 
     @Override
