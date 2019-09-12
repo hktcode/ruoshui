@@ -13,7 +13,7 @@ import com.hktcode.bgsimple.method.SimpleMethodPstParamsDefault;
 import com.hktcode.bgsimple.status.SimpleStatusOuterDel;
 import com.hktcode.bgsimple.status.SimpleStatusOuterPst;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpperMethodPstParamsRecvLsn;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmParamsPstRecvLsn;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -95,7 +95,7 @@ public class UpperKafkaProducerCallback implements Callback
             else if (this.lsn.asLong() != LogSequenceNumber.INVALID_LSN.asLong()) {
                 logger.info("kafka producer send record success: lsn={}", this.lsn);
                 SimpleMethodPst[] method = new SimpleMethodPst[3];
-                method[0] = UpperMethodPstParamsRecvLsn.of(this.lsn);
+                method[0] = UpcsmParamsPstRecvLsn.of(this.lsn);
                 method[1] = SimpleMethodPstParamsDefault.of();
                 method[2] = SimpleMethodPstParamsDefault.of();
                 Phaser phaser = new Phaser(4);

@@ -6,5 +6,9 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 public interface PgMetricEnd extends PgMetric
 {
-    PgMetricErr toErrMetrics(Throwable throwerr);
+    @Override
+    default PgMetricEnd toEndMetrics()
+    {
+        return this;
+    }
 }

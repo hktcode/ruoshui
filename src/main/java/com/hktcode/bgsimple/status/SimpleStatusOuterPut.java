@@ -5,7 +5,6 @@
 package com.hktcode.bgsimple.status;
 
 import com.hktcode.bgsimple.BgWorker;
-import com.hktcode.bgsimple.SimpleWorker;
 import com.hktcode.bgsimple.method.SimpleMethodPut;
 import com.hktcode.lang.exception.ArgumentNullException;
 

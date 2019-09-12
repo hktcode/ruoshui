@@ -13,7 +13,7 @@ import com.hktcode.bgsimple.future.SimpleFuturePut;
 import com.hktcode.bgsimple.method.*;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpperSnapshotPstParams;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmParamsPstSnapshot;
 import com.hktcode.pgstack.ruoshui.upper.consumer.Upcsm;
 import com.hktcode.pgstack.ruoshui.upper.junction.Upjct;
 import com.hktcode.pgstack.ruoshui.upper.producer.Uppdc;
@@ -114,7 +114,7 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
             throw new ArgumentNullException("json");
         }
         SimpleMethodPst[] method = new SimpleMethodPst[] {
-            UpperSnapshotPstParams.of(json),
+            UpcsmParamsPstSnapshot.of(json),
             SimpleMethodPstParamsDefault.of(),
             SimpleMethodPstParamsDefault.of()
         };

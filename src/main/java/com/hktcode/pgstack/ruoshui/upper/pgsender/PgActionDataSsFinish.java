@@ -65,10 +65,4 @@ class PgActionDataSsFinish extends PgActionDataSnapshot
     {
         return PgMetricRunSsFinish.of(this);
     }
-
-    @Override
-    public PgMetricEndSsFinish toEndMetrics()
-    {
-        return PgMetricEndSsFinish.of(this);
-    }
 }

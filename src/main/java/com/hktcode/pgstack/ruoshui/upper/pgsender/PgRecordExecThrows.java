@@ -5,39 +5,44 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
-import com.hktcode.pgstack.ruoshui.upper.consumer.FetchThreadThrowsErrorException;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmActionRun;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmSenderMainline;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmSenderSnapshot;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.hktcode.pgstack.ruoshui.upper.consumer.*;
 
 public class PgRecordExecThrows implements PgRecord
 {
-    public static PgRecordExecThrows of(Throwable throwable)
+    public static PgRecordExecThrows of(PgResultErr result)
     {
-        if (throwable == null) {
-            throw new ArgumentNullException("throwable");
+        if (result == null) {
+            throw new ArgumentNullException("result");
         }
-        return new PgRecordExecThrows(throwable);
+        return new PgRecordExecThrows(result);
     }
 
-    public final Throwable throwable;
-
-    private static final Logger logger = LoggerFactory.getLogger(PgRecordExecThrows.class);
+    public final PgResultErr result;
 
     @Override
-    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmSenderSnapshot thread)
+    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmSenderSnapshotSimpleData sender)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        if (thread == null) {
-            throw new ArgumentNullException("fetch");
+        if (sender == null) {
+            throw new ArgumentNullException("sender");
         }
-        logger.error("throws exception: ", throwable);
-        action.fetchThread = thread.mlxact;
+        sender.mlxact.sslist.add(this.result);
+        action.fetchThread = sender.mlxact;
         return null;
+    }
+
+    @Override
+    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmSenderSnapshotUntilPoint sender)
+    {
+        if (action == null) {
+            throw new ArgumentNullException("action");
+        }
+        if (sender == null) {
+            throw new ArgumentNullException("sender");
+        }
+        throw new FetchThreadThrowsErrorException();
     }
 
     @Override
@@ -52,8 +57,8 @@ public class PgRecordExecThrows implements PgRecord
         throw new FetchThreadThrowsErrorException();
     }
 
-    private PgRecordExecThrows(Throwable throwable)
+    private PgRecordExecThrows(PgResultErr result)
     {
-        this.throwable = throwable;
+        this.result = result;
     }
 }

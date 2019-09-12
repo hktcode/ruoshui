@@ -26,10 +26,4 @@ class PgActionReplTxactionStraight extends PgActionReplTxaction
     {
         return PgMetricRunTxactionStraight.of(this);
     }
-
-    @Override
-    public PgMetricEndTxactionStraight toEndMetrics()
-    {
-        return PgMetricEndTxactionStraight.of(this);
-    }
 }

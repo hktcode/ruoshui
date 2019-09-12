@@ -4,6 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.google.common.collect.ImmutableMap;
@@ -19,13 +20,32 @@ import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 import org.postgresql.jdbc.PgConnection;
 
 import javax.script.ScriptException;
-import java.sql.*;
-import java.util.concurrent.Callable;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class PgConfig extends TqueueConfig
 {
+    public static ImmutableMap<PgReplRelationName, String> toTupleSelect(JsonNode node)
+    {
+        if (node == null) {
+            throw new ArgumentNullException("node");
+        }
+        Map<PgReplRelationName, String> map = new HashMap<>();
+        Iterator<Map.Entry<String, JsonNode>> it = node.fields();
+        while (it.hasNext()) {
+            Map.Entry<String, JsonNode> e = it.next();
+            PgReplRelationName relationName = PgReplRelationName.ofTextString(e.getKey());
+            map.put(relationName, e.getValue().asText());
+        }
+        return ImmutableMap.copyOf(map);
+    }
     /**
      * 默认的{@link ResultSet#setFetchSize(int)}值.
      */
@@ -287,10 +307,7 @@ public abstract class PgConfig extends TqueueConfig
         this.getSnapshot = getSnapshot;
     }
 
-    public PgAction afterSnapshot(PgActionDataSsFinish action)
-    {
-        return PgActionTerminateEnd.of(action);
-    }
+    public abstract PgAction afterSnapshot(PgActionDataSsFinish action);
 
     public PgRecordLogicalMsg createMessage(long lsn, LogicalMsg msg)
     {

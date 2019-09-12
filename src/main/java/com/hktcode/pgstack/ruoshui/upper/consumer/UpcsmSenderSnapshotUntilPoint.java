@@ -4,11 +4,13 @@
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgjdbc.LogicalTxactBeginsMsg;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 public class UpcsmSenderSnapshotUntilPoint extends UpcsmSenderSnapshot
 {
@@ -29,7 +31,7 @@ public class UpcsmSenderSnapshotUntilPoint extends UpcsmSenderSnapshot
         return new UpcsmSenderSnapshotUntilPoint(snapshot, slttuple);
     }
 
-    private final PgReplSlotTuple slot;
+    public final PgReplSlotTuple slot;
 
     private UpcsmSenderSnapshotUntilPoint //
         /* */( UpcsmSenderSnapshot snapshot //
@@ -44,25 +46,10 @@ public class UpcsmSenderSnapshotUntilPoint extends UpcsmSenderSnapshot
     public UpperRecordConsumer poll(long timeout, UpcsmActionRun action) //
         throws InterruptedException
     {
-        UpperRecordConsumer record = mlxact.poll(timeout, action);
+        PgRecord record = mlxact.tqueue.poll(timeout, TimeUnit.MILLISECONDS);
         if (record != null) {
-            if (record.msg instanceof LogicalTxactBeginsMsg) {
-                LogicalTxactBeginsMsg beginsMsg = (LogicalTxactBeginsMsg)record.msg;
-                if (Long.compareUnsigned(beginsMsg.lsnofcmt, slot.consistentPoint) > 0) {
-                    action.fetchThread = UpcsmSenderSnapshotSelectData.of(this, record);
-                    return null;
-                }
-            }
-            return record;
+            return record.toRecord(action, this);
         }
-        else if (thread.isAlive()) {
-            return null;
-        }
-        else {
-            logger.error("snapshot post is not alive."); // TODO:
-            // TODO: mlxact.sslist.add();
-            action.fetchThread = mlxact;
-            return null;
-        }
+        return super.pollDefaultRecord(action);
     }
 }

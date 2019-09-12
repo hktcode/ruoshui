@@ -5,14 +5,11 @@
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.google.common.collect.ImmutableList;
-import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalBegRelationMsg;
 import com.hktcode.pgjdbc.PgReplRelation;
-import org.postgresql.jdbc.PgConnection;
 
 import java.util.Iterator;
-import java.util.concurrent.ExecutorService;
 
 class PgActionDataSrBegins extends PgActionDataOfferMsg
 {
@@ -42,11 +39,11 @@ class PgActionDataSrBegins extends PgActionDataOfferMsg
 
     public final PgReportSsBegins ssbegins;
 
-    public final ImmutableList<PgsqlRelationMetric> relationLst;
+    public final ImmutableList<PgStructRelainfo> relationLst;
 
-    final Iterator<PgsqlRelationMetric> relIterator;
+    final Iterator<PgStructRelainfo> relIterator;
 
-    final PgsqlRelationMetric curRelation;
+    final PgStructRelainfo curRelation;
 
     private PgActionDataSrBegins(PgActionDataSsBegins action)
     {
@@ -101,11 +98,5 @@ class PgActionDataSrBegins extends PgActionDataOfferMsg
     public PgMetricRunTupleval toRunMetrics()
     {
         return PgMetricRunTupleval.of(this);
-    }
-
-    @Override
-    public PgMetricEndTupleval toEndMetrics()
-    {
-        return PgMetricEndTupleval.of(this);
     }
 }

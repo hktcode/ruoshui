@@ -5,46 +5,46 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.SimpleHolder;
-import com.hktcode.bgsimple.future.SimpleFutureDel;
-import com.hktcode.bgsimple.future.SimpleFutureGet;
-import com.hktcode.bgsimple.future.SimpleFuturePst;
-import com.hktcode.bgsimple.future.SimpleFuturePut;
+import com.hktcode.bgsimple.future.*;
 import com.hktcode.bgsimple.method.*;
-import com.hktcode.bgsimple.status.SimpleStatus;
-import com.hktcode.bgsimple.status.SimpleStatusOuterDel;
-import com.hktcode.bgsimple.status.SimpleStatusOuterGet;
-import com.hktcode.bgsimple.status.SimpleStatusOuterPst;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.PgRecord;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.PgResult;
+import com.hktcode.bgsimple.status.*;
+import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.*;
 import org.postgresql.replication.LogSequenceNumber;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Phaser;
-import java.util.concurrent.TransferQueue;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.TimeUnit;
 
 public abstract class UpcsmSenderSnapshot extends UpcsmSender
 {
+    private static final Logger logger = LoggerFactory.getLogger(UpcsmSenderSnapshot.class);
+
     public final UpcsmSenderMainline mlxact;
 
-    protected final TransferQueue<PgRecord> tqueue;
+    public final UpperRecordConsumer record;
 
-    protected UpcsmSenderSnapshot(UpcsmSenderSnapshot thread)
+    protected UpcsmSenderSnapshot(UpcsmSenderSnapshot sender, UpperRecordConsumer record)
     {
-        super(thread.thread, thread.status);
-        this.mlxact = thread.mlxact;
-        this.tqueue = thread.tqueue;
+        super(sender);
+        this.mlxact = sender.mlxact;
+        this.record = record;
     }
 
-    protected UpcsmSenderSnapshot
-        /* */( UpcsmSenderMainline mlxact
-        /* */, Thread thread
-        /* */, TransferQueue<PgRecord> tqueue
-        /* */, AtomicReference<SimpleStatus> status
-        /* */)
+    protected UpcsmSenderSnapshot(UpcsmSenderSnapshot sender)
     {
-        super(thread, status);
+        super(sender);
+        this.mlxact = sender.mlxact;
+        this.record = null;
+    }
+
+    protected UpcsmSenderSnapshot(UpcsmSenderMainline mlxact, PgConfig config)
+    {
+        super(config);
         this.mlxact = mlxact;
-        this.tqueue = tqueue;
+        this.record = null;
     }
 
     @Override
@@ -54,13 +54,7 @@ public abstract class UpcsmSenderSnapshot extends UpcsmSender
         SimpleFuturePut future = holder.put();
         thread.start();
         UpcsmReportSender ml = this.mlxact.get();
-        PgResult snapshot = (PgResult)future.get().get(0);
-        ImmutableList<PgResult> list = ImmutableList
-            .<PgResult>builder() //
-            .addAll(ml.snapshot) //
-            .add(snapshot) //
-            .build();
-        return UpcsmReportSender.of(ml.mainline, list);
+        return this.build(ml, future);
     }
 
     @Override
@@ -74,13 +68,7 @@ public abstract class UpcsmSenderSnapshot extends UpcsmSender
         SimpleStatusOuterGet get = SimpleStatusOuterGet.of(params, phaser);
         SimpleFutureGet future = holder.get(get);
         UpcsmReportSender ml = this.mlxact.get();
-        PgResult snapshot = (PgResult)future.get().get(0);
-        ImmutableList<PgResult> list = ImmutableList
-            .<PgResult>builder() //
-            .addAll(ml.snapshot) //
-            .add(snapshot) //
-            .build();
-        return UpcsmReportSender.of(ml.mainline, list);
+        return this.build(ml, future);
     }
 
     @Override
@@ -94,6 +82,27 @@ public abstract class UpcsmSenderSnapshot extends UpcsmSender
         SimpleStatusOuterDel del = SimpleStatusOuterDel.of(params, phaser);
         SimpleFutureDel future = holder.del(del);
         UpcsmReportSender ml = this.mlxact.del();
+        return this.build(ml, future);
+    }
+
+    @Override
+    public UpcsmReportSender pst(LogSequenceNumber lsn) //
+        throws InterruptedException
+    {
+        SimpleHolder holder = SimpleHolder.of(status);
+        SimpleMethodPst[] params = new SimpleMethodPst[] {
+            UpcsmParamsPstRecvLsn.of(lsn)
+        };
+        Phaser phaser = new Phaser(2);
+        SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(params, phaser);
+        SimpleFuturePst future = holder.pst(pst);
+        UpcsmReportSender ml = this.mlxact.pst(lsn);
+        return this.build(ml, future);
+    }
+
+    private UpcsmReportSender build(UpcsmReportSender ml, SimpleFuture future)
+        throws InterruptedException
+    {
         PgResult snapshot = (PgResult)future.get().get(0);
         ImmutableList<PgResult> list = ImmutableList
             .<PgResult>builder() //
@@ -103,24 +112,23 @@ public abstract class UpcsmSenderSnapshot extends UpcsmSender
         return UpcsmReportSender.of(ml.mainline, list);
     }
 
-    @Override
-    public UpcsmReportSender pst(LogSequenceNumber lsn) //
-        throws InterruptedException
+    UpperRecordConsumer pollDefaultRecord(UpcsmActionRun action)
     {
-        SimpleHolder holder = SimpleHolder.of(status);
-        SimpleMethodPst[] params = new SimpleMethodPst[] {
-            UpperMethodPstParamsRecvLsn.of(lsn)
-        };
-        Phaser phaser = new Phaser(2);
-        SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(params, phaser);
-        SimpleFuturePst future = holder.pst(pst);
-        UpcsmReportSender ml = this.mlxact.pst(lsn);
-        PgResult snapshot = (PgResult)future.get().get(0);
-        ImmutableList<PgResult> list = ImmutableList
-            .<PgResult>builder() //
-            .addAll(ml.snapshot) //
-            .add(snapshot) //
-            .build();
-        return UpcsmReportSender.of(ml.mainline, list);
+        if (thread.isAlive()) {
+            return null;
+        }
+        logger.error("snapshot post is not alive.");
+        action.fetchThread = mlxact;
+        SimpleStatus status = this.status.get();
+        PgResult pgResult;
+        if (status instanceof SimpleStatusInnerEnd) {
+            SimpleStatusInnerEnd end = (SimpleStatusInnerEnd)status;
+            pgResult = (PgResult) end.result.get(0);
+        }
+        else {
+            pgResult = PgResultUnk.of(this.config);
+        }
+        mlxact.sslist.add(pgResult);
+        return this.record;
     }
 }

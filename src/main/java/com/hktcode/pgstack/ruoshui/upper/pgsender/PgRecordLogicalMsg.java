@@ -5,10 +5,9 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
+import com.hktcode.pgjdbc.LogicalTxactBeginsMsg;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmActionRun;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmSenderMainline;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmSenderSnapshot;
+import com.hktcode.pgstack.ruoshui.upper.consumer.*;
 
 public class PgRecordLogicalMsg implements PgRecord
 {
@@ -31,7 +30,29 @@ public class PgRecordLogicalMsg implements PgRecord
     }
 
     @Override
-    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmSenderSnapshot thread)
+    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmSenderSnapshotUntilPoint sender)
+    {
+        if (action == null) {
+            throw new ArgumentNullException("action");
+        }
+        if (sender == null) {
+            throw new ArgumentNullException("sender");
+        }
+        UpperRecordConsumer result = UpperRecordConsumer.of(lsn, msg);
+        if (!(this.msg instanceof LogicalTxactBeginsMsg)) {
+            return result;
+        }
+        LogicalTxactBeginsMsg beginsMsg = (LogicalTxactBeginsMsg)this.msg;
+        long consistentPoint = sender.slot.consistentPoint;
+        if (Long.compareUnsigned(beginsMsg.lsnofcmt, consistentPoint) > 0) {
+            action.fetchThread = UpcsmSenderSnapshotSimpleData.of(sender, result);
+            return null;
+        }
+        return result;
+    }
+
+    @Override
+    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmSenderSnapshotSimpleData thread)
     {
         if (action == null) {
             throw new ArgumentNullException("action");

@@ -7,6 +7,7 @@ package com.hktcode.bgsimple.future;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.method.*;
 import com.hktcode.bgsimple.status.*;
+import com.hktcode.lang.exception.NeverHappenAssertionError;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.Future;
@@ -59,8 +60,7 @@ public abstract class SimpleFuture<S extends SimpleStatusOuter>
             return ImmutableList.copyOf(result);
         }
         else if (future == origin) {
-            // TODO 不可能发生.
-            throw new RuntimeException("should never happen");
+            throw new NeverHappenAssertionError();
         }
         else if (this.status.compareAndSet(origin, future)) {
             phaser.arriveAndDeregister();

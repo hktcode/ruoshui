@@ -32,7 +32,7 @@ class PgActionDataRelaLock extends PgActionData
 
     public final PgReportRelaList relalist;
 
-    public final ImmutableList<PgsqlRelationMetric> relationLst;
+    public final ImmutableList<PgStructRelainfo> relationLst;
 
     private PgActionDataRelaLock(PgActionDataRelaList action)
     {
@@ -56,8 +56,8 @@ class PgActionDataRelaLock extends PgActionData
             throw new ArgumentNullException("pgrepl");
         }
         try (Statement s = pgdata.createStatement()) {
-            Iterator<PgsqlRelationMetric> iter = this.relationLst.iterator();
-            PgsqlRelationMetric relation = null;
+            Iterator<PgStructRelainfo> iter = this.relationLst.iterator();
+            PgStructRelainfo relation = null;
             Boolean success = null;
             long starts = System.currentTimeMillis();
             Future<Boolean> executeFuture = null;
@@ -96,11 +96,5 @@ class PgActionDataRelaLock extends PgActionData
     public PgMetricRunRelaLock toRunMetrics()
     {
         return PgMetricRunRelaLock.of(this);
-    }
-
-    @Override
-    public PgMetricEndRelaLock toEndMetrics()
-    {
-        return PgMetricEndRelaLock.of(this);
     }
 }

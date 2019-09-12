@@ -8,6 +8,7 @@ import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmActionRun;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmSenderSnapshot;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmSenderSnapshotSimpleData;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmSenderSnapshotUntilPoint;
 
 public class PgRecordCreateSlot implements PgRecord
@@ -28,15 +29,15 @@ public class PgRecordCreateSlot implements PgRecord
     }
 
     @Override
-    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmSenderSnapshot thread)
+    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmSenderSnapshotSimpleData sender)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        if (thread == null) {
+        if (sender == null) {
             throw new ArgumentNullException("thread");
         }
-        action.fetchThread = UpcsmSenderSnapshotUntilPoint.of(thread, slotTuple);
+        action.fetchThread = UpcsmSenderSnapshotUntilPoint.of(sender, slotTuple);
         return null;
     }
 }

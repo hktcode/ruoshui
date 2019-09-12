@@ -14,11 +14,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingMessage;
 import com.hktcode.jackson.exception.JsonFormatException;
-import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.jackson.exception.JsonFormatEOFException;
 import com.hktcode.jackson.exception.JsonSchemaValidationException;
 import com.hktcode.jackson.exception.JsonSchemaValidationImplException;
 import com.hktcode.jackson.exception.JsonSchemaValidationProcessingException;
+import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -111,19 +110,7 @@ public class JacksonExceptionHandler
         if (req == null) {
             throw new ArgumentNullException("req");
         }
-        logger.info("parse body to json failure: uri={}", req.getRequestURI(), ex);
-
-        ObjectNode entity = new ObjectNode(JsonNodeFactory.instance);
-        entity.put(MESSAGE_FIELD_NAME, ex.getOriginalMessage());
-        JsonLocation location = ex.getLocation();
-        putLocation(entity, location);
-        if (ex instanceof JsonFormatEOFException) {
-            JsonToken token = ((JsonFormatEOFException) ex).getTokenBeingDecoded();
-            if (token != null) {
-                entity.put("token_being_decoded", token.name());
-            }
-        }
-        return ResponseEntity.badRequest().body(entity);
+        return this.jsonProcessingExceptionHandler(ex.getCause(), req);
     }
 
     /**

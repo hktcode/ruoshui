@@ -6,6 +6,7 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.bgsimple.status.SimpleStatus;
+import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.bgsimple.tqueue.TqueueAction;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.replication.LogSequenceNumber;
@@ -18,7 +19,7 @@ public abstract class PgAction //
     implements BgWorker<PgAction> //
 {
     protected PgAction //
-        /* */(PgConfig config //
+        /* */( PgConfig config //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */, AtomicReference<SimpleStatus> status //
         /* */)
@@ -60,13 +61,25 @@ public abstract class PgAction //
         return this.get();
     }
 
-    public PgActionThrowsErrors next(Throwable throwsError)
+    public PgActionThrowsErrors next(Throwable throwsError) throws InterruptedException
     {
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
         }
-        return PgActionThrowsErrors.of(this, throwsError);
+        PgActionThrowsErrors action = PgActionThrowsErrors.of(this, throwsError);
+        PgRecord record = PgRecordExecThrows.of(action.del());
+        while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
+            if ((record = this.send(record)) == null) {
+                return action;
+            }
+        }
+        return action;
     }
 
-    public abstract PgMetricEnd toEndMetrics();
+    public PgActionTerminateEnd next() throws InterruptedException
+    {
+        return PgActionTerminateEnd.of(this);
+    }
+
+    public abstract PgMetric toMetrics();
 }

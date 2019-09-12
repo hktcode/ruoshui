@@ -6,7 +6,6 @@ package com.hktcode.bgsimple.status;
 
 import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.bgsimple.method.SimpleMethodDel;
-import com.hktcode.bgsimple.SimpleWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.util.concurrent.Phaser;

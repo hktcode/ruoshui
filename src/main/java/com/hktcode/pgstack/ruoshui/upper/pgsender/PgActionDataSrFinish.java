@@ -30,11 +30,11 @@ class PgActionDataSrFinish extends PgActionDataOfferMsg
 
     public final PgReportSsBegins ssbegins;
 
-    public final ImmutableList<PgsqlRelationMetric> relationLst;
+    public final ImmutableList<PgStructRelainfo> relationLst;
 
-    final Iterator<PgsqlRelationMetric> relIterator;
+    final Iterator<PgStructRelainfo> relIterator;
 
-    final PgsqlRelationMetric curRelation;
+    final PgStructRelainfo curRelation;
 
     private PgActionDataSrFinish(PgActionDataTupleval action) //
     {
@@ -80,11 +80,5 @@ class PgActionDataSrFinish extends PgActionDataOfferMsg
     public PgMetricRunTupleval toRunMetrics()
     {
         return PgMetricRunTupleval.of(this);
-    }
-
-    @Override
-    public PgMetricEndTupleval toEndMetrics()
-    {
-        return PgMetricEndTupleval.of(this);
     }
 }

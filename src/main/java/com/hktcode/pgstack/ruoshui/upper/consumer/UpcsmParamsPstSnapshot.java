@@ -10,21 +10,16 @@ import com.hktcode.bgsimple.method.SimpleMethodPstResult;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplRelationName;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.PgFilter;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.PgFilterDefault;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.PgFilterScript;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.PgConfigMainline;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.PgLockMode;
-import com.hktcode.pgstack.ruoshui.upper.pgsender.PgConfigSnapshot;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.*;
 
 import javax.script.ScriptException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class UpperSnapshotPstParams implements SimpleMethodPstParams<UpcsmAction>
+public class UpcsmParamsPstSnapshot implements SimpleMethodPstParams<UpcsmAction>
 {
-    public static UpperSnapshotPstParams of(JsonNode json)
+    public static UpcsmParamsPstSnapshot of(JsonNode json)
         throws ScriptException
     {
         if (json == null) {
@@ -32,14 +27,7 @@ public class UpperSnapshotPstParams implements SimpleMethodPstParams<UpcsmAction
         }
 
         JsonNode tupleSelectNode = json.path("tuple_select");
-        Map<PgReplRelationName, String> map = new HashMap<>();
-        Iterator<Map.Entry<String, JsonNode>> it = tupleSelectNode.fields();
-        while (it.hasNext()) {
-            Map.Entry<String, JsonNode> e = it.next();
-            PgReplRelationName relationName = PgReplRelationName.ofTextString(e.getKey());
-            map.put(relationName, e.getValue().asText());
-        }
-        ImmutableMap<PgReplRelationName, String> tupleSelect = ImmutableMap.copyOf(map);
+        ImmutableMap<PgReplRelationName, String> tupleSelect = PgConfig.toTupleSelect(tupleSelectNode);
 
         JsonNode whereScriptNode = json.path("where_script");
         PgFilter whereScript;
@@ -70,7 +58,7 @@ public class UpperSnapshotPstParams implements SimpleMethodPstParams<UpcsmAction
             String key = e.getKey();
             srcMap.put(key, e.getValue().asText());
         }
-        return new UpperSnapshotPstParams
+        return new UpcsmParamsPstSnapshot
             /* */( ImmutableMap.copyOf(srcMap)
             /* */, tupleSelect
             /* */, relationSql
@@ -82,21 +70,21 @@ public class UpperSnapshotPstParams implements SimpleMethodPstParams<UpcsmAction
             /* */);
     }
 
-    public final ImmutableMap<String, String> srcProperty;
+    private final ImmutableMap<String, String> srcProperty;
 
-    public final ImmutableMap<PgReplRelationName, String> tupleSelect;
+    private final ImmutableMap<PgReplRelationName, String> tupleSelect;
 
-    public final String relationSql;
+    private final String relationSql;
 
-    public final PgFilter whereScript;
+    private final PgFilter whereScript;
 
-    public final PgLockMode lockingMode;
+    private final PgLockMode lockingMode;
 
-    public final int rsFetchsize;
+    private final int rsFetchsize;
 
-    public final long waitTimeout;
+    private final long waitTimeout;
 
-    public final long logDuration;
+    private final long logDuration;
 
     @Override
     public SimpleMethodPstResult<UpcsmAction> run(UpcsmAction action)
@@ -108,7 +96,7 @@ public class UpperSnapshotPstParams implements SimpleMethodPstParams<UpcsmAction
         return action.pst(this);
     }
 
-    public PgConfigSnapshot toConfig(PgConfigMainline mainline)
+    PgConfigSnapshot toConfig(PgConfigMainline mainline)
     {
         if (mainline == null) {
             throw new ArgumentNullException("mainline");
@@ -142,7 +130,7 @@ public class UpperSnapshotPstParams implements SimpleMethodPstParams<UpcsmAction
         return result;
     }
 
-    private UpperSnapshotPstParams
+    private UpcsmParamsPstSnapshot
         /* */( ImmutableMap<String, String> srcProperty
         /* */, ImmutableMap<PgReplRelationName, String> tupleSelect
         /* */, String relationSql

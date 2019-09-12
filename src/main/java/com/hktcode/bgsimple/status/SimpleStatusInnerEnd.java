@@ -6,7 +6,6 @@ package com.hktcode.bgsimple.status;
 
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
-import com.hktcode.bgsimple.SimpleWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.util.concurrent.Phaser;

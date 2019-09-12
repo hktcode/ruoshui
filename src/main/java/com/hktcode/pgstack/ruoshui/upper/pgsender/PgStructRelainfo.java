@@ -7,14 +7,14 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.PgReplRelation;
 
-public class PgsqlRelationMetric
+public class PgStructRelainfo
 {
-    public static PgsqlRelationMetric of(PgReplRelation relationInfo)
+    public static PgStructRelainfo of(PgReplRelation relationInfo)
     {
         if (relationInfo == null) {
             throw new ArgumentNullException("relationInfo");
         }
-        return new PgsqlRelationMetric(relationInfo);
+        return new PgStructRelainfo(relationInfo);
     }
 
     public final PgReplRelation relationInfo;
@@ -25,7 +25,7 @@ public class PgsqlRelationMetric
 
     public long tuplevalSize = -1;
 
-    private PgsqlRelationMetric(PgReplRelation relationInfo)
+    private PgStructRelainfo(PgReplRelation relationInfo)
     {
         this.relationInfo = relationInfo;
     }

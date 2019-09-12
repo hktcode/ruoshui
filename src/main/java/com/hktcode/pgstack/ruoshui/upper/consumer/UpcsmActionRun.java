@@ -179,7 +179,7 @@ public class UpcsmActionRun //
     }
 
     @Override
-    public UpcsmResult pst(UpperSnapshotPstParams params) //
+    public UpcsmResult pst(UpcsmParamsPstSnapshot params) //
         throws InterruptedException
     {
         if (params == null) {

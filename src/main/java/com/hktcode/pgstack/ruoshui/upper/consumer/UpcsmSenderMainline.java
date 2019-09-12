@@ -11,7 +11,9 @@ import com.hktcode.bgsimple.future.SimpleFutureGet;
 import com.hktcode.bgsimple.future.SimpleFuturePst;
 import com.hktcode.bgsimple.future.SimpleFuturePut;
 import com.hktcode.bgsimple.method.*;
-import com.hktcode.bgsimple.status.*;
+import com.hktcode.bgsimple.status.SimpleStatusOuterDel;
+import com.hktcode.bgsimple.status.SimpleStatusOuterGet;
+import com.hktcode.bgsimple.status.SimpleStatusOuterPst;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.*;
@@ -19,31 +21,19 @@ import org.postgresql.replication.LogSequenceNumber;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TransferQueue;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class UpcsmSenderMainline extends UpcsmSender
 {
     public final List<PgResult> sslist = new ArrayList<>();
 
-    public final TransferQueue<PgRecord> tqueue;
-
     public static UpcsmSenderMainline of(PgConfigMainline config)
     {
         if (config == null) {
-            throw new ArgumentNullException("thread");
+            throw new ArgumentNullException("config");
         }
-        TransferQueue<PgRecord> tqueue = new LinkedTransferQueue<>();
-        SimpleMethodPut[] put = new SimpleMethodPut[] {
-            SimpleMethodPutParamsDefault.of()
-        };
-        SimpleStatusOuterPut s = SimpleStatusOuterPut.of(put, new Phaser(2));
-        AtomicReference<SimpleStatus> status = new AtomicReference<>(s);
-        Thread thread = new Thread(PgThread.of(config, status, tqueue));
-        return new UpcsmSenderMainline(thread, tqueue, status);
+        return new UpcsmSenderMainline(config);
     }
 
     @Override
@@ -66,14 +56,9 @@ public class UpcsmSenderMainline extends UpcsmSender
         }
     }
 
-    private UpcsmSenderMainline //
-        /* */(Thread thread //
-        /* */, TransferQueue<PgRecord> tqueue //
-        /* */, AtomicReference<SimpleStatus> status //
-        /* */) //
+    private UpcsmSenderMainline(PgConfig config)
     {
-        super(thread, status);
-        this.tqueue = tqueue;
+        super(config);
     }
 
     @Override
@@ -148,13 +133,6 @@ public class UpcsmSenderMainline extends UpcsmSender
         if (!(mainline instanceof PgResultNormalSnapshot)) {
             return this;
         }
-        TransferQueue<PgRecord> q = new LinkedTransferQueue<>();
-        SimpleMethodPut[] put = new SimpleMethodPut[] {
-            SimpleMethodPutParamsDefault.of()
-        };
-        SimpleStatusOuterPut s = SimpleStatusOuterPut.of(put, new Phaser(2));
-        AtomicReference<SimpleStatus> status = new AtomicReference<>(s);
-        Thread thread = new Thread(PgThread.of(config, status, q));
-        return UpcsmSenderSnapshotLockingRel.of(this, thread, q, status);
+        return UpcsmSenderSnapshotSimpleData.of(this, config);
     }
 }

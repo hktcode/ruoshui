@@ -109,10 +109,4 @@ public class PgActionDataRelaList extends PgActionDataQueryRel
     {
         return PgMetricRunRelaList.of(this);
     }
-
-    @Override
-    public PgMetricEndRelaList toEndMetrics()
-    {
-        return PgMetricEndRelaList.of(this);
-    }
 }

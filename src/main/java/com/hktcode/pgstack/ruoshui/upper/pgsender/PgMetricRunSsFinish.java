@@ -16,6 +16,14 @@ public class PgMetricRunSsFinish implements PgMetricRun
         return new PgMetricRunSsFinish(action);
     }
 
+    static PgMetricRunSsFinish of(PgActionDataSsReturn action)
+    {
+        if (action == null) {
+            throw new ArgumentNullException("action");
+        }
+        return new PgMetricRunSsFinish(action);
+    }
+
     private PgMetricRunSsFinish(PgActionDataSsFinish action)
     {
         long finish = System.currentTimeMillis();
@@ -26,6 +34,18 @@ public class PgMetricRunSsFinish implements PgMetricRun
         this.ssbegins = action.ssBegins;
         this.tupleval = action.tupleval;
         this.ssfinish = PgReportSsFinish.of(action, finish);
+    }
+
+    private PgMetricRunSsFinish(PgActionDataSsReturn action)
+    {
+        long finish = System.currentTimeMillis();
+        this.relalist = action.relalist;
+        this.relalock = action.relaLock;
+        this.replslot = action.replSlot;
+        this.sizediff = action.sizeDiff;
+        this.ssbegins = action.ssBegins;
+        this.tupleval = action.tupleval;
+        this.ssfinish = action.ssfinish;
     }
 
     public final PgReportRelaList relalist;

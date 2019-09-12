@@ -13,9 +13,9 @@ import com.hktcode.pgjdbc.PgReplRelationMetadata;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RelationBuilder
+public class PgStructRelation
 {
-    public static RelationBuilder of(long relident, String dbschema, String relation, long replchar)
+    public static PgStructRelation of(long relident, String dbschema, String relation, long replchar)
     {
         if (dbschema == null) {
             throw new ArgumentNullException("dbschema");
@@ -23,22 +23,22 @@ public class RelationBuilder
         if (relation == null) {
             throw new ArgumentNullException("relation");
         }
-        return new RelationBuilder(relident, dbschema, relation, replchar);
+        return new PgStructRelation(relident, dbschema, relation, replchar);
     }
 
     public final PgReplRelationMetadata metadata;
 
     public final List<PgReplAttribute> attrlist;
 
-    private RelationBuilder(long relident, String dbschema, String relation, long replchar)
+    private PgStructRelation(long relident, String dbschema, String relation, long replchar)
     {
         this.metadata = PgReplRelationMetadata.of(relident, dbschema, relation, replchar);
         this.attrlist = new ArrayList<>();
     }
 
-    public PgsqlRelationMetric builder()
+    public PgStructRelainfo builder()
     {
         PgReplRelation relation = PgReplRelation.of(this.metadata, ImmutableList.copyOf(this.attrlist));
-        return PgsqlRelationMetric.of(relation);
+        return PgStructRelainfo.of(relation);
     }
 }

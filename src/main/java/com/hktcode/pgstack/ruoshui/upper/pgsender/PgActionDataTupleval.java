@@ -14,7 +14,6 @@ import com.hktcode.pgjdbc.*;
 import org.postgresql.jdbc.PgConnection;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -41,11 +40,11 @@ class PgActionDataTupleval extends PgActionDataQuerySql
 
     public final PgReportSsBegins ssbegins;
 
-    public final ImmutableList<PgsqlRelationMetric> relationLst;
+    public final ImmutableList<PgStructRelainfo> relationLst;
 
-    final Iterator<PgsqlRelationMetric> relIterator;
+    final Iterator<PgStructRelainfo> relIterator;
 
-    final PgsqlRelationMetric curRelation;
+    final PgStructRelainfo curRelation;
 
     private PgActionDataTupleval(PgActionDataSrBegins action) //
     {
@@ -103,11 +102,5 @@ class PgActionDataTupleval extends PgActionDataQuerySql
     public PgMetricRunTupleval toRunMetrics()
     {
         return PgMetricRunTupleval.of(this);
-    }
-
-    @Override
-    public PgMetricEndTupleval toEndMetrics()
-    {
-        return PgMetricEndTupleval.of(this);
     }
 }

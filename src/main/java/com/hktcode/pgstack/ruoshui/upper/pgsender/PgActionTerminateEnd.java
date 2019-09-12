@@ -21,11 +21,17 @@ public class PgActionTerminateEnd extends PgAction
     private PgActionTerminateEnd(PgAction action)
     {
         super(action.config, action.tqueue, action.status);
-        this.metric = action.toEndMetrics();
+        this.metric = action.toMetrics().toEndMetrics();
     }
 
     @Override
-    public PgMetricEnd toEndMetrics()
+    public PgActionTerminateEnd next()
+    {
+        return this;
+    }
+
+    @Override
+    public PgMetric toMetrics()
     {
         return this.metric;
     }

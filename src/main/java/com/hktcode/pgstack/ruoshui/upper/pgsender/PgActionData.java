@@ -100,6 +100,11 @@ public abstract class PgActionData extends PgAction
 
     public abstract PgMetricRun toRunMetrics();
 
+    public PgMetric toMetrics()
+    {
+        return this.toRunMetrics();
+    }
+
     @Override
     public PgResult get()
     {
@@ -109,6 +114,6 @@ public abstract class PgActionData extends PgAction
     @Override
     public PgResultFinish del()
     {
-        return PgResultFinish.of(this.config, this.toEndMetrics());
+        return PgResultFinish.of(this.config, this.toRunMetrics().toEndMetrics());
     }
 }

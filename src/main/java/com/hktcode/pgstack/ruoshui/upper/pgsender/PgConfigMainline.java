@@ -11,14 +11,9 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.LogicalReplConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplRelationName;
-import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 
 import javax.script.ScriptException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -49,14 +44,7 @@ public class PgConfigMainline extends PgConfig
         JsonNode tupleSelectNode = json.path("tuple_select");
         JsonNode whereScriptNode = json.path("where_script");
         String relationSql = json.path("relation_sql").asText(DEFAULT_RELATION_SQL);
-        Map<PgReplRelationName, String> map = new HashMap<>();
-        Iterator<Map.Entry<String, JsonNode>> it = tupleSelectNode.fields();
-        while (it.hasNext()) {
-            Map.Entry<String, JsonNode> e = it.next();
-            PgReplRelationName relationName = PgReplRelationName.ofTextString(e.getKey());
-            map.put(relationName, e.getValue().asText());
-        }
-        ImmutableMap<PgReplRelationName, String> tupleSelect = ImmutableMap.copyOf(map);
+        ImmutableMap<PgReplRelationName, String> tupleSelect = PgConfig.toTupleSelect(tupleSelectNode);
         PgFilter whereScript;
         if (whereScriptNode.isMissingNode()) {
             whereScript = PgFilterDefault.of();
@@ -66,8 +54,8 @@ public class PgConfigMainline extends PgConfig
         String lockingModeText = json.path("locking_mode").asText("SHARE_UPDATE_EXCLUSIVE");
         PgLockMode lockingMode = PgLockMode.valueOf(lockingModeText);
         boolean getSnapshot = json.path("get_snapshot").asBoolean(true);
-        PgConfigMainline result = PgConfigMainline.of
-            /* */( srcProperty //
+        PgConfigMainline result = new PgConfigMainline
+                /* */( srcProperty //
                 /* */, typelistSql //
                 /* */, relationSql //
                 /* */, whereScript //
@@ -85,43 +73,8 @@ public class PgConfigMainline extends PgConfig
         return result;
     }
 
-    static PgConfigMainline of //
-        /* */(PgConnectionProperty srcProperty //
-        /* */, String typelistSql //
-        /* */, String relationSql //
-        /* */, PgFilter whereScript //
-        /* */, PgLockMode lockingMode //
-        /* */, LogicalReplConfig logicalRepl //
-        /* */, ImmutableMap<PgReplRelationName, String> tupleSelect //
-        /* */, boolean getSnapshot //
-        /* */) //
-    {
-        if (srcProperty == null) {
-            throw new ArgumentNullException("srcProperty");
-        }
-        if (typelistSql == null) {
-            throw new ArgumentNullException("typelistSql");
-        }
-        if (relationSql == null) {
-            throw new ArgumentNullException("relationSql");
-        }
-        if (whereScript == null) {
-            throw new ArgumentNullException("whereScript");
-        }
-        if (lockingMode == null) {
-            throw new ArgumentNullException("lockingMode");
-        }
-        if (logicalRepl == null) {
-            throw new ArgumentNullException("logicalRepl");
-        }
-        if (tupleSelect == null) {
-            throw new ArgumentNullException("tupleSelect");
-        }
-        return new PgConfigMainline(srcProperty, typelistSql, relationSql, whereScript, lockingMode, logicalRepl, tupleSelect, getSnapshot);
-    }
-
     private PgConfigMainline
-        /* */(PgConnectionProperty srcProperty //
+        /* */( PgConnectionProperty srcProperty //
         /* */, String typelistSql //
         /* */, String relationSql //
         /* */, PgFilter whereScript //

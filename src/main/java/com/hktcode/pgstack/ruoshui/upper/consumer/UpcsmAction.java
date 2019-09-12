@@ -40,7 +40,7 @@ public interface UpcsmAction extends BgWorker<UpcsmAction>
         return this.get();
     }
 
-    default UpcsmResult pst(UpperSnapshotPstParams params) //
+    default UpcsmResult pst(UpcsmParamsPstSnapshot params) //
         throws InterruptedException
     {
         if (params == null) {

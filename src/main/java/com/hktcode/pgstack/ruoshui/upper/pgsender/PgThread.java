@@ -4,10 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
-import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.status.SimpleStatus;
-import com.hktcode.bgsimple.status.SimpleStatusInner;
-import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.jdbc.PgConnection;
 import org.slf4j.Logger;
@@ -96,31 +93,18 @@ public class PgThread implements Runnable
             while (action instanceof PgActionRepl) {
                 action = ((PgActionRepl) action).next(pgrepl);
             }
-            SimpleStatusInner o;
-            SimpleStatusInnerEnd f;
-            do {
-                o = action.newStatus(action);
-                f = SimpleStatusInnerEnd.of(ImmutableList.of(action.del()));
-            } while (!this.status.compareAndSet(o, f));
-            logger.info("pgsender completes");
+            logger.info("pgsender complete");
         }
         catch (InterruptedException ex) {
             throw ex;
         }
         catch (Exception ex) {
-            logger.error("pgsender throws exception: ", ex);
+            logger.error("pgsender throwerr: ", ex);
             action = action.next(ex);
-            SimpleStatusInner o;
-            SimpleStatusInnerEnd f;
-            do {
-                o = action.newStatus(action);
-                f = SimpleStatusInnerEnd.of(ImmutableList.of(action.del()));
-            } while (!this.status.compareAndSet(o, f));
-            PgRecord r = PgRecordExecThrows.of(ex);
-            do {
-                r = action.send(r);
-            } while (r != null);
-            logger.info("pgsender terminate");
         }
+        while (!(action instanceof PgActionTerminateEnd)) {
+            action = action.next();
+        }
+        logger.info("pgsender terminate");
     }
 }

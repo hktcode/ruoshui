@@ -21,7 +21,7 @@ abstract class PgActionDataSnapshot extends PgActionDataOfferMsg
 
     public final PgReportSizeDiff sizeDiff;
 
-    final ImmutableList<PgsqlRelationMetric> relationLst;
+    final ImmutableList<PgStructRelainfo> relationLst;
 
     PgActionDataSnapshot(PgActionDataSizeDiff action)
     {
@@ -61,7 +61,7 @@ abstract class PgActionDataSnapshot extends PgActionDataOfferMsg
     {
         long lsn = this.replSlot.createTuple.consistentPoint;
         List<PgReplRelation> list = new ArrayList<>(this.relationLst.size());
-        for(PgsqlRelationMetric m : this.relationLst) {
+        for(PgStructRelainfo m : this.relationLst) {
             list.add(m.relationInfo);
         }
         ImmutableList<PgReplRelation> l = ImmutableList.copyOf(list);

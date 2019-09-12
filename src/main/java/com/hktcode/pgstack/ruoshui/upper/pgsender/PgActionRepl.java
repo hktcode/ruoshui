@@ -28,6 +28,11 @@ abstract class PgActionRepl extends PgAction
 
     public abstract PgMetricRun toRunMetrics();
 
+    public PgMetric toMetrics()
+    {
+        return this.toRunMetrics();
+    }
+
     @Override
     public PgResultNormal get()
     {
@@ -38,7 +43,7 @@ abstract class PgActionRepl extends PgAction
     @Override
     public PgResultFinish del()
     {
-        PgMetricEnd metric = this.toEndMetrics();
+        PgMetricEnd metric = this.toMetrics().toEndMetrics();
         return PgResultFinish.of(this.config, metric);
     }
 }

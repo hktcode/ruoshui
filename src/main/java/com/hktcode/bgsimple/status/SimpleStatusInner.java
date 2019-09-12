@@ -4,8 +4,6 @@
 
 package com.hktcode.bgsimple.status;
 
-import com.hktcode.bgsimple.SimpleWorker;
-
 public interface SimpleStatusInner extends SimpleStatus
 {
 }

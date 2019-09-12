@@ -52,11 +52,5 @@ class PgActionDataTypelistSnapshot extends PgActionDataTypelist
     {
         return PgMetricRunTypelistSnapshot.of(this);
     }
-
-    @Override
-    public PgMetricEndTypelistSnapshot toEndMetrics()
-    {
-        return PgMetricEndTypelistSnapshot.of(this);
-    }
 }
 

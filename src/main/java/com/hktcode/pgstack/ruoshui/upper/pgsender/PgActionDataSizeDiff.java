@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -33,7 +32,7 @@ public class PgActionDataSizeDiff extends PgActionDataQueryRel
 
     public final PgReportReplSlotTuple replSlot;
 
-    final ImmutableList<PgsqlRelationMetric> oldRelalist;
+    final ImmutableList<PgStructRelainfo> oldRelalist;
 
     private PgActionDataSizeDiff(PgActionDataReplSlot action)
     {
@@ -77,11 +76,5 @@ public class PgActionDataSizeDiff extends PgActionDataQueryRel
     public PgMetricRunSizeDiff toRunMetrics()
     {
         return PgMetricRunSizeDiff.of(this);
-    }
-
-    @Override
-    public PgMetricEndSizeDiff toEndMetrics()
-    {
-        return PgMetricEndSizeDiff.of(this);
     }
 }

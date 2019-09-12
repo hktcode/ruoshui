@@ -17,4 +17,10 @@ public interface PgMetricErr extends PgMetricEnd
         }
         return this;
     }
+
+    @Override
+    default PgMetricEnd toEndMetrics()
+    {
+        return this;
+    }
 }

@@ -37,9 +37,9 @@ abstract class PgActionDataQueryRel extends PgActionDataQuerySql
         this.logDatetime = action.logDatetime;
     }
 
-    final List<PgsqlRelationMetric> newRelalist = new ArrayList<>();
+    final List<PgStructRelainfo> newRelalist = new ArrayList<>();
 
-    RelationBuilder[] relaBuilder = new RelationBuilder[0];
+    PgStructRelation[] relaBuilder = new PgStructRelation[0];
 
     @Override
     PgRecord build(ResultSet rs) //
@@ -56,18 +56,18 @@ abstract class PgActionDataQueryRel extends PgActionDataQuerySql
             String dbschema = rs.getString("dbschema");
             String relation = rs.getString("relation");
             long replchar = rs.getLong("replchar");
-            this.relaBuilder = new RelationBuilder[] {
-                RelationBuilder.of(relident, dbschema, relation, replchar)
+            this.relaBuilder = new PgStructRelation[] {
+                PgStructRelation.of(relident, dbschema, relation, replchar)
             };
         } else if (this.relaBuilder[0].metadata.relident != relident) {
-            PgsqlRelationMetric r = this.relaBuilder[0].builder();
+            PgStructRelainfo r = this.relaBuilder[0].builder();
             if (this.config.whereRelalist(r.relationInfo)) {
                 this.newRelalist.add(r);
             }
             String dbschema = rs.getString("dbschema");
             String relation = rs.getString("relation");
             long replchar = rs.getLong("replchar");
-            this.relaBuilder[0] = RelationBuilder.of(relident, dbschema, relation, replchar);
+            this.relaBuilder[0] = PgStructRelation.of(relident, dbschema, relation, replchar);
         }
         PgReplAttribute attr = PgReplAttribute.of //
             /* */( attrname //

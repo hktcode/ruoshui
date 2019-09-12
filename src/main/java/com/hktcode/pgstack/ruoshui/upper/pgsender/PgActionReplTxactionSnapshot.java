@@ -47,11 +47,5 @@ class PgActionReplTxactionSnapshot extends PgActionReplTxaction
     {
         return PgMetricRunTxactionSnapshot.of(this);
     }
-
-    @Override
-    public PgMetricEndTxactionSnapshot toEndMetrics()
-    {
-        return PgMetricEndTxactionSnapshot.of(this);
-    }
 }
 

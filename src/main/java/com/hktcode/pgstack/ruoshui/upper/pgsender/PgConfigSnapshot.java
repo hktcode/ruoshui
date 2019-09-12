@@ -97,4 +97,10 @@ public class PgConfigSnapshot extends PgConfig
         }
         return PgRecordCreateSlot.of(tuple);
     }
+
+    @Override
+    public PgAction afterSnapshot(PgActionDataSsFinish action)
+    {
+        return PgActionDataSsReturn.of(action);
+    }
 }

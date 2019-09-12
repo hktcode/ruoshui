@@ -9,19 +9,19 @@ import com.hktcode.bgsimple.method.SimpleMethodPstResult;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.replication.LogSequenceNumber;
 
-public class UpperMethodPstParamsRecvLsn implements SimpleMethodPst<UpcsmAction>
+public class UpcsmParamsPstRecvLsn implements SimpleMethodPst<UpcsmAction>
 {
-    public static UpperMethodPstParamsRecvLsn of(LogSequenceNumber receiveLsn)
+    public static UpcsmParamsPstRecvLsn of(LogSequenceNumber receiveLsn)
     {
         if (receiveLsn == null) {
             throw new ArgumentNullException("receiveLsn");
         }
-        return new UpperMethodPstParamsRecvLsn(receiveLsn);
+        return new UpcsmParamsPstRecvLsn(receiveLsn);
     }
 
     private final LogSequenceNumber receiveLsn;
 
-    private UpperMethodPstParamsRecvLsn(LogSequenceNumber receiveLsn)
+    private UpcsmParamsPstRecvLsn(LogSequenceNumber receiveLsn)
     {
         this.receiveLsn = receiveLsn;
     }

@@ -31,7 +31,7 @@ class PgActionDataReplSlot extends PgActionDataQuerySql
 
     public final PgReportRelaLock relaLock;
 
-    public final ImmutableList<PgsqlRelationMetric> relationLst;
+    public final ImmutableList<PgStructRelainfo> relationLst;
 
     long sltDuration = 0;
 
@@ -85,11 +85,5 @@ class PgActionDataReplSlot extends PgActionDataQuerySql
     public PgMetricRunReplSlot toRunMetrics()
     {
         return PgMetricRunReplSlot.of(this);
-    }
-
-    @Override
-    public PgMetricEndReplSlot toEndMetrics()
-    {
-        return PgMetricEndReplSlot.of(this);
     }
 }

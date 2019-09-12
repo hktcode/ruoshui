@@ -6,30 +6,39 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.lang.exception.NeverHappenAssertionError;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmActionRun;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmSenderMainline;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmSenderSnapshot;
+import com.hktcode.pgstack.ruoshui.upper.consumer.*;
 
 public interface PgRecord
 {
-    default UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmSenderSnapshot thread)
+    default UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmSenderSnapshotUntilPoint sender)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        if (thread == null) {
-            throw new ArgumentNullException("thread");
+        if (sender == null) {
+            throw new ArgumentNullException("sender");
         }
         throw new NeverHappenAssertionError();
     }
 
-    default UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmSenderMainline thread)
+    default UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmSenderSnapshotSimpleData sender)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        if (thread == null) {
-            throw new ArgumentNullException("thread");
+        if (sender == null) {
+            throw new ArgumentNullException("sender");
+        }
+        throw new NeverHappenAssertionError();
+    }
+
+    default UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmSenderMainline sender)
+    {
+        if (action == null) {
+            throw new ArgumentNullException("action");
+        }
+        if (sender == null) {
+            throw new ArgumentNullException("sender");
         }
         throw new NeverHappenAssertionError();
     }

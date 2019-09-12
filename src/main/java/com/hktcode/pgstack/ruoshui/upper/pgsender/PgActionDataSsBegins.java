@@ -22,7 +22,7 @@ class PgActionDataSsBegins extends PgActionDataSnapshot
         return new PgActionDataSsBegins(action);
     }
 
-    final Iterator<PgsqlRelationMetric> relIterator;
+    final Iterator<PgStructRelainfo> relIterator;
 
     private PgActionDataSsBegins(PgActionDataSizeDiff action)
     {
@@ -52,11 +52,5 @@ class PgActionDataSsBegins extends PgActionDataSnapshot
     public PgMetricRunSsbegins toRunMetrics()
     {
         return PgMetricRunSsbegins.of(this);
-    }
-
-    @Override
-    public PgMetricEndSsbegins toEndMetrics()
-    {
-        return PgMetricEndSsbegins.of(this);
     }
 }
