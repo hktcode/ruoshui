@@ -11,9 +11,11 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.*;
+import com.hktcode.pgstack.ruoshui.pgsql.PgReplRelationName;
 import org.postgresql.jdbc.PgConnection;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -95,8 +97,37 @@ class PgActionDataTupleval extends PgActionDataQuerySql
         throws SQLException
     {
         PgReplRelation r = this.curRelation.relationInfo;
-        return PgDeputeSelectData.of(this.config.queryTupleval(pgdata, r));
+        PgReplRelationName name = PgReplRelationName.of(r.dbschema, r.relation);
+        String sql = this.config.tupleSelect.get(name);
+        if (sql == null) {
+            sql = buildSelect(pgdata, r);
+        }
+        PreparedStatement ps = this.preparedStatement(pgdata, sql);
+        return PgDeputeSelectData.of(ps);
     }
+
+    private static String buildSelect(PgConnection c, PgReplRelation r) //
+        throws SQLException
+    {
+        StringBuilder sb = new StringBuilder("\nSELECT ");
+        String n = c.escapeIdentifier(r.attrlist.get(0).attrname);
+        sb.append(n);
+        sb.append("::text as ");
+        sb.append(n);
+        for(int i = 1; i < r.attrlist.size(); ++i) {
+            sb.append("\n     , ");
+            n = c.escapeIdentifier(r.attrlist.get(i).attrname);
+            sb.append(n);
+            sb.append("::text as ");
+            sb.append(n);
+        }
+        sb.append("\nFROM ");
+        sb.append(c.escapeIdentifier(r.dbschema));
+        sb.append(".");
+        sb.append(c.escapeIdentifier(r.relation));
+        return sb.toString();
+    }
+
 
     @Override
     public PgMetricRunTupleval toRunMetrics()

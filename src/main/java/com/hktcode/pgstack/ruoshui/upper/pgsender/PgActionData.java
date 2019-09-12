@@ -5,12 +5,15 @@
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.bgsimple.status.SimpleStatus;
+import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.lang.exception.NeverHappenAssertionError;
 import org.postgresql.jdbc.PgConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.script.ScriptException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -95,6 +98,32 @@ public abstract class PgActionData extends PgAction
             else {
                 throw new NeverHappenAssertionError(cause);
             }
+        }
+    }
+
+    PreparedStatement preparedStatement(PgConnection pg, String sql) //
+        throws SQLException
+    {
+        if (pg == null) {
+            throw new ArgumentNullException("pg");
+        }
+        if (sql == null) {
+            throw new ArgumentNullException("sql");
+        }
+        PreparedStatement ps = pg.prepareStatement //
+            /* */( sql //
+                /* */, ResultSet.TYPE_FORWARD_ONLY //
+                /* */, ResultSet.CONCUR_READ_ONLY //
+                /* */, ResultSet.CLOSE_CURSORS_AT_COMMIT //
+                /* */);
+        try {
+            ps.setFetchDirection(ResultSet.FETCH_FORWARD);
+            ps.setFetchSize(this.config.rsFetchsize);
+            return ps;
+        }
+        catch (Exception ex) {
+            ps.close();
+            throw ex;
         }
     }
 

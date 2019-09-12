@@ -78,7 +78,10 @@ class PgActionDataRelaLock extends PgActionData
                 }
                 else if (iter.hasNext()) {
                     relation = iter.next();
-                    String sql = this.config.lockStatement(relation.relationInfo, pgdata);
+                    PgLockMode lock = this.config.lockingMode;
+                    String dbschema = relation.relationInfo.dbschema;
+                    String relaname = relation.relationInfo.relation;
+                    String sql = lock.lockStatement(pgdata, dbschema, relaname);
                     logger.info("lock relation: sql={}", sql);
                     Callable<Boolean> callable = DeputeLockRelationMainline.of(s, sql);
                     starts = System.currentTimeMillis();

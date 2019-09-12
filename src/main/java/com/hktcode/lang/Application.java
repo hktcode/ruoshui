@@ -5,6 +5,10 @@ package com.hktcode.lang;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 /**
  * 应用程序帮助类.
  */
@@ -39,6 +43,41 @@ public class Application
             System.exit(-1);
         }
         return home;
+    }
+
+    /**
+     * Reads given resource file as a string.
+     *
+     * modify from
+     * https://stackoverflow.com/questions/6068197/utils-to-read-resource-text-file-to-string-java
+     *
+     * @param name path to the resource file
+     * @return the file's contents
+     * @throws UncheckedIOException if read fails for any reason
+     */
+    public static String getResourceFileAsString(String name) //
+    {
+        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        try (InputStream is = classLoader.getResourceAsStream(name)) {
+            if (is == null) {
+                throw new RuntimeException();
+            }
+            StringBuilder builder = new StringBuilder();
+            Charset utf8 = StandardCharsets.UTF_8;
+            try (InputStreamReader isr = new InputStreamReader(is, utf8);
+                 BufferedReader reader = new BufferedReader(isr)) {
+                int length = 1024;
+                char[] buffer = new char[length];
+                int readlength;
+                while ((readlength = reader.read(buffer)) != -1) {
+                    builder.append(buffer, 0, readlength);
+                }
+                return builder.toString();
+            }
+        }
+        catch (IOException ex) {
+            throw new UncheckedIOException(ex);
+        }
     }
 
     /**

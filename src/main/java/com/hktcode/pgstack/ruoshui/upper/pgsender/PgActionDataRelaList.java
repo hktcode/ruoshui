@@ -101,7 +101,7 @@ public class PgActionDataRelaList extends PgActionDataQueryRel
     PgDeputeStatement createDepute(PgConnection pgdata, PgConnection pgrepl) //
         throws SQLException
     {
-        return PgDeputeSelectData.of(this.config.queryRelalist(pgdata));
+        return PgDeputeSelectData.of(this.queryRelalist(pgdata));
     }
 
     @Override

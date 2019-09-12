@@ -5,6 +5,7 @@
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.bgsimple.status.SimpleStatus;
+import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalDatatypeInfMsg;
 import org.postgresql.jdbc.PgConnection;
 
@@ -58,7 +59,9 @@ abstract class PgActionDataTypelist extends PgActionDataQuerySql
     PgDeputeSelectData createDepute(PgConnection pgdata, PgConnection pgrepl) //
         throws SQLException
     {
-        return PgDeputeSelectData.of(this.config.queryTypelist(pgdata));
+        String sql = this.config.typelistSql;
+        PreparedStatement ps = this.preparedStatement(pgdata, sql);
+        return PgDeputeSelectData.of(ps);
     }
 }
 

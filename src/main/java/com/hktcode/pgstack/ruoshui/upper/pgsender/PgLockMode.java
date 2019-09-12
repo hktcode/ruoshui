@@ -5,7 +5,9 @@
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
+import org.postgresql.jdbc.PgConnection;
 
+import java.sql.SQLException;
 import java.util.Objects;
 
 public enum PgLockMode
@@ -42,6 +44,28 @@ public enum PgLockMode
             }
         }
         return NO_LOCK;
+    }
+
+    public String lockStatement(PgConnection cnt, String dbschema, String relation) //
+        throws SQLException
+    {
+        if (cnt == null) {
+            throw new ArgumentNullException("cnt");
+        }
+        if (dbschema == null) {
+            throw new ArgumentNullException("dbschema");
+        }
+        if (relation == null) {
+            throw new ArgumentNullException("relation");
+        }
+        return "LOCK TABLE ONLY " //
+            + cnt.escapeIdentifier(dbschema) //
+            + "." //
+            + cnt.escapeIdentifier(relation) //
+            + " IN " //
+            + this.textFormat //
+            + " MODE" //
+            ;
     }
 
     public final String textFormat;

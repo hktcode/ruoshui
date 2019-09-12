@@ -69,7 +69,7 @@ public class PgActionDataSizeDiff extends PgActionDataQueryRel
             logger.info("execute set snapshot: {}", setTransaction);
             s.execute(setTransaction); // TODO: pollFromFuture?
         }
-        return PgDeputeSelectData.of(this.config.queryRelalist(pgdata));
+        return PgDeputeSelectData.of(this.queryRelalist(pgdata));
     }
 
     @Override

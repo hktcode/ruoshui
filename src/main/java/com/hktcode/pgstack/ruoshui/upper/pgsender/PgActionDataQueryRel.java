@@ -4,12 +4,16 @@
 
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.pgjdbc.PgReplAttribute;
+import org.postgresql.jdbc.PgConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.script.ScriptException;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -61,7 +65,7 @@ abstract class PgActionDataQueryRel extends PgActionDataQuerySql
             };
         } else if (this.relaBuilder[0].metadata.relident != relident) {
             PgStructRelainfo r = this.relaBuilder[0].builder();
-            if (this.config.whereRelalist(r.relationInfo)) {
+            if (this.config.whereScript.eval(r.relationInfo)) {
                 this.newRelalist.add(r);
             }
             String dbschema = rs.getString("dbschema");
@@ -80,5 +84,24 @@ abstract class PgActionDataQueryRel extends PgActionDataQuerySql
             /* */);
         this.relaBuilder[0].attrlist.add(attr);
         return null;
+    }
+
+    public PreparedStatement queryRelalist(PgConnection pgdata) //
+        throws SQLException
+    {
+        ArrayNode arrayNode = new ArrayNode(JsonNodeFactory.instance);
+        String sql = this.config.relationSql;
+        for (String name : this.config.logicalRepl.publicationNames) {
+            arrayNode.add(name);
+        }
+        PreparedStatement ps = this.preparedStatement(pgdata, sql);
+        try {
+            ps.setString(1, arrayNode.toString());
+            return ps;
+        }
+        catch (Exception ex) {
+            ps.close();
+            throw ex;
+        }
     }
 }

@@ -10,10 +10,8 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.LogicalReplConfig;
 import com.hktcode.pgstack.ruoshui.pgsql.PgConnectionProperty;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplRelationName;
-import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 
 import java.sql.Statement;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -65,7 +63,7 @@ public class PgConfigSnapshot extends PgConfig
         /* */, ImmutableMap<PgReplRelationName, String> tupleSelect //
         /* */) //
     {
-        super(srcProperty, relationSql, whereScript, lockingMode, logicalRepl, tupleSelect);
+        super(srcProperty, relationSql, whereScript, lockingMode, logicalRepl, tupleSelect, DEFAULT_TYPELIST_SQL, true);
     }
 
     @Override
