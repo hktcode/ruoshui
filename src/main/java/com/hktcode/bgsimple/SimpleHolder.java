@@ -95,7 +95,7 @@ public class SimpleHolder
         } while (/*  */!(future instanceof SimpleStatusOuterDel)  //
                 /**/|| future == origin  //
                 /**/|| (    future == del //
-                /*     */|| !this.status.compareAndSet(origin, future) //
+                /*     */&& !this.status.compareAndSet(origin, future) //
                 /*   */) //
             /**/);
         return SimpleFutureDel.of(status, (SimpleStatusOuterDel)future);
