@@ -34,10 +34,7 @@ public class SimpleHolder
     {
         SimpleStatus s = this.status.get();
         if (!(s instanceof SimpleStatusOuterPut)) {
-            // TODO: 抛出异常可能会好点.
-            // TODO: 如何确保start只会被调用一次呢？
-            // return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            throw new RuntimeException(); // TODO:
+            throw new SimpleStatusIsNotPutException();
         }
         SimpleStatusOuterPut put = (SimpleStatusOuterPut)s;
 
