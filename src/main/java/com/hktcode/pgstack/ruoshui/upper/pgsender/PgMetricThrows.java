@@ -4,7 +4,14 @@
 
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializable;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.hktcode.lang.exception.ArgumentNullException;
+
+import java.io.IOException;
 
 public class PgMetricThrows implements PgMetricErr
 {
@@ -21,6 +28,7 @@ public class PgMetricThrows implements PgMetricErr
         return new PgMetricThrows(runinfor, throwerr);
     }
 
+    @JsonUnwrapped
     public final PgMetricRun runinfor;
 
     public final PgReportThrowErr throwerr;

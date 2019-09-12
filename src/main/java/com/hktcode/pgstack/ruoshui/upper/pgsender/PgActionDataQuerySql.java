@@ -28,7 +28,7 @@ abstract class PgActionDataQuerySql extends PgActionData
     private long maxnextTime = -1;
 
     PgActionDataQuerySql
-        /* */(PgConfig config //
+        /* */( PgConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */)
@@ -39,11 +39,6 @@ abstract class PgActionDataQuerySql extends PgActionData
     PgActionDataQuerySql(PgActionData action, long actionStart) //
     {
         super(action, actionStart);
-    }
-
-    PgActionDataQuerySql(PgActionData action) //
-    {
-        super(action, action.actionStart);
     }
 
     @Override

@@ -5,7 +5,6 @@
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.bgsimple.status.SimpleStatus;
-import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalDatatypeInfMsg;
 import org.postgresql.jdbc.PgConnection;
 
@@ -19,7 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 abstract class PgActionDataTypelist extends PgActionDataQuerySql
 {
     PgActionDataTypelist
-        /* */(PgConfigMainline config //
+        /* */( PgConfigMainline config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */)

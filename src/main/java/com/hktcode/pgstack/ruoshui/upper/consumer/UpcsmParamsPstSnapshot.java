@@ -121,7 +121,7 @@ public class UpcsmParamsPstSnapshot implements SimpleMethodPstParams<UpcsmAction
         PgLockMode lck = lockingMode == PgLockMode.NULL_LOCK ?
             mainline.lockingMode : lockingMode;
 
-        PgConfigSnapshot result = PgConfigSnapshot.of(src, rel, whr, lck, mainline.logicalRepl, tpl);
+        PgConfigSnapshot result = PgConfigSnapshot.of(src, rel, whr, lck, mainline.logicalRepl, tpl, mainline.typelistSql);
 
         result.rsFetchsize = (rsFetchsize == -1 ? mainline.rsFetchsize : rsFetchsize);
         result.waitTimeout = (waitTimeout == -1 ? mainline.waitTimeout : waitTimeout);

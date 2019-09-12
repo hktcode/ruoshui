@@ -18,12 +18,13 @@ import java.util.concurrent.atomic.AtomicReference;
 public class PgConfigSnapshot extends PgConfig
 {
     public static PgConfigSnapshot of //
-        /* */(PgConnectionProperty srcProperty //
+        /* */( PgConnectionProperty srcProperty //
         /* */, String relationSql //
         /* */, PgFilter whereScript //
         /* */, PgLockMode lockingMode //
         /* */, LogicalReplConfig logicalRepl //
         /* */, ImmutableMap<PgReplRelationName, String> tupleSelect //
+        /* */, String typelistSql //
         /* */) //
     {
         if (srcProperty == null) {
@@ -51,19 +52,21 @@ public class PgConfigSnapshot extends PgConfig
             /* */, lockingMode //
             /* */, logicalRepl //
             /* */, tupleSelect //
+            /* */, typelistSql //
             /* */);
     }
 
     private PgConfigSnapshot //
-        /* */(PgConnectionProperty srcProperty //
+        /* */( PgConnectionProperty srcProperty //
         /* */, String relationSql //
         /* */, PgFilter whereScript //
         /* */, PgLockMode lockingMode //
         /* */, LogicalReplConfig logicalRepl //
         /* */, ImmutableMap<PgReplRelationName, String> tupleSelect //
+        /* */, String typelistSql //
         /* */) //
     {
-        super(srcProperty, relationSql, whereScript, lockingMode, logicalRepl, tupleSelect, DEFAULT_TYPELIST_SQL, true);
+        super(srcProperty, relationSql, whereScript, lockingMode, logicalRepl, tupleSelect, typelistSql);
     }
 
     @Override

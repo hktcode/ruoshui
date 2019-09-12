@@ -73,6 +73,8 @@ public class PgConfigMainline extends PgConfig
         return result;
     }
 
+    private final boolean getSnapshot;
+
     private PgConfigMainline
         /* */( PgConnectionProperty srcProperty //
         /* */, String typelistSql //
@@ -84,7 +86,8 @@ public class PgConfigMainline extends PgConfig
         /* */, boolean getSnapshot //
         /* */) //
     {
-        super(srcProperty, relationSql, whereScript, lockingMode, logicalRepl, tupleSelect, typelistSql, getSnapshot);
+        super(srcProperty, relationSql, whereScript, lockingMode, logicalRepl, tupleSelect, typelistSql);
+        this.getSnapshot = getSnapshot;
     }
 
     @Override

@@ -13,7 +13,7 @@ Accept: application/x-yaml
 consumer:
   src_property:
     PGHOST: 192.168.119.137
-    PGPORT: 5432
+    PGPORT: "5432"
     PGDBNAME: postgres
     password: postgres
 producer:
@@ -39,7 +39,7 @@ Accept: application/json
 ###
 
 GET http://localhost:8080/api/upper/ruoshui
-Accept: application/json
+# Accept: application/json
 
 ###
 

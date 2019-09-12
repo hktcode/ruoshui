@@ -57,7 +57,7 @@ public class Application
      */
     public static String getResourceFileAsString(String name) //
     {
-        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try (InputStream is = classLoader.getResourceAsStream(name)) {
             if (is == null) {
                 throw new RuntimeException();

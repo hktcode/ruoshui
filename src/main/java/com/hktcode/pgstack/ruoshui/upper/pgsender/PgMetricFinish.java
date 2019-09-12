@@ -4,6 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class PgMetricFinish implements PgMetricEnd
@@ -23,6 +24,7 @@ public class PgMetricFinish implements PgMetricEnd
         this.complete = PgReportComplete.of(finish);
     }
 
+    @JsonUnwrapped
     public final PgMetricRun runinfor;
 
     public final PgReportComplete complete;

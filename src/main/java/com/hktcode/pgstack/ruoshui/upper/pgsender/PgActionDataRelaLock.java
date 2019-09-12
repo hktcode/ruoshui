@@ -78,12 +78,7 @@ class PgActionDataRelaLock extends PgActionData
                 }
                 else if (iter.hasNext()) {
                     relation = iter.next();
-                    PgLockMode lock = this.config.lockingMode;
-                    String dbschema = relation.relationInfo.dbschema;
-                    String relaname = relation.relationInfo.relation;
-                    String sql = lock.lockStatement(pgdata, dbschema, relaname);
-                    logger.info("lock relation: sql={}", sql);
-                    Callable<Boolean> callable = DeputeLockRelationMainline.of(s, sql);
+                    Callable<Boolean> callable = this.createLock(relation, s);
                     starts = System.currentTimeMillis();
                     executeFuture = exesvc.submit(callable);
                 }
@@ -93,6 +88,21 @@ class PgActionDataRelaLock extends PgActionData
             }
         }
         return PgActionTerminateEnd.of(this);
+    }
+
+    private Callable<Boolean> createLock(PgStructRelainfo relation, Statement s)
+        throws SQLException
+    {
+        PgLockMode lock = this.config.lockingMode;
+        if (lock == PgLockMode.NO_LOCK || lock == PgLockMode.NULL_LOCK) {
+            return ()->true;
+        }
+        String dbschema = relation.relationInfo.dbschema;
+        String relaname = relation.relationInfo.relation;
+        PgConnection connection = s.getConnection().unwrap(PgConnection.class);
+        String sql = lock.lockStatement(connection, dbschema, relaname);
+        logger.info("lock relation: sql={}", sql);
+        return DeputeLockRelationMainline.of(s, sql);
     }
 
     @Override

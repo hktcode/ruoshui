@@ -50,8 +50,8 @@ public abstract class PgConfig extends TqueueConfig
     static final String DEFAULT_TYPELIST_SQL;
 
     static {
-        DEFAULT_TYPELIST_SQL = getResourceFileAsString("/default_typelist.sql");
-        DEFAULT_RELATION_SQL = getResourceFileAsString("/default_relalist.sql");
+        DEFAULT_TYPELIST_SQL = getResourceFileAsString("default_typelist.sql");
+        DEFAULT_RELATION_SQL = getResourceFileAsString("default_relalist.sql");
     }
 
     public final PgConnectionProperty srcProperty;
@@ -70,8 +70,6 @@ public abstract class PgConfig extends TqueueConfig
 
     public final String typelistSql;
 
-    public final boolean getSnapshot;
-
     protected PgConfig //
         /* */( PgConnectionProperty srcProperty //
         /* */, String relationSql //
@@ -80,7 +78,6 @@ public abstract class PgConfig extends TqueueConfig
         /* */, LogicalReplConfig logicalRepl //
         /* */, ImmutableMap<PgReplRelationName, String> tupleSelect //
         /* */, String typelistSql //
-        /* */, boolean getSnapshot //
         /* */) //
     {
         this.srcProperty = srcProperty;
@@ -90,7 +87,6 @@ public abstract class PgConfig extends TqueueConfig
         this.tupleSelect = tupleSelect;
         this.logicalRepl = logicalRepl;
         this.typelistSql = typelistSql;
-        this.getSnapshot = getSnapshot;
     }
 
     public abstract PgAction afterSnapshot(PgActionDataSsFinish action);
