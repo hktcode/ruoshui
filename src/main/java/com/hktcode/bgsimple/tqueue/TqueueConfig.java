@@ -4,11 +4,13 @@
 
 package com.hktcode.bgsimple.tqueue;
 
-import com.hktcode.bgsimple.triple.TripleConfig;
-
 public class TqueueConfig
 {
-    public long waitTimeout = TripleConfig.DEFALUT_WAIT_TIMEOUT;
+    public static final long DEFALUT_WAIT_TIMEOUT = 100;
 
-    public long logDuration = TripleConfig.DEFAULT_LOG_DURATION;
+    public static final long DEFAULT_LOG_DURATION = 10 * 1000L;
+
+    public long waitTimeout = DEFALUT_WAIT_TIMEOUT;
+
+    public long logDuration = DEFAULT_LOG_DURATION;
 }

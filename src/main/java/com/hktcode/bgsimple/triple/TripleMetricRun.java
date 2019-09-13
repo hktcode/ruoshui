@@ -1,21 +1,15 @@
 /*
  * Copyright (c) 2019, Huang Ketian.
  */
+package com.hktcode.bgsimple.triple;
 
-package com.hktcode.pgstack.ruoshui.upper.producer;
-
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class UppdcMetricEnd
-{
-    public static UppdcMetricEnd of(UppdcActionRun action)
-    {
-        if (action == null) {
-            throw new ArgumentNullException("action");
-        }
-        return new UppdcMetricEnd(action);
-    }
+import java.time.ZonedDateTime;
 
+public class TripleMetricRun
+{
     public final long actionStart;
 
     public final long recordCount;
@@ -28,16 +22,15 @@ public class UppdcMetricEnd
 
     public final long offerMillis;
 
+    public final long totalMillis;
+
     /**
      * 描述当前状态的信息.
      */
     public final String statusInfor;
 
-    public final long totalMillis;
-
-    private UppdcMetricEnd(UppdcActionRun action)
+    protected TripleMetricRun(TripleActionRun action)
     {
-        long finish = System.currentTimeMillis();
         this.actionStart = action.actionStart;
         this.recordCount = action.recordCount;
         this.fetchCounts = action.fetchCounts;
@@ -45,6 +38,7 @@ public class UppdcMetricEnd
         this.offerCounts = action.offerCounts;
         this.offerMillis = action.offerMillis;
         this.statusInfor = action.statusInfor;
-        this.totalMillis = finish - action.actionStart;
+        final long finish = System.currentTimeMillis();
+        this.totalMillis = finish - actionStart;
     }
 }

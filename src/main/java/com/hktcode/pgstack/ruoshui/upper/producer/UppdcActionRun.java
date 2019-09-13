@@ -5,21 +5,22 @@
 package com.hktcode.pgstack.ruoshui.upper.producer;
 
 import com.hktcode.bgsimple.SimpleHolder;
-import com.hktcode.bgsimple.SimpleWorker;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
+import com.hktcode.bgsimple.triple.TripleAction;
+import com.hktcode.bgsimple.triple.TripleActionEnd;
+import com.hktcode.bgsimple.triple.TripleActionRun;
+import com.hktcode.bgsimple.triple.TripleMetricEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.PgsqlValTxactCommit;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordProducer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.Serializer;
 import org.postgresql.replication.LogSequenceNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.script.ScriptException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Properties;
@@ -29,8 +30,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.hktcode.kafka.Kafka.Serializers.BYTES;
 
-public class UppdcActionRun //
-    extends SimpleWorker<UppdcAction> implements UppdcAction
+class UppdcActionRun extends TripleActionRun<UppdcActionRun, UpperProducerConfig, UppdcMetricRun>
 {
     public static UppdcActionRun of
         /* */( UpperProducerConfig config
@@ -52,28 +52,7 @@ public class UppdcActionRun //
 
     private static final Logger logger = LoggerFactory.getLogger(UppdcActionRun.class);
 
-    public final UpperProducerConfig config;
-
     public final BlockingQueue<UpperRecordProducer> getout;
-
-    public final long actionStart;
-
-    public long recordCount = 0;
-
-    public long fetchCounts = 0;
-
-    public long fetchMillis = 0;
-
-    public long offerCounts = 0;
-
-    public long offerMillis = 0;
-
-    public long logDatetime = 0;
-
-    /**
-     * 描述当前状态的信息.
-     */
-    public String statusInfor = "";
 
     private UppdcActionRun
         /* */( UpperProducerConfig config
@@ -81,38 +60,18 @@ public class UppdcActionRun //
         /* */, AtomicReference<SimpleStatus> status
         /* */)
     {
-        super(status, 2);
-        this.config = config;
+        super(status, config, 2);
         this.getout = getout;
-        this.actionStart = System.currentTimeMillis();
     }
 
-    @Override
-    public UppdcActionErr next(Throwable throwsError)
+    public TripleAction<UppdcActionRun, UpperProducerConfig, UppdcMetricRun>
+    next() throws InterruptedException
     {
-        if (throwsError == null) {
-            throw new ArgumentNullException("throwsError");
+        Properties properties = new Properties();
+        for (Map.Entry<String, String> e : config.kfkProperty.entrySet()) {
+            properties.setProperty(e.getKey(), e.getValue());
         }
-        return UppdcActionErr.of(this, throwsError);
-    }
-
-    @Override
-    public UppdcResult get()
-    {
-        UppdcMetricRun metric = UppdcMetricRun.of(this);
-        return UppdcResultRun.of(config, metric);
-    }
-
-    @Override
-    public UppdcResultEnd del()
-    {
-        UppdcMetricEnd metric = UppdcMetricEnd.of(this);
-        return UppdcResultEnd.of(config, metric);
-    }
-
-    public UppdcAction next() throws InterruptedException, ScriptException
-    {
-        try (Producer<byte[], byte[]> kfk = this.producer(BYTES, BYTES)) {
+        try (Producer<byte[], byte[]> kfk = new KafkaProducer<>(properties, BYTES, BYTES)) {
             logger.info("kfk.metrics={}", kfk.metrics());
             logger.info("target_topic={}, partition_no={}", config.targetTopic, config.partitionNo);
             UpperRecordProducer d = null;
@@ -140,17 +99,9 @@ public class UppdcActionRun //
                 }
             }
         }
-        return UppdcActionEnd.of(this);
-    }
-
-    private Producer<byte[], byte[]> //
-    producer(Serializer<byte[]> k, Serializer<byte[]> v)
-    {
-        Properties properties = new Properties();
-        for (Map.Entry<String, String> e : config.kfkProperty.entrySet()) {
-            properties.setProperty(e.getKey(), e.getValue());
-        }
-        return new KafkaProducer<>(properties, k, v);
+        UppdcMetricRun basicMetric = this.toRunMetrics();
+        TripleMetricEnd<UppdcMetricRun> metric = TripleMetricEnd.of(basicMetric);
+        return TripleActionEnd.of(this, config, metric, this.number);
     }
 
     private UpperRecordProducer poll() throws InterruptedException
@@ -175,5 +126,11 @@ public class UppdcActionRun //
             }
         }
         return record;
+    }
+
+    @Override
+    public UppdcMetricRun toRunMetrics()
+    {
+        return UppdcMetricRun.of(this);
     }
 }

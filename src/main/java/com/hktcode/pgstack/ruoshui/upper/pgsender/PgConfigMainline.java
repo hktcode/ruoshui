@@ -17,9 +17,6 @@ import java.sql.Statement;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.hktcode.bgsimple.triple.TripleConfig.DEFALUT_WAIT_TIMEOUT;
-import static com.hktcode.bgsimple.triple.TripleConfig.DEFAULT_LOG_DURATION;
-
 public class PgConfigMainline extends PgConfig
 {
     public static PgConfigMainline ofJsonObject(JsonNode json) //

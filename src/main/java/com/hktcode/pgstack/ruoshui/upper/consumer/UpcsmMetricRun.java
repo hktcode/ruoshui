@@ -4,9 +4,10 @@
 
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
+import com.hktcode.bgsimple.triple.TripleMetricRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class UpcsmMetricRun
+public class UpcsmMetricRun extends TripleMetricRun
 {
     public static UpcsmMetricRun of(UpcsmActionRun action, UpcsmReportSender fetchThread)
     {
@@ -19,31 +20,11 @@ public class UpcsmMetricRun
         return new UpcsmMetricRun(action, fetchThread);
     }
 
-    public final long actionStart;
-
-    public final long recordCount;
-
-    public final long fetchCounts;
-
-    public final long fetchMillis;
-
-    public final long offerCounts;
-
-    public final long offerMillis;
-
     public final UpcsmReportSender fetchThread;
-
-    public final String statusInfor;
 
     private UpcsmMetricRun(UpcsmActionRun action, UpcsmReportSender fetchThread)
     {
-        this.actionStart = action.actionStart;
-        this.recordCount = action.recordCount;
-        this.fetchCounts = action.fetchCounts;
-        this.fetchMillis = action.fetchMillis;
-        this.offerCounts = action.offerCounts;
-        this.offerMillis = action.offerMillis;
-        this.statusInfor = action.statusInfor;
+        super(action);
         this.fetchThread = fetchThread;
     }
 }

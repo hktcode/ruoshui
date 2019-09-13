@@ -4,35 +4,15 @@
 
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
-import com.hktcode.bgsimple.BgWorker;
-import com.hktcode.bgsimple.status.SimpleStatusInner;
+import com.hktcode.bgsimple.triple.TripleAction;
+import com.hktcode.bgsimple.triple.TripleResult;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.replication.LogSequenceNumber;
 
-public interface UpcsmAction extends BgWorker<UpcsmAction>
+public interface UpcsmAction extends TripleAction<UpcsmAction, UpcsmConfig, UpcsmMetricRun>
 {
-    UpcsmActionErr next(Throwable throwsError) throws InterruptedException;
-
-    SimpleStatusInner newStatus(UpcsmAction wkstep) throws InterruptedException;
-
-    UpcsmResult get() throws InterruptedException;
-
-    default UpcsmResult pst() throws InterruptedException
-    {
-        return this.get();
-    }
-
-    default UpcsmResult put() throws InterruptedException
-    {
-        return this.get();
-    }
-
-    default UpcsmResult del() throws InterruptedException
-    {
-        return this.get();
-    }
-
-    default UpcsmResult pst(LogSequenceNumber lsn) throws InterruptedException
+    default TripleResult<UpcsmAction> pst(LogSequenceNumber lsn) //
+        throws InterruptedException
     {
         if (lsn == null) {
             throw new ArgumentNullException("lsn");
@@ -40,7 +20,7 @@ public interface UpcsmAction extends BgWorker<UpcsmAction>
         return this.get();
     }
 
-    default UpcsmResult pst(UpcsmParamsPstSnapshot params) //
+    default TripleResult<UpcsmAction> pst(UpcsmParamsPstSnapshot params) //
         throws InterruptedException
     {
         if (params == null) {

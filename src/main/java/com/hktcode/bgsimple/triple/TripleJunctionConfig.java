@@ -4,11 +4,10 @@
 package com.hktcode.bgsimple.triple;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.hktcode.bgsimple.tqueue.TqueueConfig;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-import java.time.ZonedDateTime;
-
-public class TripleJunctionConfig extends TripleConfig<TripleJunctionMetric>
+public class TripleJunctionConfig extends TqueueConfig
 {
     public static final long DEFALUT_WAIT_TIMEOUT = 100;
 

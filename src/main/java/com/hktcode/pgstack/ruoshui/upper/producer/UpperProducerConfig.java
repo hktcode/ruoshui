@@ -5,10 +5,10 @@ package com.hktcode.pgstack.ruoshui.upper.producer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.hktcode.bgsimple.triple.kafka.KafkaTripleProducerConfig;
+import com.hktcode.bgsimple.tqueue.TqueueConfig;
 import com.hktcode.kafka.Kafka;
 import com.hktcode.lang.exception.ArgumentIllegalException;
+import com.hktcode.lang.exception.ArgumentNegativeException;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -18,7 +18,7 @@ import java.util.Map;
 
 import static com.hktcode.pgstack.Ruoshui.THE_NAME;
 
-public class UpperProducerConfig extends KafkaTripleProducerConfig
+public class UpperProducerConfig extends TqueueConfig
 {
     public static UpperProducerConfig ofJsonObject(JsonNode json)
     {
@@ -44,11 +44,8 @@ public class UpperProducerConfig extends KafkaTripleProducerConfig
         int partitionNo = UpperProducerConfig.DEFAULT_PARTITION_NO;
         partitionNo = json.path("partition_no").asInt(partitionNo);
         if (partitionNo < 0) {
-            throw new ArgumentIllegalException //
-                /*    */( "argument is less than zero" //
-                , "partitionNo" //
-                , partitionNo  //
-            ); // TODO:
+            // TODO:
+            throw new ArgumentNegativeException("partitionNo", partitionNo);
         }
         return new UpperProducerConfig(waitTimeout, kfkProperty, targetTopic, partitionNo, logDuration);
     }
@@ -56,22 +53,14 @@ public class UpperProducerConfig extends KafkaTripleProducerConfig
     public static final String DEFAULT_TARGET_TOPIC = THE_NAME;
     public static final int DEFAULT_PARTITION_NO = 0;
 
-    public static final ImmutableSet<String> PROPERTY_KEYS = ImmutableSet.of //
-        /*   */ ( ProducerConfig.BATCH_SIZE_CONFIG //
-            , ProducerConfig.BOOTSTRAP_SERVERS_CONFIG //
-            , ProducerConfig.BUFFER_MEMORY_CONFIG //
-            , ProducerConfig.COMPRESSION_TYPE_CONFIG //
-            , ProducerConfig.LINGER_MS_CONFIG //
-            , ProducerConfig.MAX_BLOCK_MS_CONFIG //
-            , ProducerConfig.MAX_REQUEST_SIZE_CONFIG //
-        );
-
-    public static Map<String, String> createDefaultMap()
+    private static Map<String, String> createDefaultMap()
     {
         Map<String, String> result = new HashMap<>();
         result.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         return result;
     }
+
+    public final ImmutableMap<String, String> kfkProperty;
 
     public final String targetTopic;
 
@@ -85,8 +74,10 @@ public class UpperProducerConfig extends KafkaTripleProducerConfig
         /* */, long logDuration //
         /* */)
     {
-        super(waitTimeout, logDuration, kfkProperty);
+        this.kfkProperty = kfkProperty;
         this.targetTopic = targetTopic;
         this.partitionNo = partitionNo;
+        this.waitTimeout = waitTimeout;
+        this.logDuration = logDuration;
     }
 }

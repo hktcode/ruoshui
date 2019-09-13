@@ -3,76 +3,109 @@
  */
 package com.hktcode.bgsimple.triple;
 
+import com.google.common.collect.ImmutableList;
+import com.hktcode.bgsimple.future.SimpleFutureDel;
+import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
+import com.hktcode.bgsimple.method.SimpleMethodDel;
+import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
+import com.hktcode.bgsimple.status.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Phaser;
+import java.util.concurrent.atomic.AtomicReference;
 
-public final class Triple
+public abstract class Triple implements Runnable
 {
     private static final Logger logger = LoggerFactory.getLogger(Triple.class);
 
-    public static
-        /* */< R
-        /* */, F extends TripleConfig
-        /* */, M extends TripleMetric
-        /* */>
-    R push(R record, F config, M metric, BlockingQueue<R> queue) //
-        throws InterruptedException
+    protected final AtomicReference<SimpleStatus> status;
+
+    protected final int number;
+
+    protected Triple(AtomicReference<SimpleStatus> status, int number)
     {
-        long waitTimeout = config.waitTimeout;
-        long startsMillis = System.currentTimeMillis();
-        metric.statusInfor = "offer record wait";
-        boolean success = queue.offer(record, waitTimeout, TimeUnit.MILLISECONDS);
-        metric.statusInfor = "offer record end";
-        long finishMillis = System.currentTimeMillis();
-        metric.offerMillis += (finishMillis - startsMillis);
-        ++metric.offerCounts;
-        if (success) {
-            ++metric.recordCount;
-            return null;
+        this.status = status;
+        this.number = number;
+    }
+
+    protected abstract TripleActionRun createsAction();
+
+    private void runWithInterrupted() throws InterruptedException
+    {
+        TripleAction action = this.createsAction();
+        try {
+            do {
+                TripleActionRun act = (TripleActionRun)action;
+                action = act.next();
+            } while (action instanceof TripleActionRun);
+            logger.info("upper consumer completes");
         }
-        else {
-            long logDuration = config.logDuration;
-            long currMillis = System.currentTimeMillis();
-            if (currMillis - metric.logDatetime >= logDuration) {
-                logger.info("push record to comein fail: timeout={}, logDuration={}", waitTimeout, logDuration);
-                metric.logDatetime = currMillis;
+        catch (InterruptedException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            logger.error("upper consumer throws exception: ", ex);
+            TripleActionErr erract = action.next(ex);
+            SimpleStatusInner o;
+            SimpleStatus f;
+            do {
+                o = erract.newStatus(erract);
+                f = o;
+                if (o instanceof SimpleStatusInnerRun) {
+                    SimpleMethodDel[] method = new SimpleMethodDel[3];
+                    for (int i = 0; i < method.length; ++i) {
+                        if (i == number) {
+                            method[i] = action.del();
+                        }
+                        else {
+                            method[i] = SimpleMethodDelParamsDefault.of();
+                        }
+                    }
+                    Phaser phaser = new Phaser(3);
+                    f = SimpleStatusOuterDel.of(method, phaser);
+                }
+                else if (!isSameEnd(erract, (SimpleStatusInnerEnd)o)) {
+                    SimpleStatusInnerEnd end = (SimpleStatusInnerEnd)o;
+                    SimpleMethodAllResultEnd[] method = new SimpleMethodAllResultEnd[3];
+                    for (int i = 0; i < method.length; ++i) {
+                        if (i == number) {
+                            method[i] = (SimpleMethodAllResultEnd)action.del();
+                        }
+                        else {
+                            end.result.get(i);
+                        }
+                    };
+                    f = SimpleStatusInnerEnd.of(ImmutableList.copyOf(method));
+                }
+            } while (o != f && !this.status.compareAndSet(o, f));
+            if (f instanceof SimpleStatusOuterDel) {
+                SimpleStatusOuterDel del = (SimpleStatusOuterDel)f;
+                SimpleFutureDel future = SimpleFutureDel.of(status, del);
+                future.get();
             }
-            return record;
+            logger.info("triple terminate.");
         }
     }
 
-    public static
-    /* */< R
-    /* */, F extends TripleConfig
-    /* */, M extends TripleMetric
-    /* */>
-    R poll(F config, M metric, BlockingQueue<R> queue) //
-        throws InterruptedException
+    private static boolean isSameEnd(TripleActionErr erract, SimpleStatusInnerEnd status)
     {
-        long waitTimeout = config.waitTimeout;
-        long logDuration = config.logDuration;
-        long startsMillis = System.currentTimeMillis();
-        metric.statusInfor = "fetch record wait";
-        R record = queue.poll(waitTimeout, TimeUnit.MILLISECONDS);
-        metric.statusInfor = "fetch record end";
-        long finishMillis = System.currentTimeMillis();
-        metric.fetchMillis += (finishMillis - startsMillis);
-        ++metric.fetchCounts;
-        if (record == null) {
-            long currMillis = System.currentTimeMillis();
-            if (currMillis - metric.logDatetime >= logDuration) {
-                logger.info("poll record from getout timeout" //
-                        + ": waitTimeout={}" //
-                        + ", logDuration={}" //
-                        + ", logDatetime={}" //
-                        + ", currMillis={}" //
-                    , waitTimeout, logDuration, metric.logDatetime, currMillis);
-                metric.logDatetime = currMillis;
-            }
+        SimpleMethodAllResultEnd statusResult = status.result.get(1);
+        if (!(statusResult instanceof TripleResultErr)) {
+            return false;
         }
-        return record;
+        TripleResultErr rhs = (TripleResultErr)statusResult;
+        return rhs.metric == erract.metric && rhs.config == erract.config;
+    }
+
+    @Override
+    public void run()
+    {
+        try {
+            this.runWithInterrupted();
+        } catch (InterruptedException e) {
+            logger.error("should never happen", e);
+            Thread.currentThread().interrupt();
+        }
     }
 }

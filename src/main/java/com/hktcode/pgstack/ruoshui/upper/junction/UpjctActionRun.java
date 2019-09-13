@@ -5,10 +5,9 @@
 package com.hktcode.pgstack.ruoshui.upper.junction;
 
 import com.google.common.collect.ImmutableList;
-import com.hktcode.bgsimple.SimpleWorker;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
-import com.hktcode.bgsimple.triple.TripleJunctionConfig;
+import com.hktcode.bgsimple.triple.*;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalBegSnapshotMsg;
 import com.hktcode.pgjdbc.LogicalMsg;
@@ -21,7 +20,6 @@ import com.hktcode.pgstack.ruoshui.upper.UpperRecordProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.script.ScriptException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +27,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-class UpjctActionRun extends SimpleWorker<UpjctAction> implements UpjctAction
+class UpjctActionRun extends TripleActionRun<UpjctActionRun, TripleJunctionConfig, UpjctMetricRun>
 {
     private static final Logger logger = LoggerFactory.getLogger(UpjctActionRun.class);
 
@@ -55,36 +53,15 @@ class UpjctActionRun extends SimpleWorker<UpjctAction> implements UpjctAction
         return new UpjctActionRun(config, comein, getout, status);
     }
 
-    public final TripleJunctionConfig config;
-
     private final BlockingQueue<UpperRecordConsumer> comein;
 
     private final BlockingQueue<UpperRecordProducer> getout;
-
-    public final long actionStart;
-
-    long recordCount = 0;
-
-    long fetchCounts = 0;
-
-    long fetchMillis = 0;
-
-    long offerCounts = 0;
-
-    long offerMillis = 0;
-
-    /**
-     * 描述当前状态的信息.
-     */
-    String statusInfor = "";
 
     long curLsnofcmt = 0;
 
     long curSequence = 0;
 
     private final LogicalTxactContext txidContext;
-
-    private long logDatetime = 0;
 
     private UpjctActionRun //
         /* */( TripleJunctionConfig config
@@ -93,11 +70,9 @@ class UpjctActionRun extends SimpleWorker<UpjctAction> implements UpjctAction
         /* */, AtomicReference<SimpleStatus> status
         /* */)
     {
-        super(status, 1);
-        this.config = config;
+        super(status, config, 1);
         this.comein = comein;
         this.getout = getout;
-        this.actionStart = System.currentTimeMillis();
         this.txidContext = LogicalTxactContext.of();
     }
 
@@ -127,7 +102,8 @@ class UpjctActionRun extends SimpleWorker<UpjctAction> implements UpjctAction
         return record;
     }
 
-    public UpjctAction next() throws InterruptedException, ScriptException
+    public TripleAction<UpjctActionRun, TripleJunctionConfig, UpjctMetricRun>
+    next() throws InterruptedException
     {
         UpperRecordConsumer r = null;
         UpperRecordProducer o = null;
@@ -148,7 +124,9 @@ class UpjctActionRun extends SimpleWorker<UpjctAction> implements UpjctAction
                 r = null;
             }
         }
-        return UpjctActionEnd.of(this);
+        UpjctMetricRun basicMetric = this.toRunMetrics();
+        TripleMetricEnd<UpjctMetricRun> metric = TripleMetricEnd.of(basicMetric);
+        return TripleActionEnd.of(this, config, metric, this.number);
     }
 
     private UpperRecordProducer push(UpperRecordProducer record) //
@@ -214,22 +192,8 @@ class UpjctActionRun extends SimpleWorker<UpjctAction> implements UpjctAction
     }
 
     @Override
-    public UpjctResultRun get()
+    public UpjctMetricRun toRunMetrics()
     {
-        UpjctMetricRun metric = UpjctMetricRun.of(this);
-        return UpjctResultRun.of(config, metric);
-    }
-
-    @Override
-    public UpjctResultEnd del()
-    {
-        UpjctMetricEnd metric = UpjctMetricEnd.of(this);
-        return UpjctResultEnd.of(config, metric);
-    }
-
-    @Override
-    public UpjctActionErr next(Throwable throwsError)
-    {
-        return UpjctActionErr.of(this, throwsError);
+        return UpjctMetricRun.of(this);
     }
 }

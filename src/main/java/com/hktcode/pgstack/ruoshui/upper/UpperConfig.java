@@ -6,6 +6,7 @@ package com.hktcode.pgstack.ruoshui.upper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.hktcode.bgsimple.triple.TripleJunctionConfig;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmConfig;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgConfigMainline;
 import com.hktcode.pgstack.ruoshui.upper.producer.UpperProducerConfig;
 
@@ -20,9 +21,10 @@ public class UpperConfig
         if (jsonNode == null) {
             throw new ArgumentNullException("jsonNode");
         }
-        PgConfigMainline consumer = PgConfigMainline.ofJsonObject(jsonNode.path("consumer"));
+        PgConfigMainline mainline = PgConfigMainline.ofJsonObject(jsonNode.path("consumer"));
         TripleJunctionConfig junction = TripleJunctionConfig.ofJsonObject(jsonNode.path("junction"));
         UpperProducerConfig producer = UpperProducerConfig.ofJsonObject(jsonNode.path("producer"));
+        UpcsmConfig consumer = UpcsmConfig.of(mainline);
 
         return new UpperConfig(consumer, junction, producer);
     }
@@ -36,14 +38,14 @@ public class UpperConfig
         }
     }
 
-    public final PgConfigMainline consumer;
+    public final UpcsmConfig consumer;
 
     public final TripleJunctionConfig junction;
 
     public final UpperProducerConfig producer;
 
     private UpperConfig //
-        /* */(PgConfigMainline consumer //
+        /* */( UpcsmConfig consumer //
         /* */, TripleJunctionConfig junction //
         /* */, UpperProducerConfig producer //
         /* */)
