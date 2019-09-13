@@ -10,28 +10,26 @@ import com.hktcode.lang.exception.ArgumentNullException;
 public class UpcsmActionEnd //
     extends SimpleWorker<UpcsmAction> implements UpcsmAction
 {
-    public static UpcsmActionEnd of(UpcsmActionRun action, UpcsmReportSender fetchThread)
+    public static UpcsmActionEnd of(UpcsmActionRun action) //
+        throws InterruptedException
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        if (fetchThread == null) {
-            throw new ArgumentNullException("fetchThread");
-        }
-        return new UpcsmActionEnd(action, fetchThread);
+        return new UpcsmActionEnd(action);
     }
 
     public final UpcsmMetricEnd metric;
 
-    private UpcsmActionEnd(UpcsmActionRun action, UpcsmReportSender fetchThread)
+    private UpcsmActionEnd(UpcsmActionRun action) //
+        throws InterruptedException
     {
         super(action.status, 0);
-        this.metric = UpcsmMetricEnd.of(action, fetchThread);
+        this.metric = UpcsmMetricEnd.of(action.get().metric);
     }
 
     @Override
     public UpcsmActionErr next(Throwable throwsError) //
-        throws InterruptedException
     {
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");

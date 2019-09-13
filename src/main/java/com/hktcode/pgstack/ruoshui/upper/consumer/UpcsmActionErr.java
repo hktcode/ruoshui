@@ -10,19 +10,16 @@ import com.hktcode.lang.exception.ArgumentNullException;
 public class UpcsmActionErr //
     extends SimpleWorker<UpcsmAction> implements UpcsmAction
 {
-    public static UpcsmActionErr of //
-        (UpcsmActionRun action, UpcsmReportSender fetchThread, Throwable throwsError)
+    public static UpcsmActionErr of(UpcsmActionRun action, Throwable throwsError) //
+        throws InterruptedException
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        if (fetchThread == null) {
-            throw new ArgumentNullException("fetchThread");
-        }
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
         }
-        return new UpcsmActionErr(action, fetchThread, throwsError);
+        return new UpcsmActionErr(action, throwsError);
     }
 
     public static UpcsmActionErr of //
@@ -39,23 +36,29 @@ public class UpcsmActionErr //
 
     public final UpcsmMetricErr metric;
 
-    private UpcsmActionErr //
-        (UpcsmActionRun action, UpcsmReportSender fetchThread, Throwable throwsError)
+    private UpcsmActionErr(UpcsmActionRun action, Throwable throwsError) //
+        throws InterruptedException
     {
         super(action.status, 0);
-        this.metric = UpcsmMetricErr.of(action, fetchThread, throwsError);
+        UpcsmMetricRun basicMetric;
+        if (throwsError instanceof FetchThreadThrowsErrorException) {
+            UpcsmReportSender report = ((FetchThreadThrowsErrorException) throwsError).sender;
+            basicMetric = UpcsmMetricRun.of(action, report);
+        }
+        else {
+            basicMetric = action.get().metric;
+        }
+        this.metric = UpcsmMetricErr.of(basicMetric, throwsError);
     }
 
-    private UpcsmActionErr //
-        (UpcsmActionEnd action, Throwable throwsError)
+    private UpcsmActionErr(UpcsmActionEnd action, Throwable throwsError)
     {
         super(action.status, 0);
-        this.metric = UpcsmMetricErr.of(action.metric, throwsError);
+        this.metric = UpcsmMetricErr.of(action.metric.basicMetric, throwsError);
     }
 
     @Override
     public UpcsmActionErr next(Throwable throwsError) //
-        throws InterruptedException
     {
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");

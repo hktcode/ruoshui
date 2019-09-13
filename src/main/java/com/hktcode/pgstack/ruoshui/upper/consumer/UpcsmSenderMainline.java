@@ -11,9 +11,7 @@ import com.hktcode.bgsimple.future.SimpleFutureGet;
 import com.hktcode.bgsimple.future.SimpleFuturePst;
 import com.hktcode.bgsimple.future.SimpleFuturePut;
 import com.hktcode.bgsimple.method.*;
-import com.hktcode.bgsimple.status.SimpleStatusOuterDel;
-import com.hktcode.bgsimple.status.SimpleStatusOuterGet;
-import com.hktcode.bgsimple.status.SimpleStatusOuterPst;
+import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.*;
@@ -44,11 +42,18 @@ public class UpcsmSenderMainline extends UpcsmSender
             throw new ArgumentNullException("action");
         }
         PgRecord record = this.tqueue.poll(timeout, TimeUnit.MILLISECONDS);
+        SimpleStatus s;
         if (record != null) {
             return record.toRecord(action, this);
         }
         else if (this.thread.isAlive()) {
             return null;
+        }
+        else if ((s = this.status.get()) instanceof SimpleStatusInnerEnd) {
+            SimpleStatusInnerEnd end = (SimpleStatusInnerEnd)s;
+            PgResult mainline = (PgResult)end.result.get(0);
+            UpcsmReportSender sender = UpcsmReportSender.of(mainline, ImmutableList.copyOf(this.sslist));
+            throw new FetchThreadThrowsErrorException(sender);
         }
         else {
             // TODO: throw new DelegateNotAliveException();

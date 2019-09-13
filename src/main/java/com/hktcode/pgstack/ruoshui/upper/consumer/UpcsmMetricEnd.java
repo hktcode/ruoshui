@@ -4,52 +4,28 @@
 
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class UpcsmMetricEnd
 {
-    public static UpcsmMetricEnd of //
-    (UpcsmActionRun action, UpcsmReportSender fetchThread) //
+    public static UpcsmMetricEnd of(UpcsmMetricRun basicMetric)
     {
-        if (action == null) {
-            throw new ArgumentNullException("action");
+        if (basicMetric == null) {
+            throw new ArgumentNullException("basicMetric");
         }
-        if (fetchThread == null) {
-            throw new ArgumentNullException("fetchThread");
-        }
-        return new UpcsmMetricEnd(action, fetchThread);
+        return new UpcsmMetricEnd(basicMetric);
     }
 
-    public final long actionStart;
-
-    public final long recordCount;
-
-    public final long fetchCounts;
-
-    public final long fetchMillis;
-
-    public final long offerCounts;
-
-    public final long offerMillis;
+    @JsonUnwrapped
+    public final UpcsmMetricRun basicMetric;
 
     public final long totalMillis;
 
-    public final UpcsmReportSender fetchThread;
-
-    public final String statusInfor;
-
-    private UpcsmMetricEnd //
-    (UpcsmActionRun action, UpcsmReportSender fetchThread) //
+    private UpcsmMetricEnd(UpcsmMetricRun basicMetric)
     {
         long finish = System.currentTimeMillis();
-        this.actionStart = action.actionStart;
-        this.recordCount = action.recordCount;
-        this.fetchCounts = action.fetchCounts;
-        this.fetchMillis = action.fetchMillis;
-        this.offerCounts = action.offerCounts;
-        this.offerMillis = action.offerMillis;
-        this.statusInfor = action.statusInfor;
-        this.totalMillis = finish - action.actionStart;
-        this.fetchThread = fetchThread;
+        this.basicMetric = basicMetric;
+        this.totalMillis = finish - basicMetric.actionStart;
     }
 }

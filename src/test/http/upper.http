@@ -5,6 +5,12 @@ Accept: application/json
 { "consumer": 23 }
 
 ###
+PUT http://localhost:8080/api/upper/ruoshui
+Content-Type: application/x-yaml; charset=utf-8
+Accept: application/x-yaml
+
+{}
+###
 
 PUT http://localhost:8080/api/upper/ruoshui
 Content-Type: application/x-yaml; charset=utf-8

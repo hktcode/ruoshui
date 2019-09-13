@@ -6,7 +6,6 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.bgsimple.status.SimpleStatus;
-import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.bgsimple.tqueue.TqueueAction;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.replication.LogSequenceNumber;
@@ -61,19 +60,13 @@ public abstract class PgAction //
         return this.get();
     }
 
-    public PgActionThrowsErrors next(Throwable throwsError) throws InterruptedException
+    public PgActionThrowsErrors next(Throwable throwsError)
+        throws InterruptedException
     {
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
         }
-        PgActionThrowsErrors action = PgActionThrowsErrors.of(this, throwsError);
-        PgRecord record = PgRecordExecThrows.of(action.del());
-        while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
-            if ((record = this.send(record)) == null) {
-                return action;
-            }
-        }
-        return action;
+        return PgActionThrowsErrors.of(this, throwsError);
     }
 
     public PgActionTerminateEnd next() throws InterruptedException

@@ -3,6 +3,7 @@
  */
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
+import com.google.common.collect.ImmutableList;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import com.hktcode.pgstack.ruoshui.upper.consumer.*;
@@ -42,19 +43,23 @@ public class PgRecordExecThrows implements PgRecord
         if (sender == null) {
             throw new ArgumentNullException("sender");
         }
-        throw new FetchThreadThrowsErrorException();
+        ImmutableList<PgResult> snapshot = ImmutableList.copyOf(sender.mlxact.sslist);
+        UpcsmReportSender report = UpcsmReportSender.of(this.result, snapshot);
+        throw new FetchThreadThrowsErrorException(report);
     }
 
     @Override
-    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmSenderMainline thread)
+    public UpperRecordConsumer toRecord(UpcsmActionRun action, UpcsmSenderMainline sender)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        if (thread == null) {
-            throw new ArgumentNullException("thread");
+        if (sender == null) {
+            throw new ArgumentNullException("sender");
         }
-        throw new FetchThreadThrowsErrorException();
+        ImmutableList<PgResult> snapshot = ImmutableList.copyOf(sender.sslist);
+        UpcsmReportSender report = UpcsmReportSender.of(this.result, snapshot);
+        throw new FetchThreadThrowsErrorException(report);
     }
 
     private PgRecordExecThrows(PgResultErr result)

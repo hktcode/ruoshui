@@ -38,12 +38,17 @@ public class PgActionThrowsErrors extends PgAction
     {
         SimpleStatusInner origin;
         PgResultThrows result = this.del();
+        PgRecord record = PgRecordExecThrows.of(result);
         ImmutableList<SimpleMethodAllResultEnd> list = ImmutableList.of(result);
         SimpleStatusInnerEnd future = SimpleStatusInnerEnd.of(list);
-        do {
-            origin = this.newStatus(this);
-        } while (    origin instanceof SimpleStatusInnerRun
-                  && !this.status.compareAndSet(origin, future));
+        while ((origin = this.newStatus(this)) instanceof SimpleStatusInnerRun) {
+            if (this.status.compareAndSet(origin, future)) {
+                break;
+            }
+            else if (record != null) {
+                record = this.send(record);
+            }
+        }
         return PgActionTerminateEnd.of(this);
     }
 

@@ -59,7 +59,7 @@ public class Upcsm implements Runnable
         this.status = status;
     }
 
-    public void runWithInterrupted() throws InterruptedException, ScriptException
+    private void runWithInterrupted() throws InterruptedException, ScriptException
     {
         UpcsmAction action = UpcsmActionRun.of(config, comein, status);
         try {
@@ -121,7 +121,7 @@ public class Upcsm implements Runnable
             return false;
         }
         UpcsmResultErr rhs = (UpcsmResultErr)statusResult;
-        return rhs.metric == erract.metric;// && rhs.config == erract.config;
+        return rhs.metric == erract.metric; // && rhs.config == erract.config;
     }
 
     @Override

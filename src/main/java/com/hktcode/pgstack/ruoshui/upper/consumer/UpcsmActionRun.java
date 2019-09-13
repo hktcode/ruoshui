@@ -15,9 +15,7 @@ import org.postgresql.replication.LogSequenceNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.script.ScriptException;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -66,13 +64,13 @@ public class UpcsmActionRun //
 
     public UpcsmSender fetchThread;
 
-    public UpcsmAction next() throws InterruptedException, ExecutionException, ScriptException
+    public UpcsmAction next() throws InterruptedException
     {
         UpperRecordConsumer r = null;
         while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
             r = (r == null ? this.poll() : this.push(r));
         }
-        return UpcsmActionEnd.of(this, this.fetchThread.get());
+        return UpcsmActionEnd.of(this);
     }
 
     private UpperRecordConsumer poll() throws InterruptedException
@@ -127,7 +125,7 @@ public class UpcsmActionRun //
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
         }
-        return UpcsmActionErr.of(this, this.fetchThread.get(), throwsError);
+        return UpcsmActionErr.of(this, throwsError);
     }
 
     private UpcsmActionRun //
@@ -163,7 +161,8 @@ public class UpcsmActionRun //
     public UpcsmResultEnd del() throws InterruptedException
     {
         UpcsmReportSender fetchThreadReport = this.fetchThread.del();
-        UpcsmMetricEnd metric = UpcsmMetricEnd.of(this, fetchThreadReport);
+        UpcsmMetricRun run = UpcsmMetricRun.of(this, fetchThreadReport);
+        UpcsmMetricEnd metric = UpcsmMetricEnd.of(run);
         return UpcsmResultEnd.of(metric);
     }
 

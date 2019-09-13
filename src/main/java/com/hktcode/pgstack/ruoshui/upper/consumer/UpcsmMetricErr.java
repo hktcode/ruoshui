@@ -4,86 +4,41 @@
 
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializable;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.hktcode.lang.exception.ArgumentNullException;
+
+import java.io.IOException;
 
 public class UpcsmMetricErr
 {
-    public static UpcsmMetricErr of //
-        (UpcsmActionRun action, UpcsmReportSender fetchThread, Throwable throwsError)
+    public static UpcsmMetricErr of(UpcsmMetricRun basicMetric, Throwable throwsError)
     {
-        if (action == null) {
-            throw new ArgumentNullException("action");
-        }
-        if (fetchThread == null) {
-            throw new ArgumentNullException("fetchThread");
+        if (basicMetric == null) {
+            throw new ArgumentNullException("basicMetric");
         }
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
         }
-        return new UpcsmMetricErr(action, fetchThread, throwsError);
+        return new UpcsmMetricErr(basicMetric, throwsError);
     }
 
-    public static UpcsmMetricErr of //
-        (UpcsmMetricEnd metric, Throwable throwsError)
-    {
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
-        if (throwsError == null) {
-            throw new ArgumentNullException("throwsError");
-        }
-        return new UpcsmMetricErr(metric, throwsError);
-    }
-
-    public final long actionStart;
-
-    public final long recordCount;
-
-    public final long fetchCounts;
-
-    public final long fetchMillis;
-
-    public final long offerCounts;
-
-    public final long offerMillis;
+    @JsonUnwrapped
+    public final UpcsmMetricRun basicMetric;
 
     public final long totalMillis;
 
-    public final String statusInfor;
+    public final UpcsmReportThrows throwsError;
 
-    public final UpcsmReportSender fetchThread;
-
-    public final Throwable throwsError;
-
-    private UpcsmMetricErr //
-    (UpcsmActionRun action, UpcsmReportSender fetchThread, Throwable throwsError)
+    private UpcsmMetricErr(UpcsmMetricRun basicMetric, Throwable throwsError)
     {
         long finish = System.currentTimeMillis();
-        this.actionStart = action.actionStart;
-        this.recordCount = action.recordCount;
-        this.fetchCounts = action.fetchCounts;
-        this.fetchMillis = action.fetchMillis;
-        this.offerCounts = action.offerCounts;
-        this.offerMillis = action.offerMillis;
-        this.totalMillis = finish - action.actionStart;
-        this.statusInfor = action.statusInfor;
-        this.throwsError = throwsError;
-        this.fetchThread = fetchThread;
-    }
-
-    private UpcsmMetricErr //
-    (UpcsmMetricEnd metric, Throwable throwsError)
-    {
-        long finish = System.currentTimeMillis();
-        this.actionStart = metric.actionStart;
-        this.recordCount = metric.recordCount;
-        this.fetchCounts = metric.fetchCounts;
-        this.fetchMillis = metric.fetchMillis;
-        this.offerCounts = metric.offerCounts;
-        this.offerMillis = metric.offerMillis;
-        this.fetchThread = metric.fetchThread;
-        this.statusInfor = metric.statusInfor;
-        this.totalMillis = finish - metric.actionStart;
-        this.throwsError = throwsError;
+        this.basicMetric = basicMetric;
+        this.totalMillis = finish - basicMetric.actionStart;
+        this.throwsError = UpcsmReportThrows.of(finish, throwsError);
     }
 }

@@ -82,8 +82,7 @@ public class PgThread implements Runnable
                 pgdata.setAutoCommit(false);
                 pgdata.setTransactionIsolation(TRANSACTION_REPEATABLE_READ);
                 do {
-                    PgActionData
-                        dataAction = (PgActionData)action;
+                    PgActionData dataAction = (PgActionData)action;
                     action = dataAction.next(exesvc, pgdata, pgrepl);
                 } while (action instanceof PgActionData);
             }
