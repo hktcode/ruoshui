@@ -11,7 +11,7 @@ import com.hktcode.pgstack.ruoshui.upper.pgsender.PgResult;
 public class UpcsmReportSender
 {
     public static UpcsmReportSender of //
-        /* */(PgResult mainline //
+        /* */( PgResult mainline //
         /* */, ImmutableList<PgResult> snapshot //
         /* */)
     {

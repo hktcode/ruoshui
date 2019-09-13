@@ -10,6 +10,7 @@ import com.hktcode.bgsimple.triple.*;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgConfigSnapshot;
+import com.hktcode.pgstack.ruoshui.upper.pgsender.PgResultEnd;
 import org.postgresql.replication.LogSequenceNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,16 +47,14 @@ public class UpcsmActionRun extends TripleActionRun<UpcsmAction, UpcsmConfig, Up
     public UpcsmSender fetchThread;
 
     @Override
-    public TripleAction<UpcsmAction, UpcsmConfig, UpcsmMetricRun> //
-    next() throws InterruptedException
+    public TripleAction<UpcsmAction, UpcsmConfig, UpcsmMetricRun> next() //
+        throws InterruptedException
     {
         UpperRecordConsumer r = null;
         while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
             r = (r == null ? this.poll() : this.push(r));
         }
-        UpcsmMetricRun basicMetric = this.toRunMetrics();
-        TripleMetricEnd<UpcsmMetricRun> metric = TripleMetricEnd.of(basicMetric);
-        return UpcsmActionEnd.of(this, super.config, metric, this.number);
+        return UpcsmActionEnd.of(this);
     }
 
     private UpperRecordConsumer poll() throws InterruptedException
@@ -82,6 +81,7 @@ public class UpcsmActionRun extends TripleActionRun<UpcsmAction, UpcsmConfig, Up
         throws InterruptedException
     {
         long waitTimeout = config.waitTimeout;
+        long logDuration = config.logDuration;
         long startsMillis = System.currentTimeMillis();
         boolean success = comein.offer(record, waitTimeout, TimeUnit.MILLISECONDS);
         long finishMillis = System.currentTimeMillis();
@@ -91,16 +91,12 @@ public class UpcsmActionRun extends TripleActionRun<UpcsmAction, UpcsmConfig, Up
             ++this.recordCount;
             return null;
         }
-        else {
-            long logDuration = config.logDuration;
-            long currMillis = System.currentTimeMillis();
-            if (currMillis - this.logDatetime >= logDuration) {
-                logger.info("push record to comein fail: waitTimeout={}, logDuration={}" //
-                    , waitTimeout, logDuration);
-                this.logDatetime = currMillis;
-            }
-            return record;
+        else if (finishMillis - this.logDatetime >= logDuration) {
+            logger.info("push record to comein fail: waitTimeout={}, logDuration={}" //
+                , waitTimeout, logDuration);
+            this.logDatetime = finishMillis;
         }
+        return record;
     }
 
     private UpcsmActionRun //
@@ -115,25 +111,22 @@ public class UpcsmActionRun extends TripleActionRun<UpcsmAction, UpcsmConfig, Up
     }
 
     @Override
-    public TripleResultRun<UpcsmAction, UpcsmConfig, UpcsmMetricRun>
-    put() throws InterruptedException
+    public TripleResult<UpcsmAction> put() throws InterruptedException
     {
-        UpcsmReportSender fetchThreadReport = this.fetchThread.put();
-        UpcsmMetricRun metric = UpcsmMetricRun.of(this, fetchThreadReport);
-        return TripleResultRun.of(super.config, metric);
-    }
-
-    public TripleResultRun<UpcsmAction, UpcsmConfig, UpcsmMetricRun>
-    get() throws InterruptedException
-    {
-        UpcsmReportSender fetchThreadReport = this.fetchThread.get();
-        UpcsmMetricRun metric = UpcsmMetricRun.of(this, fetchThreadReport);
-        return TripleResultRun.of(super.config, metric);
+        UpcsmReportSender sender = this.fetchThread.put();
+        return this.build(sender);
     }
 
     @Override
-    public TripleResultEnd<UpcsmAction, UpcsmConfig, UpcsmMetricRun> //
-    del() throws InterruptedException
+    public TripleResult<UpcsmAction> get() throws InterruptedException
+    {
+        UpcsmReportSender sender = this.fetchThread.get();
+        return this.build(sender);
+    }
+
+    @Override
+    public TripleResultEnd<UpcsmAction, UpcsmConfig, UpcsmMetricRun> del() //
+        throws InterruptedException
     {
         UpcsmReportSender fetchThreadReport = this.fetchThread.del();
         UpcsmMetricRun run = UpcsmMetricRun.of(this, fetchThreadReport);
@@ -148,19 +141,20 @@ public class UpcsmActionRun extends TripleActionRun<UpcsmAction, UpcsmConfig, Up
         return UpcsmMetricRun.of(this, fetchThreadReport);
     }
 
-    public TripleResultRun<UpcsmAction, UpcsmConfig, UpcsmMetricRun>
-    pst(LogSequenceNumber lsn) throws InterruptedException
+    @Override
+    public TripleResult<UpcsmAction> pst(LogSequenceNumber lsn) //
+        throws InterruptedException
     {
         if (lsn == null) {
             throw new ArgumentNullException("lsn");
         }
-        UpcsmReportSender fetchThreadReport = this.fetchThread.pst(lsn);
-        UpcsmMetricRun metric = UpcsmMetricRun.of(this, fetchThreadReport);
-        return TripleResultRun.of(super.config, metric);
+        UpcsmReportSender sender = this.fetchThread.pst(lsn);
+        return this.build(sender);
     }
 
-    public TripleResultRun<UpcsmAction, UpcsmConfig, UpcsmMetricRun>
-    pst(UpcsmParamsPstSnapshot params) throws InterruptedException
+    @Override
+    public TripleResult<UpcsmAction> pst(UpcsmParamsPstSnapshot params) //
+        throws InterruptedException
     {
         if (params == null) {
             throw new ArgumentNullException("params");
@@ -172,14 +166,25 @@ public class UpcsmActionRun extends TripleActionRun<UpcsmAction, UpcsmConfig, Up
             return this.get();
         }
         this.fetchThread = newThread;
-        UpcsmReportSender fetchThreadReport =  this.fetchThread.put();
-        UpcsmMetricRun metric = UpcsmMetricRun.of(this, fetchThreadReport);
-        return TripleResultRun.of(super.config, metric);
+        UpcsmReportSender sender =  this.fetchThread.put();
+        return this.build(sender);
     }
 
     @Override
     public UpcsmActionErr next(Throwable throwsError) throws InterruptedException
     {
         return UpcsmActionErr.of(this, throwsError);
+    }
+
+    private TripleResult<UpcsmAction> build(UpcsmReportSender sender)
+    {
+        UpcsmMetricRun metric = UpcsmMetricRun.of(this, sender);
+        if (sender.mainline instanceof PgResultEnd) {
+            TripleMetricEnd<UpcsmMetricRun> m = TripleMetricEnd.of(metric);
+            return TripleResultEnd.of(super.config, m);
+        }
+        else {
+            return TripleResultRun.of(super.config, metric);
+        }
     }
 }

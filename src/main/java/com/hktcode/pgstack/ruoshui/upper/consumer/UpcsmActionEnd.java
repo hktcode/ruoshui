@@ -16,7 +16,8 @@ public class UpcsmActionEnd extends TripleActionEnd<UpcsmAction, UpcsmConfig, Up
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        UpcsmMetricRun basicMetric = action.get().metric;
+        UpcsmReportSender sender = action.fetchThread.del();
+        UpcsmMetricRun basicMetric = UpcsmMetricRun.of(action, sender);
         TripleMetricEnd<UpcsmMetricRun> metric = TripleMetricEnd.of(basicMetric);
         return new UpcsmActionEnd(action, metric);
     }

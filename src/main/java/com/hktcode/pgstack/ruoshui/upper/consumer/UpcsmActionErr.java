@@ -20,13 +20,14 @@ public class UpcsmActionErr extends TripleActionErr<UpcsmAction, UpcsmConfig, Up
             throw new ArgumentNullException("throwsError");
         }
         UpcsmMetricRun basicMetric;
+        UpcsmReportSender report;
         if (throwsError instanceof FetchThreadThrowsErrorException) {
-            UpcsmReportSender report = ((FetchThreadThrowsErrorException) throwsError).sender;
-            basicMetric = UpcsmMetricRun.of(action, report);
+            report = ((FetchThreadThrowsErrorException) throwsError).sender;
         }
         else {
-            basicMetric = action.get().metric;
+            report = action.fetchThread.get();
         }
+        basicMetric = UpcsmMetricRun.of(action, report);
         TripleMetricErr<UpcsmMetricRun> metric = TripleMetricErr.of(basicMetric, throwsError);
         return new UpcsmActionErr(action, metric);
     }

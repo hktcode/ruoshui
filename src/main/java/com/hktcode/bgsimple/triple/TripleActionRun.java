@@ -51,7 +51,7 @@ public abstract class TripleActionRun<A extends TripleAction<A, C, M>, C, M exte
     }
 
     @Override
-    public TripleResultRun<A, C, M> get() throws InterruptedException
+    public TripleResult<A> get() throws InterruptedException
     {
         M metric = this.toRunMetrics();
         return TripleResultRun.of(config, metric);

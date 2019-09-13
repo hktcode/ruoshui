@@ -126,7 +126,7 @@ public abstract class SimpleFuture<S extends SimpleStatusOuter>
             return this.origin;
         } else {
             logger.info("new status outer del: delCount={}", delCount);
-            return SimpleStatusOuterDel.of(method, new Phaser(delCount + 1));
+            return SimpleStatusOuterDel.of(method, new Phaser(4));
         }
     }
 
