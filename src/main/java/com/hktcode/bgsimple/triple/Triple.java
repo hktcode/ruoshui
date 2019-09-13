@@ -39,13 +39,13 @@ public abstract class Triple implements Runnable
                 TripleActionRun act = (TripleActionRun)action;
                 action = act.next();
             } while (action instanceof TripleActionRun);
-            logger.info("upper consumer completes");
+            logger.info("triple completes");
         }
         catch (InterruptedException ex) {
             throw ex;
         }
         catch (Exception ex) {
-            logger.error("upper consumer throws exception: ", ex);
+            logger.error("triple throws exception: ", ex);
             TripleActionErr erract = action.next(ex);
             SimpleStatusInner o;
             SimpleStatus f;

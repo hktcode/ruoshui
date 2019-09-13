@@ -55,7 +55,7 @@ public class UpcsmActionRun extends TripleActionRun<UpcsmAction, UpcsmConfig, Up
         }
         UpcsmMetricRun basicMetric = this.toRunMetrics();
         TripleMetricEnd<UpcsmMetricRun> metric = TripleMetricEnd.of(basicMetric);
-        return TripleActionEnd.of(this, super.config, metric, this.number);
+        return UpcsmActionEnd.of(this, super.config, metric, this.number);
     }
 
     private UpperRecordConsumer poll() throws InterruptedException

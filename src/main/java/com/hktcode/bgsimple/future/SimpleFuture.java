@@ -8,6 +8,8 @@ import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.method.*;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.NeverHappenAssertionError;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.Future;
@@ -123,7 +125,10 @@ public abstract class SimpleFuture<S extends SimpleStatusOuter>
         } else if (this.origin instanceof SimpleStatusOuterDel) {
             return this.origin;
         } else {
+            logger.info("new status outer del: delCount={}", delCount);
             return SimpleStatusOuterDel.of(method, new Phaser(delCount + 1));
         }
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(SimpleFuture.class);
 }

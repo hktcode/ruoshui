@@ -6,11 +6,15 @@ package com.hktcode.bgsimple.status;
 
 import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Phaser;
 
 public abstract class SimpleStatusOuter implements SimpleStatus
 {
+    private static final Logger logger = LoggerFactory.getLogger(SimpleStatusOuter.class);
+
     public final Phaser phaser;
 
     protected SimpleStatusOuter(Phaser phaser)
@@ -26,6 +30,9 @@ public abstract class SimpleStatusOuter implements SimpleStatus
         }
         this.setResult(wkstep, number);
         int phase = this.phaser.arriveAndDeregister();
+        if (phase < 0) {
+            logger.error("phaser.arriveAndDeregister: number={}, phaser={}", number, phase);
+        }
         this.phaser.awaitAdvanceInterruptibly(phase);
         this.phaser.awaitAdvanceInterruptibly(this.phaser.getPhase());
     }
