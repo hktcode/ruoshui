@@ -11,8 +11,10 @@ Ruoshui是一个基于PostgreSQL和Apache Kafka的流式处理框架，在Postgr
 
 ## [构建运行](/doc/01.build.md)
 
-## [快速开始](/doc/03.usage.md)
+## [快速开始](/doc/02.quick-start.md)
 
-## [消息](/doc/04.message.md)
+## [用户手册](/doc/03.usage.md)
 
-## [设计](./doc/design/design.md)
+## [消息格式](/doc/04.message.md)
+
+## [设计理念](./doc/design/design.md)
