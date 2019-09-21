@@ -12,7 +12,7 @@ import com.hktcode.pgjdbc.PgReplRelation;
 
 import java.util.Iterator;
 
-class PgActionDataSsBegins extends PgActionDataSnapshot
+class PgActionDataSsBegins extends PgActionDataOfferMsg
 {
     static PgActionDataSsBegins of(PgActionDataSizeDiff action)
     {
@@ -32,9 +32,12 @@ class PgActionDataSsBegins extends PgActionDataSnapshot
     }
 
     @Override
-    LogicalMsg createMsg(ImmutableList<PgReplRelation> list)
+    PgRecord createRecord()
     {
-        return LogicalBegSnapshotMsg.of(list);
+        long lsn = this.replSlot.createTuple.consistentPoint;
+        ImmutableList<PgReplRelation> list = super.getImmutableReplRelaList();
+        LogicalMsg msg = LogicalBegSnapshotMsg.of(list);
+        return PgRecordLogicalMsg.of(lsn, msg);
     }
 
     @Override

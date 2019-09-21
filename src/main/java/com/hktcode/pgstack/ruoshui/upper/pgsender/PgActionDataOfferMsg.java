@@ -6,24 +6,68 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
-import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgjdbc.LogicalBegRelationMsg;
+import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgjdbc.PgReplRelation;
 import org.postgresql.jdbc.PgConnection;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 abstract class PgActionDataOfferMsg extends PgActionData
 {
-    PgActionDataOfferMsg(PgActionData action, long actionStart)
+    public final PgReportRelaList relalist;
+
+    public final PgReportRelaLock relaLock;
+
+    public final PgReportReplSlotTuple replSlot;
+
+    public final PgReportSizeDiff sizeDiff;
+
+    final ImmutableList<PgStructRelainfo> relationLst;
+
+    PgActionDataOfferMsg(PgActionDataOfferMsg action, long actionStart)
     {
         super(action, actionStart);
+        this.relalist = action.relalist;
+        this.relaLock = action.relaLock;
+        this.replSlot = action.replSlot;
+        this.sizeDiff = action.sizeDiff;
+        this.relationLst = action.relationLst;
+        this.logDatetime = action.logDatetime;
     }
 
-    PgActionDataOfferMsg(PgActionData action)
+    PgActionDataOfferMsg(PgActionDataOfferMsg action)
     {
         super(action, action.actionStart);
+        this.relalist = action.relalist;
+        this.relaLock = action.relaLock;
+        this.replSlot = action.replSlot;
+        this.sizeDiff = action.sizeDiff;
+        this.relationLst = action.relationLst;
+        this.logDatetime = action.logDatetime;
+    }
+
+    PgActionDataOfferMsg(PgActionDataTupleval action)
+    {
+        super(action, action.actionStart);
+        this.relalist = action.relalist;
+        this.relaLock = action.relaLock;
+        this.replSlot = action.replSlot;
+        this.sizeDiff = action.sizeDiff;
+        this.relationLst = action.relationLst;
+        this.logDatetime = action.logDatetime;
+    }
+
+    PgActionDataOfferMsg(PgActionDataSizeDiff action)
+    {
+        super(action, System.currentTimeMillis());
+        this.relalist = action.relalist;
+        this.relaLock = action.relaLock;
+        this.replSlot = action.replSlot;
+        this.sizeDiff = PgReportSizeDiff.of(action, this.actionStart);
+        this.relationLst = action.oldRelalist;
+        this.logDatetime = action.logDatetime;
     }
 
     @Override
@@ -37,6 +81,15 @@ abstract class PgActionDataOfferMsg extends PgActionData
             }
         }
         return PgActionTerminateEnd.of(this);
+    }
+
+    ImmutableList<PgReplRelation> getImmutableReplRelaList()
+    {
+        List<PgReplRelation> list = new ArrayList<>(this.relationLst.size());
+        for(PgStructRelainfo m : this.relationLst) {
+            list.add(m.relationInfo);
+        }
+        return ImmutableList.copyOf(list);
     }
 
     abstract PgRecord createRecord();

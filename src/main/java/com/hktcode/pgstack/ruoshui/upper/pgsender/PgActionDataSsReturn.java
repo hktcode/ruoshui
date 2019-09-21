@@ -17,16 +17,6 @@ class PgActionDataSsReturn extends PgActionDataOfferMsg
         return new PgActionDataSsReturn(action);
     }
 
-    public final PgReportRelaList relalist;
-
-    public final PgReportRelaLock relaLock;
-
-    public final PgReportReplSlotTuple replSlot;
-
-    public final PgReportSizeDiff sizeDiff;
-
-    final ImmutableList<PgStructRelainfo> relationLst;
-
     public final PgReportSsBegins ssBegins;
 
     public final PgReportTupleval tupleval;
@@ -37,15 +27,10 @@ class PgActionDataSsReturn extends PgActionDataOfferMsg
     {
         super(action);
         long finish = System.currentTimeMillis();
-        this.relalist = action.relalist;
-        this.relaLock = action.relaLock;
-        this.replSlot = action.replSlot;
-        this.sizeDiff = action.sizeDiff;
         this.ssBegins = action.ssBegins;
         this.tupleval = action.tupleval;
         this.ssfinish = PgReportSsFinish.of(action, finish);
         this.logDatetime = action.logDatetime;
-        this.relationLst = action.relationLst;
     }
 
     @Override

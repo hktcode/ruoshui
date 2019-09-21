@@ -4,7 +4,6 @@
 
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
-import com.google.common.collect.ImmutableList;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalBegRelationMsg;
 import com.hktcode.pgjdbc.PgReplRelation;
@@ -29,17 +28,7 @@ class PgActionDataSrBegins extends PgActionDataOfferMsg
         return new PgActionDataSrBegins(action);
     }
 
-    public final PgReportRelaList relalist;
-
-    public final PgReportRelaLock relaLock;
-
-    public final PgReportReplSlotTuple replSlot;
-
-    public final PgReportSizeDiff sizeDiff;
-
     public final PgReportSsBegins ssbegins;
-
-    public final ImmutableList<PgStructRelainfo> relationLst;
 
     final Iterator<PgStructRelainfo> relIterator;
 
@@ -48,12 +37,7 @@ class PgActionDataSrBegins extends PgActionDataOfferMsg
     private PgActionDataSrBegins(PgActionDataSsBegins action)
     {
         super(action, System.currentTimeMillis());
-        this.relalist = action.relalist;
-        this.relaLock = action.relaLock;
-        this.replSlot = action.replSlot;
-        this.sizeDiff = action.sizeDiff;
         this.ssbegins = PgReportSsBegins.of(action, action.actionStart);
-        this.relationLst = action.relationLst;
         this.relIterator = action.relIterator;
         this.curRelation = this.relIterator.next();
         this.logDatetime = action.logDatetime;
@@ -62,12 +46,7 @@ class PgActionDataSrBegins extends PgActionDataOfferMsg
     private PgActionDataSrBegins(PgActionDataSrFinish action)
     {
         super(action, action.actionStart);
-        this.relalist = action.relalist;
-        this.relaLock = action.relaLock;
-        this.replSlot = action.replSlot;
-        this.sizeDiff = action.sizeDiff;
         this.ssbegins = action.ssbegins;
-        this.relationLst = action.relationLst;
         this.relIterator = action.relIterator;
         this.logDatetime = action.logDatetime;
         this.rsgetCounts = action.rsgetCounts;

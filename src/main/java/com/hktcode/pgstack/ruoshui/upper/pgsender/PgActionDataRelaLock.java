@@ -63,6 +63,7 @@ class PgActionDataRelaLock extends PgActionData
             Future<Boolean> executeFuture = null;
             while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
                 if (Boolean.FALSE.equals(success)) {
+                    pgdata.rollback();
                     return PgActionDataRelaList.of(this);
                 }
                 else if (Boolean.TRUE.equals(success)) {

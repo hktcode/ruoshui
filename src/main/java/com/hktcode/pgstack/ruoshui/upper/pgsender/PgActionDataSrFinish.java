@@ -20,17 +20,7 @@ class PgActionDataSrFinish extends PgActionDataOfferMsg
         return new PgActionDataSrFinish(action);
     }
 
-    public final PgReportRelaList relalist;
-
-    public final PgReportRelaLock relaLock;
-
-    public final PgReportReplSlotTuple replSlot;
-
-    public final PgReportSizeDiff sizeDiff;
-
     public final PgReportSsBegins ssbegins;
-
-    public final ImmutableList<PgStructRelainfo> relationLst;
 
     final Iterator<PgStructRelainfo> relIterator;
 
@@ -38,13 +28,8 @@ class PgActionDataSrFinish extends PgActionDataOfferMsg
 
     private PgActionDataSrFinish(PgActionDataTupleval action) //
     {
-        super(action, action.actionStart);
-        this.relalist = action.relalist;
-        this.relaLock = action.relaLock;
-        this.replSlot = action.replSlot;
-        this.sizeDiff = action.sizeDiff;
+        super(action);
         this.ssbegins = action.ssbegins;
-        this.relationLst = action.relationLst;
         this.relIterator = action.relIterator;
         this.logDatetime = action.logDatetime;
         this.rsgetCounts = action.rsgetCounts;

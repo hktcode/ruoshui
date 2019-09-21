@@ -45,7 +45,7 @@ public class PgActionDataSizeDiff extends PgActionDataQueryRel
     }
 
     @Override
-    PgAction complete(Connection pgdata)
+    PgAction complete(Connection pgdata) throws SQLException
     {
         if (super.relaBuilder[0] != null) {
             this.newRelalist.add(super.relaBuilder[0].builder());
@@ -54,6 +54,7 @@ public class PgActionDataSizeDiff extends PgActionDataQueryRel
             return PgActionDataSsBegins.of(this);
         }
         else {
+            pgdata.rollback();
             return PgActionDataRelaList.of(this);
         }
     }

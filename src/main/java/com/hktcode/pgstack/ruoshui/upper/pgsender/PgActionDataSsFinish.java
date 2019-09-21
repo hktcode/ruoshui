@@ -10,7 +10,7 @@ import com.hktcode.pgjdbc.LogicalEndSnapshotMsg;
 import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgjdbc.PgReplRelation;
 
-class PgActionDataSsFinish extends PgActionDataSnapshot
+class PgActionDataSsFinish extends PgActionDataOfferMsg
 {
     static PgActionDataSsFinish of(PgActionDataSrFinish action)
     {
@@ -49,9 +49,12 @@ class PgActionDataSsFinish extends PgActionDataSnapshot
     }
 
     @Override
-    LogicalMsg createMsg(ImmutableList<PgReplRelation> list)
+    PgRecord createRecord()
     {
-        return LogicalEndSnapshotMsg.of(list);
+        long lsn = this.replSlot.createTuple.consistentPoint;
+        ImmutableList<PgReplRelation> list = super.getImmutableReplRelaList();
+        LogicalMsg msg = LogicalEndSnapshotMsg.of(list);
+        return PgRecordLogicalMsg.of(lsn, msg);
     }
 
     @Override
