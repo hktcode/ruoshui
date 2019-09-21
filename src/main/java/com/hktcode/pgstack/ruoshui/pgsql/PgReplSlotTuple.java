@@ -45,26 +45,31 @@ public class PgReplSlotTuple
      *
      * TODO: maybe a {@code LogicalReplicationSlotCreator} is good.
      *
-     * @param resultSet the resultSet from {@code CREATE_REPLICATION_SLOT LOGICAL} statement.
+     * @param rs the resultSet from {@code CREATE_REPLICATION_SLOT LOGICAL} statement.
      *
      * @return a PgReplSlotTuple Object.
      *
      * @throws SQLException if execute the {@code sql} wrong.
      * @throws ArgumentNullException if {@code connection} or {@code sql} is {@code null}.
      */
-    public static PgReplSlotTuple of(ResultSet resultSet) //
+    public static PgReplSlotTuple of(ResultSet rs) //
         throws SQLException
     {
-        if (resultSet == null) {
-            throw new ArgumentNullException("resultSet");
+        if (rs == null) {
+            throw new ArgumentNullException("rs");
         }
         // NOTE:XXX: 此处需要处理null问题么？需要处理rs返回多条记录的问题么？
-        String slotName = resultSet.getString("slot_name");
-        String snapshotName = resultSet.getString("snapshot_name");
-        String outputPlugin = resultSet.getString("output_plugin");
-        String consistentPointTxt = resultSet.getString("consistent_point");
+        Object slotNameObj = rs.getObject("slot_name");
+        Object snapshotNameObj = rs.getObject("snapshot_name");
+        Object outputPluginObj = rs.getObject("output_plugin");
+        Object consistentPointObj = rs.getObject("consistent_point");
+
+        String slotName = Objects.toString(slotNameObj, "");
+        String snapshotName = Objects.toString(snapshotNameObj, "");
+        String outputPlugin = Objects.toString(outputPluginObj, "");
         LogSequenceNumber consistentPoint = LogSequenceNumber.INVALID_LSN;
-        if (consistentPointTxt != null) {
+        if (consistentPointObj != null) {
+            String consistentPointTxt = consistentPointObj.toString();
             consistentPoint = LogSequenceNumber.valueOf(consistentPointTxt);
         }
         return new PgReplSlotTuple //

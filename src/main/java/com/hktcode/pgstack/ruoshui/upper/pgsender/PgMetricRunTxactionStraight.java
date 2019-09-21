@@ -19,5 +19,8 @@ public class PgMetricRunTxactionStraight extends PgMetricRunTxaction
     private PgMetricRunTxactionStraight(PgActionReplTxactionStraight action)
     {
         super(action);
+        this.replslot = action.replslot;
     }
+
+    public final PgReportReplSlot replslot;
 }

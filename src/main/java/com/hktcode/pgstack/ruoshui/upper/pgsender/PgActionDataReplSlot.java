@@ -5,6 +5,7 @@
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.google.common.collect.ImmutableList;
+import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.pgsql.PgReplSlotTuple;
 import org.postgresql.jdbc.PgConnection;
@@ -14,35 +15,29 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.concurrent.TransferQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
-class PgActionDataReplSlot extends PgActionDataQuerySql
+abstract class PgActionDataReplSlot extends PgActionDataQuerySql
 {
     private static final Logger logger = LoggerFactory.getLogger(PgActionDataReplSlot.class);
-
-    static PgActionDataReplSlot of(PgActionDataRelaLock action)
-    {
-        if (action == null) {
-            throw new ArgumentNullException("action");
-        }
-        return new PgActionDataReplSlot(action);
-    }
-
-    public final PgReportRelaList relalist;
-
-    public final PgReportRelaLock relaLock;
-
-    public final ImmutableList<PgStructRelainfo> relationLst;
 
     long sltDuration = 0;
 
     PgReplSlotTuple[] createTuple = new PgReplSlotTuple[0];
 
-    private PgActionDataReplSlot(PgActionDataRelaLock action)
+    PgActionDataReplSlot
+        /* */( PgConfig config //
+        /* */, AtomicReference<SimpleStatus> status //
+        /* */, TransferQueue<PgRecord> tqueue //
+        /* */)
+    {
+        super(config, status, tqueue);
+    }
+
+    PgActionDataReplSlot(PgActionDataRelaLock action)
     {
         super(action, System.currentTimeMillis());
-        this.relalist = action.relalist;
-        this.relaLock = PgReportRelaLock.of(action, this.actionStart);
-        this.relationLst = action.relationLst;
         this.logDatetime = action.logDatetime;
     }
 
@@ -60,30 +55,11 @@ class PgActionDataReplSlot extends PgActionDataQuerySql
     }
 
     @Override
-    PgRecord initRecord()
-    {
-        return PgRecordPauseWorld.of();
-    }
-
-    @Override
-    PgAction complete(Connection pgdata)
-    {
-        if (this.createTuple.length == 0) {
-            throw new RuntimeException(); // TODO:
-        }
-        return PgActionDataSizeDiff.of(this);
-    }
-
-    @Override
     PgDeputeCreateSlot createDepute(PgConnection pgdata, PgConnection pgrepl) //
         throws SQLException
     {
         return this.config.newCreateSlot(pgrepl.createStatement());
     }
 
-    @Override
-    public PgMetricRunReplSlot toRunMetrics()
-    {
-        return PgMetricRunReplSlot.of(this);
-    }
+
 }

@@ -6,22 +6,22 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class PgMetricRunReplSlot implements PgMetricRun
+public class PgMetricRunTxactionContinue extends PgMetricRunTxaction
 {
-    static PgMetricRunReplSlot of(PgActionDataReplSlotSnapshot action)
+    static PgMetricRunTxactionContinue of(PgActionReplTxactionContinue action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new PgMetricRunReplSlot(action);
+        return new PgMetricRunTxactionContinue(action);
     }
 
-    private PgMetricRunReplSlot(PgActionDataReplSlotSnapshot action)
+    private PgMetricRunTxactionContinue(PgActionReplTxactionContinue action)
     {
-        long finish = System.currentTimeMillis();
+        super(action);
         this.relalist = action.relalist;
         this.relalock = action.relaLock;
-        this.replslot = PgReportReplSlot.of(action, finish);
+        this.replslot = action.replSlot;
     }
 
     public final PgReportRelaList relalist;

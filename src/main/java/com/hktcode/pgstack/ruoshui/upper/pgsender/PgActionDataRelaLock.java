@@ -84,7 +84,7 @@ class PgActionDataRelaLock extends PgActionData
                     executeFuture = exesvc.submit(callable);
                 }
                 else {
-                    return PgActionDataReplSlot.of(this);
+                    return PgActionDataReplSlotSnapshot.of(this);
                 }
             }
         }

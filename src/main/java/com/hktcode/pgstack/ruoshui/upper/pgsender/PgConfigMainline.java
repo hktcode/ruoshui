@@ -99,7 +99,7 @@ public class PgConfigMainline extends PgConfig
         if (statement == null) {
             throw new ArgumentNullException("statement");
         }
-        return PgDeputeCreateSlotMainline.of(statement, logicalRepl.slotName);
+        return PgDeputeCreateSlotMainline.of(statement, logicalRepl.slotName, getSnapshot);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class PgConfigMainline extends PgConfig
         if (this.getSnapshot) {
             return PgActionDataRelaList.of(this, status, tqueue);
         } else {
-            return PgActionDataTypelistStraight.of(this, status, tqueue);
+            return PgActionDataReplSlotStraight.of(this, status, tqueue);
         }
     }
 }

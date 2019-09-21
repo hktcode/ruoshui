@@ -19,5 +19,8 @@ public class PgMetricRunTypelistStraight extends PgMetricRunTypelist
     private PgMetricRunTypelistStraight(PgActionDataTypelistStraight action)
     {
         super(action);
+        this.replslot = action.replslot;
     }
+
+    public final PgReportReplSlot replslot;
 }

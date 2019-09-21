@@ -12,31 +12,20 @@ import java.util.concurrent.atomic.AtomicReference;
 
 class PgActionDataTypelistStraight extends PgActionDataTypelist
 {
-    static PgActionDataTypelistStraight of
-        /* */(PgConfigMainline config //
-        /* */, AtomicReference<SimpleStatus> status //
-        /* */, TransferQueue<PgRecord> tqueue //
-        /* */)
+    static PgActionDataTypelistStraight of(PgActionDataReplSlotStraight action)
     {
-        if (config == null) {
-            throw new ArgumentNullException("config");
+        if (action == null) {
+            throw new ArgumentNullException("action");
         }
-        if (status == null) {
-            throw new ArgumentNullException("status");
-        }
-        if (tqueue == null) {
-            throw new ArgumentNullException("tqueue");
-        }
-        return new PgActionDataTypelistStraight(config, status, tqueue);
+        return new PgActionDataTypelistStraight(action);
     }
 
-    private PgActionDataTypelistStraight
-        /* */(PgConfigMainline config //
-        /* */, AtomicReference<SimpleStatus> status //
-        /* */, TransferQueue<PgRecord> tqueue //
-        /* */)
+    final PgReportReplSlot replslot;
+
+    private PgActionDataTypelistStraight(PgActionDataReplSlotStraight action)
     {
-        super(config, status, tqueue);
+        super((PgConfigMainline) action.config, action.status, action.tqueue);
+        this.replslot = PgReportReplSlot.of(action, this.actionStart);
     }
 
     public PgActionReplTxactionStraight txaction()

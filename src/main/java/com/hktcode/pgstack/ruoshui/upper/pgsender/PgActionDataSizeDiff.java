@@ -16,7 +16,7 @@ import java.sql.Statement;
 
 public class PgActionDataSizeDiff extends PgActionDataQueryRel
 {
-    static PgActionDataSizeDiff of(PgActionDataReplSlot action)
+    static PgActionDataSizeDiff of(PgActionDataReplSlotSnapshot action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -34,7 +34,7 @@ public class PgActionDataSizeDiff extends PgActionDataQueryRel
 
     final ImmutableList<PgStructRelainfo> oldRelalist;
 
-    private PgActionDataSizeDiff(PgActionDataReplSlot action)
+    private PgActionDataSizeDiff(PgActionDataReplSlotSnapshot action)
     {
         super(action, System.currentTimeMillis());
         this.relalist = action.relalist;

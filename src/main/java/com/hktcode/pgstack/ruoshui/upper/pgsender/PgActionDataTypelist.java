@@ -33,6 +33,12 @@ abstract class PgActionDataTypelist extends PgActionDataQuerySql
         this.logDatetime = action.logDatetime;
     }
 
+    PgActionDataTypelist(PgActionDataReplSlot action)
+    {
+        super(action, System.currentTimeMillis());
+        this.logDatetime = action.logDatetime;
+    }
+
     public abstract PgActionReplTxaction txaction();
 
     @Override

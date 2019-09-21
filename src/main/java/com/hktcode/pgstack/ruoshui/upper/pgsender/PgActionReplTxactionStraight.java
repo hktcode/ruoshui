@@ -16,9 +16,12 @@ class PgActionReplTxactionStraight extends PgActionReplTxaction
         return new PgActionReplTxactionStraight(action);
     }
 
+    final PgReportReplSlot replslot;
+
     private PgActionReplTxactionStraight(PgActionDataTypelistStraight action)
     {
         super(action);
+        this.replslot = action.replslot;
     }
 
     @Override
