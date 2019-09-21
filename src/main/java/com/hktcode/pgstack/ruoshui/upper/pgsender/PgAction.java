@@ -39,7 +39,10 @@ public abstract class PgAction //
     }
 
     @Override
-    public abstract PgResult get();
+    public PgResult get()
+    {
+        return this.del();
+    }
 
     @Override
     public abstract PgResultEnd del();

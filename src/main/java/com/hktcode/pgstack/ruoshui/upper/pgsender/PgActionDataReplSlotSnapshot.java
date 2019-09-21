@@ -6,16 +6,12 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.google.common.collect.ImmutableList;
 import com.hktcode.lang.exception.ArgumentNullException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 class PgActionDataReplSlotSnapshot extends PgActionDataReplSlot
 {
-    private static final Logger logger = LoggerFactory.getLogger(PgActionDataReplSlotSnapshot.class);
-
     static PgActionDataReplSlotSnapshot of(PgActionDataRelaLock action)
     {
         if (action == null) {
@@ -24,11 +20,11 @@ class PgActionDataReplSlotSnapshot extends PgActionDataReplSlot
         return new PgActionDataReplSlotSnapshot(action);
     }
 
-    public final PgReportRelaList relalist;
+    final PgReportRelaList relalist;
 
-    public final PgReportRelaLock relaLock;
+    final PgReportRelaLock relaLock;
 
-    public final ImmutableList<PgStructRelainfo> relationLst;
+    final ImmutableList<PgStructRelainfo> relationLst;
 
     private PgActionDataReplSlotSnapshot(PgActionDataRelaLock action)
     {

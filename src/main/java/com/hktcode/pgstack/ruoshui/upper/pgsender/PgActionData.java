@@ -18,19 +18,19 @@ import java.sql.SQLException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class PgActionData extends PgAction
+abstract class PgActionData extends PgAction
 {
     private static final Logger logger = LoggerFactory.getLogger(PgActionData.class);
 
-    public final long actionStart;
+    final long actionStart;
 
-    public long rsgetCounts = 0;
+    long rsgetCounts = 0;
 
-    public long rsgetMillis = 0;
+    long rsgetMillis = 0;
 
-    public long rsnextCount = 0;
+    long rsnextCount = 0;
 
-    protected PgActionData(PgActionData action, long actionStart)
+    PgActionData(PgActionData action, long actionStart)
     {
         super(action.config, action.tqueue, action.status);
         this.actionStart = actionStart;
@@ -38,8 +38,8 @@ public abstract class PgActionData extends PgAction
         this.logDatetime = action.logDatetime;
     }
 
-    protected PgActionData //
-        /* */(PgConfig config //
+    PgActionData //
+        /* */( PgConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */, long actionStart //
@@ -53,7 +53,7 @@ public abstract class PgActionData extends PgAction
     next(ExecutorService exesvc, PgConnection pgdata, PgConnection pgrepl) //
         throws SQLException, InterruptedException, ScriptException;
 
-    public <T> T pollFromFuture(Future<T> future) //
+    <T> T pollFromFuture(Future<T> future) //
         throws SQLException, InterruptedException
     {
         long waitTimeout = this.config.waitTimeout;

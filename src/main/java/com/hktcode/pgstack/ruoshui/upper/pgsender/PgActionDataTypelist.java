@@ -39,7 +39,7 @@ abstract class PgActionDataTypelist extends PgActionDataQuerySql
         this.logDatetime = action.logDatetime;
     }
 
-    public abstract PgActionReplTxaction txaction();
+    abstract PgActionReplTxaction txaction();
 
     @Override
     PgRecord build(ResultSet rs) //

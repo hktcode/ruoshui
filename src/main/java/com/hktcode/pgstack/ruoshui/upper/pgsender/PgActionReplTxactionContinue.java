@@ -16,11 +16,11 @@ class PgActionReplTxactionContinue extends PgActionReplTxaction
         return new PgActionReplTxactionContinue(action);
     }
 
-    public final PgReportRelaList relalist;
+    final PgReportRelaList relalist;
 
-    public final PgReportRelaLock relaLock;
+    final PgReportRelaLock relaLock;
 
-    public final PgReportReplSlot replSlot;
+    final PgReportReplSlot replSlot;
 
     private PgActionReplTxactionContinue(PgActionDataTypelistContinue action)
     {

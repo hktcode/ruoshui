@@ -32,17 +32,17 @@ class PgActionDataTupleval extends PgActionDataQuerySql
         return new PgActionDataTupleval(action);
     }
 
-    public final PgReportRelaList relalist;
+    final PgReportRelaList relalist;
 
-    public final PgReportRelaLock relaLock;
+    final PgReportRelaLock relaLock;
 
-    public final PgReportReplSlotTuple replSlot;
+    final PgReportReplSlotTuple replSlot;
 
-    public final PgReportSizeDiff sizeDiff;
+    final PgReportSizeDiff sizeDiff;
 
-    public final PgReportSsBegins ssbegins;
+    final PgReportSsBegins ssbegins;
 
-    public final ImmutableList<PgStructRelainfo> relationLst;
+    final ImmutableList<PgStructRelainfo> relationLst;
 
     final Iterator<PgStructRelainfo> relIterator;
 
@@ -127,7 +127,6 @@ class PgActionDataTupleval extends PgActionDataQuerySql
         sb.append(c.escapeIdentifier(r.relation));
         return sb.toString();
     }
-
 
     @Override
     public PgMetricRunTupleval toRunMetrics()

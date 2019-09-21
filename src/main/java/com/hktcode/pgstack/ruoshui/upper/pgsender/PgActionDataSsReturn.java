@@ -4,7 +4,6 @@
 
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
-import com.google.common.collect.ImmutableList;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 class PgActionDataSsReturn extends PgActionDataOfferMsg
@@ -17,11 +16,11 @@ class PgActionDataSsReturn extends PgActionDataOfferMsg
         return new PgActionDataSsReturn(action);
     }
 
-    public final PgReportSsBegins ssBegins;
+    final PgReportSsBegins ssBegins;
 
-    public final PgReportTupleval tupleval;
+    final PgReportTupleval tupleval;
 
-    public final PgReportSsFinish ssfinish;
+    final PgReportSsFinish ssfinish;
 
     private PgActionDataSsReturn(PgActionDataSsFinish action)
     {

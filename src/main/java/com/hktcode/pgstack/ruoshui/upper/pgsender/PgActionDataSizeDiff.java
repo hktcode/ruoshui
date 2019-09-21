@@ -67,8 +67,8 @@ public class PgActionDataSizeDiff extends PgActionDataQueryRel
         String setTransaction //
             = "SET TRANSACTION SNAPSHOT '" + pgdata.escapeLiteral(name) + "'";
         try (Statement s = pgdata.createStatement()) {
-            logger.info("execute set snapshot: {}", setTransaction);
-            s.execute(setTransaction); // TODO: pollFromFuture?
+            boolean success = s.execute(setTransaction); // TODO: pollFromFuture?
+            logger.info("execute set snapshot: statement={}, success={}", setTransaction, success);
         }
         return PgDeputeSelectData.of(this.queryRelalist(pgdata));
     }

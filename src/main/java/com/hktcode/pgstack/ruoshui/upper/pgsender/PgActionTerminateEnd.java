@@ -6,9 +6,9 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class PgActionTerminateEnd extends PgAction
+class PgActionTerminateEnd extends PgAction
 {
-    public static PgActionTerminateEnd of(PgAction action)
+    static PgActionTerminateEnd of(PgAction action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -16,7 +16,7 @@ public class PgActionTerminateEnd extends PgAction
         return new PgActionTerminateEnd(action);
     }
 
-    public final PgMetricEnd metric;
+    final PgMetricEnd metric;
 
     private PgActionTerminateEnd(PgAction action)
     {
@@ -37,14 +37,8 @@ public class PgActionTerminateEnd extends PgAction
     }
 
     @Override
-    public PgResultFinish get()
-    {
-        return PgResultFinish.of(this.config, this.metric);
-    }
-
-    @Override
     public PgResultFinish del()
     {
-        return this.get();
+        return PgResultFinish.of(this.config, this.metric);
     }
 }

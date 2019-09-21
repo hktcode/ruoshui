@@ -30,9 +30,9 @@ class PgActionDataRelaLock extends PgActionData
         return new PgActionDataRelaLock(action);
     }
 
-    public final PgReportRelaList relalist;
+    final PgReportRelaList relalist;
 
-    public final ImmutableList<PgStructRelainfo> relationLst;
+    final ImmutableList<PgStructRelainfo> relationLst;
 
     private PgActionDataRelaLock(PgActionDataRelaList action)
     {

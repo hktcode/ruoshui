@@ -4,7 +4,6 @@
 
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
-import com.google.common.collect.ImmutableList;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalEndRelationMsg;
 
@@ -20,11 +19,11 @@ class PgActionDataSrFinish extends PgActionDataOfferMsg
         return new PgActionDataSrFinish(action);
     }
 
-    public final PgReportSsBegins ssbegins;
+    final PgReportSsBegins ssbegins;
 
     final Iterator<PgStructRelainfo> relIterator;
 
-    final PgStructRelainfo curRelation;
+    private final PgStructRelainfo curRelation;
 
     private PgActionDataSrFinish(PgActionDataTupleval action) //
     {

@@ -16,11 +16,11 @@ class PgActionDataTypelistContinue extends PgActionDataTypelist
         return new PgActionDataTypelistContinue(action);
     }
 
-    public final PgReportRelaList relalist;
+    final PgReportRelaList relalist;
 
-    public final PgReportRelaLock relaLock;
+    final PgReportRelaLock relaLock;
 
-    public final PgReportReplSlot replSlot;
+    final PgReportReplSlot replSlot;
 
     private PgActionDataTypelistContinue(PgActionDataReplSlotSnapshot action)
     {
@@ -30,7 +30,8 @@ class PgActionDataTypelistContinue extends PgActionDataTypelist
         this.replSlot = PgReportReplSlotEmpty.of(action, this.actionStart);
     }
 
-    public PgActionReplTxaction txaction()
+    @Override
+    PgActionReplTxaction txaction()
     {
         return PgActionReplTxactionContinue.of(this);
     }

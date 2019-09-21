@@ -4,11 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
-import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
-
-import java.util.concurrent.TransferQueue;
-import java.util.concurrent.atomic.AtomicReference;
 
 class PgActionDataTypelistStraight extends PgActionDataTypelist
 {
@@ -28,7 +24,8 @@ class PgActionDataTypelistStraight extends PgActionDataTypelist
         this.replslot = PgReportReplSlot.of(action, this.actionStart);
     }
 
-    public PgActionReplTxactionStraight txaction()
+    @Override
+    PgActionReplTxactionStraight txaction()
     {
         return PgActionReplTxactionStraight.of(this);
     }

@@ -28,9 +28,9 @@ class PgActionDataSsFinish extends PgActionDataOfferMsg
         return new PgActionDataSsFinish(action);
     }
 
-    public final PgReportSsBegins ssBegins;
+    final PgReportSsBegins ssBegins;
 
-    public final PgReportTupleval tupleval;
+    final PgReportTupleval tupleval;
 
     private PgActionDataSsFinish(PgActionDataSsBegins action)
     {

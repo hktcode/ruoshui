@@ -6,15 +6,14 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
-import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class PgActionThrowsErrors extends PgAction
+class PgActionThrowsErrors extends PgAction
 {
-    public static PgActionThrowsErrors of(PgAction action, Throwable throwsError)
+    static PgActionThrowsErrors of(PgAction action, Throwable throwsError)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -31,7 +30,7 @@ public class PgActionThrowsErrors extends PgAction
         this.metric = action.toMetrics().toErrMetrics(throwsError);
     }
 
-    public final PgMetricErr metric;
+    final PgMetricErr metric;
 
     @Override
     public PgActionTerminateEnd next() throws InterruptedException
@@ -56,12 +55,6 @@ public class PgActionThrowsErrors extends PgAction
     public PgMetricErr toMetrics()
     {
         return this.metric;
-    }
-
-    @Override
-    public PgResultThrows get()
-    {
-        return PgResultThrows.of(config, metric);
     }
 
     @Override

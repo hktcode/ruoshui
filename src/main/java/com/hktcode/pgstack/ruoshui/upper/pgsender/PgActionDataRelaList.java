@@ -8,11 +8,8 @@ import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.jdbc.PgConnection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicReference;
@@ -20,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class PgActionDataRelaList extends PgActionDataQueryRel
 {
     public static PgActionDataRelaList of //
-        /* */(PgConfig config //
+        /* */( PgConfig config //
         /* */, AtomicReference<SimpleStatus> status //
         /* */, TransferQueue<PgRecord> tqueue //
         /* */)
@@ -52,8 +49,6 @@ public class PgActionDataRelaList extends PgActionDataQueryRel
         }
         return new PgActionDataRelaList(action);
     }
-
-    private static final Logger logger = LoggerFactory.getLogger(PgActionDataRelaList.class);
 
     private PgActionDataRelaList
         /* */( PgConfig config //

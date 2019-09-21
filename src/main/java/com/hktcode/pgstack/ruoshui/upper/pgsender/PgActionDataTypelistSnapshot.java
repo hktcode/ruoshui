@@ -16,19 +16,19 @@ class PgActionDataTypelistSnapshot extends PgActionDataTypelist
         return new PgActionDataTypelistSnapshot(action);
     }
 
-    public final PgReportRelaList relalist;
+    final PgReportRelaList relalist;
 
-    public final PgReportRelaLock relaLock;
+    final PgReportRelaLock relaLock;
 
-    public final PgReportReplSlot replSlot;
+    final PgReportReplSlot replSlot;
 
-    public final PgReportSizeDiff sizeDiff;
+    final PgReportSizeDiff sizeDiff;
 
-    public final PgReportSsBegins ssBegins;
+    final PgReportSsBegins ssBegins;
 
-    public final PgReportTupleval tupleval;
+    final PgReportTupleval tupleval;
 
-    public final PgReportSsFinish ssfinish;
+    final PgReportSsFinish ssfinish;
 
     private PgActionDataTypelistSnapshot(PgActionDataSsFinish action)
     {
@@ -42,7 +42,8 @@ class PgActionDataTypelistSnapshot extends PgActionDataTypelist
         this.ssfinish = PgReportSsFinish.of(action, this.actionStart);
     }
 
-    public PgActionReplTxaction txaction()
+    @Override
+    PgActionReplTxaction txaction()
     {
         return PgActionReplTxactionSnapshot.of(this);
     }

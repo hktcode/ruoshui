@@ -6,7 +6,6 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
-import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgjdbc.PgReplRelation;
 import org.postgresql.jdbc.PgConnection;
 
@@ -16,13 +15,13 @@ import java.util.concurrent.ExecutorService;
 
 abstract class PgActionDataOfferMsg extends PgActionData
 {
-    public final PgReportRelaList relalist;
+    final PgReportRelaList relalist;
 
-    public final PgReportRelaLock relaLock;
+    final PgReportRelaLock relaLock;
 
-    public final PgReportReplSlotTuple replSlot;
+    final PgReportReplSlotTuple replSlot;
 
-    public final PgReportSizeDiff sizeDiff;
+    final PgReportSizeDiff sizeDiff;
 
     final ImmutableList<PgStructRelainfo> relationLst;
 

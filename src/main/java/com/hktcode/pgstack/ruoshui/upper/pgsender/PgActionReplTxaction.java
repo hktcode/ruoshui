@@ -32,8 +32,8 @@ abstract class PgActionReplTxaction extends PgActionRepl
     }
 
     @Override
-    public PgAction
-    next(PgConnection pgrepl) throws SQLException, InterruptedException
+    public PgAction next(PgConnection pgrepl) //
+        throws SQLException, InterruptedException
     {
         PgRecord r = null;
         this.statusInfor = "start logical replication stream";

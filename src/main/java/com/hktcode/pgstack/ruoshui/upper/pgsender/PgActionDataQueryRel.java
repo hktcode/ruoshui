@@ -9,8 +9,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.pgjdbc.PgReplAttribute;
 import org.postgresql.jdbc.PgConnection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.script.ScriptException;
 import java.sql.PreparedStatement;
@@ -23,8 +21,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 abstract class PgActionDataQueryRel extends PgActionDataQuerySql
 {
-    private static final Logger logger = LoggerFactory.getLogger(PgActionDataQueryRel.class);
-
     PgActionDataQueryRel
         /* */( PgConfig config //
         /* */, AtomicReference<SimpleStatus> status //
@@ -86,7 +82,7 @@ abstract class PgActionDataQueryRel extends PgActionDataQuerySql
         return null;
     }
 
-    public PreparedStatement queryRelalist(PgConnection pgdata) //
+    PreparedStatement queryRelalist(PgConnection pgdata) //
         throws SQLException
     {
         ArrayNode arrayNode = new ArrayNode(JsonNodeFactory.instance);

@@ -12,11 +12,11 @@ abstract class PgActionRepl extends PgAction
 {
     public final long actionStart;
 
-    public long fetchCounts = 0;
+    long fetchCounts = 0;
 
-    public long fetchMillis = 0;
+    long fetchMillis = 0;
 
-    protected PgActionRepl(PgActionData action, long actionStart)
+    PgActionRepl(PgActionData action, long actionStart)
     {
         super(action.config, action.tqueue, action.status);
         this.actionStart = actionStart;
