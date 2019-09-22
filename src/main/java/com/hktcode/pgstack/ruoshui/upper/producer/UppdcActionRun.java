@@ -25,7 +25,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.hktcode.kafka.Kafka.Serializers.BYTES;
@@ -52,7 +51,7 @@ class UppdcActionRun extends TripleActionRun<UppdcActionRun, UpperProducerConfig
 
     private static final Logger logger = LoggerFactory.getLogger(UppdcActionRun.class);
 
-    public final BlockingQueue<UpperRecordProducer> getout;
+    private final BlockingQueue<UpperRecordProducer> getout;
 
     private UppdcActionRun
         /* */( UpperProducerConfig config
@@ -77,7 +76,7 @@ class UppdcActionRun extends TripleActionRun<UppdcActionRun, UpperProducerConfig
             UpperRecordProducer d = null;
             while (super.newStatus(this) instanceof SimpleStatusInnerRun) {
                 if (d == null) {
-                    d = this.poll();
+                    d = this.poll(getout);
                 }
                 else {
                     String keyText = d.key.toObjectNode().toString();
@@ -102,30 +101,6 @@ class UppdcActionRun extends TripleActionRun<UppdcActionRun, UpperProducerConfig
         UppdcMetricRun basicMetric = this.toRunMetrics();
         TripleMetricEnd<UppdcMetricRun> metric = TripleMetricEnd.of(basicMetric);
         return TripleActionEnd.of(this, config, metric, this.number);
-    }
-
-    private UpperRecordProducer poll() throws InterruptedException
-    {
-        long waitTimeout = config.waitTimeout;
-        long logDuration = config.logDuration;
-        long startsMillis = System.currentTimeMillis();
-        UpperRecordProducer record = getout.poll(waitTimeout, TimeUnit.MILLISECONDS);
-        long finishMillis = System.currentTimeMillis();
-        this.fetchMillis += (finishMillis - startsMillis);
-        ++fetchCounts;
-        if (record == null) {
-            long currMillis = System.currentTimeMillis();
-            if (currMillis - logDatetime >= logDuration) {
-                logger.info("poll record from getout timeout" //
-                        + ": waitTimeout={}" //
-                        + ", logDuration={}" //
-                        + ", logDatetime={}" //
-                        + ", currMillis={}" //
-                    , waitTimeout, logDuration, logDatetime, currMillis);
-                logDatetime = currMillis;
-            }
-        }
-        return record;
     }
 
     @Override

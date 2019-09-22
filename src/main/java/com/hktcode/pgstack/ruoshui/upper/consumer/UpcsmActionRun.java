@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class UpcsmActionRun extends TripleActionRun<UpcsmAction, UpcsmConfig, UpcsmMetricRun>
@@ -52,7 +51,7 @@ public class UpcsmActionRun extends TripleActionRun<UpcsmAction, UpcsmConfig, Up
     {
         UpperRecordConsumer r = null;
         while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
-            r = (r == null ? this.poll() : this.push(r));
+            r = (r == null ? this.poll() : this.push(r, comein));
         }
         return UpcsmActionEnd.of(this);
     }
@@ -75,28 +74,6 @@ public class UpcsmActionRun extends TripleActionRun<UpcsmAction, UpcsmConfig, Up
             this.logDatetime = finishMillis;
         }
         return r;
-    }
-
-    private UpperRecordConsumer push(UpperRecordConsumer record) //
-        throws InterruptedException
-    {
-        long waitTimeout = config.waitTimeout;
-        long logDuration = config.logDuration;
-        long startsMillis = System.currentTimeMillis();
-        boolean success = comein.offer(record, waitTimeout, TimeUnit.MILLISECONDS);
-        long finishMillis = System.currentTimeMillis();
-        this.offerMillis += (finishMillis - startsMillis);
-        ++this.offerCounts;
-        if (success) {
-            ++this.recordCount;
-            return null;
-        }
-        else if (finishMillis - this.logDatetime >= logDuration) {
-            logger.info("push record to comein fail: waitTimeout={}, logDuration={}" //
-                , waitTimeout, logDuration);
-            this.logDatetime = finishMillis;
-        }
-        return record;
     }
 
     private UpcsmActionRun //

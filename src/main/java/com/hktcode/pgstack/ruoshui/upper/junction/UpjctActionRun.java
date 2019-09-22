@@ -17,20 +17,15 @@ import com.hktcode.pgstack.ruoshui.pgsql.PgsqlKey;
 import com.hktcode.pgstack.ruoshui.pgsql.PgsqlVal;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordProducer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 class UpjctActionRun extends TripleActionRun<UpjctActionRun, TripleJunctionConfig, UpjctMetricRun>
 {
-    private static final Logger logger = LoggerFactory.getLogger(UpjctActionRun.class);
-
     public static UpjctActionRun of //
         /* */( TripleJunctionConfig config
         /* */, BlockingQueue<UpperRecordConsumer> comein
@@ -76,32 +71,6 @@ class UpjctActionRun extends TripleActionRun<UpjctActionRun, TripleJunctionConfi
         this.txidContext = LogicalTxactContext.of();
     }
 
-    protected UpperRecordConsumer poll() throws InterruptedException
-    {
-        long waitTimeout = config.waitTimeout;
-        long logDuration = config.logDuration;
-        long startsMillis = System.currentTimeMillis();
-        UpperRecordConsumer record //
-            = this.comein.poll(waitTimeout, TimeUnit.MILLISECONDS);
-        long finishMillis = System.currentTimeMillis();
-        this.fetchMillis += (finishMillis - startsMillis);
-        ++this.fetchCounts;
-        long currMillis = System.currentTimeMillis();
-        if (record != null) {
-            this.logDatetime = currMillis;
-        }
-        else if (currMillis - this.logDatetime >= logDuration) {
-            logger.info("poll record from getout timeout" //
-                    + ": waitTimeout={}" //
-                    + ", logDuration={}" //
-                    + ", logDatetime={}" //
-                    + ", currMillis={}" //
-                , waitTimeout, logDuration, this.logDatetime, currMillis);
-            this.logDatetime = currMillis;
-        }
-        return record;
-    }
-
     public TripleAction<UpjctActionRun, TripleJunctionConfig, UpjctMetricRun>
     next() throws InterruptedException
     {
@@ -111,13 +80,13 @@ class UpjctActionRun extends TripleActionRun<UpjctActionRun, TripleJunctionConfi
             = ImmutableList.<UpperRecordProducer>of().iterator();
         while (super.newStatus(this) instanceof SimpleStatusInnerRun) {
             if (o != null) {
-                o = this.push(o);
+                o = this.push(o, getout);
             }
             else if (t.hasNext()) {
                 o = t.next();
             }
             else if (r == null) {
-                r = this.poll();
+                r = this.poll(comein);
             }
             else {
                 t = this.convert(r).iterator();
@@ -127,33 +96,6 @@ class UpjctActionRun extends TripleActionRun<UpjctActionRun, TripleJunctionConfi
         UpjctMetricRun basicMetric = this.toRunMetrics();
         TripleMetricEnd<UpjctMetricRun> metric = TripleMetricEnd.of(basicMetric);
         return TripleActionEnd.of(this, config, metric, this.number);
-    }
-
-    private UpperRecordProducer push(UpperRecordProducer record) //
-        throws InterruptedException
-    {
-        long waitTimeout = config.waitTimeout;
-        long startsMillis = System.currentTimeMillis();
-        boolean success //
-            = this.getout.offer(record, waitTimeout, TimeUnit.MILLISECONDS);
-        long finishMillis = System.currentTimeMillis();
-        this.offerMillis += (finishMillis - startsMillis);
-        ++this.offerCounts;
-        if (success) {
-            ++this.recordCount;
-            return null;
-        }
-        else {
-            long logDuration = config.logDuration;
-            long currMillis = System.currentTimeMillis();
-            if (currMillis - this.logDatetime >= logDuration) {
-                logger.info("push record to comein fail" //
-                        + ": timeout={}, logDuration={}" //
-                    , waitTimeout, logDuration);
-                this.logDatetime = currMillis;
-            }
-            return record;
-        }
     }
 
     private List<UpperRecordProducer> convert(UpperRecordConsumer record)
