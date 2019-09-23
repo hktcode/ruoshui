@@ -91,7 +91,7 @@ public abstract class PgConfig extends TqueueConfig
 
     public abstract PgAction afterSnapshot(PgActionDataSsFinish action);
 
-    public abstract PgDeputeCreateSlot newCreateSlot(Statement statement);
+    public abstract PgDeputeReplSlot newCreateSlot(Statement statement);
 
     public abstract PgAction createsAction(AtomicReference<SimpleStatus> status, TransferQueue<PgRecord> tqueue);
 }

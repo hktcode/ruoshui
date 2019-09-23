@@ -12,9 +12,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-class PgDeputeCreateSlotMainline extends PgDeputeCreateSlot
+class PgDeputeReplSlotMainline extends PgDeputeReplSlot
 {
-    static PgDeputeCreateSlotMainline of(Statement statement, String nameinfor, boolean snapshots)
+    static PgDeputeReplSlotMainline of(Statement statement, String nameinfor, boolean snapshots)
     {
         if (statement == null) {
             throw new ArgumentNullException("statement");
@@ -22,7 +22,7 @@ class PgDeputeCreateSlotMainline extends PgDeputeCreateSlot
         if (nameinfor == null) {
             throw new ArgumentNullException("nameinfor");
         }
-        return new PgDeputeCreateSlotMainline(statement, nameinfor, snapshots);
+        return new PgDeputeReplSlotMainline(statement, nameinfor, snapshots);
     }
 
     private static final String EMPTY_SELECT = "" //
@@ -36,7 +36,7 @@ class PgDeputeCreateSlotMainline extends PgDeputeCreateSlot
 
     private final boolean snapshots;
 
-    private PgDeputeCreateSlotMainline(Statement statement, String nameinfor, boolean snapshots)
+    private PgDeputeReplSlotMainline(Statement statement, String nameinfor, boolean snapshots)
     {
         super(statement, nameinfor);
         this.snapshots = snapshots;

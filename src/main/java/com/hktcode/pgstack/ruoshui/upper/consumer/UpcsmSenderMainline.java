@@ -113,7 +113,7 @@ public class UpcsmSenderMainline extends UpcsmSender
     {
         SimpleHolder holder = SimpleHolder.of(status);
         SimpleMethodPst[] params = new SimpleMethodPst[] {
-            MainlineMethodPstParamsRecvLsn.of(lsn)
+            PgParamsPstRecveLsn.of(lsn)
         };
         Phaser phaser = new Phaser(2);
         SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(params, phaser);
@@ -129,7 +129,7 @@ public class UpcsmSenderMainline extends UpcsmSender
     {
         SimpleHolder holder = SimpleHolder.of(status);
         SimpleMethodPst[] params = new SimpleMethodPst[] {
-            MainlineSnapshotPstParams.of(config)
+            PgParamsPstSnasphot.of(config)
         };
         Phaser phaser = new Phaser(2);
         SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(params, phaser);

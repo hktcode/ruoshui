@@ -29,10 +29,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.hktcode.kafka.Kafka.Serializers.BYTES;
 
-class UppdcActionRun extends TripleActionRun<UppdcActionRun, UpperProducerConfig, UppdcMetricRun>
+class UppdcActionRun extends TripleActionRun<UppdcActionRun, UppdcConfig, UppdcMetricRun>
 {
     public static UppdcActionRun of
-        /* */( UpperProducerConfig config
+        /* */( UppdcConfig config
         /* */, BlockingQueue<UpperRecordProducer> getout
         /* */, AtomicReference<SimpleStatus> status
         /* */)
@@ -54,7 +54,7 @@ class UppdcActionRun extends TripleActionRun<UppdcActionRun, UpperProducerConfig
     private final BlockingQueue<UpperRecordProducer> getout;
 
     private UppdcActionRun
-        /* */( UpperProducerConfig config
+        /* */( UppdcConfig config
         /* */, BlockingQueue<UpperRecordProducer> getout
         /* */, AtomicReference<SimpleStatus> status
         /* */)
@@ -63,7 +63,7 @@ class UppdcActionRun extends TripleActionRun<UppdcActionRun, UpperProducerConfig
         this.getout = getout;
     }
 
-    public TripleAction<UppdcActionRun, UpperProducerConfig, UppdcMetricRun>
+    public TripleAction<UppdcActionRun, UppdcConfig, UppdcMetricRun>
     next() throws InterruptedException
     {
         Properties properties = new Properties();
@@ -93,7 +93,7 @@ class UppdcActionRun extends TripleActionRun<UppdcActionRun, UpperProducerConfig
                         lsn = LogSequenceNumber.valueOf(val.lsnofmsg);
                     }
                     SimpleHolder holder = SimpleHolder.of(this.status);
-                    kfk.send(r, UpperKafkaProducerCallback.of(lsn, holder, kfk));
+                    kfk.send(r, UppdcKafkaCallback.of(lsn, holder, kfk));
                     d = null;
                 }
             }

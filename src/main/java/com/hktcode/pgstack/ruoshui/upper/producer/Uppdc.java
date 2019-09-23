@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Uppdc extends Triple
 {
     public static Uppdc of //
-        /* */( UpperProducerConfig config //
+        /* */(UppdcConfig config //
         /* */, BlockingQueue<UpperRecordProducer> getout //
         /* */, AtomicReference<SimpleStatus> status //
         /* */)
@@ -33,12 +33,12 @@ public class Uppdc extends Triple
         return new Uppdc(config, getout, status);
     }
 
-    private final UpperProducerConfig config;
+    private final UppdcConfig config;
 
     private final BlockingQueue<UpperRecordProducer> getout;
 
     private Uppdc //
-        /* */( UpperProducerConfig config //
+        /* */(UppdcConfig config //
         /* */, BlockingQueue<UpperRecordProducer> getout //
         /* */, AtomicReference<SimpleStatus> status //
         /* */)

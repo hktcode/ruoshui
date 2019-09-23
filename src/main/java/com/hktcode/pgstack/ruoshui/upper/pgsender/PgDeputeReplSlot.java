@@ -7,13 +7,13 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-abstract class PgDeputeCreateSlot implements PgDeputeStatement
+abstract class PgDeputeReplSlot implements PgDeputeStatement
 {
     final Statement statement;
 
     final String nameinfor;
 
-    PgDeputeCreateSlot(Statement statement, String nameinfor)
+    PgDeputeReplSlot(Statement statement, String nameinfor)
     {
         this.statement = statement;
         this.nameinfor = nameinfor;

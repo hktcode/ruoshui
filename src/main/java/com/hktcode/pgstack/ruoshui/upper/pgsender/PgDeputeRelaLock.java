@@ -13,9 +13,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.concurrent.Callable;
 
-public class DeputeLockRelationMainline implements Callable<Boolean>
+public class PgDeputeRelaLock implements Callable<Boolean>
 {
-    public static DeputeLockRelationMainline of(Statement statement, String sqlscript)
+    public static PgDeputeRelaLock of(Statement statement, String sqlscript)
     {
         if (statement == null) {
             throw new ArgumentNullException("statement");
@@ -23,20 +23,20 @@ public class DeputeLockRelationMainline implements Callable<Boolean>
         if (sqlscript == null) {
             throw new ArgumentNullException("sqlscript");
         }
-        return new DeputeLockRelationMainline(statement, sqlscript);
+        return new PgDeputeRelaLock(statement, sqlscript);
     }
 
     private final Statement statement;
 
     private final String sqlscript;
 
-    private DeputeLockRelationMainline(Statement statement, String sqlscript)
+    private PgDeputeRelaLock(Statement statement, String sqlscript)
     {
         this.statement = statement;
         this.sqlscript = sqlscript;
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(DeputeLockRelationMainline.class);
+    private static final Logger logger = LoggerFactory.getLogger(PgDeputeRelaLock.class);
 
     @Override
     public Boolean call() throws SQLException

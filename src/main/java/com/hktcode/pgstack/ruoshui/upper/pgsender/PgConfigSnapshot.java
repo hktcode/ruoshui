@@ -70,12 +70,12 @@ public class PgConfigSnapshot extends PgConfig
     }
 
     @Override
-    public PgDeputeCreateSlotSnapshot newCreateSlot(Statement statement)
+    public PgDeputeReplSlotSnapshot newCreateSlot(Statement statement)
     {
         if (statement == null) {
             throw new ArgumentNullException("statement");
         }
-        return PgDeputeCreateSlotSnapshot.of(statement, logicalRepl.slotName);
+        return PgDeputeReplSlotSnapshot.of(statement, logicalRepl.slotName);
     }
 
     @Override

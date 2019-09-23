@@ -52,7 +52,7 @@ abstract class PgActionDataReplSlot extends PgActionDataQuerySql
     }
 
     @Override
-    PgDeputeCreateSlot createDepute(PgConnection pgdata, PgConnection pgrepl) //
+    PgDeputeReplSlot createDepute(PgConnection pgdata, PgConnection pgrepl) //
         throws SQLException
     {
         return this.config.newCreateSlot(pgrepl.createStatement());

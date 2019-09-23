@@ -8,7 +8,7 @@ import com.hktcode.bgsimple.triple.TripleJunctionConfig;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmConfig;
 import com.hktcode.pgstack.ruoshui.upper.pgsender.PgConfigMainline;
-import com.hktcode.pgstack.ruoshui.upper.producer.UpperProducerConfig;
+import com.hktcode.pgstack.ruoshui.upper.producer.UppdcConfig;
 
 import javax.script.ScriptException;
 import java.util.Iterator;
@@ -23,7 +23,7 @@ public class UpperConfig
         }
         PgConfigMainline mainline = PgConfigMainline.ofJsonObject(jsonNode.path("consumer"));
         TripleJunctionConfig junction = TripleJunctionConfig.ofJsonObject(jsonNode.path("junction"));
-        UpperProducerConfig producer = UpperProducerConfig.ofJsonObject(jsonNode.path("producer"));
+        UppdcConfig producer = UppdcConfig.ofJsonObject(jsonNode.path("producer"));
         UpcsmConfig consumer = UpcsmConfig.of(mainline);
 
         return new UpperConfig(consumer, junction, producer);
@@ -42,12 +42,12 @@ public class UpperConfig
 
     public final TripleJunctionConfig junction;
 
-    public final UpperProducerConfig producer;
+    public final UppdcConfig producer;
 
     private UpperConfig //
-        /* */( UpcsmConfig consumer //
+        /* */(UpcsmConfig consumer //
         /* */, TripleJunctionConfig junction //
-        /* */, UpperProducerConfig producer //
+        /* */, UppdcConfig producer //
         /* */)
     {
         this.consumer = consumer;

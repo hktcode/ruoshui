@@ -10,19 +10,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
 
-public class DeputeResultSetNextMainline implements Callable<Boolean>
+public class PgDeputeResultSetNext implements Callable<Boolean>
 {
-    public static DeputeResultSetNextMainline of(ResultSet resultSet)
+    public static PgDeputeResultSetNext of(ResultSet resultSet)
     {
         if (resultSet == null) {
             throw new ArgumentNullException("resultSet");
         }
-        return new DeputeResultSetNextMainline(resultSet);
+        return new PgDeputeResultSetNext(resultSet);
     }
 
     private final ResultSet resultSet;
 
-    private DeputeResultSetNextMainline(ResultSet resultSet)
+    private PgDeputeResultSetNext(ResultSet resultSet)
     {
         this.resultSet = resultSet;
     }

@@ -63,7 +63,7 @@ abstract class PgActionDataQuerySql extends PgActionData
             this.statusInfor = "doingtask: executeQuery";
             Future<ResultSet> rsFuture = exesvc.submit(ps);
             Future<Boolean> nextFuture = null;
-            DeputeResultSetNextMainline rsDepute = null;
+            PgDeputeResultSetNext rsDepute = null;
             while (this.newStatus(this) instanceof SimpleStatusInnerRun) {
                 if (record != null) {
                     record = this.send(record);
@@ -78,7 +78,7 @@ abstract class PgActionDataQuerySql extends PgActionData
                     this.statusInfor = "doingtask: resultSet";
                     rs.setFetchDirection(ResultSet.FETCH_FORWARD);
                     rs.setFetchSize(this.config.rsFetchsize);
-                    rsDepute = DeputeResultSetNextMainline.of(rs);
+                    rsDepute = PgDeputeResultSetNext.of(rs);
                     nextFuture = exesvc.submit(rsDepute);
                 } else if (next == null) {
                     next = this.pollFromFuture(nextFuture);

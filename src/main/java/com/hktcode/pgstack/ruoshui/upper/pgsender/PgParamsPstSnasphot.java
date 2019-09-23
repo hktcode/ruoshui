@@ -6,14 +6,14 @@ package com.hktcode.pgstack.ruoshui.upper.pgsender;
 import com.hktcode.bgsimple.method.SimpleMethodPstParams;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class MainlineSnapshotPstParams implements SimpleMethodPstParams<PgAction>
+public class PgParamsPstSnasphot implements SimpleMethodPstParams<PgAction>
 {
-    public static MainlineSnapshotPstParams of(PgConfigSnapshot config)
+    public static PgParamsPstSnasphot of(PgConfigSnapshot config)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
         }
-        return new MainlineSnapshotPstParams(config);
+        return new PgParamsPstSnasphot(config);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class MainlineSnapshotPstParams implements SimpleMethodPstParams<PgAction
 
     private final PgConfigSnapshot config;
 
-    private MainlineSnapshotPstParams(PgConfigSnapshot config)
+    private PgParamsPstSnasphot(PgConfigSnapshot config)
     {
         this.config = config;
     }

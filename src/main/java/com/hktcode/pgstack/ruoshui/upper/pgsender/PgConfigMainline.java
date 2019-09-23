@@ -94,12 +94,12 @@ public class PgConfigMainline extends PgConfig
     }
 
     @Override
-    public PgDeputeCreateSlotMainline newCreateSlot(Statement statement)
+    public PgDeputeReplSlotMainline newCreateSlot(Statement statement)
     {
         if (statement == null) {
             throw new ArgumentNullException("statement");
         }
-        return PgDeputeCreateSlotMainline.of(statement, logicalRepl.slotName, getSnapshot);
+        return PgDeputeReplSlotMainline.of(statement, logicalRepl.slotName, getSnapshot);
     }
 
     @Override

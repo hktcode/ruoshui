@@ -103,7 +103,7 @@ class PgActionDataRelaLock extends PgActionData
         PgConnection connection = s.getConnection().unwrap(PgConnection.class);
         String sql = lock.lockStatement(connection, dbschema, relaname);
         logger.info("lock relation: sql={}", sql);
-        return DeputeLockRelationMainline.of(s, sql);
+        return PgDeputeRelaLock.of(s, sql);
     }
 
     @Override

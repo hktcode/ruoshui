@@ -12,9 +12,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-class PgDeputeCreateSlotSnapshot extends PgDeputeCreateSlot
+class PgDeputeReplSlotSnapshot extends PgDeputeReplSlot
 {
-    static PgDeputeCreateSlotSnapshot of(Statement statement, String nameinfor)
+    static PgDeputeReplSlotSnapshot of(Statement statement, String nameinfor)
     {
         if (statement == null) {
             throw new ArgumentNullException("statement");
@@ -22,10 +22,10 @@ class PgDeputeCreateSlotSnapshot extends PgDeputeCreateSlot
         if (nameinfor == null) {
             throw new ArgumentNullException("nameinfor");
         }
-        return new PgDeputeCreateSlotSnapshot(statement, nameinfor);
+        return new PgDeputeReplSlotSnapshot(statement, nameinfor);
     }
 
-    private PgDeputeCreateSlotSnapshot(Statement statement, String nameinfor)
+    private PgDeputeReplSlotSnapshot(Statement statement, String nameinfor)
     {
         super(statement, nameinfor);
     }

@@ -8,19 +8,19 @@ import com.hktcode.bgsimple.method.SimpleMethodPst;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.replication.LogSequenceNumber;
 
-public class MainlineMethodPstParamsRecvLsn implements SimpleMethodPst<PgAction>
+public class PgParamsPstRecveLsn implements SimpleMethodPst<PgAction>
 {
-    public static MainlineMethodPstParamsRecvLsn of(LogSequenceNumber receiveLsn)
+    public static PgParamsPstRecveLsn of(LogSequenceNumber receiveLsn)
     {
         if (receiveLsn == null) {
             throw new ArgumentNullException("receiveLsn");
         }
-        return new MainlineMethodPstParamsRecvLsn(receiveLsn);
+        return new PgParamsPstRecveLsn(receiveLsn);
     }
 
     private final LogSequenceNumber receiveLsn;
 
-    private MainlineMethodPstParamsRecvLsn(LogSequenceNumber receiveLsn)
+    private PgParamsPstRecveLsn(LogSequenceNumber receiveLsn)
     {
         this.receiveLsn = receiveLsn;
     }

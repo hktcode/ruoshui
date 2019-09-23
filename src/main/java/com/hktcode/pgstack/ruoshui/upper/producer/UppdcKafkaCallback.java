@@ -25,9 +25,9 @@ import java.time.ZonedDateTime;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
 
-public class UpperKafkaProducerCallback implements Callback
+public class UppdcKafkaCallback implements Callback
 {
-    public static UpperKafkaProducerCallback of //
+    public static UppdcKafkaCallback of //
         /* */( LogSequenceNumber lsn //
         /* */, SimpleHolder holder //
         /* */, Producer<byte[], byte[]> producer //
@@ -42,11 +42,11 @@ public class UpperKafkaProducerCallback implements Callback
         if (producer == null) {
             throw new ArgumentNullException("producer");
         }
-        return new UpperKafkaProducerCallback(lsn, holder, producer);
+        return new UppdcKafkaCallback(lsn, holder, producer);
     }
 
     private static final Logger logger //
-        = LoggerFactory.getLogger(UpperKafkaProducerCallback.class);
+        = LoggerFactory.getLogger(UppdcKafkaCallback.class);
 
     private final LogSequenceNumber lsn;
 
@@ -54,7 +54,7 @@ public class UpperKafkaProducerCallback implements Callback
 
     private final SimpleHolder holder;
 
-    private UpperKafkaProducerCallback //
+    private UppdcKafkaCallback //
         /* */( LogSequenceNumber lsn //
         /* */, SimpleHolder holder //
         /* */, Producer<byte[], byte[]> producer //
