@@ -7,12 +7,22 @@ properties:
       src_property:
         type: object
         properties:
-          PGDBNAME: { "type":  "string", "default": "postgres"  }
-          PGHOST: { "type":  "string", "default": "localhost" }
-          PGPORT: { "type": "string", "default": "5432" }
-          user: { "type":  "string", "default": "postgres"  }
-          password: { "type": "string" }
-        patternProperties: { "^.*$": { "type": "string" } }
+          PGDBNAME:
+            oneOf: [{"type": "string"}, {"type": "number"}]
+            default: "postgres"
+          PGHOST:
+            oneOf: [{"type": "string"}, {"type": "number"}]
+            default: "localhost"
+          PGPORT:
+            oneOf: [{"type": "string"}, {"type": "number"}]
+            default: 5432
+          user:
+            oneOf: [{"type": "string"}, {"type": "number"}]
+            default: "postgres"
+          password:
+            oneOf: [{"type": "string"}, {"type": "number"}]
+        patternProperties:
+          "^.*$": { "oneOf": [{ "type":"string"}, {"type":"number"}] }
       typelist_sql: { "type": "string" } # TODO: default
       tuple_select:
         type: object
