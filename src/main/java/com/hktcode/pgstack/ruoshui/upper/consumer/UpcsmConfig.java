@@ -23,5 +23,7 @@ public class UpcsmConfig extends TqueueConfig
     private UpcsmConfig(PgConfigMainline mainlineCfg)
     {
         this.mainlineCfg = mainlineCfg;
+        super.logDuration = mainlineCfg.logDuration;
+        super.waitTimeout = mainlineCfg.waitTimeout;
     }
 }
