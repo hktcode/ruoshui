@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
-    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-      <encoder><pattern>${FILE_LOG_PATTERN}</pattern></encoder>
-      <file>${RUOSHUI_HOME}/log/today.log</file>
-      <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-          <fileNamePattern>${RUOSHUI_HOME}/log/%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
-          <maxFileSize>${LOG_FILE_MAX_SIZE:-64MB}</maxFileSize>
-          <maxHistory>${LOG_FILE_MAX_HISTORY:-366}</maxHistory>
-        </rollingPolicy>
-    </appender>
-    <logger name="org.springframework" level="INFO" />
-    <logger name="org.hibernate" level="INFO" />
-    <root level="INFO">
-        <appender-ref ref="FILE" />
-        <appender-ref ref="CONSOLE" />
-    </root>
+  <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+  <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <encoder><pattern>${FILE_LOG_PATTERN}</pattern></encoder>
+    <file>${RUOSHUI_HOME}/log/today.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>${RUOSHUI_HOME}/log/%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+      <maxFileSize>${LOG_FILE_MAX_SIZE:-64MB}</maxFileSize>
+      <maxHistory>${LOG_FILE_MAX_HISTORY:-366}</maxHistory>
+    </rollingPolicy>
+  </appender>
+  <logger name="org.springframework" level="INFO" />
+  <root level="INFO">
+    <appender-ref ref="FILE" />
+    <appender-ref ref="CONSOLE" />
+  </root>
 </configuration>
