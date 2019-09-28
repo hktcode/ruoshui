@@ -47,6 +47,7 @@ public abstract class Triple implements Runnable
         catch (Exception ex) {
             logger.error("triple throws exception: ", ex);
             TripleActionErr erract = action.next(ex);
+            // TODO: 迁移到TripleActionErr的next()中去: 参考PgThread
             SimpleStatusInner o;
             SimpleStatus f;
             do {
@@ -73,9 +74,9 @@ public abstract class Triple implements Runnable
                             method[i] = (SimpleMethodAllResultEnd)action.del();
                         }
                         else {
-                            end.result.get(i);
+                            method[i] = end.result.get(i);
                         }
-                    };
+                    }
                     f = SimpleStatusInnerEnd.of(ImmutableList.copyOf(method));
                 }
             } while (o != f && !this.status.compareAndSet(o, f));
