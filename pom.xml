@@ -27,7 +27,7 @@
     <kafka-clients.version>1.1.0</kafka-clients.version>
     <guava.version>27.0.1-jre</guava.version>
     <jmockit.version>1.43</jmockit.version>
-    <groovy.version>2.5.6</groovy.version>
+    <groovy.version>3.0.7</groovy.version>
     <jsr305.version>3.0.2</jsr305.version>
     <json-schema-validator.version>2.2.10</json-schema-validator.version>
   </properties>
