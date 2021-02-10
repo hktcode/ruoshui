@@ -4,6 +4,7 @@
 
 package com.hktcode.bgsimple.triple;
 
+import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.SimpleWorker;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.tqueue.TqueueConfig;
@@ -44,7 +45,7 @@ public abstract class TripleActionRun
      */
     public String statusInfor = "";
 
-    protected TripleActionRun(AtomicReference<SimpleStatus> status, C config, int number)
+    protected TripleActionRun(SimpleHolder status, C config, int number)
     {
         super(status, number);
         this.config = config;

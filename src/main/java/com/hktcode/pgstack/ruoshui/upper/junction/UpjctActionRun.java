@@ -5,6 +5,7 @@
 package com.hktcode.pgstack.ruoshui.upper.junction;
 
 import com.google.common.collect.ImmutableList;
+import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.bgsimple.triple.*;
@@ -29,7 +30,7 @@ class UpjctActionRun extends TripleActionRun<UpjctActionRun, TripleJunctionConfi
         /* */( TripleJunctionConfig config
         /* */, BlockingQueue<UpperRecordConsumer> comein
         /* */, BlockingQueue<UpperRecordProducer> getout
-        /* */, AtomicReference<SimpleStatus> status
+        /* */, SimpleHolder status
         /* */)
     {
         if (config == null) {
@@ -61,7 +62,7 @@ class UpjctActionRun extends TripleActionRun<UpjctActionRun, TripleJunctionConfi
         /* */( TripleJunctionConfig config
         /* */, BlockingQueue<UpperRecordConsumer> comein
         /* */, BlockingQueue<UpperRecordProducer> getout
-        /* */, AtomicReference<SimpleStatus> status
+        /* */, SimpleHolder status
         /* */)
     {
         super(status, config, 1);

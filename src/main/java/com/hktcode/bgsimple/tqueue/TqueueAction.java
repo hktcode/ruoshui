@@ -5,6 +5,7 @@
 package com.hktcode.bgsimple.tqueue;
 
 import com.hktcode.bgsimple.BgWorker;
+import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.bgsimple.status.SimpleStatusOuter;
@@ -25,12 +26,12 @@ public abstract class TqueueAction //
 
     public final TransferQueue<R> tqueue;
 
-    public final AtomicReference<SimpleStatus> status;
+    public final SimpleHolder status;
 
     protected TqueueAction //
         /* */( C config //
         /* */, TransferQueue<R> tqueue //
-        /* */, AtomicReference<SimpleStatus> status //
+        /* */, SimpleHolder status //
         /* */) //
     {
         this.config = config;

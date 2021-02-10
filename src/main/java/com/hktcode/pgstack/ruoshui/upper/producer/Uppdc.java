@@ -4,9 +4,9 @@
 
 package com.hktcode.pgstack.ruoshui.upper.producer;
 
+import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.triple.Triple;
-import com.hktcode.bgsimple.triple.TripleActionRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordProducer;
 
@@ -18,7 +18,7 @@ public class Uppdc extends Triple
     public static Uppdc of //
         /* */(UppdcConfig config //
         /* */, BlockingQueue<UpperRecordProducer> getout //
-        /* */, AtomicReference<SimpleStatus> status //
+        /* */, SimpleHolder status //
         /* */)
     {
         if (config == null) {
@@ -40,7 +40,7 @@ public class Uppdc extends Triple
     private Uppdc //
         /* */(UppdcConfig config //
         /* */, BlockingQueue<UpperRecordProducer> getout //
-        /* */, AtomicReference<SimpleStatus> status //
+        /* */, SimpleHolder status //
         /* */)
     {
         super(status, 2);

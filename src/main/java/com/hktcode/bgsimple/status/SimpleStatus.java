@@ -4,9 +4,8 @@
 
 package com.hktcode.bgsimple.status;
 
+import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.future.SimpleFuture;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 public interface SimpleStatus
 {
@@ -16,5 +15,5 @@ public interface SimpleStatus
 
     SimpleStatusOuter del(SimpleStatusOuterDel del);
 
-    SimpleFuture newFuture(AtomicReference<SimpleStatus> status);
+    SimpleFuture newFuture(SimpleHolder status);
 }

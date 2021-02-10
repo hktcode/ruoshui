@@ -4,6 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.junction;
 
+import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.triple.Triple;
 import com.hktcode.bgsimple.triple.TripleJunctionConfig;
@@ -17,10 +18,10 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Upjct extends Triple
 {
     public static Upjct of //
-        /* */(TripleJunctionConfig config //
+        /* */( TripleJunctionConfig config //
         /* */, BlockingQueue<UpperRecordConsumer> comein //
         /* */, BlockingQueue<UpperRecordProducer> getout //
-        /* */, AtomicReference<SimpleStatus> status //
+        /* */, SimpleHolder status //
         /* */)
     {
         if (config == null) {
@@ -48,7 +49,7 @@ public class Upjct extends Triple
         /* */( TripleJunctionConfig config //
         /* */, BlockingQueue<UpperRecordConsumer> comein //
         /* */, BlockingQueue<UpperRecordProducer> getout //
-        /* */, AtomicReference<SimpleStatus> status //
+        /* */, SimpleHolder status //
         /* */)
     {
         super(status, 1);

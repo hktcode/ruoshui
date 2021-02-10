@@ -3,19 +3,18 @@
  */
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
-import com.hktcode.bgsimple.status.SimpleStatus;
+import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.triple.Triple;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class Upcsm extends Triple
 {
     public static Upcsm of //
         /* */( UpcsmConfig config //
-        /* */, AtomicReference<SimpleStatus> status //
+        /* */, SimpleHolder status //
         /* */, BlockingQueue<UpperRecordConsumer> comein //
         /* */)
     {
@@ -38,7 +37,7 @@ public class Upcsm extends Triple
     private Upcsm //
         /* */( UpcsmConfig config //
         /* */, BlockingQueue<UpperRecordConsumer> comein //
-        /* */, AtomicReference<SimpleStatus> status //
+        /* */, SimpleHolder status //
         /* */)
     {
         super(status, 0);

@@ -7,15 +7,13 @@ import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.bgsimple.status.SimpleStatusOuter;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 public abstract class SimpleWorker<W extends BgWorker<W>>
 {
     public final int number;
 
-    public final AtomicReference<SimpleStatus> status;
+    public final SimpleHolder status;
 
-    protected SimpleWorker(AtomicReference<SimpleStatus> status, int number)
+    protected SimpleWorker(SimpleHolder status, int number)
     {
         this.number = number;
         this.status = status;

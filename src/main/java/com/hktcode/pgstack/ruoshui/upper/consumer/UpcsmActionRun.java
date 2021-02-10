@@ -4,6 +4,7 @@
 
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
+import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;
 import com.hktcode.bgsimple.triple.*;
@@ -29,7 +30,7 @@ public class UpcsmActionRun extends TripleActionRun<UpcsmActionRun, UpcsmConfig,
     public static UpcsmActionRun of //
         /* */( UpcsmConfig config //
         /* */, BlockingQueue<UpperRecordConsumer> comein //
-        /* */, AtomicReference<SimpleStatus> status //
+        /* */, SimpleHolder status //
         /* */)
     {
         if (config == null) {
@@ -103,9 +104,9 @@ public class UpcsmActionRun extends TripleActionRun<UpcsmActionRun, UpcsmConfig,
 
     private UpcsmActionRun //
         /* */( UpcsmConfig config //
-            /* */, BlockingQueue<UpperRecordConsumer> comein //
-            /* */, AtomicReference<SimpleStatus> status //
-            /* */)
+        /* */, BlockingQueue<UpperRecordConsumer> comein //
+        /* */, SimpleHolder status //
+        /* */)
     {
         super(status, config, 0);
         this.comein = comein;

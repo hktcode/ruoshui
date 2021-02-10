@@ -5,6 +5,7 @@
 package com.hktcode.bgsimple.status;
 
 import com.hktcode.bgsimple.BgWorker;
+import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.future.SimpleFutureOuter;
 import com.hktcode.bgsimple.method.SimpleMethod;
 import com.hktcode.lang.exception.ArgumentNullException;
@@ -72,7 +73,7 @@ public abstract class SimpleStatusOuter implements SimpleStatus
         return this;
     }
 
-    public SimpleFutureOuter newFuture(AtomicReference<SimpleStatus> status)
+    public SimpleFutureOuter newFuture(SimpleHolder status)
     {
         if (status == null) {
             throw new ArgumentNullException("status");

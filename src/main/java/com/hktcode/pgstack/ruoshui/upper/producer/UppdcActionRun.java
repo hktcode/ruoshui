@@ -5,7 +5,6 @@
 package com.hktcode.pgstack.ruoshui.upper.producer;
 
 import com.hktcode.bgsimple.SimpleHolder;
-import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.bgsimple.triple.TripleAction;
 import com.hktcode.bgsimple.triple.TripleActionEnd;
@@ -25,7 +24,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.hktcode.kafka.Kafka.Serializers.BYTES;
 
@@ -34,7 +32,7 @@ class UppdcActionRun extends TripleActionRun<UppdcActionRun, UppdcConfig, UppdcM
     public static UppdcActionRun of
         /* */( UppdcConfig config
         /* */, BlockingQueue<UpperRecordProducer> getout
-        /* */, AtomicReference<SimpleStatus> status
+        /* */, SimpleHolder status
         /* */)
     {
         if (config == null) {
@@ -56,7 +54,7 @@ class UppdcActionRun extends TripleActionRun<UppdcActionRun, UppdcConfig, UppdcM
     private UppdcActionRun
         /* */( UppdcConfig config
         /* */, BlockingQueue<UpperRecordProducer> getout
-        /* */, AtomicReference<SimpleStatus> status
+        /* */, SimpleHolder status
         /* */)
     {
         super(status, config, 2);
@@ -81,7 +79,6 @@ class UppdcActionRun extends TripleActionRun<UppdcActionRun, UppdcConfig, UppdcM
                 else {
                     String keyText = d.key.toObjectNode().toString();
                     String valText = d.val.toObjectNode().toString();
-                    System.out.println(keyText + ": " + valText);
                     String t = this.config.targetTopic;
                     int p = this.config.partitionNo;
                     byte[] k = keyText.getBytes(StandardCharsets.UTF_8);
@@ -93,8 +90,7 @@ class UppdcActionRun extends TripleActionRun<UppdcActionRun, UppdcConfig, UppdcM
                         PgsqlValTxactCommit val = (PgsqlValTxactCommit)d.val;
                         lsn = LogSequenceNumber.valueOf(val.lsnofmsg);
                     }
-                    SimpleHolder holder = SimpleHolder.of(this.status);
-                    kfk.send(r, UppdcKafkaCallback.of(lsn, holder, kfk));
+                    kfk.send(r, UppdcKafkaCallback.of(lsn, this.status, kfk));
                     d = null;
                 }
             }

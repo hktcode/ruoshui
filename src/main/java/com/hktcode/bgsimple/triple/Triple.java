@@ -4,6 +4,7 @@
 package com.hktcode.bgsimple.triple;
 
 import com.google.common.collect.ImmutableList;
+import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.future.SimpleFutureOuter;
 import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
 import com.hktcode.bgsimple.method.SimpleMethodDel;
@@ -13,17 +14,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Phaser;
-import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class Triple implements Runnable
 {
     private static final Logger logger = LoggerFactory.getLogger(Triple.class);
 
-    protected final AtomicReference<SimpleStatus> status;
+    protected final SimpleHolder status;
 
     protected final int number;
 
-    protected Triple(AtomicReference<SimpleStatus> status, int number)
+    protected Triple(SimpleHolder status, int number)
     {
         this.status = status;
         this.number = number;
@@ -79,7 +79,7 @@ public abstract class Triple implements Runnable
                     }
                     f = SimpleStatusInnerEnd.of(ImmutableList.copyOf(method));
                 }
-            } while (o != f && !this.status.compareAndSet(o, f));
+            } while (o != f && !this.status.cas(o, f));
             if (f instanceof SimpleStatusOuterDel) {
                 SimpleStatusOuterDel del = (SimpleStatusOuterDel)f;
                 SimpleFutureOuter future = del.newFuture(this.status);

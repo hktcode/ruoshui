@@ -5,6 +5,7 @@
 package com.hktcode.bgsimple.future;
 
 import com.google.common.collect.ImmutableList;
+import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.method.*;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
@@ -16,14 +17,12 @@ import javax.annotation.Nonnull;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class SimpleFutureOuter extends SimpleFuture
 {
-    private final AtomicReference<SimpleStatus> status;
+    private final SimpleHolder status;
 
-    public static SimpleFutureOuter //
-    of(AtomicReference<SimpleStatus> status, SimpleStatusOuter origin)
+    public static SimpleFutureOuter of(SimpleHolder status, SimpleStatusOuter origin)
     {
         if (status == null) {
             throw new ArgumentNullException("status");
@@ -34,7 +33,7 @@ public class SimpleFutureOuter extends SimpleFuture
         return new SimpleFutureOuter(status, origin);
     }
 
-    protected SimpleFutureOuter(AtomicReference<SimpleStatus> status, SimpleStatusOuter origin)
+    protected SimpleFutureOuter(SimpleHolder status, SimpleStatusOuter origin)
     {
         super(origin);
         this.status = status;
@@ -52,7 +51,7 @@ public class SimpleFutureOuter extends SimpleFuture
         Phaser phaser = ((SimpleStatusOuter)origin).phaser;
         phaser.awaitAdvanceInterruptibly(phaser.arrive());
         SimpleStatus future = this.newStatus();
-        this.status.compareAndSet(origin, future);
+        this.status.cas(origin, future);
         phaser.arriveAndDeregister();
         SimpleFuture result = future.newFuture(this.status);
         return result.get();
@@ -66,7 +65,7 @@ public class SimpleFutureOuter extends SimpleFuture
         Phaser phaser = ((SimpleStatusOuter)origin).phaser;
         phaser.awaitAdvanceInterruptibly(phaser.arrive(), timeout, unit);
         SimpleStatus future = this.newStatus();
-        this.status.compareAndSet(origin, future);
+        this.status.cas(origin, future);
         phaser.arriveAndDeregister();
         SimpleFuture result = future.newFuture(this.status);
         return result.get(timeout, unit);

@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class SimpleHolder
 {
-    public static SimpleHolder of(AtomicReference<SimpleStatus> status) //
+    public static SimpleHolder of(AtomicReference<SimpleStatus> status)
     {
         if (status == null) {
             throw new ArgumentNullException("status");
@@ -27,6 +27,22 @@ public class SimpleHolder
         this.status = status;
     }
 
+    public SimpleStatus get()
+    {
+        return this.status.get();
+    }
+
+    public boolean cas(SimpleStatus expect, SimpleStatus update)
+    {
+        if (expect == null) {
+            throw new ArgumentNullException("expect");
+        }
+        if (update == null) {
+            throw new ArgumentNullException("update");
+        }
+        return this.status.compareAndSet(expect, update);
+    }
+
     public SimpleFutureOuter put()
     {
         SimpleStatus s = this.status.get();
@@ -34,7 +50,7 @@ public class SimpleHolder
             throw new SimpleStatusIsNotPutException();
         }
         SimpleStatusOuterPut put = (SimpleStatusOuterPut)s;
-        return put.newFuture(this.status);
+        return put.newFuture(this);
     }
 
     public SimpleFutureOuter pst(SimpleStatusOuterPst pst)
@@ -54,7 +70,7 @@ public class SimpleHolder
                 /*     */&& !this.status.compareAndSet(origin, future) //
                 /*   */)
             /**/);
-        return future.newFuture(this.status);
+        return future.newFuture(this);
     }
 
     public SimpleFutureOuter get(SimpleStatusOuterGet get)
@@ -74,7 +90,7 @@ public class SimpleHolder
                 /*     */&& !this.status.compareAndSet(origin, future) //
                 /*   */)
             /**/);
-        return future.newFuture(this.status);
+        return future.newFuture(this);
     }
 
     public SimpleFutureOuter del(SimpleStatusOuterDel del)
@@ -94,6 +110,6 @@ public class SimpleHolder
                 /*     */&& !this.status.compareAndSet(origin, future) //
                 /*   */) //
             /**/);
-        return future.newFuture(this.status);
+        return future.newFuture(this);
     }
 }
