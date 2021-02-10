@@ -6,7 +6,6 @@ package com.hktcode.pgstack.ruoshui.upper.junction;
 
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.triple.Triple;
-import com.hktcode.bgsimple.triple.TripleActionRun;
 import com.hktcode.bgsimple.triple.TripleJunctionConfig;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
@@ -59,7 +58,7 @@ public class Upjct extends Triple
     }
 
     @Override
-    protected TripleActionRun createsAction()
+    protected UpjctActionRun createsAction()
     {
         return UpjctActionRun.of(config, comein, getout, status);
     }

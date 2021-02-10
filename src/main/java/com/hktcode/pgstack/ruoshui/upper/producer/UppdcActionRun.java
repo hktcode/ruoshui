@@ -81,6 +81,7 @@ class UppdcActionRun extends TripleActionRun<UppdcActionRun, UppdcConfig, UppdcM
                 else {
                     String keyText = d.key.toObjectNode().toString();
                     String valText = d.val.toObjectNode().toString();
+                    System.out.println(keyText + ": " + valText);
                     String t = this.config.targetTopic;
                     int p = this.config.partitionNo;
                     byte[] k = keyText.getBytes(StandardCharsets.UTF_8);

@@ -6,25 +6,23 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.bgsimple.triple.TripleMetricRun;
 import com.hktcode.lang.exception.ArgumentNullException;
+import org.postgresql.replication.LogSequenceNumber;
 
 public class UpcsmMetricRun extends TripleMetricRun
 {
-    public static UpcsmMetricRun of(UpcsmActionRun action, UpcsmReportSender fetchThread)
+    public static UpcsmMetricRun of(UpcsmActionRun action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        if (fetchThread == null) {
-            throw new ArgumentNullException("fetchThread");
-        }
-        return new UpcsmMetricRun(action, fetchThread);
+        return new UpcsmMetricRun(action);
     }
 
-    public final UpcsmReportSender fetchThread;
+    public final LogSequenceNumber txactionLsn;
 
-    private UpcsmMetricRun(UpcsmActionRun action, UpcsmReportSender fetchThread)
+    private UpcsmMetricRun(UpcsmActionRun action)
     {
         super(action);
-        this.fetchThread = fetchThread;
+        this.txactionLsn = action.txactionLsn;
     }
 }

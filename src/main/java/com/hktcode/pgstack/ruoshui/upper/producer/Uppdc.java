@@ -49,7 +49,7 @@ public class Uppdc extends Triple
     }
 
     @Override
-    protected TripleActionRun createsAction()
+    protected UppdcActionRun createsAction()
     {
         return UppdcActionRun.of(config, getout, status);
     }

@@ -3,7 +3,6 @@
  */
 package com.hktcode.pgjdbc;
 
-import com.hktcode.lang.exception.ArgumentIllegalException;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 /**

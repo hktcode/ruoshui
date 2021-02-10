@@ -23,13 +23,6 @@ properties:
             oneOf: [{"type": "string"}, {"type": "number"}]
         patternProperties:
           "^.*$": { "oneOf": [{ "type":"string"}, {"type":"number"}] }
-      typelist_sql: { "type": "string" } # TODO: default
-      tuple_select:
-        type: object
-        # propertyNames: { pattern: "(?:(?:[^.]|(?:\\.\\.))+)(?:\\.)(?:(?:[^.]|(?:\\.\\.))+)" }
-        patternProperties: { "^.*$": { "type": "string" } }
-        default: {}
-      relation_sql: { "type": "string" } # TODO: default
       logical_repl:
         type: object
         properties:
@@ -40,29 +33,6 @@ properties:
             type: array
             items: { type: "string", pattern: "[0-9a-z_]{1,63}" }
             default: ["ruoshui"]
-      get_snapshot: { type: boolean, default: true }
-      standby_skip: { type: boolean, default: true }
-      where_script:
-        oneOf:
-          - type: string
-          - type: object
-            properties:
-              engine_name: { type: string } # TODO:
-              script_text: { type: string }
-      locking_mode:
-        type: string
-        enum:
-          - "NO_LOCK"
-          - "ACCESS_SHARE"
-          - "ROW_SHARE"
-          - "ROW_EXCLUSIVE"
-          - "SHARE_UPDATE_EXCLUSIVE"
-          - "SHARE"
-          - "SHARE_ROW_EXCLUSIVE"
-          - "EXCLUSIVE"
-          - "ACCESS_EXCLUSIVE"
-        default: "SHARE_UPDATE_EXCLUSIVE"
-      rs_fetchsize: { type: integer, default: 10240, minimum: 0, maximum: 2147483647 }
       wait_timeout: { type: integer, default: 100, minimum: 10, maximum: 9223372036854775807 }
       log_duration: { type: integer, default: 30000, minimum: 0, maximum: 9223372036854775807 }
   junction:

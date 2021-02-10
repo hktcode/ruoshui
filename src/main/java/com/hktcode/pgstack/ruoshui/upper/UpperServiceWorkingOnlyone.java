@@ -13,7 +13,6 @@ import com.hktcode.bgsimple.future.SimpleFuturePut;
 import com.hktcode.bgsimple.method.*;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmParamsPstSnapshot;
 import com.hktcode.pgstack.ruoshui.upper.consumer.Upcsm;
 import com.hktcode.pgstack.ruoshui.upper.junction.Upjct;
 import com.hktcode.pgstack.ruoshui.upper.producer.Uppdc;
@@ -108,13 +107,13 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
 
     @Override
     public ResponseEntity pst(JsonNode json)
-        throws InterruptedException, ScriptException
+        throws InterruptedException
     {
         if (json == null) {
             throw new ArgumentNullException("json");
         }
         SimpleMethodPst[] method = new SimpleMethodPst[] {
-            UpcsmParamsPstSnapshot.of(json),
+            SimpleMethodPstParamsDefault.of(),
             SimpleMethodPstParamsDefault.of(),
             SimpleMethodPstParamsDefault.of()
         };

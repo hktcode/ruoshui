@@ -5,7 +5,6 @@ package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.triple.Triple;
-import com.hktcode.bgsimple.triple.TripleActionRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 
@@ -48,7 +47,7 @@ public class Upcsm extends Triple
     }
 
     @Override
-    protected TripleActionRun createsAction()
+    protected UpcsmActionRun createsAction()
     {
         return UpcsmActionRun.of(config, comein, status);
     }

@@ -9,7 +9,7 @@ import com.hktcode.bgsimple.method.SimpleMethodPstResult;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.replication.LogSequenceNumber;
 
-public class UpcsmParamsPstRecvLsn implements SimpleMethodPst<UpcsmAction>
+public class UpcsmParamsPstRecvLsn implements SimpleMethodPst<UpcsmActionRun>
 {
     public static UpcsmParamsPstRecvLsn of(LogSequenceNumber receiveLsn)
     {
@@ -27,7 +27,7 @@ public class UpcsmParamsPstRecvLsn implements SimpleMethodPst<UpcsmAction>
     }
 
     @Override
-    public SimpleMethodPstResult<UpcsmAction> run(UpcsmAction worker) //
+    public SimpleMethodPstResult<UpcsmActionRun> run(UpcsmActionRun worker) //
         throws InterruptedException
     {
         if (worker == null) {

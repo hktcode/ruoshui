@@ -21,7 +21,6 @@ import org.postgresql.replication.LogSequenceNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.ZonedDateTime;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
 
@@ -71,6 +70,7 @@ public class UppdcKafkaCallback implements Callback
         try {
             if (ex != null) {
                 // TODO: 此处不应该对每条记录都将this.producer.close()方法执行一遍
+                // 这方面看来，Kafka客户端的设计并不是非常合理，缺少批量处理的能力
                 logger.error("kafka producer send record fail: lsn={}", this.lsn, ex);
                 // 如果已经关闭了，再次调用close不会抛出异常：
                 // 但是ex的值固定为：
@@ -81,8 +81,7 @@ public class UppdcKafkaCallback implements Callback
                 //	at java.lang.Thread.run(Thread.java:745) [na:1.8.0_121]
 
                 this.producer.close(0, TimeUnit.MILLISECONDS);
-                ZonedDateTime endtime = ZonedDateTime.now();
-                SimpleMethodDel[] method = new SimpleMethodDel[3];
+                SimpleMethodDel<?>[] method = new SimpleMethodDel[3];
                 method[0] = SimpleMethodDelParamsDefault.of(); // TODO:
                 method[1] = SimpleMethodDelParamsDefault.of();
                 method[2] = SimpleMethodDelParamsDefault.of();
@@ -90,11 +89,10 @@ public class UppdcKafkaCallback implements Callback
                 SimpleStatusOuterDel del = SimpleStatusOuterDel.of(method, phaser);
                 SimpleFutureDel future = this.holder.del(del);
                 future.get();
-
             }
             else if (this.lsn.asLong() != LogSequenceNumber.INVALID_LSN.asLong()) {
                 logger.info("kafka producer send record success: lsn={}", this.lsn);
-                SimpleMethodPst[] method = new SimpleMethodPst[3];
+                SimpleMethodPst<?>[] method = new SimpleMethodPst[3];
                 method[0] = UpcsmParamsPstRecvLsn.of(this.lsn);
                 method[1] = SimpleMethodPstParamsDefault.of();
                 method[2] = SimpleMethodPstParamsDefault.of();

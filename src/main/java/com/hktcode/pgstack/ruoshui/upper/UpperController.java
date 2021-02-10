@@ -18,10 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.script.ScriptException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
@@ -34,8 +32,6 @@ public class UpperController implements DisposableBean
 
     private final JsonSchema upperConfigSchema;
 
-    private final JsonSchema snapshotSchema;
-
     public UpperController(@Autowired YAMLMapper mapper) //
         throws IOException, ProcessingException
     {
@@ -46,12 +42,11 @@ public class UpperController implements DisposableBean
             JsonNode jsonNode = mapper.readTree(input);
             this.upperConfigSchema = factory.getJsonSchema(jsonNode);
         }
-        this.snapshotSchema = this.upperConfigSchema; // TODO:
     }
 
     @PutMapping
     public ResponseEntity put(@RequestBody JsonNode body) //
-        throws ScriptException, InterruptedException, ProcessingException
+        throws InterruptedException, ProcessingException
     {
         if (body == null) {
             throw new ArgumentNullException("body");
@@ -89,23 +84,8 @@ public class UpperController implements DisposableBean
         return service.get();
     }
 
-    @PostMapping(path="snapshot")
-    public ResponseEntity pst(@RequestBody JsonNode body) //
-        throws InterruptedException, ScriptException, ProcessingException
-    {
-        if (body == null) {
-            throw new ArgumentNullException("body");
-        }
-        ProcessingReport report = this.snapshotSchema.validate(body);
-        if (!report.isSuccess()) {
-            throw new JsonSchemaValidationImplException(report);
-        }
-        UpperService service = this.service.get();
-        return service.pst(body);
-    }
-
     @Override
-    public void destroy() throws ExecutionException, InterruptedException
+    public void destroy() throws InterruptedException
     {
         this.del();
     }

@@ -51,7 +51,7 @@ public abstract class TripleActionRun
         this.actionStart = System.currentTimeMillis();
     }
 
-    public abstract TripleAction<A, C, M> next() throws InterruptedException;
+    public abstract TripleAction<A, C, M> next() throws Exception;
 
     protected <T> T poll(BlockingQueue<T> queue) throws InterruptedException
     {
