@@ -5,7 +5,6 @@
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
 import com.hktcode.bgsimple.SimpleHolder;
-import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInnerEnd;
 import com.hktcode.bgsimple.triple.*;
 import com.hktcode.lang.exception.ArgumentNullException;
@@ -56,7 +55,7 @@ public class UpcsmActionRun extends TripleActionRun<UpcsmConfig, UpcsmMetricRun>
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
             try (PGReplicationStream slt = this.config.logicalRepl.start(pgrepl)) {
                 UpperRecordConsumer r = null;
-                while (!(this.newStatus(this) instanceof SimpleStatusInnerEnd)) {
+                while (!(this.status.newStatus(this, this.number) instanceof SimpleStatusInnerEnd)) {
                     LogSequenceNumber txactionlsn = this.txactionLsn;
                     this.statusInfor = "receive logical replication stream message";
                     if (r == null) {

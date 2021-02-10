@@ -18,14 +18,4 @@ public abstract class SimpleWorker
         this.number = number;
         this.status = status;
     }
-
-    public SimpleStatusInner newStatus(BgWorker wkstep) throws InterruptedException
-    {
-        SimpleStatus origin;
-        while (!((origin = this.status.get()) instanceof SimpleStatusInner)) {
-            SimpleStatusOuter outer = (SimpleStatusOuter) origin;
-            outer.newStatus(wkstep, number);
-        }
-        return (SimpleStatusInner) origin;
-    }
 }

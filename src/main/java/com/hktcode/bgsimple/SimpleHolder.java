@@ -31,9 +31,14 @@ public class SimpleHolder
         this.status = new AtomicReference<>(put);
     }
 
-    public SimpleStatus get()
+    public SimpleStatusInner newStatus(BgWorker wkstep, int number) throws InterruptedException
     {
-        return this.status.get();
+        SimpleStatus origin;
+        while (!((origin = this.status.get()) instanceof SimpleStatusInner)) {
+            SimpleStatusOuter outer = (SimpleStatusOuter) origin;
+            outer.newStatus(wkstep, number);
+        }
+        return (SimpleStatusInner) origin;
     }
 
     public SimpleFutureOuter put()

@@ -72,7 +72,7 @@ class UppdcActionRun extends TripleActionRun<UppdcConfig, UppdcMetricRun>
             logger.info("kfk.metrics={}", kfk.metrics());
             logger.info("target_topic={}, partition_no={}", config.targetTopic, config.partitionNo);
             UpperRecordProducer d = null;
-            while (super.newStatus(this) instanceof SimpleStatusInnerRun) {
+            while (this.status.newStatus(this, this.number) instanceof SimpleStatusInnerRun) {
                 if (d == null) {
                     d = this.poll(getout);
                 }

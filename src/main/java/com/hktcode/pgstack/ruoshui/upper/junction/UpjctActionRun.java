@@ -78,7 +78,7 @@ class UpjctActionRun extends TripleActionRun<TripleJunctionConfig, UpjctMetricRu
         UpperRecordProducer o = null;
         Iterator<UpperRecordProducer> t //
             = ImmutableList.<UpperRecordProducer>of().iterator();
-        while (super.newStatus(this) instanceof SimpleStatusInnerRun) {
+        while (this.status.newStatus(this, this.number) instanceof SimpleStatusInnerRun) {
             if (o != null) {
                 o = this.push(o, getout);
             }
