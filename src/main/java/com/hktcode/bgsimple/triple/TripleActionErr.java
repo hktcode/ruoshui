@@ -5,9 +5,14 @@
 package com.hktcode.bgsimple.triple;
 
 import com.hktcode.bgsimple.SimpleWorker;
+import com.hktcode.bgsimple.method.SimpleMethodDel;
+import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
+import com.hktcode.bgsimple.status.SimpleStatusOuter;
 import com.hktcode.bgsimple.tqueue.TqueueConfig;
 import com.hktcode.lang.exception.ArgumentNegativeException;
 import com.hktcode.lang.exception.ArgumentNullException;
+
+import java.util.concurrent.Phaser;
 
 public class TripleActionErr //
     /* */< A extends TripleAction<A, C, M> //
@@ -68,6 +73,21 @@ public class TripleActionErr //
         super(action.status, action.number);
         this.config = action.config;
         this.metric = TripleMetricErr.of(action.metric.basicMetric, throwsError);
+    }
+
+    @Override
+    public TripleActionEnd<A, C, M> next() throws Exception
+    {
+        SimpleMethodDel<?>[] method = new SimpleMethodDel[] {
+            SimpleMethodDelParamsDefault.of(),
+            SimpleMethodDelParamsDefault.of(),
+            SimpleMethodDelParamsDefault.of(),
+        };
+        method[this.number] = this.del();
+        Phaser phaser = new Phaser(3);
+        SimpleStatusOuter del = SimpleStatusOuter.of(phaser, method);
+        this.status.run(del);
+        return TripleActionEnd.of(this, this.config, this.metric, this.number);
     }
 
     public TripleActionErr<A, C, M> next(Throwable throwsError) //

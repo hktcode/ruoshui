@@ -19,6 +19,11 @@ public interface TripleAction
 
     SimpleStatusInner newStatus(A action) throws InterruptedException;
 
+    default TripleAction<A, C, M> next() throws Exception
+    {
+        return this;
+    }
+
     default TripleResult<A> get() throws InterruptedException
     {
         return this.del();
