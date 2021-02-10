@@ -13,14 +13,6 @@ public class SimpleStatusInnerRun implements SimpleStatusInner
         return new SimpleStatusInnerRun();
     }
 
-    public SimpleStatus outer(SimpleStatus outer)
-    {
-        if (outer == null) {
-            throw new ArgumentNullException("outer");
-        }
-        return outer;
-    }
-
     @Override
     public SimpleStatus get(SimpleStatusOuterGet get)
     {

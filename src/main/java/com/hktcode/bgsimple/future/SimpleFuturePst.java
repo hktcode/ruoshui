@@ -4,7 +4,6 @@
 
 package com.hktcode.bgsimple.future;
 
-import com.hktcode.bgsimple.method.SimpleMethodAllResult;
 import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusOuterPst;
 import com.hktcode.lang.exception.ArgumentNullException;
@@ -28,14 +27,5 @@ public class SimpleFuturePst extends SimpleFuture<SimpleStatusOuterPst>
     private SimpleFuturePst(AtomicReference<SimpleStatus> status, SimpleStatusOuterPst origin)
     {
         super(status, origin);
-    }
-
-    protected SimpleMethodAllResult[] getResult()
-    {
-        SimpleMethodAllResult[] result = new SimpleMethodAllResult[origin.method.length];
-        for (int i = 0; i < result.length; ++i) {
-            result[i] = (SimpleMethodAllResult)this.origin.method[i];
-        }
-        return result;
     }
 }

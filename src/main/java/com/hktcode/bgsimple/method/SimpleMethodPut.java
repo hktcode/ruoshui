@@ -5,7 +5,7 @@ package com.hktcode.bgsimple.method;
 
 import com.hktcode.bgsimple.BgWorker;
 
-public interface SimpleMethodPut<W extends BgWorker<W>>
+public interface SimpleMethodPut<W extends BgWorker<W>> extends SimpleMethod<W>
 {
     SimpleMethodPutResult<W> run(W worker) throws InterruptedException;
 }

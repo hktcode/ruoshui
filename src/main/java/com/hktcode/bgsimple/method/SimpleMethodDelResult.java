@@ -7,7 +7,7 @@ import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public interface SimpleMethodDelResult<W extends BgWorker<W>> //
-    extends SimpleMethodDel<W>
+    extends SimpleMethodDel<W>, SimpleMethodResult<W>
 {
     @Override
     default SimpleMethodDelResult<W> run(W wkstep)

@@ -5,7 +5,7 @@ package com.hktcode.bgsimple.method;
 
 import com.hktcode.bgsimple.BgWorker;
 
-public interface SimpleMethodDel<W extends BgWorker<W>>
+public interface SimpleMethodDel<W extends BgWorker<W>> extends SimpleMethod<W>
 {
     SimpleMethodDelResult<W> run(W wkstep) throws InterruptedException;
 }

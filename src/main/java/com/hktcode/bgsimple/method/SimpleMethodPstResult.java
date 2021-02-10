@@ -7,7 +7,7 @@ import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public interface SimpleMethodPstResult<W extends BgWorker<W>> //
-    extends SimpleMethodPst<W>
+    extends SimpleMethodPst<W>, SimpleMethodResult<W>
 {
     @Override
     default SimpleMethodPstResult<W> run(W wkstep)

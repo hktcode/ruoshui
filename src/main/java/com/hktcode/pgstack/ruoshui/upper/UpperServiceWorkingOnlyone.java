@@ -18,7 +18,6 @@ import com.hktcode.pgstack.ruoshui.upper.junction.Upjct;
 import com.hktcode.pgstack.ruoshui.upper.producer.Uppdc;
 import org.springframework.http.ResponseEntity;
 
-import javax.script.ScriptException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Phaser;
@@ -35,7 +34,7 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
 
     private UpperServiceWorkingOnlyone()
     {
-        SimpleMethodPut[] method = new SimpleMethodPut[] {
+        SimpleMethodPut<?>[] method = new SimpleMethodPut[] {
             SimpleMethodPutParamsDefault.of(),
             SimpleMethodPutParamsDefault.of(),
             SimpleMethodPutParamsDefault.of()
@@ -45,7 +44,7 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
     }
 
     @Override
-    public ResponseEntity put(UpperConfig config) //
+    public ResponseEntity<?> put(UpperConfig config) //
         throws InterruptedException
     {
         if (config == null) {
@@ -71,14 +70,14 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
         thread.setDaemon(false);
         thread.setName("ruoshui-upper-consumer");
         thread.start();
-        ImmutableList<SimpleMethodAllResult> list = future.get();
+        ImmutableList<SimpleMethodAllResult<?>> list = future.get();
         return ResponseEntity.ok(list);
     }
 
     @Override
-    public ResponseEntity del() throws InterruptedException
+    public ResponseEntity<?> del() throws InterruptedException
     {
-        SimpleMethodDel[] method = new SimpleMethodDel[] {
+        SimpleMethodDel<?>[] method = new SimpleMethodDel[] {
             SimpleMethodDelParamsDefault.of(),
             SimpleMethodDelParamsDefault.of(),
             SimpleMethodDelParamsDefault.of()
@@ -86,14 +85,14 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
         SimpleStatusOuterDel del = SimpleStatusOuterDel.of(method, new Phaser(4));
         SimpleHolder holder = SimpleHolder.of(this.status);
         SimpleFutureDel future = holder.del(del);
-        ImmutableList<SimpleMethodAllResult> list = future.get();
+        ImmutableList<SimpleMethodAllResult<?>> list = future.get();
         return ResponseEntity.ok(list);
     }
 
     @Override
-    public ResponseEntity get() throws InterruptedException
+    public ResponseEntity<?> get() throws InterruptedException
     {
-        SimpleMethodGet[] method = new SimpleMethodGet[] {
+        SimpleMethodGet<?>[] method = new SimpleMethodGet[] {
             SimpleMethodGetParamsDefault.of(),
             SimpleMethodGetParamsDefault.of(),
             SimpleMethodGetParamsDefault.of()
@@ -101,18 +100,18 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
         SimpleStatusOuterGet get = SimpleStatusOuterGet.of(method, new Phaser(4));
         SimpleHolder holder = SimpleHolder.of(this.status);
         SimpleFutureGet future = holder.get(get);
-        ImmutableList<SimpleMethodAllResult> list = future.get();
+        ImmutableList<SimpleMethodAllResult<?>> list = future.get();
         return ResponseEntity.ok(list);
     }
 
     @Override
-    public ResponseEntity pst(JsonNode json)
+    public ResponseEntity<?> pst(JsonNode json)
         throws InterruptedException
     {
         if (json == null) {
             throw new ArgumentNullException("json");
         }
-        SimpleMethodPst[] method = new SimpleMethodPst[] {
+        SimpleMethodPst<?>[] method = new SimpleMethodPst[] {
             SimpleMethodPstParamsDefault.of(),
             SimpleMethodPstParamsDefault.of(),
             SimpleMethodPstParamsDefault.of()
@@ -120,7 +119,7 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
         SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(method, new Phaser(4));
         SimpleHolder holder = SimpleHolder.of(this.status);
         SimpleFuturePst future = holder.pst(pst);
-        ImmutableList<SimpleMethodAllResult> list = future.get();
+        ImmutableList<SimpleMethodAllResult<?>> list = future.get();
         return ResponseEntity.ok(list);
     }
 
