@@ -128,19 +128,21 @@ attrlist:
     val: value
 
 create table wallog
-( lsnvalue bigint
-, seqvalue bigint
+( keyvalue bigint
 , typename bigint
 , dbschema string
 , relation string
-, newtuple Map<string, string>
-, oldtuple Map<string, string>
-, newukeys Array<Map<string, string>>
-, oldukeys Array<Map<string, string>>
-, primary key(lsnvalue, seqvalue)
+, committs timestamp
+// , newtuple Map<string, string>
+// , oldtuple Map<string, string>
+// , newukeys Array<Map<string, string>>
+// , oldukeys Array<Map<string, string>>
+, tupleval Map<string, string>
+, pkeysval Map<string, string>
+, primary key(keyval)
 );
 
-元组：000
-关系：010(开始), 011(结束)
-事务：100(开始), 101(结束)
-冲正：110(开始), 111(结束)
+元组(tupleval)：000
+关系(relation)：010(开始), 011(结束)
+事务(txaction)：100(开始), 101(结束)
+冲正(reversal)：110(开始), 111(结束)
