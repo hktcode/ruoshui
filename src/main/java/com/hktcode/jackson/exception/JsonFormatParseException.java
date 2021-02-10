@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.util.RequestPayload;
 import com.hktcode.lang.exception.ArgumentNullException;
+import org.springframework.http.HttpStatus;
 
 /**
  * 当解析不合法的Json串时抛出的异常.
@@ -28,6 +29,32 @@ public class JsonFormatParseException extends JsonFormatException
         super(initCause);
         if (initCause == null) {
             throw new ArgumentNullException("initCause");
+        }
+    }
+
+
+    public JsonFormatParseException(HttpStatus code, JsonProcessingException cause)
+    {
+        super(code, cause);
+        if (code == null) {
+            throw new ArgumentNullException("code");
+        }
+        if (cause == null) {
+            throw new ArgumentNullException("cause");
+        }
+    }
+
+    public JsonFormatParseException(HttpStatus code, String message, JsonProcessingException cause)
+    {
+        super(code, message, cause);
+        if (code == null) {
+            throw new ArgumentNullException("code");
+        }
+        if (message == null) {
+            throw new ArgumentNullException("message");
+        }
+        if (cause == null) {
+            throw new ArgumentNullException("cause");
         }
     }
 

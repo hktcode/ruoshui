@@ -5,26 +5,56 @@ package com.hktcode.jackson.exception;
 
 import com.fasterxml.jackson.core.JsonLocation;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
+import com.hktcode.jackson.HttpStatusJacksonObjectException;
 import com.hktcode.lang.exception.ArgumentNullException;
+import org.springframework.http.HttpStatus;
 
 /**
  * 当解析不合法的Json串时抛出的异常.
  *
  * 该类其实是{@link JsonProcessingException}的unchecked包装.
  */
-public class JsonFormatException extends RuntimeException
+public class JsonFormatException extends HttpStatusJacksonObjectException
 {
     /**
      * 构造函数.
      *
-     * @param initCause 使用Jackson解析时抛出的{@link JsonProcessingException}
+     * @param cause 使用Jackson解析时抛出的{@link JsonProcessingException}
      * @throws ArgumentNullException 当参数{@code initCause}为{@code null}时抛出.
      */
-    public JsonFormatException(JsonProcessingException initCause)
+    public JsonFormatException(JsonProcessingException cause)
     {
-        super(initCause);
-        if (initCause == null) {
-            throw new ArgumentNullException("initCause");
+        super(HttpStatus.BAD_REQUEST, cause);
+        if (cause == null) {
+            throw new ArgumentNullException("cause");
+        }
+    }
+
+    public JsonFormatException(HttpStatus code, JsonProcessingException cause)
+    {
+        super(code, cause);
+        if (code == null) {
+            throw new ArgumentNullException("code");
+        }
+        if (cause == null) {
+            throw new ArgumentNullException("cause");
+        }
+    }
+
+    public JsonFormatException(HttpStatus code, String message, JsonProcessingException cause)
+    {
+        super(code, message, cause);
+        if (code == null) {
+            throw new ArgumentNullException("code");
+        }
+        if (message == null) {
+            throw new ArgumentNullException("message");
+        }
+        if (cause == null) {
+            throw new ArgumentNullException("cause");
         }
     }
 
@@ -95,5 +125,28 @@ public class JsonFormatException extends RuntimeException
     public String toString()
     {
         return getClass().getName() + ": " + getMessage();
+    }
+
+    public ObjectNode toJsonObject(ObjectNode node)
+    {
+        if (node == null) {
+            throw new ArgumentNullException("node");
+        }
+        JsonProcessingException cause = this.getCause();
+        node.put("message", cause.getOriginalMessage());
+        node.set("errcode", TextNode.valueOf(""));
+        node.putArray("advises"); // TODO:
+        node.put("exclass", this.getClass().getName());
+        ArrayNode errdata = node.putArray("errdata");
+        ObjectNode data = errdata.addObject();
+        JsonLocation location = cause.getLocation();
+        if (location != null) {
+            Object sourceRef = location.getSourceRef();
+            if (sourceRef != null) {
+                data.put("source", sourceRef.toString());
+            }
+            data.put("line", location.getLineNr() - 1);
+        }
+        return node;
     }
 }
