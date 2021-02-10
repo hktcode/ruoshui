@@ -115,7 +115,7 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
         };
         SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(method, new Phaser(4));
         SimpleHolder holder = SimpleHolder.of(this.status);
-        SimpleFuturePst future = holder.pst(pst);
+        SimpleFutureOuter<SimpleStatusOuterPst> future = holder.pst(pst);
         ImmutableList<SimpleMethodAllResult<?>> list = future.get();
         return ResponseEntity.ok(list);
     }

@@ -5,7 +5,6 @@ package com.hktcode.pgstack.ruoshui.upper.producer;
 
 import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.future.SimpleFutureOuter;
-import com.hktcode.bgsimple.future.SimpleFuturePst;
 import com.hktcode.bgsimple.method.SimpleMethodDel;
 import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
 import com.hktcode.bgsimple.method.SimpleMethodPst;
@@ -98,7 +97,7 @@ public class UppdcKafkaCallback implements Callback
                 method[2] = SimpleMethodPstParamsDefault.of();
                 Phaser phaser = new Phaser(4);
                 SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(method, phaser);
-                SimpleFuturePst future = this.holder.pst(pst);
+                SimpleFutureOuter<SimpleStatusOuterPst> future = this.holder.pst(pst);
                 future.get();
             }
         } catch (InterruptedException e) {

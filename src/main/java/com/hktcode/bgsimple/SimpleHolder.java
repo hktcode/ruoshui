@@ -38,7 +38,7 @@ public class SimpleHolder
         return SimpleFuturePut.of(status, put);
     }
 
-    public SimpleFuturePst pst(SimpleStatusOuterPst pst)
+    public SimpleFutureOuter<SimpleStatusOuterPst> pst(SimpleStatusOuterPst pst)
     {
         if (pst == null) {
             throw new ArgumentNullException("pst");
@@ -55,7 +55,7 @@ public class SimpleHolder
                 /*     */&& !this.status.compareAndSet(origin, future) //
                 /*   */)
             /**/);
-        return SimpleFuturePst.of(status, (SimpleStatusOuterPst)future);
+        return SimpleFutureOuter.of(status, (SimpleStatusOuterPst)future);
     }
 
     public SimpleFutureOuter<SimpleStatusOuterGet> get(SimpleStatusOuterGet get)
