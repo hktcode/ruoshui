@@ -6,14 +6,12 @@ package com.hktcode.bgsimple.triple;
 
 import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.SimpleWorker;
-import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.tqueue.TqueueConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class TripleActionRun
     /* */< A extends TripleAction<A, C, M>

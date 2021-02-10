@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Phaser;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class UpperServiceWorkingOnlyone implements UpperServiceWorking
 {
@@ -37,7 +36,7 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
             SimpleMethodPutParamsDefault.of()
         };
         SimpleStatus put = SimpleStatusOuterPut.of(method, new Phaser(4));
-        this.status = SimpleHolder.of(new AtomicReference<>(put));
+        this.status = SimpleHolder.of(put);
     }
 
     @Override

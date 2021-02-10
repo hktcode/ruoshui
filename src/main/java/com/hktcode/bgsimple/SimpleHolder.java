@@ -12,19 +12,19 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class SimpleHolder
 {
-    public static SimpleHolder of(AtomicReference<SimpleStatus> status)
+    public static SimpleHolder of(SimpleStatus put)
     {
-        if (status == null) {
-            throw new ArgumentNullException("status");
+        if (put == null) {
+            throw new ArgumentNullException("put");
         }
-        return new SimpleHolder(status);
+        return new SimpleHolder(put);
     }
 
     private final AtomicReference<SimpleStatus> status;
 
-    private SimpleHolder(AtomicReference<SimpleStatus> status)
+    private SimpleHolder(SimpleStatus put)
     {
-        this.status = status;
+        this.status = new AtomicReference<>(put);
     }
 
     public SimpleStatus get()
