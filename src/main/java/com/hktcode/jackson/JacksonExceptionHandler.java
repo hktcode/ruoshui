@@ -102,6 +102,7 @@ public class JacksonExceptionHandler
      * @return {@link JsonFormatException}转换成的响应对象.
      */
     @ExceptionHandler
+    @SuppressWarnings("rawtypes")
     public ResponseEntity jsonFormatExceptionHandler(JsonFormatException ex, HttpServletRequest req)
     {
         if (ex == null) {
@@ -121,6 +122,7 @@ public class JacksonExceptionHandler
      * @return {@link JsonProcessingException}转换成的响应对象.
      */
     @ExceptionHandler
+    @SuppressWarnings("rawtypes")
     public ResponseEntity jsonProcessingExceptionHandler(JsonProcessingException ex, HttpServletRequest req)
     {
         if (ex == null) {
@@ -152,6 +154,7 @@ public class JacksonExceptionHandler
      * @return {@link JsonSchemaValidationException}转换成的响应对象.
      */
     @ExceptionHandler
+    @SuppressWarnings("rawtypes")
     public ResponseEntity jsonSchemaValidationExceptionHandler(JsonSchemaValidationException ex, HttpServletRequest req)
     {
         if (ex == null) {
@@ -189,6 +192,7 @@ public class JacksonExceptionHandler
      * @return {@link ProcessingException}转换成的响应对象.
      */
     @ExceptionHandler
+    @SuppressWarnings("rawtypes")
     public ResponseEntity processingExceptionHandler(ProcessingException ex, HttpServletRequest req)
     {
         if (ex == null) {

@@ -10,7 +10,7 @@ import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 
 import java.util.concurrent.BlockingQueue;
 
-public class Upcsm extends Triple
+public class Upcsm extends Triple<UpcsmConfig, UpcsmMetricRun>
 {
     public static Upcsm of //
         /* */( UpcsmConfig config //

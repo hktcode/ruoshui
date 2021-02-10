@@ -34,6 +34,10 @@ public final class Kafka
          * the deserializer of byte array.
          */
         public static final ByteArrayDeserializer BYTES = new ByteArrayDeserializer();
+
+        private Deserializers()
+        {
+        }
     }
 
     /**
@@ -50,5 +54,13 @@ public final class Kafka
          * the serializer of byte array.
          */
         public static final ByteArraySerializer BYTES = new ByteArraySerializer();
+
+        private Serializers()
+        {
+        }
+    }
+
+    private Kafka()
+    {
     }
 }

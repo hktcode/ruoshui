@@ -3,10 +3,7 @@
  */
 package com.hktcode.jackson.exception;
 
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingMessage;
-import com.github.fge.jsonschema.core.report.ProcessingReport;
-import com.hktcode.lang.exception.ArgumentNullException;
 
 /**
  * {@link com.fasterxml.jackson.databind.JsonNode}不符合指定的JsonSchema时抛出的异常.

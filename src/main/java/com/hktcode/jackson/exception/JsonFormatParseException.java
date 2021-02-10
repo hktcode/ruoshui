@@ -5,7 +5,6 @@ package com.hktcode.jackson.exception;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.util.RequestPayload;
 import com.hktcode.lang.exception.ArgumentNullException;
 
@@ -22,7 +21,7 @@ public class JsonFormatParseException extends JsonFormatException
      * 构造函数.
      *
      * @param initCause 使用Jackson解析时抛出的{@link JsonParseException}
-     * @throws 当参数{@code initCause}为{@code null}时抛出.
+     * @throws ArgumentNullException 当参数{@code initCause}为{@code null}时抛出.
      */
     public JsonFormatParseException(JsonParseException initCause)
     {

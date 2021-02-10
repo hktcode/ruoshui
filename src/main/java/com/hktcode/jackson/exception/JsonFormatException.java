@@ -32,7 +32,7 @@ public class JsonFormatException extends RuntimeException
      * {@inheritDoc}
      */
     @Override
-    public JsonProcessingException getCause()
+    public synchronized JsonProcessingException getCause()
     {
         return (JsonProcessingException)super.getCause();
     }
@@ -82,6 +82,7 @@ public class JsonFormatException extends RuntimeException
      *
      * @see JsonProcessingException#getMessage()
      */
+    @Override
     public String getMessage()
     {
         return this.getCause().getMessage();

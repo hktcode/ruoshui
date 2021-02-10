@@ -5,15 +5,13 @@
 package com.hktcode.pgstack.ruoshui.upper.producer;
 
 import com.hktcode.bgsimple.SimpleHolder;
-import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.triple.Triple;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordProducer;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicReference;
 
-public class Uppdc extends Triple
+public class Uppdc extends Triple<UppdcConfig, UppdcMetricRun>
 {
     public static Uppdc of //
         /* */(UppdcConfig config //

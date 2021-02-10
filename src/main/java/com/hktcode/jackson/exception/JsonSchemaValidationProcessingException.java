@@ -33,7 +33,7 @@ public class JsonSchemaValidationProcessingException extends JsonSchemaValidatio
      * {@inheritDoc}
      */
     @Override
-    public ProcessingException getCause()
+    public synchronized ProcessingException getCause()
     {
         return (ProcessingException)super.getCause();
     }

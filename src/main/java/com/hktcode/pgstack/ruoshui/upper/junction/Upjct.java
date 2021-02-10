@@ -5,7 +5,6 @@
 package com.hktcode.pgstack.ruoshui.upper.junction;
 
 import com.hktcode.bgsimple.SimpleHolder;
-import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.triple.Triple;
 import com.hktcode.bgsimple.triple.TripleJunctionConfig;
 import com.hktcode.lang.exception.ArgumentNullException;
@@ -13,9 +12,8 @@ import com.hktcode.pgstack.ruoshui.upper.UpperRecordConsumer;
 import com.hktcode.pgstack.ruoshui.upper.UpperRecordProducer;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicReference;
 
-public class Upjct extends Triple
+public class Upjct extends Triple<TripleJunctionConfig, UpjctMetricRun>
 {
     public static Upjct of //
         /* */( TripleJunctionConfig config //

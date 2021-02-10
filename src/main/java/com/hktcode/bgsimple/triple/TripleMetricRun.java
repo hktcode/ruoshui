@@ -3,6 +3,8 @@
  */
 package com.hktcode.bgsimple.triple;
 
+import com.hktcode.bgsimple.tqueue.TqueueConfig;
+
 public class TripleMetricRun
 {
     public final long actionStart;
@@ -24,7 +26,8 @@ public class TripleMetricRun
      */
     public final String statusInfor;
 
-    protected TripleMetricRun(TripleActionRun action)
+    protected <C extends TqueueConfig, M extends TripleMetricRun> //
+    TripleMetricRun(TripleActionRun<C, M> action)
     {
         this.actionStart = action.actionStart;
         this.recordCount = action.recordCount;

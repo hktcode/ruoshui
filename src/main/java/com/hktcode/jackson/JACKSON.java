@@ -19,6 +19,7 @@ public class JACKSON
 
     }
 
+    @SuppressWarnings("rawtypes")
     public static JsonNode immutableCopy(JsonNode node)
     {
         if (node == null) {
@@ -32,6 +33,7 @@ public class JACKSON
         }
     }
 
+    @SuppressWarnings("rawtypes")
     public static ContainerNode immutableCopy(ContainerNode node)
     {
         if (node == null) {

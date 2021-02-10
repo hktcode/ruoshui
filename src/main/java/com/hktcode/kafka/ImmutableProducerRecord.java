@@ -5,7 +5,6 @@ package com.hktcode.kafka;
 
 import com.google.common.collect.ImmutableList;
 import com.hktcode.lang.exception.ArgumentNullException;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 
 /**

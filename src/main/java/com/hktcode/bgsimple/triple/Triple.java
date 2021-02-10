@@ -4,10 +4,11 @@
 package com.hktcode.bgsimple.triple;
 
 import com.hktcode.bgsimple.SimpleHolder;
+import com.hktcode.bgsimple.tqueue.TqueueConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Triple implements Runnable
+public abstract class Triple<C extends TqueueConfig, M extends TripleMetricRun> implements Runnable
 {
     private static final Logger logger = LoggerFactory.getLogger(Triple.class);
 
@@ -21,11 +22,11 @@ public abstract class Triple implements Runnable
         this.number = number;
     }
 
-    protected abstract TripleActionRun createsAction();
+    protected abstract TripleActionRun<C, M> createsAction();
 
     private void runWithInterrupted() throws InterruptedException
     {
-        TripleAction action = this.createsAction();
+        TripleAction<C, M> action = this.createsAction();
         while (!(action instanceof TripleActionEnd)) {
             try {
                 action = action.next();

@@ -3,11 +3,7 @@
  */
 package com.hktcode.bgsimple;
 
-import com.hktcode.bgsimple.status.SimpleStatus;
-import com.hktcode.bgsimple.status.SimpleStatusInner;
-import com.hktcode.bgsimple.status.SimpleStatusOuter;
-
-public abstract class SimpleWorker
+public abstract class SimpleWorker implements BgWorker
 {
     public final int number;
 
