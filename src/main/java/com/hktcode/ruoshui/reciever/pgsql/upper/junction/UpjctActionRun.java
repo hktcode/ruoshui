@@ -69,6 +69,7 @@ class UpjctActionRun extends TripleActionRun<TripleJunctionConfig, UpjctMetricRu
         this.txidContext = LogicalTxactContext.of();
     }
 
+    @Override
     public TripleAction<TripleJunctionConfig, UpjctMetricRun>
     next() throws InterruptedException
     {
