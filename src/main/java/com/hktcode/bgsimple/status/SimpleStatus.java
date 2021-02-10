@@ -4,8 +4,10 @@
 
 package com.hktcode.bgsimple.status;
 
+import com.hktcode.bgsimple.BgWorker;
+
 public interface SimpleStatus
 {
-    SimpleStatusOuter outer(SimpleStatusOuter outer);
-    SimpleStatusInner inner() throws InterruptedException;
+    SimpleStatusCmd cmd(SimpleStatusCmd cmd);
+    SimpleStatus run(BgWorker wkstep, int number) throws InterruptedException;
 }
