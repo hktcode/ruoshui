@@ -3,11 +3,9 @@
  */
 package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
-import com.hktcode.bgsimple.SimpleHolder;
-import com.hktcode.bgsimple.method.*;
-import com.hktcode.bgsimple.status.SimpleStatusCmd;
+import com.hktcode.simple.SimpleHolder;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmParamsPstRecvLsn;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperEntity;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -15,14 +13,15 @@ import org.postgresql.replication.LogSequenceNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
 
 public class UppdcKafkaCallback implements Callback
 {
+    private static final Logger logger = LoggerFactory.getLogger(UppdcKafkaCallback.class);
+
     public static UppdcKafkaCallback of //
         /* */( LogSequenceNumber lsn //
-        /* */, SimpleHolder holder //
+        /* */, SimpleHolder<UpperEntity> holder //
         /* */, Producer<byte[], byte[]> producer //
         /* */)
     {
@@ -38,18 +37,16 @@ public class UppdcKafkaCallback implements Callback
         return new UppdcKafkaCallback(lsn, holder, producer);
     }
 
-    private static final Logger logger //
-        = LoggerFactory.getLogger(UppdcKafkaCallback.class);
 
     private final LogSequenceNumber lsn;
 
     private final Producer<byte[], byte[]> producer;
 
-    private final SimpleHolder holder;
+    private final SimpleHolder<UpperEntity> holder;
 
     private UppdcKafkaCallback //
         /* */( LogSequenceNumber lsn //
-        /* */, SimpleHolder holder //
+        /* */, SimpleHolder<UpperEntity> holder //
         /* */, Producer<byte[], byte[]> producer //
         /* */)
     {
@@ -61,41 +58,30 @@ public class UppdcKafkaCallback implements Callback
     @Override
     public void onCompletion(RecordMetadata metadata, Exception ex)
     {
-        try {
-            if (ex != null) {
-                // TODO: 此处不应该对每条记录都将this.producer.close()方法执行一遍
-                // 这方面看来，Kafka客户端的设计并不是非常合理，缺少批量处理的能力
-                logger.error("kafka producer send record fail: lsn={}", this.lsn, ex);
-                // 如果已经关闭了，再次调用close不会抛出异常：
-                // 但是ex的值固定为：
-                // java.lang.IllegalStateException: Producer is closed forcefully.
-                //	at org.apache.kafka.clients.producer.internals.RecordAccumulator.abortBatches(RecordAccumulator.java:696) [kafka-clients-1.1.0.jar:na]
-                //	at org.apache.kafka.clients.producer.internals.RecordAccumulator.abortIncompleteBatches(RecordAccumulator.java:683) [kafka-clients-1.1.0.jar:na]
-                //	at org.apache.kafka.clients.producer.internals.Sender.run(Sender.java:185) [kafka-clients-1.1.0.jar:na]
-                //	at java.lang.Thread.run(Thread.java:745) [na:1.8.0_121]
-
+        if (ex != null) {
+            logger.error("kafka producer send record fail: lsn={}", this.lsn, ex);
+            if (this.holder.entity.producer.metric.callbackRef.compareAndSet(null, ex)) {
+                // kafka客户端的行为好奇怪，不符合一般的Java类调用约定：
+                // 1. 通常Java类中，应该是谁创建谁关闭。
+                //    Kafka的Producer虽然也满足这个条件，但是如果此处ex不是null，必须在此方法中调用close。
+                // 2. Kafka后端是批量发送的，所以一旦发送失败，其实是多条发送失败，此方法会被调用多次。
+                //    如果简单的执行close，则会关闭producer.close()多次，虽然producer.close确实可以多次调用。
+                //    但每次执行close感觉不是那么优雅。
+                //    我采用了设置callbackRef成功才关闭producer，这样子就只会调用producer.close()一次。
+                //    如果已经关闭了，再次调用close不会抛出异常：
+                //    但是ex的值固定为：
+                //    java.lang.IllegalStateException: Producer is closed forcefully.
+                //	     at org.apache.kafka.clients.producer.internals.RecordAccumulator.abortBatches(RecordAccumulator.java:696) [kafka-clients-1.1.0.jar:na]
+                //	     at org.apache.kafka.clients.producer.internals.RecordAccumulator.abortIncompleteBatches(RecordAccumulator.java:683) [kafka-clients-1.1.0.jar:na]
+                //	     at org.apache.kafka.clients.producer.internals.Sender.run(Sender.java:185) [kafka-clients-1.1.0.jar:na]
+                //	     at java.lang.Thread.run(Thread.java:745) [na:1.8.0_121]
+                // 从这两方面来看，Kafka客户端的设计并不是非常合理
                 this.producer.close(0, TimeUnit.MILLISECONDS);
-                SimpleMethod[] method = new SimpleMethod[3];
-                method[0] = SimpleMethodParamsDelDefault.of(); // TODO:
-                method[1] = SimpleMethodParamsDelDefault.of();
-                method[2] = SimpleMethodParamsDelDefault.of();
-                Phaser phaser = new Phaser(3);
-                SimpleStatusCmd del = SimpleStatusCmd.of(phaser, method);
-                this.holder.cmd(del);
             }
-            else if (this.lsn.asLong() != LogSequenceNumber.INVALID_LSN.asLong()) {
-                logger.info("kafka producer send record success: lsn={}", this.lsn);
-                SimpleMethod[] method = new SimpleMethod[3];
-                method[0] = UpcsmParamsPstRecvLsn.of(this.lsn);
-                method[1] = SimpleMethodParamsPstDefault.of();
-                method[2] = SimpleMethodParamsPstDefault.of();
-                Phaser phaser = new Phaser(3);
-                SimpleStatusCmd pst = SimpleStatusCmd.of(phaser, method);
-                this.holder.cmd(pst);
-            }
-        } catch (InterruptedException e) {
-            logger.error("should never happen", ex);
-            Thread.currentThread().interrupt();
+        }
+        else if (this.lsn.asLong() != LogSequenceNumber.INVALID_LSN.asLong()) {
+            logger.info("kafka producer send record success: lsn={}", this.lsn);
+            this.holder.entity.consumer.metric.txactionLsn.set(this.lsn.asLong());
         }
     }
 }

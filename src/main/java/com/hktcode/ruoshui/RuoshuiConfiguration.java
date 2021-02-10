@@ -6,6 +6,8 @@ package com.hktcode.ruoshui;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import com.hktcode.jackson.JacksonExceptionHandler;
+import com.hktcode.jackson.HttpStatusJacksonObjectExceptionHandler;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogSequenceNumberJacksonSerializer;
 import org.postgresql.replication.LogSequenceNumber;
@@ -111,5 +113,23 @@ public class RuoshuiConfiguration
             throw new ArgumentNullException("yamlMapper");
         }
         return new MappingJackson2YamlHttpMessageConverter(yamlMapper);
+    }
+
+    @Bean
+    public JacksonExceptionHandler jacksonExceptionHandler(ObjectMapper mapper)
+    {
+        if (mapper == null) {
+            throw new ArgumentNullException("mapper");
+        }
+        return JacksonExceptionHandler.of(mapper);
+    }
+
+    @Bean
+    public HttpStatusJacksonObjectExceptionHandler jacksonObjectExceptionHandler(ObjectMapper mapper)
+    {
+        if (mapper == null) {
+            throw new ArgumentNullException("mapper");
+        }
+        return HttpStatusJacksonObjectExceptionHandler.of(mapper);
     }
 }

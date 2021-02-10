@@ -7,7 +7,9 @@ package com.hktcode.ruoshui.reciever.pgsql.entity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
+import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
@@ -27,7 +29,7 @@ import static com.hktcode.ruoshui.Ruoshui.THE_NAME;
 /**
  * PostgreSQL逻辑复制流配置类.
  */
-public class LogicalReplConfig
+public class LogicalReplConfig implements JacksonObject
 {
     private static final Logger logger = LoggerFactory.getLogger(LogicalReplConfig.class);
 
@@ -166,9 +168,24 @@ public class LogicalReplConfig
         sb.append(", statusInterval=");
         sb.append(this.statusInterval);
         sb.append(", startPosition=");
-        sb.append(LogSequenceNumber.valueOf(this.startPosition));
+        sb.append(LogSequenceNumber.valueOf(this.startPosition).asString());
         sb.append(", publicationNames=");
         sb.append(this.publicationNames);
         return sb.toString();
+    }
+
+    public ObjectNode toJsonObject(ObjectNode node)
+    {
+        if (node == null) {
+            throw new ArgumentNullException("node");
+        }
+        node.put("slot_name", this.slotName);
+        LogSequenceNumber start = LogSequenceNumber.valueOf(this.startPosition);
+        node.put("start_position", start.asString());
+        ArrayNode names = node.putArray("publication_names");
+        for (String name : this.publicationNames) {
+            names.add(name);
+        }
+        return node;
     }
 }

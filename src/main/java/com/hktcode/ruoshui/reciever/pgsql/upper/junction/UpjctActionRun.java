@@ -5,99 +5,69 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.junction;
 
 import com.google.common.collect.ImmutableList;
-import com.hktcode.bgsimple.SimpleHolder;
-import com.hktcode.bgsimple.status.SimpleStatusRun;
-import com.hktcode.bgsimple.triple.*;
+import com.hktcode.simple.SimpleAction;
+import com.hktcode.simple.SimpleActionEnd;
+import com.hktcode.simple.SimpleHolder;
+import com.hktcode.queue.Tqueue;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgjdbc.LogicalTxactBeginsMsg;
-import com.hktcode.ruoshui.reciever.pgsql.entity.LogicalTxactContext;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlKey;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlVal;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperAction;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperEntity;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 
-class UpjctActionRun extends TripleActionRun<TripleJunctionConfig, UpjctMetricRun>
+class UpjctActionRun extends UpperAction
 {
-    public static UpjctActionRun of //
-        /* */( TripleJunctionConfig config
-        /* */, BlockingQueue<UpperRecordConsumer> comein
-        /* */, BlockingQueue<UpperRecordProducer> getout
-        /* */, SimpleHolder status
-        /* */)
+    public static UpjctActionRun of(SimpleHolder<UpperEntity> holder)
     {
-        if (config == null) {
-            throw new ArgumentNullException("config");
+        if (holder == null) {
+            throw new ArgumentNullException("holder");
         }
-        if (comein == null) {
-            throw new ArgumentNullException("comein");
-        }
-        if (getout == null) {
-            throw new ArgumentNullException("getout");
-        }
-        if (status == null) {
-            throw new ArgumentNullException("status");
-        }
-        return new UpjctActionRun(config, comein, getout, status);
+        return new UpjctActionRun(holder);
     }
 
-    private final BlockingQueue<UpperRecordConsumer> comein;
-
-    private final BlockingQueue<UpperRecordProducer> getout;
-
-    long curLsnofcmt = 0;
-
-    long curSequence = 0;
-
-    private final LogicalTxactContext txidContext;
-
-    private UpjctActionRun //
-        /* */( TripleJunctionConfig config
-        /* */, BlockingQueue<UpperRecordConsumer> comein
-        /* */, BlockingQueue<UpperRecordProducer> getout
-        /* */, SimpleHolder status
-        /* */)
+    private UpjctActionRun(SimpleHolder<UpperEntity> holder)
     {
-        super(status, config, 1);
-        this.comein = comein;
-        this.getout = getout;
-        this.txidContext = LogicalTxactContext.of();
+        super(holder);
     }
 
     @Override
-    public TripleAction<TripleJunctionConfig, UpjctMetricRun>
-    next() throws InterruptedException
+    public SimpleAction<UpperEntity> next() throws InterruptedException
     {
+        final UpperEntity entity = this.holder.entity;
+        final UpjctMetric metric = entity.junction.metric;
+        final Tqueue<UpperRecordConsumer> comein = entity.srcqueue;
+        final Tqueue<UpperRecordProducer> getout = entity.tgtqueue;
         UpperRecordConsumer r = null;
         UpperRecordProducer o = null;
         Iterator<UpperRecordProducer> t //
             = ImmutableList.<UpperRecordProducer>of().iterator();
-        while (this.status.run(this, this.number) instanceof SimpleStatusRun) {
+        while (this.holder.run(metric).deletets == Long.MAX_VALUE) {
             if (o != null) {
-                o = this.push(o, getout);
+                o = getout.push(o);
             }
             else if (t.hasNext()) {
                 o = t.next();
             }
             else if (r == null) {
-                r = this.poll(comein);
+                r = comein.poll();
             }
             else {
-                t = this.convert(r).iterator();
+                t = this.convert(metric, r).iterator();
                 r = null;
             }
         }
-        UpjctMetricRun basicMetric = this.toRunMetrics();
-        TripleMetricEnd<UpjctMetricRun> metric = TripleMetricEnd.of(basicMetric);
-        return TripleActionEnd.of(this, config, metric, this.number);
+        return SimpleActionEnd.of(this.holder);
     }
 
-    private List<UpperRecordProducer> convert(UpperRecordConsumer record)
+    private List<UpperRecordProducer> convert(UpjctMetric metric, UpperRecordConsumer record)
     {
         long lsn = record.lsn;
         LogicalMsg msg = record.msg;
@@ -114,23 +84,17 @@ class UpjctActionRun extends TripleActionRun<TripleJunctionConfig, UpjctMetricRu
         // 此时LSN不是严格自增长.
 
         if (msg instanceof LogicalTxactBeginsMsg) {
-            this.curLsnofcmt = ((LogicalTxactBeginsMsg) msg).lsnofcmt;
-            this.curSequence = 1;
+            metric.curLsnofcmt = ((LogicalTxactBeginsMsg) msg).lsnofcmt;
+            metric.curSequence = 1;
         }
 
-        ImmutableList<PgsqlVal> vallist = PgsqlVal.of(lsn, msg, txidContext);
+        ImmutableList<PgsqlVal> vallist = PgsqlVal.of(lsn, msg, metric.txidContext);
         List<UpperRecordProducer> result = new ArrayList<>();
         for (PgsqlVal val : vallist) {
-            PgsqlKey key = PgsqlKey.of(this.curLsnofcmt, this.curSequence++);
+            PgsqlKey key = PgsqlKey.of(metric.curLsnofcmt, metric.curSequence++);
             UpperRecordProducer d = UpperRecordProducer.of(key, val);
             result.add(d);
         }
         return ImmutableList.copyOf(result);
-    }
-
-    @Override
-    public UpjctMetricRun toRunMetrics()
-    {
-        return UpjctMetricRun.of(this);
     }
 }

@@ -4,13 +4,14 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
-import com.hktcode.bgsimple.tqueue.TqueueConfig;
+import com.hktcode.simple.SimpleConfig;
+import com.hktcode.jackson.JacksonObject;
 import com.hktcode.kafka.Kafka;
 import com.hktcode.lang.exception.ArgumentIllegalException;
 import com.hktcode.lang.exception.ArgumentNegativeException;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
 import java.util.HashMap;
@@ -18,19 +19,36 @@ import java.util.Map;
 
 import static com.hktcode.ruoshui.Ruoshui.THE_NAME;
 
-public class UppdcConfig extends TqueueConfig
+public class UppdcConfig extends SimpleConfig
 {
+    public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UppdcConfig.class, "UppdcConfig.yml");
+
     public static UppdcConfig ofJsonObject(JsonNode json)
     {
         if (json == null) {
             throw new ArgumentNullException("json");
         }
+        // wait_timeout
+        // log_duration
+        // factory_type
+        // config_props
+        //   kfk_property
+        //   target_topic
+        //   partition_no
+        // config_props
+        //   wal_datapath
+        //   max_synctime
+        //   max_syncsize
+        //   max_filesize
+        //   max_filetime
+        //
+        //
         long waitTimeout = json.path("wait_timeout").asLong(DEFALUT_WAIT_TIMEOUT);
         long logDuration = json.path("log_duration").asLong(DEFAULT_LOG_DURATION);
         Map<String, String> kfkMap = UppdcConfig.createDefaultMap();
         JsonNode kfkNode = json.get("kfk_property");
         if (kfkNode != null) {
-            UpperConfig.merge(kfkMap, kfkNode);
+            JacksonObject.merge(kfkMap, kfkNode);
         }
         ImmutableMap<String, String> kfkProperty = ImmutableMap.copyOf(kfkMap);
         // TODO: 检查properties
@@ -47,7 +65,10 @@ public class UppdcConfig extends TqueueConfig
             // TODO:
             throw new ArgumentNegativeException("partitionNo", partitionNo);
         }
-        return new UppdcConfig(waitTimeout, kfkProperty, targetTopic, partitionNo, logDuration);
+        UppdcConfig result = new UppdcConfig(kfkProperty, targetTopic, partitionNo);
+        result.waitTimeout = waitTimeout;
+        result.logDuration = logDuration;
+        return result;
     }
 
     public static final String DEFAULT_TARGET_TOPIC = THE_NAME;
@@ -67,17 +88,28 @@ public class UppdcConfig extends TqueueConfig
     public final int partitionNo;
 
     private UppdcConfig //
-        /* */( long waitTimeout
-        /* */, ImmutableMap<String, String> kfkProperty //
+        /* */( ImmutableMap<String, String> kfkProperty //
         /* */, String targetTopic //
         /* */, int partitionNo //
-        /* */, long logDuration //
         /* */)
     {
         this.kfkProperty = kfkProperty;
         this.targetTopic = targetTopic;
         this.partitionNo = partitionNo;
-        this.waitTimeout = waitTimeout;
-        this.logDuration = logDuration;
+    }
+
+    public ObjectNode toJsonObject(ObjectNode node)
+    {
+        if (node == null) {
+            throw new ArgumentNullException("node");
+        }
+        ObjectNode result = super.toJsonObject(node);
+        ObjectNode kfkPropertyNode = node.putObject("kfk_property");
+        for (Map.Entry<String, String> entry : this.kfkProperty.entrySet()) {
+            kfkPropertyNode.put(entry.getKey(), entry.getValue());
+        }
+        result.put("target_topic", this.targetTopic);
+        result.put("partition_no", this.partitionNo);
+        return result;
     }
 }

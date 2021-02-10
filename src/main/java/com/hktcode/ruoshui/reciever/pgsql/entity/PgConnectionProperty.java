@@ -4,7 +4,9 @@
 package com.hktcode.ruoshui.reciever.pgsql.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
+import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.PostgreSQL;
 import org.postgresql.PGProperty;
@@ -22,7 +24,7 @@ import java.util.Properties;
 /**
  * the property for PgConnection.
  */
-public class PgConnectionProperty
+public class PgConnectionProperty implements JacksonObject
 {
     public static final Logger logger = LoggerFactory.getLogger(PgConnectionProperty.class);
 
@@ -111,28 +113,6 @@ public class PgConnectionProperty
     }
 
     /**
-     * get a normal connection to PostgreSQL server.
-     *
-     * @return a normal connection to PostgreSQL server.
-     *
-     * @throws SQLException if connection to PostgreSQL server occur an error.
-     */
-    public Connection queriesConnection() throws SQLException
-    {
-        Properties props = new Properties();
-        for (Map.Entry<String, String> e : this.propertyMap.entrySet()) {
-            props.setProperty(e.getKey(), e.getValue());
-        }
-
-        props.remove(PGProperty.REPLICATION.getName());
-        props.remove(PGProperty.PREFER_QUERY_MODE.getName());
-        String url = PostgreSQL.JDBC_URL;
-        StringBuilder sb = toText(props);
-        logger.info("get queryies connection: url={}{}", url, sb);
-        return DriverManager.getConnection(url, props);
-    }
-
-    /**
      * convert the properties to a {@link StringBuilder}.
      *
      * @return a {@link StringBuilder} Object that contains the properties information.
@@ -163,5 +143,16 @@ public class PgConnectionProperty
         }
         sb.append('}');
         return sb.toString();
+    }
+
+    public ObjectNode toJsonObject(ObjectNode node)
+    {
+        if (node == null) {
+            throw new ArgumentNullException("node");
+        }
+        for (Map.Entry<String, String> entry : this.propertyMap.entrySet()) {
+            node.put(entry.getKey(), entry.getValue());
+        }
+        return node;
     }
 }

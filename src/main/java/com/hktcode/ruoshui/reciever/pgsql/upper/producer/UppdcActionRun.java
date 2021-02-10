@@ -4,14 +4,14 @@
 
 package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
-import com.hktcode.bgsimple.SimpleHolder;
-import com.hktcode.bgsimple.status.SimpleStatusRun;
-import com.hktcode.bgsimple.triple.TripleAction;
-import com.hktcode.bgsimple.triple.TripleActionEnd;
-import com.hktcode.bgsimple.triple.TripleActionRun;
-import com.hktcode.bgsimple.triple.TripleMetricEnd;
+import com.hktcode.simple.SimpleAction;
+import com.hktcode.simple.SimpleHolder;
+import com.hktcode.queue.Tqueue;
+import com.hktcode.simple.SimpleActionEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlValTxactCommit;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperAction;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperEntity;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -23,48 +23,35 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.BlockingQueue;
 
 import static com.hktcode.kafka.Kafka.Serializers.BYTES;
 
-class UppdcActionRun extends TripleActionRun<UppdcConfig, UppdcMetricRun>
+class UppdcActionRun extends UpperAction
 {
-    public static UppdcActionRun of
-        /* */( UppdcConfig config
-        /* */, BlockingQueue<UpperRecordProducer> getout
-        /* */, SimpleHolder status
-        /* */)
+    public static UppdcActionRun of(SimpleHolder<UpperEntity> holder)
     {
-        if (config == null) {
-            throw new ArgumentNullException("config");
+        if (holder == null) {
+            throw new ArgumentNullException("holder");
         }
-        if (getout == null) {
-            throw new ArgumentNullException("getout");
-        }
-        if (status == null) {
-            throw new ArgumentNullException("status");
-        }
-        return new UppdcActionRun(config, getout, status);
+        return new UppdcActionRun(holder);
     }
 
     private static final Logger logger = LoggerFactory.getLogger(UppdcActionRun.class);
 
-    private final BlockingQueue<UpperRecordProducer> getout;
-
-    private UppdcActionRun
-        /* */( UppdcConfig config
-        /* */, BlockingQueue<UpperRecordProducer> getout
-        /* */, SimpleHolder status
-        /* */)
+    private UppdcActionRun(SimpleHolder<UpperEntity> holder)
     {
-        super(status, config, 2);
-        this.getout = getout;
+        super(holder);
     }
 
     @Override
-    public TripleAction<UppdcConfig, UppdcMetricRun> next() throws InterruptedException
+    public SimpleAction<UpperEntity> next() throws Exception
     {
+        final UpperEntity entity = this.holder.entity;
+        final UppdcConfig config = entity.producer.config;
+        final UppdcMetric metric = entity.producer.metric;
+        final Tqueue<UpperRecordProducer> getout = entity.tgtqueue;
         Properties properties = new Properties();
+        properties.setProperty("request.timeout.ms", "1000");
         for (Map.Entry<String, String> e : config.kfkProperty.entrySet()) {
             properties.setProperty(e.getKey(), e.getValue());
         }
@@ -72,15 +59,17 @@ class UppdcActionRun extends TripleActionRun<UppdcConfig, UppdcMetricRun>
             logger.info("target_topic={}, partition_no={}, kfk.metrics={}",
                     config.targetTopic, config.partitionNo, kfk.metrics());
             UpperRecordProducer d = null;
-            while (this.status.run(this, this.number) instanceof SimpleStatusRun) {
-                if (d == null) {
-                    d = this.poll(getout);
-                }
-                else {
+            Exception ex;
+            while (this.holder.run(metric).deletets == Long.MAX_VALUE) {
+                if ((ex = metric.callbackRef.get()) != null) {
+                    throw ex;
+                } else if (d == null) {
+                    d = getout.poll();
+                } else {
                     String keyText = d.key.toObjectNode().toString();
                     String valText = d.val.toObjectNode().toString();
-                    String t = this.config.targetTopic;
-                    int p = this.config.partitionNo;
+                    String t = config.targetTopic;
+                    int p = config.partitionNo;
                     byte[] k = keyText.getBytes(StandardCharsets.UTF_8);
                     byte[] v = valText.getBytes(StandardCharsets.UTF_8);
                     ProducerRecord<byte[], byte[]> r //
@@ -90,19 +79,12 @@ class UppdcActionRun extends TripleActionRun<UppdcConfig, UppdcMetricRun>
                         PgsqlValTxactCommit val = (PgsqlValTxactCommit)d.val;
                         lsn = LogSequenceNumber.valueOf(val.lsnofmsg);
                     }
-                    kfk.send(r, UppdcKafkaCallback.of(lsn, this.status, kfk));
+                    // TODO: kafka生产者的行为好奇怪
+                    kfk.send(r, UppdcKafkaCallback.of(lsn, holder, kfk));
                     d = null;
                 }
             }
         }
-        UppdcMetricRun basicMetric = this.toRunMetrics();
-        TripleMetricEnd<UppdcMetricRun> metric = TripleMetricEnd.of(basicMetric);
-        return TripleActionEnd.of(this, config, metric, this.number);
-    }
-
-    @Override
-    public UppdcMetricRun toRunMetrics()
-    {
-        return UppdcMetricRun.of(this);
+        return SimpleActionEnd.of(this.holder);
     }
 }

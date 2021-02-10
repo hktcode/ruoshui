@@ -4,11 +4,14 @@
 
 package com.hktcode.ruoshui.reciever.pgsql.upper.consumer;
 
-import com.hktcode.bgsimple.SimpleHolder;
-import com.hktcode.bgsimple.status.SimpleStatusRun;
-import com.hktcode.bgsimple.triple.*;
+import com.hktcode.simple.SimpleAction;
+import com.hktcode.simple.SimpleActionEnd;
+import com.hktcode.simple.SimpleHolder;
+import com.hktcode.queue.Tqueue;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperAction;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperEntity;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
@@ -19,110 +22,79 @@ import org.slf4j.LoggerFactory;
 import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.concurrent.BlockingQueue;
 
-public class UpcsmActionRun extends TripleActionRun<UpcsmConfig, UpcsmMetricRun>
+public class UpcsmActionRun extends UpperAction
 {
     private static final Logger logger = LoggerFactory.getLogger(UpcsmActionRun.class);
 
-    public static UpcsmActionRun of //
-        /* */( UpcsmConfig config //
-        /* */, BlockingQueue<UpperRecordConsumer> comein //
-        /* */, SimpleHolder status //
-        /* */)
+    public static UpcsmActionRun of(SimpleHolder<UpperEntity> holder)
     {
-        if (config == null) {
-            throw new ArgumentNullException("config");
+        if (holder == null) {
+            throw new ArgumentNullException("holder");
         }
-        if (comein == null) {
-            throw new ArgumentNullException("comein");
-        }
-        if (status == null) {
-            throw new ArgumentNullException("status");
-        }
-        return new UpcsmActionRun(config, comein, status);
+        return new UpcsmActionRun(holder);
     }
 
-    private final BlockingQueue<UpperRecordConsumer> comein;
-
-    LogSequenceNumber txactionLsn = LogSequenceNumber.INVALID_LSN;
-
     @Override
-    public TripleAction<UpcsmConfig, UpcsmMetricRun> next() //
-        throws InterruptedException, SQLException
+    public SimpleAction<UpperEntity> next() throws InterruptedException, SQLException
     {
+        final UpperEntity entity = this.holder.entity;
+        final UpcsmConfig config = entity.consumer.config;
+        final UpcsmMetric metric = entity.consumer.metric;
         try (Connection repl = config.srcProperty.replicaConnection()) {
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
-            try (PGReplicationStream slt = this.config.logicalRepl.start(pgrepl)) {
+            try (PGReplicationStream slt = config.logicalRepl.start(pgrepl)) {
+                final Tqueue<UpperRecordConsumer> comein = entity.srcqueue;
                 UpperRecordConsumer r = null;
-                while (this.status.run(this, this.number) instanceof SimpleStatusRun) {
-                    LogSequenceNumber txactionlsn = this.txactionLsn;
-                    this.statusInfor = "receive logical replication stream message";
+                long prevlsn = 0;
+                while (this.holder.run(metric).deletets == Long.MAX_VALUE) {
+                    long currlsn = metric.txactionLsn.get();
+                    if (prevlsn != currlsn) {
+                        LogSequenceNumber lsn = LogSequenceNumber.valueOf(currlsn);
+                        slt.setFlushedLSN(lsn);
+                        slt.setAppliedLSN(lsn);
+                        prevlsn = currlsn;
+                    }
+                    metric.statusInfor = "receive logical replication stream message";
                     if (r == null) {
-                        slt.setFlushedLSN(txactionlsn);
-                        slt.setAppliedLSN(txactionlsn);
-                        r = this.poll(slt);
-                    } else if ((r = this.push(r, this.comein)) != null) {
-                        slt.setFlushedLSN(txactionlsn);
-                        slt.setAppliedLSN(txactionlsn);
+                        r = this.poll(config, metric, slt);
+                    } else if ((r = comein.push(r)) != null) {
                         slt.forceUpdateStatus();
                     }
                 }
             }
         }
         logger.info("pgsender complete");
-        this.statusInfor = "send txation finish record.";
-        UpcsmMetricRun basicMetric = this.toRunMetrics();
-        TripleMetricEnd<UpcsmMetricRun> metric = TripleMetricEnd.of(basicMetric);
-        return TripleActionEnd.of(this, this.config, metric, this.number);
+        metric.statusInfor = "send txation finish record.";
+        metric.endDatetime = System.currentTimeMillis();
+        return SimpleActionEnd.of(this.holder);
     }
 
-    private UpperRecordConsumer poll(PGReplicationStream s) //
+    private UpperRecordConsumer poll(UpcsmConfig config, UpcsmMetric metric, PGReplicationStream s) //
             throws SQLException, InterruptedException
     {
         ByteBuffer msg = s.readPending();
-        ++this.fetchCounts;
+        ++metric.fetchCounts;
         if (msg != null) {
-            ++this.recordCount;
+            ++metric.fetchRecord;
             long key = s.getLastReceiveLSN().asLong();
             LogicalMsg val = LogicalMsg.ofLogicalWal(msg);
             return UpperRecordConsumer.of(key, val);
         }
-        long waitTimeout = this.config.waitTimeout;
-        long logDuration = this.config.logDuration;
+        long waitTimeout = config.waitTimeout;
+        long logDuration = config.logDuration;
         Thread.sleep(waitTimeout);
-        this.fetchMillis += waitTimeout;
+        metric.fetchMillis += waitTimeout;
         long currMillis = System.currentTimeMillis();
-        if (currMillis - this.logDatetime >= logDuration) {
+        if (currMillis - metric.logDatetime >= logDuration) {
             logger.info("readPending() returns null: waitTimeout={}, logDuration={}", waitTimeout, logDuration);
-            this.logDatetime = currMillis;
+            metric.logDatetime = currMillis;
         }
         return null;
     }
 
-    private UpcsmActionRun //
-        /* */( UpcsmConfig config //
-        /* */, BlockingQueue<UpperRecordConsumer> comein //
-        /* */, SimpleHolder status //
-        /* */)
+    private UpcsmActionRun(SimpleHolder<UpperEntity> holder)
     {
-        super(status, config, 0);
-        this.comein = comein;
-    }
-
-    @Override
-    public UpcsmMetricRun toRunMetrics()
-    {
-        return UpcsmMetricRun.of(this);
-    }
-
-    public TripleResult pst(LogSequenceNumber lsn) //
-            throws InterruptedException
-    {
-        if (lsn == null) {
-            throw new ArgumentNullException("lsn");
-        }
-        this.txactionLsn = lsn;
-        return this.get();
+        super(holder);
     }
 }
