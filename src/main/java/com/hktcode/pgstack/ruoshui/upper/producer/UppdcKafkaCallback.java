@@ -4,11 +4,7 @@
 package com.hktcode.pgstack.ruoshui.upper.producer;
 
 import com.hktcode.bgsimple.SimpleHolder;
-import com.hktcode.bgsimple.future.SimpleFutureOuter;
-import com.hktcode.bgsimple.method.SimpleMethodDel;
-import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
-import com.hktcode.bgsimple.method.SimpleMethodPst;
-import com.hktcode.bgsimple.method.SimpleMethodPstParamsDefault;
+import com.hktcode.bgsimple.method.*;
 import com.hktcode.bgsimple.status.SimpleStatusOuter;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmParamsPstRecvLsn;
@@ -79,20 +75,20 @@ public class UppdcKafkaCallback implements Callback
                 //	at java.lang.Thread.run(Thread.java:745) [na:1.8.0_121]
 
                 this.producer.close(0, TimeUnit.MILLISECONDS);
-                SimpleMethodDel<?>[] method = new SimpleMethodDel[3];
-                method[0] = SimpleMethodDelParamsDefault.of(); // TODO:
-                method[1] = SimpleMethodDelParamsDefault.of();
-                method[2] = SimpleMethodDelParamsDefault.of();
+                SimpleMethod[] method = new SimpleMethod[3];
+                method[0] = SimpleMethodParamsDelDefault.of(); // TODO:
+                method[1] = SimpleMethodParamsDelDefault.of();
+                method[2] = SimpleMethodParamsDelDefault.of();
                 Phaser phaser = new Phaser(4);
                 SimpleStatusOuter del = SimpleStatusOuter.of(phaser, method);
                 this.holder.run(del);
             }
             else if (this.lsn.asLong() != LogSequenceNumber.INVALID_LSN.asLong()) {
                 logger.info("kafka producer send record success: lsn={}", this.lsn);
-                SimpleMethodPst<?>[] method = new SimpleMethodPst[3];
+                SimpleMethod[] method = new SimpleMethod[3];
                 method[0] = UpcsmParamsPstRecvLsn.of(this.lsn);
-                method[1] = SimpleMethodPstParamsDefault.of();
-                method[2] = SimpleMethodPstParamsDefault.of();
+                method[1] = SimpleMethodParamsPstDefault.of();
+                method[2] = SimpleMethodParamsPstDefault.of();
                 Phaser phaser = new Phaser(4);
                 SimpleStatusOuter pst = SimpleStatusOuter.of(phaser, method);
                 this.holder.run(pst);

@@ -7,7 +7,7 @@ import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.bgsimple.status.SimpleStatusOuter;
 
-public abstract class SimpleWorker<W extends BgWorker<W>>
+public abstract class SimpleWorker<W extends BgWorker>
 {
     public final int number;
 

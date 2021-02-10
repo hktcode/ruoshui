@@ -30,10 +30,10 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
 
     private UpperServiceWorkingOnlyone()
     {
-        SimpleMethodPut<?>[] method = new SimpleMethodPut[] {
-            SimpleMethodPutParamsDefault.of(),
-            SimpleMethodPutParamsDefault.of(),
-            SimpleMethodPutParamsDefault.of()
+        SimpleMethod[] method = new SimpleMethod[] {
+            SimpleMethodParamsPutDefault.of(),
+            SimpleMethodParamsPutDefault.of(),
+            SimpleMethodParamsPutDefault.of()
         };
         SimpleStatusOuter put = SimpleStatusOuter.of(new Phaser(4), method);
         this.status = SimpleHolder.of(put);
@@ -65,33 +65,33 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
         thread.setDaemon(false);
         thread.setName("ruoshui-upper-consumer");
         thread.start();
-        ImmutableList<? extends SimpleMethodAllResult<?>> list = future.get();
+        ImmutableList<? extends SimpleMethodResult> list = future.get();
         return ResponseEntity.ok(list);
     }
 
     @Override
     public ResponseEntity<?> del() throws InterruptedException
     {
-        SimpleMethodDel<?>[] method = new SimpleMethodDel[] {
-            SimpleMethodDelParamsDefault.of(),
-            SimpleMethodDelParamsDefault.of(),
-            SimpleMethodDelParamsDefault.of()
+        SimpleMethod[] method = new SimpleMethod[] {
+            SimpleMethodParamsDelDefault.of(),
+            SimpleMethodParamsDelDefault.of(),
+            SimpleMethodParamsDelDefault.of()
         };
         SimpleStatusOuter del = SimpleStatusOuter.of(new Phaser(4), method);
-        ImmutableList<SimpleMethodAllResult> list = this.status.run(del);
+        ImmutableList<SimpleMethodResult> list = this.status.run(del);
         return ResponseEntity.ok(list);
     }
 
     @Override
     public ResponseEntity<?> get() throws InterruptedException
     {
-        SimpleMethodGet<?>[] method = new SimpleMethodGet[] {
-            SimpleMethodGetParamsDefault.of(),
-            SimpleMethodGetParamsDefault.of(),
-            SimpleMethodGetParamsDefault.of()
+        SimpleMethod[] method = new SimpleMethod[] {
+            SimpleMethodParamsGetDefault.of(),
+            SimpleMethodParamsGetDefault.of(),
+            SimpleMethodParamsGetDefault.of()
         };
         SimpleStatusOuter get = SimpleStatusOuter.of(new Phaser(4), method);
-        ImmutableList<SimpleMethodAllResult> list = this.status.run(get);
+        ImmutableList<SimpleMethodResult> list = this.status.run(get);
         return ResponseEntity.ok(list);
     }
 
@@ -102,13 +102,13 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
         if (json == null) {
             throw new ArgumentNullException("json");
         }
-        SimpleMethodPst<?>[] method = new SimpleMethodPst[] {
-            SimpleMethodPstParamsDefault.of(),
-            SimpleMethodPstParamsDefault.of(),
-            SimpleMethodPstParamsDefault.of()
+        SimpleMethod[] method = new SimpleMethod[] {
+            SimpleMethodParamsPstDefault.of(),
+            SimpleMethodParamsPstDefault.of(),
+            SimpleMethodParamsPstDefault.of()
         };
         SimpleStatusOuter pst = SimpleStatusOuter.of(new Phaser(4), method);
-        ImmutableList<SimpleMethodAllResult> list = this.status.run(pst);
+        ImmutableList<SimpleMethodResult> list = this.status.run(pst);
         return ResponseEntity.ok(list);
     }
 

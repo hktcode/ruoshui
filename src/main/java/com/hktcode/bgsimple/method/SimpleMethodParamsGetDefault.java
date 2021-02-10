@@ -6,16 +6,15 @@ package com.hktcode.bgsimple.method;
 import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class SimpleMethodGetParamsDefault<W extends BgWorker<W>> //
-    implements SimpleMethodGetParams<W>
+public class SimpleMethodParamsGetDefault implements SimpleMethodParams
 {
-    public static <W extends BgWorker<W>> SimpleMethodGetParamsDefault<W> of()
+    public static SimpleMethodParamsGetDefault of()
     {
-        return new SimpleMethodGetParamsDefault<>();
+        return new SimpleMethodParamsGetDefault();
     }
 
     @Override
-    public SimpleMethodGetResult<W> run(W wkstep) throws InterruptedException
+    public SimpleMethodResult run(BgWorker wkstep) throws InterruptedException
     {
         if (wkstep == null) {
             throw new ArgumentNullException("wkstep");

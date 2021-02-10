@@ -5,12 +5,12 @@
 package com.hktcode.bgsimple.status;
 
 import com.google.common.collect.ImmutableList;
-import com.hktcode.bgsimple.method.SimpleMethodAllResult;
+import com.hktcode.bgsimple.method.SimpleMethodResult;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class SimpleStatusInnerRun extends SimpleStatusInner
 {
-    public static SimpleStatusInnerRun of(ImmutableList<SimpleMethodAllResult<?>> result)
+    public static SimpleStatusInnerRun of(ImmutableList<SimpleMethodResult> result)
     {
         if (result == null) {
             throw new ArgumentNullException("result");
@@ -18,7 +18,7 @@ public class SimpleStatusInnerRun extends SimpleStatusInner
         return new SimpleStatusInnerRun(result);
     }
 
-    private SimpleStatusInnerRun(ImmutableList<SimpleMethodAllResult<?>> result)
+    private SimpleStatusInnerRun(ImmutableList<SimpleMethodResult> result)
     {
         super(result);
     }

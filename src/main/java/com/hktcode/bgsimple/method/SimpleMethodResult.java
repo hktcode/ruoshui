@@ -1,11 +1,15 @@
+/*
+ * Copyright (c) 2019, Huang Ketian.
+ */
 package com.hktcode.bgsimple.method;
 
 import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public interface SimpleMethodResult<W extends BgWorker<W>> extends SimpleMethod<W>
+public interface SimpleMethodResult extends SimpleMethod
 {
-    default SimpleMethodResult<W> run(W wkstep)
+    @Override
+    default SimpleMethodResult run(BgWorker wkstep)
     {
         if (wkstep == null) {
             throw new ArgumentNullException("wkstep");

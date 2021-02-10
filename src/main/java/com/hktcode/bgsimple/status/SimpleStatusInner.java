@@ -7,16 +7,16 @@ package com.hktcode.bgsimple.status;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.future.SimpleFutureInner;
-import com.hktcode.bgsimple.method.SimpleMethodAllResult;
+import com.hktcode.bgsimple.method.SimpleMethodResult;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.util.concurrent.TimeUnit;
 
 public abstract class SimpleStatusInner implements SimpleStatus
 {
-    public final ImmutableList<? extends SimpleMethodAllResult<?>> result;
+    public final ImmutableList<? extends SimpleMethodResult> result;
 
-    protected <R extends SimpleMethodAllResult<?>> SimpleStatusInner(ImmutableList<R> result)
+    protected <R extends SimpleMethodResult> SimpleStatusInner(ImmutableList<R> result)
     {
         this.result = result;
     }
@@ -35,7 +35,6 @@ public abstract class SimpleStatusInner implements SimpleStatus
         }
         return this;
     }
-
 
     public SimpleFutureInner newFuture(SimpleHolder status)
     {

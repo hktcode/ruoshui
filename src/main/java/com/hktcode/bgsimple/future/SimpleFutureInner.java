@@ -5,7 +5,7 @@
 package com.hktcode.bgsimple.future;
 
 import com.google.common.collect.ImmutableList;
-import com.hktcode.bgsimple.method.SimpleMethodAllResult;
+import com.hktcode.bgsimple.method.SimpleMethodResult;
 import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.lang.exception.ArgumentNullException;
 
@@ -34,13 +34,13 @@ public class SimpleFutureInner extends SimpleFuture
     }
 
     @Override
-    public ImmutableList<? extends SimpleMethodAllResult<?>> get()
+    public ImmutableList<? extends SimpleMethodResult> get()
     {
         return ((SimpleStatusInner)this.origin).result;
     }
 
     @Override
-    public ImmutableList<? extends SimpleMethodAllResult<?>> get(long timeout, @Nonnull TimeUnit unit) //
+    public ImmutableList<? extends SimpleMethodResult> get(long timeout, @Nonnull TimeUnit unit) //
     {
         return ((SimpleStatusInner)this.origin).result;
     }

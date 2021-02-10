@@ -5,8 +5,8 @@
 package com.hktcode.bgsimple.triple;
 
 import com.hktcode.bgsimple.SimpleWorker;
-import com.hktcode.bgsimple.method.SimpleMethodDel;
-import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
+import com.hktcode.bgsimple.method.SimpleMethod;
+import com.hktcode.bgsimple.method.SimpleMethodParamsDelDefault;
 import com.hktcode.bgsimple.status.SimpleStatusOuter;
 import com.hktcode.bgsimple.tqueue.TqueueConfig;
 import com.hktcode.lang.exception.ArgumentNegativeException;
@@ -56,10 +56,10 @@ public class TripleActionErr //
     @Override
     public TripleActionEnd<A, C, M> next() throws Exception
     {
-        SimpleMethodDel<?>[] method = new SimpleMethodDel[] {
-            SimpleMethodDelParamsDefault.of(),
-            SimpleMethodDelParamsDefault.of(),
-            SimpleMethodDelParamsDefault.of(),
+        SimpleMethod[] method = new SimpleMethod[] {
+            SimpleMethodParamsDelDefault.of(),
+            SimpleMethodParamsDelDefault.of(),
+            SimpleMethodParamsDelDefault.of(),
         };
         method[this.number] = this.del();
         Phaser phaser = new Phaser(3);

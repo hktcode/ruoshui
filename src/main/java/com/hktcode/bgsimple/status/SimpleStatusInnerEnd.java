@@ -12,7 +12,7 @@ import java.util.concurrent.Phaser;
 
 public class SimpleStatusInnerEnd extends SimpleStatusInner
 {
-    public static SimpleStatusInnerEnd of(ImmutableList<SimpleMethodAllResultEnd<?>> result)
+    public static SimpleStatusInnerEnd of(ImmutableList<SimpleMethodResultEnd> result)
     {
         if (result == null) {
             throw new ArgumentNullException("result");
@@ -20,7 +20,7 @@ public class SimpleStatusInnerEnd extends SimpleStatusInner
         return new SimpleStatusInnerEnd(result);
     }
 
-    private SimpleStatusInnerEnd(ImmutableList<SimpleMethodAllResultEnd<?>> result)
+    private SimpleStatusInnerEnd(ImmutableList<SimpleMethodResultEnd> result)
     {
         super(result);
     }
@@ -32,7 +32,7 @@ public class SimpleStatusInnerEnd extends SimpleStatusInner
             throw new ArgumentNullException("outer");
         }
         // TODO: 检查pst中的Phaser是否已经终止.
-        SimpleMethod<?>[] method = new SimpleMethod[result.size()];
+        SimpleMethod[] method = new SimpleMethod[result.size()];
         result.toArray(method);
         return SimpleStatusOuter.of(new Phaser(1), method);
     }

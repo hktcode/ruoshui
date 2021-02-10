@@ -4,12 +4,14 @@
 
 package com.hktcode.pgstack.ruoshui.upper.consumer;
 
-import com.hktcode.bgsimple.method.SimpleMethodPst;
-import com.hktcode.bgsimple.method.SimpleMethodPstResult;
+import com.hktcode.bgsimple.BgWorker;
+import com.hktcode.bgsimple.method.SimpleMethodParams;
+import com.hktcode.bgsimple.method.SimpleMethodResult;
+import com.hktcode.lang.exception.ArgumentIllegalException;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.postgresql.replication.LogSequenceNumber;
 
-public class UpcsmParamsPstRecvLsn implements SimpleMethodPst<UpcsmActionRun>
+public class UpcsmParamsPstRecvLsn implements SimpleMethodParams
 {
     public static UpcsmParamsPstRecvLsn of(LogSequenceNumber receiveLsn)
     {
@@ -27,12 +29,15 @@ public class UpcsmParamsPstRecvLsn implements SimpleMethodPst<UpcsmActionRun>
     }
 
     @Override
-    public SimpleMethodPstResult<UpcsmActionRun> run(UpcsmActionRun worker) //
+    public SimpleMethodResult run(BgWorker worker) //
         throws InterruptedException
     {
         if (worker == null) {
             throw new ArgumentNullException("worker");
         }
-        return worker.pst(this.receiveLsn);
+        if (!(worker instanceof UpcsmActionRun)) {
+            throw new ArgumentIllegalException("worker type wrong", "worker", worker);
+        }
+        return ((UpcsmActionRun)worker).pst(this.receiveLsn);
     }
 }

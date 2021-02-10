@@ -6,7 +6,7 @@ package com.hktcode.bgsimple;
 
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.future.*;
-import com.hktcode.bgsimple.method.SimpleMethodAllResult;
+import com.hktcode.bgsimple.method.SimpleMethodResult;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
 
@@ -48,7 +48,7 @@ public class SimpleHolder
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public ImmutableList<SimpleMethodAllResult> run(SimpleStatusOuter outer)
+    public ImmutableList<SimpleMethodResult> run(SimpleStatusOuter outer)
             throws InterruptedException
     {
         if (outer == null) {

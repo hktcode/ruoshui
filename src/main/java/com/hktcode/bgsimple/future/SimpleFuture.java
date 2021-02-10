@@ -5,7 +5,7 @@
 package com.hktcode.bgsimple.future;
 
 import com.google.common.collect.ImmutableList;
-import com.hktcode.bgsimple.method.SimpleMethodAllResult;
+import com.hktcode.bgsimple.method.SimpleMethodResult;
 import com.hktcode.bgsimple.status.SimpleStatus;
 
 import javax.annotation.Nonnull;
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public abstract class SimpleFuture
-    implements Future<ImmutableList<? extends SimpleMethodAllResult<?>>>
+    implements Future<ImmutableList<? extends SimpleMethodResult>>
 {
     protected final SimpleStatus origin;
 
@@ -36,10 +36,10 @@ public abstract class SimpleFuture
     }
 
     @Override
-    public abstract ImmutableList<? extends SimpleMethodAllResult<?>> get() throws InterruptedException;
+    public abstract ImmutableList<? extends SimpleMethodResult> get() throws InterruptedException;
 
     @Override
-    public abstract ImmutableList<? extends SimpleMethodAllResult<?>> //
+    public abstract ImmutableList<? extends SimpleMethodResult> //
     get(long timeout, @Nonnull TimeUnit unit) //
         throws InterruptedException, TimeoutException;
 }

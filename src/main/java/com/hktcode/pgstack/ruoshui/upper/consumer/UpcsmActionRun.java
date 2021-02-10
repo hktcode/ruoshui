@@ -118,7 +118,7 @@ public class UpcsmActionRun extends TripleActionRun<UpcsmActionRun, UpcsmConfig,
         return UpcsmMetricRun.of(this);
     }
 
-    public TripleResult<UpcsmActionRun> pst(LogSequenceNumber lsn) //
+    public TripleResult pst(LogSequenceNumber lsn) //
             throws InterruptedException
     {
         if (lsn == null) {

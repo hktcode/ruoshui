@@ -7,10 +7,10 @@ package com.hktcode.bgsimple.triple;
 import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class TripleResultErr<A extends BgWorker<A>, C, M extends TripleMetricRun>
+public class TripleResultErr<A extends BgWorker, C, M extends TripleMetricRun>
     extends TripleResultEnd<A, C, M>
 {
-    public static <A extends BgWorker<A>, C, M extends TripleMetricRun>
+    public static <A extends BgWorker, C, M extends TripleMetricRun>
     TripleResultErr<A, C, M> of(C config, TripleMetricErr<M> metric)
     {
         if(config == null){

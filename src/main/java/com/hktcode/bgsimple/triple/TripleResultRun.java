@@ -5,13 +5,13 @@
 package com.hktcode.bgsimple.triple;
 
 import com.hktcode.bgsimple.BgWorker;
-import com.hktcode.bgsimple.method.SimpleMethodAllResultRun;
+import com.hktcode.bgsimple.method.SimpleMethodResultRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class TripleResultRun<A extends BgWorker<A>, C, M extends TripleMetricRun>
-    implements TripleResult<A>, SimpleMethodAllResultRun<A>
+public class TripleResultRun<A extends BgWorker, C, M extends TripleMetricRun>
+    implements TripleResult, SimpleMethodResultRun
 {
-    public static <A extends BgWorker<A>, C, M extends TripleMetricRun>
+    public static <A extends BgWorker, C, M extends TripleMetricRun>
     TripleResultRun<A, C, M> of(C config, M metric)
     {
         if(config == null){

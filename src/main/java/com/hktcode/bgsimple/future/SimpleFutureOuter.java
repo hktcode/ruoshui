@@ -6,11 +6,9 @@ package com.hktcode.bgsimple.future;
 
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.SimpleHolder;
-import com.hktcode.bgsimple.method.SimpleMethodAllResult;
+import com.hktcode.bgsimple.method.SimpleMethodResult;
 import com.hktcode.bgsimple.status.SimpleStatusOuter;
 import com.hktcode.lang.exception.ArgumentNullException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
@@ -44,14 +42,14 @@ public class SimpleFutureOuter extends SimpleFuture
     }
 
     @Override
-    public ImmutableList<? extends SimpleMethodAllResult<?>> get() throws InterruptedException
+    public ImmutableList<? extends SimpleMethodResult> get() throws InterruptedException
     {
         SimpleFuture result = this.status.inner();
         return result.get();
     }
 
     @Override
-    public ImmutableList<? extends SimpleMethodAllResult<?>> //
+    public ImmutableList<? extends SimpleMethodResult> //
     get(long timeout, @Nonnull TimeUnit unit) //
         throws InterruptedException, TimeoutException
     {

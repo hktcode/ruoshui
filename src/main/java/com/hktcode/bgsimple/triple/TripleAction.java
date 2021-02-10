@@ -13,7 +13,7 @@ public interface TripleAction
     /* */, C extends TqueueConfig
     /* */, M extends TripleMetricRun
     /* */>
-    extends BgWorker<A>
+    extends BgWorker
 {
     TripleActionErr<A, C, M> next(Throwable throwsError) throws InterruptedException;
 
@@ -24,17 +24,17 @@ public interface TripleAction
         return this;
     }
 
-    default TripleResult<A> get() throws InterruptedException
+    default TripleResult get() throws InterruptedException
     {
         return this.del();
     }
 
-    default TripleResult<A> pst() throws InterruptedException
+    default TripleResult pst() throws InterruptedException
     {
         return this.get();
     }
 
-    default TripleResult<A> put() throws InterruptedException
+    default TripleResult put() throws InterruptedException
     {
         return this.get();
     }

@@ -107,7 +107,7 @@ public abstract class TripleActionRun
     }
 
     @Override
-    public TripleResult<A> get() throws InterruptedException
+    public TripleResult get() throws InterruptedException
     {
         M metric = this.toRunMetrics();
         return TripleResultRun.of(config, metric);

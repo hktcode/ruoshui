@@ -6,11 +6,10 @@ package com.hktcode.bgsimple.method;
 import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public interface SimpleMethodPutResult<W extends BgWorker<W>> //
-    extends SimpleMethodPut<W>, SimpleMethodResult<W>
+public interface SimpleMethodResultEnd extends SimpleMethodResult
 {
     @Override
-    default SimpleMethodPutResult<W> run(W wkstep)
+    default SimpleMethodResultEnd run(BgWorker wkstep)
     {
         if (wkstep == null) {
             throw new ArgumentNullException("wkstep");

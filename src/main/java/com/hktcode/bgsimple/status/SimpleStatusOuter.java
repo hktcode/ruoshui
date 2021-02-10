@@ -19,7 +19,7 @@ import java.util.concurrent.TimeoutException;
 
 public class SimpleStatusOuter implements SimpleStatus
 {
-    public static SimpleStatusOuter of(Phaser phaser, SimpleMethod<?>[] method)
+    public static SimpleStatusOuter of(Phaser phaser, SimpleMethod[] method)
     {
         if (phaser == null) {
             throw new ArgumentNullException("phaser");
@@ -34,23 +34,21 @@ public class SimpleStatusOuter implements SimpleStatus
 
     public final Phaser phaser;
 
-    public final SimpleMethod<?>[] method;
+    public final SimpleMethod[] method;
 
-    private SimpleStatusOuter(Phaser phaser, SimpleMethod<?>[] method)
+    private SimpleStatusOuter(Phaser phaser, SimpleMethod[] method)
     {
         this.phaser = phaser;
         this.method = method;
     }
 
-    public <A extends BgWorker<A>> void newStatus(A wkstep, int number) //
+    public void newStatus(BgWorker wkstep, int number) //
         throws InterruptedException
     {
         if (wkstep == null) {
             throw new ArgumentNullException("wkstep");
         }
-        @SuppressWarnings("unchecked")
-        SimpleMethod<A> w = (SimpleMethod<A>) this.method[number];
-        this.method[number] = w.run(wkstep);
+        this.method[number] = this.method[number].run(wkstep);
         int phase = this.phaser.arriveAndDeregister();
         if (phase < 0) {
             logger.error("phaser.arriveAndDeregister: number={}, phaser={}", number, phase);
@@ -71,17 +69,17 @@ public class SimpleStatusOuter implements SimpleStatus
     {
         phaser.awaitAdvanceInterruptibly(phaser.arrive());
         int runcount = 0;
-        SimpleMethod<?>[] originmethod = this.method;
-        for (SimpleMethod<?> simpleMethod : originmethod) {
-            if (simpleMethod instanceof SimpleMethodAllResultRun) {
+        SimpleMethod[] originmethod = this.method;
+        for (SimpleMethod simpleMethod : originmethod) {
+            if (simpleMethod instanceof SimpleMethodResultRun) {
                 ++runcount;
             }
         }
         SimpleStatusInner result;
         if (runcount == 0) {
-            result = SimpleStatusInnerEnd.of(ImmutableList.copyOf((SimpleMethodAllResultEnd<?>[])originmethod));
+            result = SimpleStatusInnerEnd.of(ImmutableList.copyOf((SimpleMethodResultEnd[])originmethod));
         } else {
-            result = SimpleStatusInnerRun.of(ImmutableList.copyOf((SimpleMethodAllResult<?>[])originmethod));
+            result = SimpleStatusInnerRun.of(ImmutableList.copyOf((SimpleMethodResult[])originmethod));
         }
         phaser.arriveAndDeregister();
         return result;
@@ -92,17 +90,17 @@ public class SimpleStatusOuter implements SimpleStatus
     {
         phaser.awaitAdvanceInterruptibly(phaser.arrive(), timeout, unit);
         int runcount = 0;
-        SimpleMethod<?>[] originmethod = this.method;
-        for (SimpleMethod<?> simpleMethod : originmethod) {
-            if (simpleMethod instanceof SimpleMethodAllResultRun) {
+        SimpleMethod[] originmethod = this.method;
+        for (SimpleMethod simpleMethod : originmethod) {
+            if (simpleMethod instanceof SimpleMethodResultRun) {
                 ++runcount;
             }
         }
         SimpleStatusInner result;
         if (runcount == 0) {
-            result = SimpleStatusInnerEnd.of(ImmutableList.copyOf((SimpleMethodAllResultEnd<?>[])originmethod));
+            result = SimpleStatusInnerEnd.of(ImmutableList.copyOf((SimpleMethodResultEnd[])originmethod));
         } else {
-            result = SimpleStatusInnerRun.of(ImmutableList.copyOf((SimpleMethodAllResult<?>[])originmethod));
+            result = SimpleStatusInnerRun.of(ImmutableList.copyOf((SimpleMethodResult[])originmethod));
         }
         phaser.arriveAndDeregister();
         return result;
