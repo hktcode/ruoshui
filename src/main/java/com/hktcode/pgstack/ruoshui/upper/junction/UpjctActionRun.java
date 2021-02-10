@@ -6,8 +6,7 @@ package com.hktcode.pgstack.ruoshui.upper.junction;
 
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.SimpleHolder;
-import com.hktcode.bgsimple.status.SimpleStatus;
-import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
+import com.hktcode.bgsimple.status.SimpleStatusRun;
 import com.hktcode.bgsimple.triple.*;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicReference;
 
 class UpjctActionRun extends TripleActionRun<TripleJunctionConfig, UpjctMetricRun>
 {
@@ -78,7 +76,7 @@ class UpjctActionRun extends TripleActionRun<TripleJunctionConfig, UpjctMetricRu
         UpperRecordProducer o = null;
         Iterator<UpperRecordProducer> t //
             = ImmutableList.<UpperRecordProducer>of().iterator();
-        while (this.status.newStatus(this, this.number) instanceof SimpleStatusInnerRun) {
+        while (this.status.run(this, this.number) instanceof SimpleStatusRun) {
             if (o != null) {
                 o = this.push(o, getout);
             }

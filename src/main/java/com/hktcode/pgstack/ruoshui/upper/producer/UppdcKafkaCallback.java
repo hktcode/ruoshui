@@ -5,7 +5,7 @@ package com.hktcode.pgstack.ruoshui.upper.producer;
 
 import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.method.*;
-import com.hktcode.bgsimple.status.SimpleStatusOuter;
+import com.hktcode.bgsimple.status.SimpleStatusCmd;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmParamsPstRecvLsn;
 import org.apache.kafka.clients.producer.Callback;
@@ -79,9 +79,9 @@ public class UppdcKafkaCallback implements Callback
                 method[0] = SimpleMethodParamsDelDefault.of(); // TODO:
                 method[1] = SimpleMethodParamsDelDefault.of();
                 method[2] = SimpleMethodParamsDelDefault.of();
-                Phaser phaser = new Phaser(4);
-                SimpleStatusOuter del = SimpleStatusOuter.of(phaser, method);
-                this.holder.run(del);
+                Phaser phaser = new Phaser(3);
+                SimpleStatusCmd del = SimpleStatusCmd.of(phaser, method);
+                this.holder.cmd(del);
             }
             else if (this.lsn.asLong() != LogSequenceNumber.INVALID_LSN.asLong()) {
                 logger.info("kafka producer send record success: lsn={}", this.lsn);
@@ -89,9 +89,9 @@ public class UppdcKafkaCallback implements Callback
                 method[0] = UpcsmParamsPstRecvLsn.of(this.lsn);
                 method[1] = SimpleMethodParamsPstDefault.of();
                 method[2] = SimpleMethodParamsPstDefault.of();
-                Phaser phaser = new Phaser(4);
-                SimpleStatusOuter pst = SimpleStatusOuter.of(phaser, method);
-                this.holder.run(pst);
+                Phaser phaser = new Phaser(3);
+                SimpleStatusCmd pst = SimpleStatusCmd.of(phaser, method);
+                this.holder.cmd(pst);
             }
         } catch (InterruptedException e) {
             logger.error("should never happen", ex);

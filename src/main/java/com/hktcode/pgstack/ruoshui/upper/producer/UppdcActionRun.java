@@ -5,7 +5,7 @@
 package com.hktcode.pgstack.ruoshui.upper.producer;
 
 import com.hktcode.bgsimple.SimpleHolder;
-import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
+import com.hktcode.bgsimple.status.SimpleStatusRun;
 import com.hktcode.bgsimple.triple.TripleAction;
 import com.hktcode.bgsimple.triple.TripleActionEnd;
 import com.hktcode.bgsimple.triple.TripleActionRun;
@@ -61,8 +61,8 @@ class UppdcActionRun extends TripleActionRun<UppdcConfig, UppdcMetricRun>
         this.getout = getout;
     }
 
-    public TripleAction<UppdcConfig, UppdcMetricRun>
-    next() throws InterruptedException
+    @Override
+    public TripleAction<UppdcConfig, UppdcMetricRun> next() throws InterruptedException
     {
         Properties properties = new Properties();
         for (Map.Entry<String, String> e : config.kfkProperty.entrySet()) {
@@ -72,7 +72,7 @@ class UppdcActionRun extends TripleActionRun<UppdcConfig, UppdcMetricRun>
             logger.info("kfk.metrics={}", kfk.metrics());
             logger.info("target_topic={}, partition_no={}", config.targetTopic, config.partitionNo);
             UpperRecordProducer d = null;
-            while (this.status.newStatus(this, this.number) instanceof SimpleStatusInnerRun) {
+            while (this.status.run(this, this.number) instanceof SimpleStatusRun) {
                 if (d == null) {
                     d = this.poll(getout);
                 }

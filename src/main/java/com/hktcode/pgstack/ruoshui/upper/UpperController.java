@@ -20,15 +20,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
-@RequestMapping("api/upper/ruoshui")
+@RequestMapping("api/upper/")
 public class UpperController implements DisposableBean
 {
-    private static Logger logger = LoggerFactory.getLogger(UpperController.class);
+    private static final Logger logger = LoggerFactory.getLogger(UpperController.class);
 
-    private final AtomicReference<UpperService> service = new AtomicReference<>(UpperServiceWaitingOnlyone.of());
+    private final UpperService service = UpperServiceOnlyone.of();
 
     private final JsonSchema upperConfigSchema;
 
@@ -44,10 +43,13 @@ public class UpperController implements DisposableBean
         }
     }
 
-    @PutMapping
-    public ResponseEntity put(@RequestBody JsonNode body) //
+    @PutMapping("{name}")
+    public ResponseEntity put(@PathVariable("name") String name, @RequestBody JsonNode body) //
         throws InterruptedException, ProcessingException
     {
+        if (name == null) {
+            throw new ArgumentNullException("name");
+        }
         if (body == null) {
             throw new ArgumentNullException("body");
         }
@@ -56,37 +58,37 @@ public class UpperController implements DisposableBean
             throw new JsonSchemaValidationImplException(report);
         }
         UpperConfig config = UpperConfig.of(body);
-        UpperServiceWorking future;
-        UpperService origin;
-        do {
-            origin = this.service.get();
-            future = origin.putService();
-        } while (future != origin && !this.service.compareAndSet(origin, future));
-        return future.put(config);
+        return this.service.put(name, config);
     }
 
-    @DeleteMapping
-    public ResponseEntity del() throws InterruptedException
+    @DeleteMapping("{name}")
+    public ResponseEntity del(@PathVariable("name") String name) //
+            throws InterruptedException
     {
-        UpperServiceWaiting future;
-        UpperService origin;
-        do {
-            origin = this.service.get();
-            future = origin.delService();
-        } while (origin != future && !this.service.compareAndSet(origin, future));
-        return origin.del();
+        if (name == null) {
+            throw new ArgumentNullException("name");
+        }
+        return this.service.del(name);
+    }
+
+    @GetMapping("{name}")
+    public ResponseEntity get(@PathVariable("name") String name) throws InterruptedException
+    {
+        if (name == null) {
+            throw new ArgumentNullException("name");
+        }
+        return this.service.get(name);
     }
 
     @GetMapping
     public ResponseEntity get() throws InterruptedException
     {
-        UpperService service = this.service.get();
-        return service.get();
+        return this.service.get();
     }
 
     @Override
     public void destroy() throws InterruptedException
     {
-        this.del();
+        this.service.destroy();
     }
 }

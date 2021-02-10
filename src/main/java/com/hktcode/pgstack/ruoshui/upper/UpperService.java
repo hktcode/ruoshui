@@ -6,17 +6,17 @@ package com.hktcode.pgstack.ruoshui.upper;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.http.ResponseEntity;
 
-import javax.script.ScriptException;
-
 public interface UpperService
 {
-    ResponseEntity del() throws InterruptedException;
+    ResponseEntity put(String name, UpperConfig config) throws InterruptedException;
+
+    ResponseEntity del(String name) throws InterruptedException;
+
+    ResponseEntity get(String name) throws InterruptedException;
 
     ResponseEntity get() throws InterruptedException;
 
-    ResponseEntity pst(JsonNode json) throws InterruptedException, ScriptException;
+    ResponseEntity pst(String name, JsonNode json) throws InterruptedException;
 
-    UpperServiceWorking putService();
-
-    UpperServiceWaiting delService();
+    void destroy() throws InterruptedException;
 }
