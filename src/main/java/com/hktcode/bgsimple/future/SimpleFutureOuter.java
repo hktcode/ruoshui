@@ -10,6 +10,7 @@ import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
 import com.hktcode.bgsimple.method.SimpleMethodDel;
 import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
 import com.hktcode.bgsimple.status.*;
+import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,8 +20,20 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class SimpleFutureOuter<S extends SimpleStatusOuter> extends SimpleFuture<S>
+public class SimpleFutureOuter<S extends SimpleStatusOuter> extends SimpleFuture<S>
 {
+    public static <S extends SimpleStatusOuter> SimpleFutureOuter<S> //
+    of(AtomicReference<SimpleStatus> status, S origin)
+    {
+        if (status == null) {
+            throw new ArgumentNullException("status");
+        }
+        if (origin == null) {
+            throw new ArgumentNullException("origin");
+        }
+        return new SimpleFutureOuter<>(status, origin);
+    }
+
     protected SimpleFutureOuter(AtomicReference<SimpleStatus> status, S origin)
     {
         super(status, origin);
