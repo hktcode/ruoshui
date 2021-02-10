@@ -4,6 +4,8 @@
 package com.hktcode.bgsimple.triple;
 
 import com.hktcode.bgsimple.SimpleHolder;
+import com.hktcode.bgsimple.method.SimpleMethodResultEnd;
+import com.hktcode.bgsimple.status.SimpleStatusEnd;
 import com.hktcode.bgsimple.tqueue.TqueueConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +29,7 @@ public abstract class Triple<C extends TqueueConfig, M extends TripleMetricRun> 
     private void runWithInterrupted() throws InterruptedException
     {
         TripleAction<C, M> action = this.createsAction();
-        while (!(action instanceof TripleActionEnd)) {
+        do {
             try {
                 action = action.next();
             } catch (InterruptedException ex) {
@@ -36,8 +38,10 @@ public abstract class Triple<C extends TqueueConfig, M extends TripleMetricRun> 
                 logger.error("triple throws exception: ", ex);
                 action = action.next(ex);
             }
-        }
-        logger.info("triple completes.");
+        } while (!(action instanceof TripleActionEnd));
+        SimpleStatusEnd end = this.status.end(action, this.number);
+        SimpleMethodResultEnd result = end.result.get(this.number);
+        logger.info("triple completes: result={}", result);
     }
 
     @Override
