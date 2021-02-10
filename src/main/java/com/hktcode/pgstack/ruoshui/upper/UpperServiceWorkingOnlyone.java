@@ -6,7 +6,6 @@ package com.hktcode.pgstack.ruoshui.upper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.SimpleHolder;
-import com.hktcode.bgsimple.future.*;
 import com.hktcode.bgsimple.method.*;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
@@ -46,7 +45,6 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
         if (config == null) {
             throw new ArgumentNullException("config");
         }
-        SimpleFutureOuter future = this.status.put();
         BlockingQueue<UpperRecordConsumer> comein = new ArrayBlockingQueue<>(config.junction.comeinCount);
         BlockingQueue<UpperRecordProducer> getout = new ArrayBlockingQueue<>(config.junction.getoutCount);
 
@@ -65,7 +63,7 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
         thread.setDaemon(false);
         thread.setName("ruoshui-upper-consumer");
         thread.start();
-        ImmutableList<? extends SimpleMethodResult> list = future.get();
+        ImmutableList<? extends SimpleMethodResult> list = this.status.run();
         return ResponseEntity.ok(list);
     }
 

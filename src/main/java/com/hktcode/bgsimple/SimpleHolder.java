@@ -5,13 +5,10 @@
 package com.hktcode.bgsimple;
 
 import com.google.common.collect.ImmutableList;
-import com.hktcode.bgsimple.future.*;
 import com.hktcode.bgsimple.method.SimpleMethodResult;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class SimpleHolder
@@ -41,18 +38,6 @@ public class SimpleHolder
         return (SimpleStatusInner) origin;
     }
 
-    public SimpleFutureOuter put()
-    {
-        SimpleStatus s = this.status.get();
-        // if (!(s instanceof SimpleStatusOuterPut)) {
-        //     throw new SimpleStatusIsNotPutException();
-        // }
-        // SimpleStatusOuterPut put = (SimpleStatusOuterPut)s;
-        // return put.newFuture(this);
-        return ((SimpleStatusOuter)s).newFuture(this);
-    }
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public ImmutableList<SimpleMethodResult> run(SimpleStatusOuter outer)
             throws InterruptedException
     {
@@ -70,15 +55,10 @@ public class SimpleHolder
                 /*     */&& !this.status.compareAndSet(origin, future) //
                 /*   */)
             /**/);
-        do {
-            origin = this.status.get();
-            future = origin.inner();
-        } while (future != origin && !this.status.compareAndSet(origin, future));
-        SimpleStatusInner result = (SimpleStatusInner)future;
-        return ImmutableList.copyOf(result.result);
+        return this.run();
     }
 
-    public SimpleFutureInner inner() throws InterruptedException
+    public ImmutableList<SimpleMethodResult> run() throws InterruptedException
     {
         SimpleStatus origin;
         SimpleStatusInner future;
@@ -86,18 +66,6 @@ public class SimpleHolder
             origin = this.status.get();
             future = origin.inner();
         } while (future != origin && !this.status.compareAndSet(origin, future));
-        return future.newFuture(this);
-    }
-
-    public SimpleFutureInner inner(long timeout, TimeUnit unit) //
-            throws InterruptedException, TimeoutException //
-    {
-        SimpleStatus origin;
-        SimpleStatusInner future;
-        do {
-            origin = this.status.get();
-            future = origin.inner(timeout, unit);
-        } while (future != origin && !this.status.compareAndSet(origin, future));
-        return future.newFuture(this);
+        return ImmutableList.copyOf(future.result);
     }
 }
