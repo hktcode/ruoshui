@@ -68,13 +68,13 @@ public abstract class Triple implements Runnable
                 }
                 else if (!isSameEnd(erract, (SimpleStatusInnerEnd)o)) {
                     SimpleStatusInnerEnd end = (SimpleStatusInnerEnd)o;
-                    SimpleMethodAllResultEnd[] method = new SimpleMethodAllResultEnd[3];
+                    SimpleMethodAllResultEnd<?>[] method = new SimpleMethodAllResultEnd<?>[3];
                     for (int i = 0; i < method.length; ++i) {
                         if (i == number) {
-                            method[i] = (SimpleMethodAllResultEnd)action.del();
+                            method[i] = action.del();
                         }
                         else {
-                            method[i] = end.result.get(i);
+                            method[i] = (SimpleMethodAllResultEnd<?>)end.result.get(i);
                         }
                     }
                     f = SimpleStatusInnerEnd.of(ImmutableList.copyOf(method));
@@ -82,7 +82,7 @@ public abstract class Triple implements Runnable
             } while (o != f && !this.status.compareAndSet(o, f));
             if (f instanceof SimpleStatusOuterDel) {
                 SimpleStatusOuterDel del = (SimpleStatusOuterDel)f;
-                SimpleFutureOuter<SimpleStatusOuterDel> future = SimpleFutureOuter.of(this.status, del);
+                SimpleFutureOuter future = del.newFuture(this.status);
                 future.get();
             }
             logger.info("triple terminate.");
@@ -91,7 +91,7 @@ public abstract class Triple implements Runnable
 
     private static boolean isSameEnd(TripleActionErr erract, SimpleStatusInnerEnd status)
     {
-        SimpleMethodAllResultEnd statusResult = status.result.get(1);
+        SimpleMethodAllResultEnd statusResult = (SimpleMethodAllResultEnd) status.result.get(1);
         if (!(statusResult instanceof TripleResultErr)) {
             return false;
         }

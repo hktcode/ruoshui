@@ -6,13 +6,16 @@ package com.hktcode.bgsimple.status;
 
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
+import com.hktcode.bgsimple.method.SimpleMethodDel;
+import com.hktcode.bgsimple.method.SimpleMethodGet;
+import com.hktcode.bgsimple.method.SimpleMethodPst;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.util.concurrent.Phaser;
 
-public class SimpleStatusInnerEnd implements SimpleStatusInner
+public class SimpleStatusInnerEnd extends SimpleStatusInner
 {
-    public static SimpleStatusInnerEnd of(ImmutableList<SimpleMethodAllResultEnd> result)
+    public static SimpleStatusInnerEnd of(ImmutableList<SimpleMethodAllResultEnd<?>> result)
     {
         if (result == null) {
             throw new ArgumentNullException("result");
@@ -20,45 +23,43 @@ public class SimpleStatusInnerEnd implements SimpleStatusInner
         return new SimpleStatusInnerEnd(result);
     }
 
-    public final ImmutableList<SimpleMethodAllResultEnd> result;
-
-    private SimpleStatusInnerEnd(ImmutableList<SimpleMethodAllResultEnd> result)
+    private SimpleStatusInnerEnd(ImmutableList<SimpleMethodAllResultEnd<?>> result)
     {
-        this.result = result;
+        super(result);
     }
 
     @Override
-    public SimpleStatus get(SimpleStatusOuterGet get)
+    public SimpleStatusOuterGet get(SimpleStatusOuterGet get)
     {
         if (get == null) {
             throw new ArgumentNullException("get");
         }
         // TODO: 检查pst中的Phaser是否已经终止.
-        SimpleMethodAllResultEnd[] method = new SimpleMethodAllResultEnd[result.size()];
+        SimpleMethodGet<?>[] method = new SimpleMethodGet[result.size()];
         result.toArray(method);
         return SimpleStatusOuterGet.of(method, new Phaser(1));
     }
 
     @Override
-    public SimpleStatus pst(SimpleStatusOuterPst pst)
+    public SimpleStatusOuterPst pst(SimpleStatusOuterPst pst)
     {
         if (pst == null) {
             throw new ArgumentNullException("pst");
         }
         // TODO: 检查pst中的Phaser是否已经终止.
-        SimpleMethodAllResultEnd[] method = new SimpleMethodAllResultEnd[result.size()];
+        SimpleMethodPst<?>[] method = new SimpleMethodPst[result.size()];
         result.toArray(method);
         return SimpleStatusOuterPst.of(method, new Phaser(1));
     }
 
     @Override
-    public SimpleStatus del(SimpleStatusOuterDel del)
+    public SimpleStatusOuterDel del(SimpleStatusOuterDel del)
     {
         if (del == null) {
             throw new ArgumentNullException("del");
         }
         // TODO: 检查del中的Phaser是否已经终止
-        SimpleMethodAllResultEnd[] method = new SimpleMethodAllResultEnd[result.size()];
+        SimpleMethodDel<?>[] method = new SimpleMethodDel[result.size()];
         result.toArray(method);
         return SimpleStatusOuterDel.of(method, new Phaser(1));
     }

@@ -4,17 +4,27 @@
 
 package com.hktcode.bgsimple.status;
 
+import com.google.common.collect.ImmutableList;
+import com.hktcode.bgsimple.method.SimpleMethodAllResultRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class SimpleStatusInnerRun implements SimpleStatusInner
+public class SimpleStatusInnerRun extends SimpleStatusInner
 {
-    public static SimpleStatusInnerRun of()
+    public static SimpleStatusInnerRun of(ImmutableList<SimpleMethodAllResultRun<?>> result)
     {
-        return new SimpleStatusInnerRun();
+        if (result == null) {
+            throw new ArgumentNullException("result");
+        }
+        return new SimpleStatusInnerRun(result);
+    }
+
+    private SimpleStatusInnerRun(ImmutableList<SimpleMethodAllResultRun<?>> result)
+    {
+        super(result);
     }
 
     @Override
-    public SimpleStatus get(SimpleStatusOuterGet get)
+    public SimpleStatusOuterGet get(SimpleStatusOuterGet get)
     {
         if (get == null) {
             throw new ArgumentNullException("get");
@@ -24,7 +34,7 @@ public class SimpleStatusInnerRun implements SimpleStatusInner
     }
 
     @Override
-    public SimpleStatus pst(SimpleStatusOuterPst pst)
+    public SimpleStatusOuterPst pst(SimpleStatusOuterPst pst)
     {
         if (pst == null) {
             throw new ArgumentNullException("pst");
@@ -34,7 +44,7 @@ public class SimpleStatusInnerRun implements SimpleStatusInner
     }
 
     @Override
-    public SimpleStatus del(SimpleStatusOuterDel del)
+    public SimpleStatusOuterDel del(SimpleStatusOuterDel del)
     {
         if (del == null) {
             throw new ArgumentNullException("del");

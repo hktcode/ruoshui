@@ -86,7 +86,7 @@ public class UppdcKafkaCallback implements Callback
                 method[2] = SimpleMethodDelParamsDefault.of();
                 Phaser phaser = new Phaser(4);
                 SimpleStatusOuterDel del = SimpleStatusOuterDel.of(method, phaser);
-                SimpleFutureOuter<SimpleStatusOuterDel> future = this.holder.del(del);
+                SimpleFutureOuter future = this.holder.del(del);
                 future.get();
             }
             else if (this.lsn.asLong() != LogSequenceNumber.INVALID_LSN.asLong()) {
@@ -97,7 +97,7 @@ public class UppdcKafkaCallback implements Callback
                 method[2] = SimpleMethodPstParamsDefault.of();
                 Phaser phaser = new Phaser(4);
                 SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(method, phaser);
-                SimpleFutureOuter<SimpleStatusOuterPst> future = this.holder.pst(pst);
+                SimpleFutureOuter future = this.holder.pst(pst);
                 future.get();
             }
         } catch (InterruptedException e) {

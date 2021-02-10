@@ -12,18 +12,14 @@ import javax.annotation.Nonnull;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class SimpleFuture<S extends SimpleStatus>
-    implements Future<ImmutableList<SimpleMethodAllResult<?>>>
+public abstract class SimpleFuture
+    implements Future<ImmutableList<? extends SimpleMethodAllResult<?>>>
 {
-    protected final AtomicReference<SimpleStatus> status;
+    protected final SimpleStatus origin;
 
-    protected final S origin;
-
-    protected SimpleFuture(AtomicReference<SimpleStatus> status, S origin)
+    protected SimpleFuture(SimpleStatus origin)
     {
-        this.status = status;
         this.origin = origin;
     }
 
@@ -40,10 +36,10 @@ public abstract class SimpleFuture<S extends SimpleStatus>
     }
 
     @Override
-    public abstract ImmutableList<SimpleMethodAllResult<?>> get() throws InterruptedException;
+    public abstract ImmutableList<? extends SimpleMethodAllResult<?>> get() throws InterruptedException;
 
     @Override
-    public abstract ImmutableList<SimpleMethodAllResult<?>> //
+    public abstract ImmutableList<? extends SimpleMethodAllResult<?>> //
     get(long timeout, @Nonnull TimeUnit unit) //
         throws InterruptedException, TimeoutException;
 }

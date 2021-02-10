@@ -5,12 +5,10 @@
 package com.hktcode.bgsimple.future;
 
 import com.google.common.collect.ImmutableList;
-import com.hktcode.bgsimple.method.SimpleMethodAllResult;
-import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
-import com.hktcode.bgsimple.method.SimpleMethodDel;
-import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
+import com.hktcode.bgsimple.method.*;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.lang.exception.NeverHappenAssertionError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,10 +18,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class SimpleFutureOuter<S extends SimpleStatusOuter> extends SimpleFuture<S>
+public class SimpleFutureOuter extends SimpleFuture
 {
-    public static <S extends SimpleStatusOuter> SimpleFutureOuter<S> //
-    of(AtomicReference<SimpleStatus> status, S origin)
+    private final AtomicReference<SimpleStatus> status;
+
+    public static SimpleFutureOuter //
+    of(AtomicReference<SimpleStatus> status, SimpleStatusOuter origin)
     {
         if (status == null) {
             throw new ArgumentNullException("status");
@@ -31,71 +31,68 @@ public class SimpleFutureOuter<S extends SimpleStatusOuter> extends SimpleFuture
         if (origin == null) {
             throw new ArgumentNullException("origin");
         }
-        return new SimpleFutureOuter<>(status, origin);
+        return new SimpleFutureOuter(status, origin);
     }
 
-    protected SimpleFutureOuter(AtomicReference<SimpleStatus> status, S origin)
+    protected SimpleFutureOuter(AtomicReference<SimpleStatus> status, SimpleStatusOuter origin)
     {
-        super(status, origin);
+        super(origin);
+        this.status = status;
     }
 
     @Override
     public boolean isDone()
     {
-        return origin.phaser.isTerminated();
+        return ((SimpleStatusOuter)origin).phaser.isTerminated();
     }
 
     @Override
-    public ImmutableList<SimpleMethodAllResult<?>> get() throws InterruptedException
+    public ImmutableList<? extends SimpleMethodAllResult<?>> get() throws InterruptedException
     {
-        Phaser phaser = origin.phaser;
+        Phaser phaser = ((SimpleStatusOuter)origin).phaser;
         phaser.awaitAdvanceInterruptibly(phaser.arrive());
         SimpleStatus future = this.newStatus();
-        boolean cas = this.status.compareAndSet(origin, future);
+        this.status.compareAndSet(origin, future);
         phaser.arriveAndDeregister();
-        if (future instanceof SimpleStatusOuterDel && cas) {
-            SimpleStatusOuterDel f = (SimpleStatusOuterDel)future;
-            SimpleFutureOuter<SimpleStatusOuterDel> del = SimpleFutureOuter.of(this.status, f);
-            return del.get();
-        }
-        return ImmutableList.copyOf((SimpleMethodAllResultEnd<?>[])this.origin.method);
+        SimpleFuture result = future.newFuture(this.status);
+        return result.get();
     }
 
     @Override
-    public ImmutableList<SimpleMethodAllResult<?>> //
+    public ImmutableList<? extends SimpleMethodAllResult<?>> //
     get(long timeout, @Nonnull TimeUnit unit) //
         throws InterruptedException, TimeoutException
     {
-        Phaser phaser = origin.phaser;
+        Phaser phaser = ((SimpleStatusOuter)origin).phaser;
         phaser.awaitAdvanceInterruptibly(phaser.arrive(), timeout, unit);
         SimpleStatus future = this.newStatus();
-        boolean cas = this.status.compareAndSet(origin, future);
+        this.status.compareAndSet(origin, future);
         phaser.arriveAndDeregister();
-        if (future instanceof SimpleStatusOuterDel && cas) {
-            SimpleStatusOuterDel f = (SimpleStatusOuterDel)future;
-            SimpleFutureOuter<SimpleStatusOuterDel> del = SimpleFutureOuter.of(this.status, f);
-            return del.get(timeout, unit);
-        }
-        return ImmutableList.copyOf((SimpleMethodAllResultEnd<?>[])this.origin.method);
+        SimpleFuture result = future.newFuture(this.status);
+        return result.get(timeout, unit);
     }
 
     private SimpleStatus newStatus()
     {
         int delCount = 0;
-        final int methodlength = this.origin.method.length;
+        SimpleMethod<?>[] originmethod = ((SimpleStatusOuter)this.origin).method;
+        final int methodlength = originmethod.length;
         SimpleMethodDel<?>[] method = new SimpleMethodDel[methodlength];
         for (int i = 0; i < methodlength; ++i) {
-            if (this.origin.method[i] instanceof SimpleMethodAllResultEnd) {
-                method[i] = (SimpleMethodAllResultEnd<?>)this.origin.method[i];
-            } else {
+            if (originmethod[i] instanceof SimpleMethodAllResultEnd) {
+                method[i] = (SimpleMethodAllResult<?>)originmethod[i];
+            } else if (originmethod[i] instanceof SimpleMethodAllResultRun) {
                 method[i] = SimpleMethodDelParamsDefault.of();
                 ++delCount;
             }
+            else {
+                throw new NeverHappenAssertionError();
+            }
         }
         if (delCount == 0) {
-            return SimpleStatusInnerEnd.of(ImmutableList.copyOf((SimpleMethodAllResultEnd<?>[])this.origin.method));
+            return SimpleStatusInnerEnd.of(ImmutableList.copyOf((SimpleMethodAllResultEnd<?>[])originmethod));
         } else if (delCount == methodlength) {
-            return SimpleStatusInnerRun.of();
+            return SimpleStatusInnerRun.of(ImmutableList.copyOf((SimpleMethodAllResultRun<?>[])originmethod));
         } else if (this.origin instanceof SimpleStatusOuterDel) {
             return this.origin;
         } else {

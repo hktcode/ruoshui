@@ -4,11 +4,17 @@
 
 package com.hktcode.bgsimple.status;
 
+import com.hktcode.bgsimple.future.SimpleFuture;
+
+import java.util.concurrent.atomic.AtomicReference;
+
 public interface SimpleStatus
 {
-    SimpleStatus get(SimpleStatusOuterGet get);
+    SimpleStatusOuter get(SimpleStatusOuterGet get);
 
-    SimpleStatus pst(SimpleStatusOuterPst pst);
+    SimpleStatusOuter pst(SimpleStatusOuterPst pst);
 
-    SimpleStatus del(SimpleStatusOuterDel del);
+    SimpleStatusOuter del(SimpleStatusOuterDel del);
+
+    SimpleFuture newFuture(AtomicReference<SimpleStatus> status);
 }

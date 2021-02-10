@@ -48,7 +48,7 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
             throw new ArgumentNullException("config");
         }
         SimpleHolder holder = SimpleHolder.of(status);
-        SimpleFutureOuter<SimpleStatusOuterPut> future = holder.put();
+        SimpleFutureOuter future = holder.put();
         BlockingQueue<UpperRecordConsumer> comein = new ArrayBlockingQueue<>(config.junction.comeinCount);
         BlockingQueue<UpperRecordProducer> getout = new ArrayBlockingQueue<>(config.junction.getoutCount);
 
@@ -67,7 +67,7 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
         thread.setDaemon(false);
         thread.setName("ruoshui-upper-consumer");
         thread.start();
-        ImmutableList<SimpleMethodAllResult<?>> list = future.get();
+        ImmutableList<? extends SimpleMethodAllResult<?>> list = future.get();
         return ResponseEntity.ok(list);
     }
 
@@ -81,8 +81,8 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
         };
         SimpleStatusOuterDel del = SimpleStatusOuterDel.of(method, new Phaser(4));
         SimpleHolder holder = SimpleHolder.of(this.status);
-        SimpleFutureOuter<SimpleStatusOuterDel> future = holder.del(del);
-        ImmutableList<SimpleMethodAllResult<?>> list = future.get();
+        SimpleFutureOuter future = holder.del(del);
+        ImmutableList<? extends SimpleMethodAllResult<?>> list = future.get();
         return ResponseEntity.ok(list);
     }
 
@@ -96,8 +96,8 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
         };
         SimpleStatusOuterGet get = SimpleStatusOuterGet.of(method, new Phaser(4));
         SimpleHolder holder = SimpleHolder.of(this.status);
-        SimpleFutureOuter<SimpleStatusOuterGet> future = holder.get(get);
-        ImmutableList<SimpleMethodAllResult<?>> list = future.get();
+        SimpleFutureOuter future = holder.get(get);
+        ImmutableList<? extends SimpleMethodAllResult<?>> list = future.get();
         return ResponseEntity.ok(list);
     }
 
@@ -115,8 +115,8 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
         };
         SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(method, new Phaser(4));
         SimpleHolder holder = SimpleHolder.of(this.status);
-        SimpleFutureOuter<SimpleStatusOuterPst> future = holder.pst(pst);
-        ImmutableList<SimpleMethodAllResult<?>> list = future.get();
+        SimpleFutureOuter future = holder.pst(pst);
+        ImmutableList<? extends SimpleMethodAllResult<?>> list = future.get();
         return ResponseEntity.ok(list);
     }
 

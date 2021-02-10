@@ -27,25 +27,24 @@ public class SimpleHolder
         this.status = status;
     }
 
-    public SimpleFutureOuter<SimpleStatusOuterPut> put()
+    public SimpleFutureOuter put()
     {
         SimpleStatus s = this.status.get();
         if (!(s instanceof SimpleStatusOuterPut)) {
             throw new SimpleStatusIsNotPutException();
         }
         SimpleStatusOuterPut put = (SimpleStatusOuterPut)s;
-
-        return SimpleFutureOuter.of(status, put);
+        return put.newFuture(this.status);
     }
 
-    public SimpleFutureOuter<SimpleStatusOuterPst> pst(SimpleStatusOuterPst pst)
+    public SimpleFutureOuter pst(SimpleStatusOuterPst pst)
     {
         if (pst == null) {
             throw new ArgumentNullException("pst");
         }
         // TODO: 判断pst中的bgMethod不是bgResult.
         SimpleStatus origin;
-        SimpleStatus future;
+        SimpleStatusOuter future;
         do {
             origin = this.status.get();
             future = origin.pst(pst);
@@ -55,17 +54,17 @@ public class SimpleHolder
                 /*     */&& !this.status.compareAndSet(origin, future) //
                 /*   */)
             /**/);
-        return SimpleFutureOuter.of(status, (SimpleStatusOuterPst)future);
+        return future.newFuture(this.status);
     }
 
-    public SimpleFutureOuter<SimpleStatusOuterGet> get(SimpleStatusOuterGet get)
+    public SimpleFutureOuter get(SimpleStatusOuterGet get)
     {
         if (get == null) {
             throw new ArgumentNullException("get");
         }
         // TODO: 判断get中的bgMethod不是bgResult.
         SimpleStatus origin;
-        SimpleStatus future;
+        SimpleStatusOuter future;
         do {
             origin = this.status.get();
             future = origin.get(get);
@@ -75,17 +74,17 @@ public class SimpleHolder
                 /*     */&& !this.status.compareAndSet(origin, future) //
                 /*   */)
             /**/);
-        return SimpleFutureOuter.of(status, (SimpleStatusOuterGet)future);
+        return future.newFuture(this.status);
     }
 
-    public SimpleFutureOuter<SimpleStatusOuterDel> del(SimpleStatusOuterDel del)
+    public SimpleFutureOuter del(SimpleStatusOuterDel del)
     {
         if (del == null) {
             throw new ArgumentNullException("del");
         }
         // TODO: 判断del中的bgMethod不是bgResult.
         SimpleStatus origin;
-        SimpleStatus future;
+        SimpleStatusOuter future;
         do {
             origin = this.status.get();
             future = origin.del(del);
@@ -95,6 +94,6 @@ public class SimpleHolder
                 /*     */&& !this.status.compareAndSet(origin, future) //
                 /*   */) //
             /**/);
-        return SimpleFutureOuter.of(status, (SimpleStatusOuterDel)future);
+        return future.newFuture(this.status);
     }
 }

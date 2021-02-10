@@ -3,11 +3,6 @@
  */
 package com.hktcode.bgsimple.triple;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.hktcode.lang.exception.ArgumentNullException;
-
-import java.time.ZonedDateTime;
-
 public class TripleMetricRun
 {
     public final long actionStart;

@@ -5,7 +5,6 @@
 package com.hktcode.bgsimple.triple;
 
 import com.hktcode.bgsimple.BgWorker;
-import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class TripleResultErr<A extends BgWorker<A>, C, M extends TripleMetricRun>
