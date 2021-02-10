@@ -29,26 +29,30 @@ Ruoshui是一个基于PostgreSQL和Apache Kafka的流式处理框架，在Postgr
 
 * ~优化UpperSender.poll~ 2019年9月12日
 * ruoshui-reciever
-    * ruoshui-pgsql
-    * ruoshui-mysql
-    * 接收wal（upper）
-    * 去重wal（lower）
-* ruoshui-standard
-    * 转换标准化wal
+    * ruoshui-reciever-pgsql
+        * 接收wal（upper）
+        * 去重wal（among）
+        * 规范wal（lower）
+    * ruoshui-reciever-mysql
+        * 接收wal（upper）
+        * 去重wal（among）
+        * 规范wal（lower）
+* ruoshui-snapshot
+    * ruoshui-snapshot-pgsql
+        * 定时快照（reset）
+    * ruoshui-snapshot-mysql
+        * 定时快照（reset）
 * ruoshui-persists
     * 写入hbase
     * hbase写入hive
     * hive视图
-* ruoshui-snapshot
-    * 定时快照
-* ruoshui-checking
     * 计算快照
-    * 定时比较验证
 * ruoshui-reversal
+    * 比较验证
     * 规范化wal中实现冲正
     * 去重wal
     
-* ladle花洒(sprinkler)
+* 花洒(sprinkler)(ladle)
 * 通用计算逻辑
 
 # Ruoshui设计
