@@ -21,9 +21,8 @@ import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicReference;
 
-public class UpcsmActionRun extends TripleActionRun<UpcsmActionRun, UpcsmConfig, UpcsmMetricRun>
+public class UpcsmActionRun extends TripleActionRun<UpcsmConfig, UpcsmMetricRun>
 {
     private static final Logger logger = LoggerFactory.getLogger(UpcsmActionRun.class);
 
@@ -50,7 +49,7 @@ public class UpcsmActionRun extends TripleActionRun<UpcsmActionRun, UpcsmConfig,
     LogSequenceNumber txactionLsn = LogSequenceNumber.INVALID_LSN;
 
     @Override
-    public TripleAction<UpcsmActionRun, UpcsmConfig, UpcsmMetricRun> next() //
+    public TripleAction<UpcsmConfig, UpcsmMetricRun> next() //
         throws InterruptedException, SQLException
     {
         try (Connection repl = config.srcProperty.replicaConnection()) {

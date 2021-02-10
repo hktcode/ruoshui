@@ -9,8 +9,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class TripleMetricEnd<R extends TripleMetricRun>
 {
-    public static <R extends TripleMetricRun> //
-    TripleMetricEnd<R> of(R basicMetric)
+    public static <R extends TripleMetricRun> TripleMetricEnd<R> of(R basicMetric)
     {
         if (basicMetric == null) {
             throw new ArgumentNullException("basicMetric");

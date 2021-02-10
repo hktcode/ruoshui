@@ -13,12 +13,8 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public abstract class TripleActionRun
-    /* */< A extends TripleAction<A, C, M>
-    /* */, C extends TqueueConfig
-    /* */, M extends TripleMetricRun
-    /* */>
-    extends SimpleWorker<A> implements TripleAction<A, C, M>
+public abstract class TripleActionRun<C extends TqueueConfig, M extends TripleMetricRun> //
+    extends SimpleWorker implements TripleAction<C, M>
 {
     private static final Logger logger = LoggerFactory.getLogger(TripleActionRun.class);
 
@@ -99,7 +95,7 @@ public abstract class TripleActionRun
     }
 
     @Override
-    public TripleActionErr<A, C, M> next(Throwable throwsError) throws InterruptedException
+    public TripleActionErr<C, M> next(Throwable throwsError) throws InterruptedException
     {
         M basicMetric = this.toRunMetrics();
         TripleMetricErr<M> metric = TripleMetricErr.of(basicMetric, throwsError);
@@ -114,7 +110,7 @@ public abstract class TripleActionRun
     }
 
     @Override
-    public TripleResultEnd<A, C, M> del() throws InterruptedException
+    public TripleResultEnd<C, M> del() throws InterruptedException
     {
         M basicMetric = this.toRunMetrics();
         TripleMetricEnd<M> metric = TripleMetricEnd.of(basicMetric);

@@ -14,18 +14,11 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.util.concurrent.Phaser;
 
-public class TripleActionErr //
-    /* */< A extends TripleAction<A, C, M> //
-    /* */, C extends TqueueConfig //
-    /* */, M extends TripleMetricRun //
-    /* */> //
-    extends SimpleWorker<A> implements TripleAction<A, C, M>
+public class TripleActionErr<C extends TqueueConfig, M extends TripleMetricRun> //
+    extends SimpleWorker implements TripleAction<C, M>
 {
-    public static < A extends TripleAction<A, C, M>
-             /* */, C extends TqueueConfig
-             /* */, M extends TripleMetricRun
-             /* */>
-    TripleActionErr<A, C, M> of(SimpleWorker<A> action, C config, TripleMetricErr<M> metric, int number) //
+    public static <C extends TqueueConfig, M extends TripleMetricRun>
+    TripleActionErr<C, M> of(SimpleWorker action, C config, TripleMetricErr<M> metric, int number) //
     {
         if (action == null) {
             throw new ArgumentNullException("action");
@@ -46,7 +39,7 @@ public class TripleActionErr //
 
     public final TripleMetricErr<M> metric;
 
-    protected TripleActionErr(SimpleWorker<A> action, C config, TripleMetricErr<M> metric, int number) //
+    protected TripleActionErr(SimpleWorker action, C config, TripleMetricErr<M> metric, int number) //
     {
         super(action.status, number);
         this.config = config;
@@ -54,7 +47,7 @@ public class TripleActionErr //
     }
 
     @Override
-    public TripleActionEnd<A, C, M> next() throws Exception
+    public TripleActionEnd<C, M> next() throws Exception
     {
         SimpleMethod[] method = new SimpleMethod[] {
             SimpleMethodParamsDelDefault.of(),
@@ -68,7 +61,7 @@ public class TripleActionErr //
         return TripleActionEnd.of(this, this.config, this.metric, this.number);
     }
 
-    public TripleActionErr<A, C, M> next(Throwable throwsError) //
+    public TripleActionErr<C, M> next(Throwable throwsError) //
     {
         if (throwsError == null) {
             throw new ArgumentNullException("throwsError");
@@ -76,7 +69,7 @@ public class TripleActionErr //
         return this;
     }
 
-    public TripleResultEnd<A, C, M> del()
+    public TripleResultEnd<C, M> del()
     {
         return TripleResultEnd.of(config, metric);
     }

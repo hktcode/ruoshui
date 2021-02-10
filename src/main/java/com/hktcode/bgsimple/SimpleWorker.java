@@ -7,7 +7,7 @@ import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.bgsimple.status.SimpleStatusOuter;
 
-public abstract class SimpleWorker<W extends BgWorker>
+public abstract class SimpleWorker
 {
     public final int number;
 
@@ -19,7 +19,7 @@ public abstract class SimpleWorker<W extends BgWorker>
         this.status = status;
     }
 
-    public SimpleStatusInner newStatus(W wkstep) throws InterruptedException
+    public SimpleStatusInner newStatus(BgWorker wkstep) throws InterruptedException
     {
         SimpleStatus origin;
         while (!((origin = this.status.get()) instanceof SimpleStatusInner)) {

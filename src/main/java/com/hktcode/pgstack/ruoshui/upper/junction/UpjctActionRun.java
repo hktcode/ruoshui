@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-class UpjctActionRun extends TripleActionRun<UpjctActionRun, TripleJunctionConfig, UpjctMetricRun>
+class UpjctActionRun extends TripleActionRun<TripleJunctionConfig, UpjctMetricRun>
 {
     public static UpjctActionRun of //
         /* */( TripleJunctionConfig config
@@ -71,7 +71,7 @@ class UpjctActionRun extends TripleActionRun<UpjctActionRun, TripleJunctionConfi
         this.txidContext = LogicalTxactContext.of();
     }
 
-    public TripleAction<UpjctActionRun, TripleJunctionConfig, UpjctMetricRun>
+    public TripleAction<TripleJunctionConfig, UpjctMetricRun>
     next() throws InterruptedException
     {
         UpperRecordConsumer r = null;

@@ -4,15 +4,14 @@
 
 package com.hktcode.bgsimple.triple;
 
-import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.bgsimple.method.SimpleMethodResultRun;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class TripleResultRun<A extends BgWorker, C, M extends TripleMetricRun>
+public class TripleResultRun<C, M extends TripleMetricRun>
     implements TripleResult, SimpleMethodResultRun
 {
-    public static <A extends BgWorker, C, M extends TripleMetricRun>
-    TripleResultRun<A, C, M> of(C config, M metric)
+    public static <C, M extends TripleMetricRun> //
+    TripleResultRun<C, M> of(C config, M metric)
     {
         if(config == null){
             throw new ArgumentNullException("config");

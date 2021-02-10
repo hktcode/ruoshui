@@ -27,7 +27,7 @@ import java.util.concurrent.BlockingQueue;
 
 import static com.hktcode.kafka.Kafka.Serializers.BYTES;
 
-class UppdcActionRun extends TripleActionRun<UppdcActionRun, UppdcConfig, UppdcMetricRun>
+class UppdcActionRun extends TripleActionRun<UppdcConfig, UppdcMetricRun>
 {
     public static UppdcActionRun of
         /* */( UppdcConfig config
@@ -61,7 +61,7 @@ class UppdcActionRun extends TripleActionRun<UppdcActionRun, UppdcConfig, UppdcM
         this.getout = getout;
     }
 
-    public TripleAction<UppdcActionRun, UppdcConfig, UppdcMetricRun>
+    public TripleAction<UppdcConfig, UppdcMetricRun>
     next() throws InterruptedException
     {
         Properties properties = new Properties();

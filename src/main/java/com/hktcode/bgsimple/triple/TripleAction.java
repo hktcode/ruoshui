@@ -5,21 +5,13 @@
 package com.hktcode.bgsimple.triple;
 
 import com.hktcode.bgsimple.BgWorker;
-import com.hktcode.bgsimple.status.SimpleStatusInner;
 import com.hktcode.bgsimple.tqueue.TqueueConfig;
 
-public interface TripleAction
-    /* */< A extends TripleAction<A, C, M>
-    /* */, C extends TqueueConfig
-    /* */, M extends TripleMetricRun
-    /* */>
-    extends BgWorker
+public interface TripleAction<C extends TqueueConfig, M extends TripleMetricRun> extends BgWorker
 {
-    TripleActionErr<A, C, M> next(Throwable throwsError) throws InterruptedException;
+    TripleActionErr<C, M> next(Throwable throwsError) throws InterruptedException;
 
-    SimpleStatusInner newStatus(A action) throws InterruptedException;
-
-    default TripleAction<A, C, M> next() throws Exception
+    default TripleAction<C, M> next() throws Exception
     {
         return this;
     }
@@ -40,5 +32,5 @@ public interface TripleAction
     }
 
     @Override
-    TripleResultEnd<A, C, M> del() throws InterruptedException;
+    TripleResultEnd<C, M> del() throws InterruptedException;
 }
