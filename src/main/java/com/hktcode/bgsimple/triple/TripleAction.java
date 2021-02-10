@@ -6,8 +6,13 @@ package com.hktcode.bgsimple.triple;
 
 import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.bgsimple.status.SimpleStatusInner;
+import com.hktcode.bgsimple.tqueue.TqueueConfig;
 
-public interface TripleAction<A extends TripleAction<A, C, M>, C, M extends TripleMetricRun>
+public interface TripleAction
+    /* */< A extends TripleAction<A, C, M>
+    /* */, C extends TqueueConfig
+    /* */, M extends TripleMetricRun
+    /* */>
     extends BgWorker<A>
 {
     TripleActionErr<A, C, M> next(Throwable throwsError) throws InterruptedException;

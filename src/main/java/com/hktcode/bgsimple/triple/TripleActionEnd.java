@@ -5,12 +5,20 @@
 package com.hktcode.bgsimple.triple;
 
 import com.hktcode.bgsimple.SimpleWorker;
+import com.hktcode.bgsimple.tqueue.TqueueConfig;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class TripleActionEnd<A extends TripleAction<A, C, M>, C, M extends TripleMetricRun>
+public class TripleActionEnd //
+    /* */< A extends TripleAction<A, C, M> //
+    /* */, C extends TqueueConfig //
+    /* */, M extends TripleMetricRun //
+    /* */> //
     extends SimpleWorker<A> implements TripleAction<A, C, M>
 {
-    public static <A extends TripleAction<A, C, M>, C, M extends TripleMetricRun>
+    public static < A extends TripleAction<A, C, M> //
+             /* */, C extends TqueueConfig //
+             /* */, M extends TripleMetricRun //
+             /* */> //
     TripleActionEnd<A, C, M> of(SimpleWorker<A> action, C config, TripleMetricEnd<M> metric, int number)
     {
         if (action == null) {

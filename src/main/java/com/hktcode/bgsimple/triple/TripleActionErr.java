@@ -4,15 +4,22 @@
 
 package com.hktcode.bgsimple.triple;
 
-import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.bgsimple.SimpleWorker;
+import com.hktcode.bgsimple.tqueue.TqueueConfig;
 import com.hktcode.lang.exception.ArgumentNegativeException;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class TripleActionErr<A extends TripleAction<A, C, M>, C, M extends TripleMetricRun>
+public class TripleActionErr //
+    /* */< A extends TripleAction<A, C, M> //
+    /* */, C extends TqueueConfig //
+    /* */, M extends TripleMetricRun //
+    /* */> //
     extends SimpleWorker<A> implements TripleAction<A, C, M>
 {
-    public static <A extends TripleAction<A, C, M>, C, M extends TripleMetricRun>
+    public static < A extends TripleAction<A, C, M>
+             /* */, C extends TqueueConfig
+             /* */, M extends TripleMetricRun
+             /* */>
     TripleActionErr<A, C, M> of(SimpleWorker<A> action, C config, TripleMetricErr<M> metric, int number) //
     {
         if (action == null) {
@@ -30,7 +37,10 @@ public class TripleActionErr<A extends TripleAction<A, C, M>, C, M extends Tripl
         return new TripleActionErr<>(action, config, metric, number);
     }
 
-    public static <A extends TripleAction<A, C, M>, C, M extends TripleMetricRun>
+    public static < A extends TripleAction<A, C, M>
+             /* */, C extends TqueueConfig
+             /* */, M extends TripleMetricRun
+             /* */>
     TripleActionErr<A, C, M> of(TripleActionEnd<A, C, M> action, Throwable throwsError) //
     {
         if (action == null) {
