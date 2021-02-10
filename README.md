@@ -43,17 +43,17 @@ Ruoshui是一个基于PostgreSQL和Apache Kafka的流式处理框架，在Postgr
     * ruoshui-snapshot-mysql
         * 定时快照（reset）
 * ruoshui-persists
-    * 写入hbase
-    * hbase写入hive
-    * hive视图
-    * 计算快照
+    * 写入hbase（Kafka消费者）(hbive.upper)
+    * hive交互(hbive.among)
+        * hbase写入hive（定时）
+        * hive视图（定时）
+    * 计算快照（定时）(hbive.lower)
 * ruoshui-reversal
-    * 比较验证
-    * 规范化wal中实现冲正
-    * 去重wal
+    * 比较验证（定时）(check)
+        * 规范化wal中实现冲正（定时）
     
 * 花洒(sprinkler)(ladle)
-* 通用计算逻辑
+* 通用计算逻辑(drink)
 
 # Ruoshui设计
 
