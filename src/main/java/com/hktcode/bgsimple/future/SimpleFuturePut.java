@@ -10,7 +10,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class SimpleFuturePut extends SimpleFuture<SimpleStatusOuterPut>
+public class SimpleFuturePut extends SimpleFutureOuter<SimpleStatusOuterPut>
 {
     public static SimpleFuturePut //
     of(AtomicReference<SimpleStatus> status, SimpleStatusOuterPut origin)

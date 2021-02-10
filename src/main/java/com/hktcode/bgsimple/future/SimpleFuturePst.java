@@ -10,7 +10,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class SimpleFuturePst extends SimpleFuture<SimpleStatusOuterPst>
+public class SimpleFuturePst extends SimpleFutureOuter<SimpleStatusOuterPst>
 {
     public static SimpleFuturePst //
     of(AtomicReference<SimpleStatus> status, SimpleStatusOuterPst origin)
