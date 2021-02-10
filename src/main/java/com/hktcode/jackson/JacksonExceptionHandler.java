@@ -8,22 +8,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.io.JsonEOFException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingMessage;
-import com.hktcode.jackson.exception.JsonFormatException;
-import com.hktcode.jackson.exception.JsonSchemaValidationException;
-import com.hktcode.jackson.exception.JsonSchemaValidationImplException;
-import com.hktcode.jackson.exception.JsonSchemaValidationProcessingException;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -32,13 +28,27 @@ import javax.servlet.http.HttpServletRequest;
  *
  * TODO: 编写文档说明各个异常转换成的Json对象的各个字段，或者编写JsonSchema说明.
  */
-@ControllerAdvice
+@RestControllerAdvice
 public class JacksonExceptionHandler
 {
     private static final Logger logger = LoggerFactory.getLogger(JacksonExceptionHandler.class);
 
     private static final String MESSAGE_FIELD_NAME = "message";
 
+    public static JacksonExceptionHandler of(ObjectMapper mapper)
+    {
+        if (mapper == null) {
+            throw new ArgumentNullException("mapper");
+        }
+        return new JacksonExceptionHandler(mapper);
+    }
+
+    private final ObjectMapper mapper;
+
+    private JacksonExceptionHandler(ObjectMapper mapper)
+    {
+        this.mapper = mapper;
+    }
     /**
      * 将{@link ProcessingMessage}对象转换为Json对象添加到指定的Json数组中.
      *
@@ -95,26 +105,6 @@ public class JacksonExceptionHandler
     }
 
     /**
-     * 处理{@link JsonFormatException}异常.
-     *
-     * @param ex 要处理的{@link JsonFormatException}异常.
-     * @param req 访问的请求.
-     * @return {@link JsonFormatException}转换成的响应对象.
-     */
-    @ExceptionHandler
-    @SuppressWarnings("rawtypes")
-    public ResponseEntity jsonFormatExceptionHandler(JsonFormatException ex, HttpServletRequest req)
-    {
-        if (ex == null) {
-            throw new ArgumentNullException("ex");
-        }
-        if (req == null) {
-            throw new ArgumentNullException("req");
-        }
-        return this.jsonProcessingExceptionHandler(ex.getCause(), req);
-    }
-
-    /**
      * 处理{@link JsonProcessingException}异常.
      *
      * @param ex 要处理的{@link JsonProcessingException}异常.
@@ -122,8 +112,7 @@ public class JacksonExceptionHandler
      * @return {@link JsonProcessingException}转换成的响应对象.
      */
     @ExceptionHandler
-    @SuppressWarnings("rawtypes")
-    public ResponseEntity jsonProcessingExceptionHandler(JsonProcessingException ex, HttpServletRequest req)
+    public ResponseEntity<ArrayNode> jsonProcessingExceptionHandler(JsonProcessingException ex, HttpServletRequest req)
     {
         if (ex == null) {
             throw new ArgumentNullException("ex");
@@ -133,7 +122,8 @@ public class JacksonExceptionHandler
         }
         logger.info("parse body to json failure: uri={}", req.getRequestURI(), ex);
 
-        ObjectNode entity = new ObjectNode(JsonNodeFactory.instance);
+        ArrayNode result = this.mapper.createArrayNode();
+        ObjectNode entity = result.addObject();
         entity.put(MESSAGE_FIELD_NAME, ex.getOriginalMessage());
         JsonLocation location = ex.getLocation();
         putLocation(entity, location);
@@ -143,45 +133,7 @@ public class JacksonExceptionHandler
                 entity.put("token_being_decoded", token.name());
             }
         }
-        return ResponseEntity.badRequest().body(entity);
-    }
-
-    /**
-     * 处理{@link JsonSchemaValidationException}异常.
-     *
-     * @param ex 要处理的{@link JsonSchemaValidationException}异常.
-     * @param req 访问的请求.
-     * @return {@link JsonSchemaValidationException}转换成的响应对象.
-     */
-    @ExceptionHandler
-    @SuppressWarnings("rawtypes")
-    public ResponseEntity jsonSchemaValidationExceptionHandler(JsonSchemaValidationException ex, HttpServletRequest req)
-    {
-        if (ex == null) {
-            throw new ArgumentNullException("ex");
-        }
-        if (req == null) {
-            throw new ArgumentNullException("req");
-        }
-        String uri = req.getRequestURI();
-        if (ex instanceof JsonSchemaValidationImplException) {
-            JsonSchemaValidationImplException e = (JsonSchemaValidationImplException)ex;
-            logger.info("validate request failure: uri={}\n{}", uri, e.report, ex);
-        }
-        else if (ex instanceof JsonSchemaValidationProcessingException) {
-            JsonSchemaValidationProcessingException e = (JsonSchemaValidationProcessingException)ex;
-            logger.info("validate request failure: uri={}\n{}", uri, e.getProcessingMessage(), ex);
-        }
-        else {
-            logger.info("validate request failure: uri={}", uri, ex);
-        }
-
-        ProcessingMessage[] messages = ex.getProcessingMessages();
-        ArrayNode entity = new ArrayNode(JsonNodeFactory.instance);
-        for (ProcessingMessage msg : messages) {
-            addObject(uri, entity, msg);
-        }
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(entity);
+        return ResponseEntity.badRequest().body(result);
     }
 
     /**
@@ -192,8 +144,7 @@ public class JacksonExceptionHandler
      * @return {@link ProcessingException}转换成的响应对象.
      */
     @ExceptionHandler
-    @SuppressWarnings("rawtypes")
-    public ResponseEntity processingExceptionHandler(ProcessingException ex, HttpServletRequest req)
+    public ResponseEntity<ArrayNode> processingExceptionHandler(ProcessingException ex, HttpServletRequest req)
     {
         if (ex == null) {
             throw new ArgumentNullException("ex");
@@ -204,7 +155,7 @@ public class JacksonExceptionHandler
         String uri = req.getRequestURI();
         logger.info("validate request failure: uri={}", uri, ex);
         ProcessingMessage msg = ex.getProcessingMessage();
-        ArrayNode entity = new ArrayNode(JsonNodeFactory.instance);
+        ArrayNode entity = this.mapper.createArrayNode();
         addObject(uri, entity, msg);
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(entity);
     }
