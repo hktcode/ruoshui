@@ -6,10 +6,7 @@ package com.hktcode.pgstack.ruoshui.upper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.SimpleHolder;
-import com.hktcode.bgsimple.future.SimpleFutureDel;
-import com.hktcode.bgsimple.future.SimpleFutureGet;
-import com.hktcode.bgsimple.future.SimpleFuturePst;
-import com.hktcode.bgsimple.future.SimpleFuturePut;
+import com.hktcode.bgsimple.future.*;
 import com.hktcode.bgsimple.method.*;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
@@ -84,7 +81,7 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
         };
         SimpleStatusOuterDel del = SimpleStatusOuterDel.of(method, new Phaser(4));
         SimpleHolder holder = SimpleHolder.of(this.status);
-        SimpleFutureDel future = holder.del(del);
+        SimpleFutureOuter<SimpleStatusOuterDel> future = holder.del(del);
         ImmutableList<SimpleMethodAllResult<?>> list = future.get();
         return ResponseEntity.ok(list);
     }

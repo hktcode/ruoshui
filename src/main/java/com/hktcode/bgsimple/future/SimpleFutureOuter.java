@@ -55,7 +55,7 @@ public class SimpleFutureOuter<S extends SimpleStatusOuter> extends SimpleFuture
         phaser.arriveAndDeregister();
         if (future instanceof SimpleStatusOuterDel && cas) {
             SimpleStatusOuterDel f = (SimpleStatusOuterDel)future;
-            SimpleFutureDel del = SimpleFutureDel.of(this.status, f);
+            SimpleFutureOuter<SimpleStatusOuterDel> del = SimpleFutureOuter.of(this.status, f);
             return del.get();
         }
         return ImmutableList.copyOf((SimpleMethodAllResultEnd<?>[])this.origin.method);
@@ -73,7 +73,7 @@ public class SimpleFutureOuter<S extends SimpleStatusOuter> extends SimpleFuture
         phaser.arriveAndDeregister();
         if (future instanceof SimpleStatusOuterDel && cas) {
             SimpleStatusOuterDel f = (SimpleStatusOuterDel)future;
-            SimpleFutureDel del = SimpleFutureDel.of(this.status, f);
+            SimpleFutureOuter<SimpleStatusOuterDel> del = SimpleFutureOuter.of(this.status, f);
             return del.get(timeout, unit);
         }
         return ImmutableList.copyOf((SimpleMethodAllResultEnd<?>[])this.origin.method);

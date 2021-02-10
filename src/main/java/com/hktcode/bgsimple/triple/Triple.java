@@ -4,7 +4,7 @@
 package com.hktcode.bgsimple.triple;
 
 import com.google.common.collect.ImmutableList;
-import com.hktcode.bgsimple.future.SimpleFutureDel;
+import com.hktcode.bgsimple.future.SimpleFutureOuter;
 import com.hktcode.bgsimple.method.SimpleMethodAllResultEnd;
 import com.hktcode.bgsimple.method.SimpleMethodDel;
 import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
@@ -82,7 +82,7 @@ public abstract class Triple implements Runnable
             } while (o != f && !this.status.compareAndSet(o, f));
             if (f instanceof SimpleStatusOuterDel) {
                 SimpleStatusOuterDel del = (SimpleStatusOuterDel)f;
-                SimpleFutureDel future = SimpleFutureDel.of(status, del);
+                SimpleFutureOuter<SimpleStatusOuterDel> future = SimpleFutureOuter.of(this.status, del);
                 future.get();
             }
             logger.info("triple terminate.");

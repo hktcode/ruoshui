@@ -4,10 +4,7 @@
 
 package com.hktcode.bgsimple;
 
-import com.hktcode.bgsimple.future.SimpleFutureDel;
-import com.hktcode.bgsimple.future.SimpleFutureGet;
-import com.hktcode.bgsimple.future.SimpleFuturePst;
-import com.hktcode.bgsimple.future.SimpleFuturePut;
+import com.hktcode.bgsimple.future.*;
 import com.hktcode.bgsimple.status.*;
 import com.hktcode.lang.exception.ArgumentNullException;
 
@@ -81,7 +78,7 @@ public class SimpleHolder
         return SimpleFutureGet.of(status, (SimpleStatusOuterGet)future);
     }
 
-    public SimpleFutureDel del(SimpleStatusOuterDel del)
+    public SimpleFutureOuter<SimpleStatusOuterDel> del(SimpleStatusOuterDel del)
     {
         if (del == null) {
             throw new ArgumentNullException("del");
@@ -98,6 +95,6 @@ public class SimpleHolder
                 /*     */&& !this.status.compareAndSet(origin, future) //
                 /*   */) //
             /**/);
-        return SimpleFutureDel.of(status, (SimpleStatusOuterDel)future);
+        return SimpleFutureOuter.of(status, (SimpleStatusOuterDel)future);
     }
 }

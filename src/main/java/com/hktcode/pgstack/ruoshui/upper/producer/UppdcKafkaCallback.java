@@ -4,7 +4,7 @@
 package com.hktcode.pgstack.ruoshui.upper.producer;
 
 import com.hktcode.bgsimple.SimpleHolder;
-import com.hktcode.bgsimple.future.SimpleFutureDel;
+import com.hktcode.bgsimple.future.SimpleFutureOuter;
 import com.hktcode.bgsimple.future.SimpleFuturePst;
 import com.hktcode.bgsimple.method.SimpleMethodDel;
 import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
@@ -87,7 +87,7 @@ public class UppdcKafkaCallback implements Callback
                 method[2] = SimpleMethodDelParamsDefault.of();
                 Phaser phaser = new Phaser(4);
                 SimpleStatusOuterDel del = SimpleStatusOuterDel.of(method, phaser);
-                SimpleFutureDel future = this.holder.del(del);
+                SimpleFutureOuter<SimpleStatusOuterDel> future = this.holder.del(del);
                 future.get();
             }
             else if (this.lsn.asLong() != LogSequenceNumber.INVALID_LSN.asLong()) {
