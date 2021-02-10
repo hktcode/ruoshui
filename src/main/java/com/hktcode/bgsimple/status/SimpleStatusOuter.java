@@ -4,15 +4,18 @@
 
 package com.hktcode.bgsimple.status;
 
+import com.google.common.collect.ImmutableList;
 import com.hktcode.bgsimple.BgWorker;
 import com.hktcode.bgsimple.SimpleHolder;
 import com.hktcode.bgsimple.future.SimpleFutureOuter;
-import com.hktcode.bgsimple.method.SimpleMethod;
+import com.hktcode.bgsimple.method.*;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Phaser;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class SimpleStatusOuter implements SimpleStatus
 {
@@ -62,6 +65,47 @@ public class SimpleStatusOuter implements SimpleStatus
             throw new ArgumentNullException("outer");
         }
         return this;
+    }
+
+    public SimpleStatusInner inner() throws InterruptedException
+    {
+        phaser.awaitAdvanceInterruptibly(phaser.arrive());
+        int runcount = 0;
+        SimpleMethod<?>[] originmethod = this.method;
+        for (SimpleMethod<?> simpleMethod : originmethod) {
+            if (simpleMethod instanceof SimpleMethodAllResultRun) {
+                ++runcount;
+            }
+        }
+        SimpleStatusInner result;
+        if (runcount == 0) {
+            result = SimpleStatusInnerEnd.of(ImmutableList.copyOf((SimpleMethodAllResultEnd<?>[])originmethod));
+        } else {
+            result = SimpleStatusInnerRun.of(ImmutableList.copyOf((SimpleMethodAllResult<?>[])originmethod));
+        }
+        phaser.arriveAndDeregister();
+        return result;
+    }
+
+    public SimpleStatusInner inner(long timeout, TimeUnit unit) //
+            throws InterruptedException, TimeoutException
+    {
+        phaser.awaitAdvanceInterruptibly(phaser.arrive(), timeout, unit);
+        int runcount = 0;
+        SimpleMethod<?>[] originmethod = this.method;
+        for (SimpleMethod<?> simpleMethod : originmethod) {
+            if (simpleMethod instanceof SimpleMethodAllResultRun) {
+                ++runcount;
+            }
+        }
+        SimpleStatusInner result;
+        if (runcount == 0) {
+            result = SimpleStatusInnerEnd.of(ImmutableList.copyOf((SimpleMethodAllResultEnd<?>[])originmethod));
+        } else {
+            result = SimpleStatusInnerRun.of(ImmutableList.copyOf((SimpleMethodAllResult<?>[])originmethod));
+        }
+        phaser.arriveAndDeregister();
+        return result;
     }
 
     public SimpleFutureOuter newFuture(SimpleHolder status)
