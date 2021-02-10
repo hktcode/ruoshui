@@ -38,6 +38,7 @@ public class TripleReportThrows implements JsonSerializable
     {
         gen.writeStartObject();
         gen.writeNumberField("action_start", actionStart);
+        gen.writeStringField("ex_classname", this.throwsError.getClass().getTypeName());
         String message = throwsError.getMessage();
         message = (message == null ? "" : message);
         if ("".equals(message)) {

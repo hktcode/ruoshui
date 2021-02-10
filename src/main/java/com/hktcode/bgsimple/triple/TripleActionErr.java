@@ -42,21 +42,6 @@ public class TripleActionErr //
         return new TripleActionErr<>(action, config, metric, number);
     }
 
-    public static < A extends TripleAction<A, C, M>
-             /* */, C extends TqueueConfig
-             /* */, M extends TripleMetricRun
-             /* */>
-    TripleActionErr<A, C, M> of(TripleActionEnd<A, C, M> action, Throwable throwsError) //
-    {
-        if (action == null) {
-            throw new ArgumentNullException("action");
-        }
-        if (throwsError == null) {
-            throw new ArgumentNullException("throwsError");
-        }
-        return new TripleActionErr<>(action, throwsError);
-    }
-
     public final C config;
 
     public final TripleMetricErr<M> metric;
@@ -66,13 +51,6 @@ public class TripleActionErr //
         super(action.status, number);
         this.config = config;
         this.metric = metric;
-    }
-
-    protected TripleActionErr(TripleActionEnd<A, C, M> action, Throwable throwsError) //
-    {
-        super(action.status, action.number);
-        this.config = action.config;
-        this.metric = TripleMetricErr.of(action.metric.basicMetric, throwsError);
     }
 
     @Override

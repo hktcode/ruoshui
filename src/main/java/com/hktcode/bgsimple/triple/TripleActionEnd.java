@@ -45,6 +45,7 @@ public class TripleActionEnd //
 
     public TripleActionErr<A, C, M> next(Throwable throwsError)
     {
-        return TripleActionErr.of(this, throwsError);
+        TripleMetricErr<M> m = TripleMetricErr.of(this.metric.basicMetric, throwsError);
+        return TripleActionErr.of(this, this.config, m, this.number);
     }
 }
