@@ -4,6 +4,6 @@
 
 package com.hktcode.bgsimple;
 
-public class SimpleStatusIsNotPutException extends RuntimeException
+public class SimpleStatusIsNotPutException extends IllegalStateException
 {
 }
