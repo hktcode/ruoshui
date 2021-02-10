@@ -50,10 +50,7 @@ public class SimpleFutureOuter extends SimpleFuture
     {
         Phaser phaser = ((SimpleStatusOuter)origin).phaser;
         phaser.awaitAdvanceInterruptibly(phaser.arrive());
-        SimpleStatus future = this.newStatus();
-        this.status.cas(origin, future);
-        phaser.arriveAndDeregister();
-        SimpleFuture result = future.newFuture(this.status);
+        SimpleFuture result = this.newStatus();
         return result.get();
     }
 
@@ -64,17 +61,15 @@ public class SimpleFutureOuter extends SimpleFuture
     {
         Phaser phaser = ((SimpleStatusOuter)origin).phaser;
         phaser.awaitAdvanceInterruptibly(phaser.arrive(), timeout, unit);
-        SimpleStatus future = this.newStatus();
-        this.status.cas(origin, future);
-        phaser.arriveAndDeregister();
-        SimpleFuture result = future.newFuture(this.status);
+        SimpleFuture result = this.newStatus();
         return result.get(timeout, unit);
     }
 
-    private SimpleStatus newStatus()
+    private SimpleFuture newStatus()
     {
         int delCount = 0;
-        SimpleMethod<?>[] originmethod = ((SimpleStatusOuter)this.origin).method;
+        SimpleStatusOuter origin = (SimpleStatusOuter)this.origin;
+        SimpleMethod<?>[] originmethod = origin.method;
         final int methodlength = originmethod.length;
         SimpleMethodDel<?>[] method = new SimpleMethodDel[methodlength];
         for (int i = 0; i < methodlength; ++i) {
@@ -88,16 +83,15 @@ public class SimpleFutureOuter extends SimpleFuture
                 throw new NeverHappenAssertionError();
             }
         }
+        SimpleStatus future;
         if (delCount == 0) {
-            return SimpleStatusInnerEnd.of(ImmutableList.copyOf((SimpleMethodAllResultEnd<?>[])originmethod));
-        } else if (delCount == methodlength) {
-            return SimpleStatusInnerRun.of(ImmutableList.copyOf((SimpleMethodAllResultRun<?>[])originmethod));
-        } else if (this.origin instanceof SimpleStatusOuterDel) {
-            return this.origin;
+            future = SimpleStatusInnerEnd.of(ImmutableList.copyOf((SimpleMethodAllResultEnd<?>[])originmethod));
         } else {
-            logger.info("new status outer del: delCount={}", delCount);
-            return SimpleStatusOuterDel.of(method, new Phaser(methodlength + 1));
+            future = SimpleStatusInnerRun.of(ImmutableList.copyOf((SimpleMethodAllResult<?>[])originmethod));
         }
+        this.status.cas(origin, future);
+        origin.phaser.arriveAndDeregister();
+        return future.newFuture(this.status);
     }
 
     private static final Logger logger = LoggerFactory.getLogger(SimpleFutureOuter.class);
