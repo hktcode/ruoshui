@@ -121,7 +121,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>com.hktcode.pgstack.Ruoshui</mainClass>
+              <mainClass>com.hktcode.ruoshui.Ruoshui</mainClass>
               <addClasspath>true</addClasspath>
               <classpathPrefix>./</classpathPrefix>
             </manifest>

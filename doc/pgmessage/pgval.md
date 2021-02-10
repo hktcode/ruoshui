@@ -53,7 +53,7 @@ typename | protocol | 描述
 [```PgsqlTupleErased```](pgval-tuple-append.md) |    | Truncate表时丢失的tuple消息
 [```PgsqlTruncateEnd```](pgval-alterrel-end.md) |    | Truncate表结束消息
 
-在内部代码上，标识PgsqlVal的代码为类```com.hktcode.pgstack.ruoshui.pgsql.PgsqlVal```，具体的类型都有前缀```PgsqlVal```。
+在内部代码上，标识PgsqlVal的代码为类```com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlVal```，具体的类型都有前缀```PgsqlVal```。
 
 
 - IU, DU  update
