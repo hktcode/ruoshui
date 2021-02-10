@@ -13,17 +13,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Phaser;
-import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class SimpleStatusOuter implements SimpleStatus
+public class SimpleStatusOuter implements SimpleStatus
 {
+    public static SimpleStatusOuter of(Phaser phaser, SimpleMethod<?>[] method)
+    {
+        if (phaser == null) {
+            throw new ArgumentNullException("phaser");
+        }
+        if (method == null) {
+            throw new ArgumentNullException("method");
+        }
+        return new SimpleStatusOuter(phaser, method);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(SimpleStatusOuter.class);
 
     public final Phaser phaser;
 
     public final SimpleMethod<?>[] method;
 
-    protected SimpleStatusOuter(Phaser phaser, SimpleMethod<?>[] method)
+    private SimpleStatusOuter(Phaser phaser, SimpleMethod<?>[] method)
     {
         this.phaser = phaser;
         this.method = method;
@@ -46,29 +56,10 @@ public abstract class SimpleStatusOuter implements SimpleStatus
         this.phaser.awaitAdvanceInterruptibly(this.phaser.getPhase());
     }
 
-    @Override
-    public SimpleStatusOuter get(SimpleStatusOuterGet get)
+    public SimpleStatusOuter outer(SimpleStatusOuter outer)
     {
-        if (get == null) {
-            throw new ArgumentNullException("get");
-        }
-        return this;
-    }
-
-    @Override
-    public SimpleStatusOuter pst(SimpleStatusOuterPst pst)
-    {
-        if (pst == null) {
-            throw new ArgumentNullException("pst");
-        }
-        return this;
-    }
-
-    @Override
-    public SimpleStatusOuter del(SimpleStatusOuterDel del)
-    {
-        if (del == null) {
-            throw new ArgumentNullException("del");
+        if (outer == null) {
+            throw new ArgumentNullException("outer");
         }
         return this;
     }

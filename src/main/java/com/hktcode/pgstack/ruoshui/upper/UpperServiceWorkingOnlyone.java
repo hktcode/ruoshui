@@ -35,7 +35,7 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
             SimpleMethodPutParamsDefault.of(),
             SimpleMethodPutParamsDefault.of()
         };
-        SimpleStatus put = SimpleStatusOuterPut.of(method, new Phaser(4));
+        SimpleStatusOuter put = SimpleStatusOuter.of(new Phaser(4), method);
         this.status = SimpleHolder.of(put);
     }
 
@@ -77,9 +77,8 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
             SimpleMethodDelParamsDefault.of(),
             SimpleMethodDelParamsDefault.of()
         };
-        SimpleStatusOuterDel del = SimpleStatusOuterDel.of(method, new Phaser(4));
-        SimpleHolder holder = this.status;
-        SimpleFutureOuter future = holder.del(del);
+        SimpleStatusOuter del = SimpleStatusOuter.of(new Phaser(4), method);
+        SimpleFutureOuter future = this.status.outer(del);
         ImmutableList<? extends SimpleMethodAllResult<?>> list = future.get();
         return ResponseEntity.ok(list);
     }
@@ -92,9 +91,8 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
             SimpleMethodGetParamsDefault.of(),
             SimpleMethodGetParamsDefault.of()
         };
-        SimpleStatusOuterGet get = SimpleStatusOuterGet.of(method, new Phaser(4));
-        SimpleHolder holder = this.status;
-        SimpleFutureOuter future = holder.get(get);
+        SimpleStatusOuter get = SimpleStatusOuter.of(new Phaser(4), method);
+        SimpleFutureOuter future = this.status.outer(get);
         ImmutableList<? extends SimpleMethodAllResult<?>> list = future.get();
         return ResponseEntity.ok(list);
     }
@@ -111,9 +109,8 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
             SimpleMethodPstParamsDefault.of(),
             SimpleMethodPstParamsDefault.of()
         };
-        SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(method, new Phaser(4));
-        SimpleHolder holder = this.status;
-        SimpleFutureOuter future = holder.pst(pst);
+        SimpleStatusOuter pst = SimpleStatusOuter.of(new Phaser(4), method);
+        SimpleFutureOuter future = this.status.outer(pst);
         ImmutableList<? extends SimpleMethodAllResult<?>> list = future.get();
         return ResponseEntity.ok(list);
     }

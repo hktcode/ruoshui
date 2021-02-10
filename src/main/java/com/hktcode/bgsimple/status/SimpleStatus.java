@@ -9,11 +9,7 @@ import com.hktcode.bgsimple.future.SimpleFuture;
 
 public interface SimpleStatus
 {
-    SimpleStatusOuter get(SimpleStatusOuterGet get);
-
-    SimpleStatusOuter pst(SimpleStatusOuterPst pst);
-
-    SimpleStatusOuter del(SimpleStatusOuterDel del);
+    SimpleStatusOuter outer(SimpleStatusOuter outer);
 
     SimpleFuture newFuture(SimpleHolder status);
 }

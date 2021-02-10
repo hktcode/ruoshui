@@ -5,12 +5,12 @@
 package com.hktcode.bgsimple.status;
 
 import com.google.common.collect.ImmutableList;
-import com.hktcode.bgsimple.method.SimpleMethodAllResultRun;
+import com.hktcode.bgsimple.method.SimpleMethodAllResult;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 public class SimpleStatusInnerRun extends SimpleStatusInner
 {
-    public static SimpleStatusInnerRun of(ImmutableList<SimpleMethodAllResultRun<?>> result)
+    public static SimpleStatusInnerRun of(ImmutableList<SimpleMethodAllResult<?>> result)
     {
         if (result == null) {
             throw new ArgumentNullException("result");
@@ -18,38 +18,18 @@ public class SimpleStatusInnerRun extends SimpleStatusInner
         return new SimpleStatusInnerRun(result);
     }
 
-    private SimpleStatusInnerRun(ImmutableList<SimpleMethodAllResultRun<?>> result)
+    private SimpleStatusInnerRun(ImmutableList<SimpleMethodAllResult<?>> result)
     {
         super(result);
     }
 
     @Override
-    public SimpleStatusOuterGet get(SimpleStatusOuterGet get)
+    public SimpleStatusOuter outer(SimpleStatusOuter outer)
     {
-        if (get == null) {
-            throw new ArgumentNullException("get");
+        if (outer == null) {
+            throw new ArgumentNullException("outer");
         }
         // TODO: 检查get的method中不是BasicGetBgResult
-        return get;
-    }
-
-    @Override
-    public SimpleStatusOuterPst pst(SimpleStatusOuterPst pst)
-    {
-        if (pst == null) {
-            throw new ArgumentNullException("pst");
-        }
-        // TODO: 检查pst的method中不是BasicGetBgResult
-        return pst;
-    }
-
-    @Override
-    public SimpleStatusOuterDel del(SimpleStatusOuterDel del)
-    {
-        if (del == null) {
-            throw new ArgumentNullException("del");
-        }
-        // TODO: 检查del的method中不是BasicDelBgResult
-        return del;
+        return outer;
     }
 }

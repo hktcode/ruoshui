@@ -9,8 +9,7 @@ import com.hktcode.bgsimple.method.SimpleMethodDel;
 import com.hktcode.bgsimple.method.SimpleMethodDelParamsDefault;
 import com.hktcode.bgsimple.method.SimpleMethodPst;
 import com.hktcode.bgsimple.method.SimpleMethodPstParamsDefault;
-import com.hktcode.bgsimple.status.SimpleStatusOuterDel;
-import com.hktcode.bgsimple.status.SimpleStatusOuterPst;
+import com.hktcode.bgsimple.status.SimpleStatusOuter;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgstack.ruoshui.upper.consumer.UpcsmParamsPstRecvLsn;
 import org.apache.kafka.clients.producer.Callback;
@@ -85,8 +84,8 @@ public class UppdcKafkaCallback implements Callback
                 method[1] = SimpleMethodDelParamsDefault.of();
                 method[2] = SimpleMethodDelParamsDefault.of();
                 Phaser phaser = new Phaser(4);
-                SimpleStatusOuterDel del = SimpleStatusOuterDel.of(method, phaser);
-                SimpleFutureOuter future = this.holder.del(del);
+                SimpleStatusOuter del = SimpleStatusOuter.of(phaser, method);
+                SimpleFutureOuter future = this.holder.outer(del);
                 future.get();
             }
             else if (this.lsn.asLong() != LogSequenceNumber.INVALID_LSN.asLong()) {
@@ -96,8 +95,8 @@ public class UppdcKafkaCallback implements Callback
                 method[1] = SimpleMethodPstParamsDefault.of();
                 method[2] = SimpleMethodPstParamsDefault.of();
                 Phaser phaser = new Phaser(4);
-                SimpleStatusOuterPst pst = SimpleStatusOuterPst.of(method, phaser);
-                SimpleFutureOuter future = this.holder.pst(pst);
+                SimpleStatusOuter pst = SimpleStatusOuter.of(phaser, method);
+                SimpleFutureOuter future = this.holder.outer(pst);
                 future.get();
             }
         } catch (InterruptedException e) {

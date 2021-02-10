@@ -64,7 +64,7 @@ public abstract class Triple implements Runnable
                         }
                     }
                     Phaser phaser = new Phaser(3);
-                    f = SimpleStatusOuterDel.of(method, phaser);
+                    f = SimpleStatusOuter.of(phaser, method);
                 }
                 else if (!isSameEnd(erract, (SimpleStatusInnerEnd)o)) {
                     SimpleStatusInnerEnd end = (SimpleStatusInnerEnd)o;
@@ -80,13 +80,20 @@ public abstract class Triple implements Runnable
                     f = SimpleStatusInnerEnd.of(ImmutableList.copyOf(method));
                 }
             } while (o != f && !this.status.cas(o, f));
-            if (f instanceof SimpleStatusOuterDel) {
-                SimpleStatusOuterDel del = (SimpleStatusOuterDel)f;
+            if (f instanceof SimpleStatusOuter) {
+                SimpleStatusOuter del = (SimpleStatusOuter)f;
                 SimpleFutureOuter future = del.newFuture(this.status);
                 future.get();
             }
             logger.info("triple terminate.");
         }
+        // catch (Exception ex) {
+        //     logger.error("pgsender throwerr: ", ex);
+        //     action = action.next(ex);
+        // }
+        // while (!(action instanceof PgActionTerminateEnd)) {
+        //     action = action.next();
+        // }
     }
 
     private static boolean isSameEnd(TripleActionErr erract, SimpleStatusInnerEnd status)
