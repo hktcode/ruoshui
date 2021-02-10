@@ -27,7 +27,7 @@ public class SimpleHolder
         this.status = status;
     }
 
-    public SimpleFuturePut put()
+    public SimpleFutureOuter<SimpleStatusOuterPut> put()
     {
         SimpleStatus s = this.status.get();
         if (!(s instanceof SimpleStatusOuterPut)) {
@@ -35,7 +35,7 @@ public class SimpleHolder
         }
         SimpleStatusOuterPut put = (SimpleStatusOuterPut)s;
 
-        return SimpleFuturePut.of(status, put);
+        return SimpleFutureOuter.of(status, put);
     }
 
     public SimpleFutureOuter<SimpleStatusOuterPst> pst(SimpleStatusOuterPst pst)

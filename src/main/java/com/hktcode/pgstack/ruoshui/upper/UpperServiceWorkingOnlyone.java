@@ -48,7 +48,7 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
             throw new ArgumentNullException("config");
         }
         SimpleHolder holder = SimpleHolder.of(status);
-        SimpleFuturePut future = holder.put();
+        SimpleFutureOuter<SimpleStatusOuterPut> future = holder.put();
         BlockingQueue<UpperRecordConsumer> comein = new ArrayBlockingQueue<>(config.junction.comeinCount);
         BlockingQueue<UpperRecordProducer> getout = new ArrayBlockingQueue<>(config.junction.getoutCount);
 
