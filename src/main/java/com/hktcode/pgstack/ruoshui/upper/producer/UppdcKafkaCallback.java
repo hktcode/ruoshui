@@ -85,8 +85,7 @@ public class UppdcKafkaCallback implements Callback
                 method[2] = SimpleMethodDelParamsDefault.of();
                 Phaser phaser = new Phaser(4);
                 SimpleStatusOuter del = SimpleStatusOuter.of(phaser, method);
-                SimpleFutureOuter future = this.holder.outer(del);
-                future.get();
+                this.holder.run(del);
             }
             else if (this.lsn.asLong() != LogSequenceNumber.INVALID_LSN.asLong()) {
                 logger.info("kafka producer send record success: lsn={}", this.lsn);
@@ -96,8 +95,7 @@ public class UppdcKafkaCallback implements Callback
                 method[2] = SimpleMethodPstParamsDefault.of();
                 Phaser phaser = new Phaser(4);
                 SimpleStatusOuter pst = SimpleStatusOuter.of(phaser, method);
-                SimpleFutureOuter future = this.holder.outer(pst);
-                future.get();
+                this.holder.run(pst);
             }
         } catch (InterruptedException e) {
             logger.error("should never happen", ex);

@@ -36,17 +36,6 @@ public class SimpleHolder
         return this.status.get();
     }
 
-    public boolean cas(SimpleStatus expect, SimpleStatus update)
-    {
-        if (expect == null) {
-            throw new ArgumentNullException("expect");
-        }
-        if (update == null) {
-            throw new ArgumentNullException("update");
-        }
-        return this.status.compareAndSet(expect, update);
-    }
-
     public SimpleFutureOuter put()
     {
         SimpleStatus s = this.status.get();
@@ -65,28 +54,23 @@ public class SimpleHolder
         if (outer == null) {
             throw new ArgumentNullException("outer");
         }
-        this.outer(outer);
-        SimpleFuture result = this.inner();
-        return (ImmutableList<SimpleMethodAllResult>) result.get();
-    }
-
-    public SimpleFutureOuter outer(SimpleStatusOuter outer)
-    {
-        if (outer == null) {
-            throw new ArgumentNullException("outer");
-        }
         // TODO: 判断get中的bgMethod不是bgResult.
         SimpleStatus origin;
-        SimpleStatusOuter future;
+        SimpleStatus future;
         do {
             origin = this.status.get();
             future = origin.outer(outer);
-        } while (/**/future == origin  //
-                || (    future == outer  //
-                /* */&& !this.status.compareAndSet(origin, future) //
-                /* */)
+        } while (/*  */future == origin  //
+                /**/|| (/**/future == outer  //
+                /*     */&& !this.status.compareAndSet(origin, future) //
+                /*   */)
             /**/);
-        return future.newFuture(this);
+        do {
+            origin = this.status.get();
+            future = origin.inner();
+        } while (future != origin && !this.status.compareAndSet(origin, future));
+        SimpleStatusInner result = (SimpleStatusInner)future;
+        return ImmutableList.copyOf(result.result);
     }
 
     public SimpleFutureInner inner() throws InterruptedException

@@ -78,8 +78,7 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
             SimpleMethodDelParamsDefault.of()
         };
         SimpleStatusOuter del = SimpleStatusOuter.of(new Phaser(4), method);
-        SimpleFutureOuter future = this.status.outer(del);
-        ImmutableList<? extends SimpleMethodAllResult<?>> list = future.get();
+        ImmutableList<SimpleMethodAllResult> list = this.status.run(del);
         return ResponseEntity.ok(list);
     }
 
@@ -92,8 +91,7 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
             SimpleMethodGetParamsDefault.of()
         };
         SimpleStatusOuter get = SimpleStatusOuter.of(new Phaser(4), method);
-        SimpleFutureOuter future = this.status.outer(get);
-        ImmutableList<? extends SimpleMethodAllResult<?>> list = future.get();
+        ImmutableList<SimpleMethodAllResult> list = this.status.run(get);
         return ResponseEntity.ok(list);
     }
 
@@ -110,8 +108,7 @@ public class UpperServiceWorkingOnlyone implements UpperServiceWorking
             SimpleMethodPstParamsDefault.of()
         };
         SimpleStatusOuter pst = SimpleStatusOuter.of(new Phaser(4), method);
-        SimpleFutureOuter future = this.status.outer(pst);
-        ImmutableList<? extends SimpleMethodAllResult<?>> list = future.get();
+        ImmutableList<SimpleMethodAllResult> list = this.status.run(pst);
         return ResponseEntity.ok(list);
     }
 
