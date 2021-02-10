@@ -26,7 +26,7 @@
     <java.version>1.8</java.version>
     <kafka-clients.version>1.1.0</kafka-clients.version>
     <guava.version>27.0.1-jre</guava.version>
-    <jmockit.version>1.43</jmockit.version>
+    <jmockit.version>1.49</jmockit.version>
     <groovy.version>2.5.6</groovy.version>
     <jsr305.version>3.0.2</jsr305.version>
     <json-schema-validator.version>2.2.10</json-schema-validator.version>
@@ -98,84 +98,10 @@
     </dependency>
 
     <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy</artifactId>
-      <version>${groovy.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-ant</artifactId>
-      <version>${groovy.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-cli-commons</artifactId>
-      <version>${groovy.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-cli-picocli</artifactId>
-      <version>${groovy.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-console</artifactId>
-      <version>${groovy.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-datetime</artifactId>
-      <version>${groovy.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-docgenerator</artifactId>
-      <version>${groovy.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-groovydoc</artifactId>
-      <version>${groovy.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-jmx</artifactId>
-      <version>${groovy.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-json</artifactId>
-      <version>${groovy.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-jsr223</artifactId>
-      <version>${groovy.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-macro</artifactId>
-      <version>${groovy.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-nio</artifactId>
-      <version>${groovy.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-sql</artifactId>
-      <version>${groovy.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-templates</artifactId>
-      <version>${groovy.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-xml</artifactId>
-      <version>${groovy.version}</version>
+      <groupId>org.jmockit</groupId>
+      <artifactId>jmockit</artifactId>
+      <version>${jmockit.version}</version>
+      <scope>test</scope>
     </dependency>
 
     <!-- 单元测试 -->
@@ -221,6 +147,15 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.22.2</version> <!-- or some other version -->
+        <configuration>
+          <argLine>
+            -javaagent:"${settings.localRepository}"/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar
+          </argLine>
+        </configuration>
       </plugin>
     </plugins>
   </build>
