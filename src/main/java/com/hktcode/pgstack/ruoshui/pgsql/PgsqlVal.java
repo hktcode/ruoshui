@@ -41,14 +41,6 @@ public abstract class PgsqlVal
             LogicalNoOperationMsg val = (LogicalNoOperationMsg)msg;
             return PgsqlValNoOperation.of(val, ctx);
         }
-        else if (msg instanceof LogicalBegSnapshotMsg) {
-            LogicalBegSnapshotMsg val = (LogicalBegSnapshotMsg)msg;
-            return PgsqlValSnapshotBeg.of(val, ctx);
-        }
-        else if (msg instanceof LogicalEndSnapshotMsg) {
-            LogicalEndSnapshotMsg val = (LogicalEndSnapshotMsg)msg;
-            return PgsqlValSnapshotEnd.of(val, ctx);
-        }
         else if (msg instanceof LogicalTxactBeginsMsg) {
             LogicalTxactBeginsMsg val = (LogicalTxactBeginsMsg)msg;
             return PgsqlValTxactBegins.of(lsn, val, ctx);
@@ -56,14 +48,6 @@ public abstract class PgsqlVal
         else if (msg instanceof LogicalTxactCommitMsg) {
             LogicalTxactCommitMsg val = (LogicalTxactCommitMsg) msg;
             return PgsqlValTxactCommit.of(lsn, val, ctx);
-        }
-        else if (msg instanceof LogicalBegRelationMsg) {
-            LogicalBegRelationMsg val = (LogicalBegRelationMsg) msg;
-            return PgsqlValRelationBeg.of(val, ctx);
-        }
-        else if (msg instanceof LogicalEndRelationMsg) {
-            LogicalEndRelationMsg val = (LogicalEndRelationMsg)msg;
-            return PgsqlValRelationEnd.of(val, ctx);
         }
         else if (msg instanceof LogicalRelTruncateMsg) {
             LogicalRelTruncateMsg val = (LogicalRelTruncateMsg)msg;
@@ -80,10 +64,6 @@ public abstract class PgsqlVal
         else if (msg instanceof LogicalTupleDeleteMsg) {
             LogicalTupleDeleteMsg val = (LogicalTupleDeleteMsg)msg;
             return PgsqlValTupleDelete.of(lsn, val, ctx);
-        }
-        else if (msg instanceof LogicalCreateTupleMsg) {
-            LogicalCreateTupleMsg val = (LogicalCreateTupleMsg)msg;
-            return PgsqlValTupleCreate.of(val, ctx);
         }
         else if (msg instanceof LogicalRelationInfMsg) {
             LogicalRelationInfMsg val = (LogicalRelationInfMsg)msg;

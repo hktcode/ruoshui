@@ -8,8 +8,6 @@ import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgjdbc.PgReplAttribute;
-import com.hktcode.pgjdbc.PgReplComponent;
 
 /**
  * 记录中的元组信息.

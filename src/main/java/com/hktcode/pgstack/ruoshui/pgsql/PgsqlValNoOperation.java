@@ -20,7 +20,7 @@ public class PgsqlValNoOperation extends PgsqlVal
      * @param msg {@link LogicalNoOperationMsg}对象.
      * @param ctx 逻辑复制上下文.
      *
-     * @return 根据快{@link LogicalNoOperationMsg}对象和复制上下文构建的{@link PgsqlValRelationEnd}对象.
+     * @return 根据{@link LogicalNoOperationMsg}对象和复制上下文构建的{@link PgsqlValNoOperation}对象.
      * @throws ArgumentNullException if {@code ctx} is {@code null}.
      */
     public static ImmutableList<PgsqlVal>

@@ -9,7 +9,6 @@ import com.hktcode.bgsimple.status.SimpleStatus;
 import com.hktcode.bgsimple.status.SimpleStatusInnerRun;
 import com.hktcode.bgsimple.triple.*;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.pgjdbc.LogicalBegSnapshotMsg;
 import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgjdbc.LogicalTxactBeginsMsg;
 import com.hktcode.pgstack.ruoshui.pgsql.LogicalTxactContext;
@@ -116,10 +115,6 @@ class UpjctActionRun extends TripleActionRun<UpjctActionRun, TripleJunctionConfi
 
         if (msg instanceof LogicalTxactBeginsMsg) {
             this.curLsnofcmt = ((LogicalTxactBeginsMsg) msg).lsnofcmt;
-            this.curSequence = 1;
-        }
-        else if (msg instanceof LogicalBegSnapshotMsg) {
-            this.curLsnofcmt = lsn;
             this.curSequence = 1;
         }
 
