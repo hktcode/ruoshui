@@ -4,15 +4,14 @@
 
 package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
-import com.hktcode.simple.SimpleAction;
-import com.hktcode.simple.SimpleHolder;
-import com.hktcode.queue.Tqueue;
-import com.hktcode.simple.SimpleActionEnd;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.queue.Tqueue;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlValTxactCommit;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperAction;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperEntity;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperHolder;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
+import com.hktcode.simple.SimpleAction;
+import com.hktcode.simple.SimpleActionEnd;
+import com.hktcode.simple.SimpleActionRun;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -26,30 +25,33 @@ import java.util.Properties;
 
 import static com.hktcode.kafka.Kafka.Serializers.BYTES;
 
-class UppdcActionRun extends UpperAction
+class UppdcActionRun extends SimpleActionRun<UppdcConfig, UppdcMetric, UpperHolder>
 {
-    public static UppdcActionRun of(SimpleHolder<UpperEntity> holder)
+    public static UppdcActionRun of(UppdcConfig config, UppdcMetric metric, UpperHolder holder)
     {
+        if (config == null) {
+            throw new ArgumentNullException("config");
+        }
+        if (metric == null) {
+            throw new ArgumentNullException("metric");
+        }
         if (holder == null) {
             throw new ArgumentNullException("holder");
         }
-        return new UppdcActionRun(holder);
+        return new UppdcActionRun(config, metric, holder);
     }
 
     private static final Logger logger = LoggerFactory.getLogger(UppdcActionRun.class);
 
-    private UppdcActionRun(SimpleHolder<UpperEntity> holder)
+    private UppdcActionRun(UppdcConfig config, UppdcMetric metric, UpperHolder holder)
     {
-        super(holder);
+        super(config, metric, holder);
     }
 
     @Override
-    public SimpleAction<UpperEntity> next() throws Exception
+    public SimpleAction<UppdcConfig, UppdcMetric, UpperHolder> next() throws Exception
     {
-        final UpperEntity entity = this.holder.entity;
-        final UppdcConfig config = entity.producer.config;
-        final UppdcMetric metric = entity.producer.metric;
-        final Tqueue<UpperRecordProducer> getout = entity.tgtqueue;
+        final Tqueue<UpperRecordProducer> getout = this.holder.tgtqueue;
         Properties properties = new Properties();
         properties.setProperty("request.timeout.ms", "1000");
         for (Map.Entry<String, String> e : config.kfkProperty.entrySet()) {
@@ -85,6 +87,6 @@ class UppdcActionRun extends UpperAction
                 }
             }
         }
-        return SimpleActionEnd.of(this.holder);
+        return SimpleActionEnd.of(this.config, this.metric, this.holder);
     }
 }

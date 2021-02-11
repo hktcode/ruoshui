@@ -2,18 +2,26 @@ package com.hktcode.simple;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class SimpleActionEnd<E> extends SimpleAction<E>
+public class SimpleActionEnd<C extends SimpleConfig, M extends SimpleMetric, H extends SimpleStatus<?>> //
+        extends SimpleAction<C, M, H>
 {
-    public static <E> SimpleActionEnd<E> of(SimpleHolder<E> holder)
+    public static <C extends SimpleConfig, M extends SimpleMetric, H extends SimpleStatus<?>> //
+    SimpleActionEnd<C, M, H> of(C config, M metric, H holder)
     {
+        if (config == null) {
+            throw new ArgumentNullException("config");
+        }
+        if (metric == null) {
+            throw new ArgumentNullException("metric");
+        }
         if (holder == null) {
             throw new ArgumentNullException("holder");
         }
-        return new SimpleActionEnd<>(holder);
+        return new SimpleActionEnd<>(config, metric, holder);
     }
 
-    protected SimpleActionEnd(SimpleHolder<E> holder)
+    protected SimpleActionEnd(C config, M metric, H holder)
     {
-        super(holder);
+        super(config, metric, holder);
     }
 }

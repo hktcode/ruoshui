@@ -1,11 +1,17 @@
 package com.hktcode.simple;
 
-public class SimpleAction<E>
+public class SimpleAction<C extends SimpleConfig, M extends SimpleMetric, H extends SimpleStatus<?>>
 {
-    protected final SimpleHolder<E> holder;
+    protected final C config;
 
-    protected SimpleAction(SimpleHolder<E> holder)
+    protected final M metric;
+
+    protected final H holder;
+
+    protected SimpleAction(C config, M metric, H holder)
     {
+        this.config = config;
+        this.metric = metric;
         this.holder = holder;
     }
 }

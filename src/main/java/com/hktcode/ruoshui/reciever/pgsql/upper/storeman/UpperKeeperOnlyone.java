@@ -9,7 +9,7 @@ import com.hktcode.lang.exception.NeverHappenAssertionError;
 import com.hktcode.ruoshui.Ruoshui;
 import com.hktcode.ruoshui.reciever.pgsql.exception.*;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperConfig;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperEntity;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperHolder;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ public class UpperKeeperOnlyone
 {
     private static final Logger logger = LoggerFactory.getLogger(UpperKeeperOnlyone.class);
 
-    private final YAMLMapper mapper;
+    public final YAMLMapper mapper;
 
     private final ImmutableMap<String, UpperConfig> etcval = ImmutableMap.of();
 
@@ -37,23 +37,20 @@ public class UpperKeeperOnlyone
         this.mapper = mapper;
     }
 
-    public UpperResult put(UpperEntity entity, long deletets)
+    public void put(String name, ObjectNode node)
     {
-        String name = entity.fullname;
-        String yaml = this.toYamlString(entity);
+        String yaml = this.toYamlString(node);
         // 检查文件 .upsert.yml .delete.yml
         // - - if .delete.yml exists: delete delete.yml
         // 先写del
         // 重命名del为yml
         updertConfFile(name, "yml", yaml);
         deleteConfFile(name, "del");
-        return UpperResult.of(entity, deletets);
     }
 
-    public UpperResult del(UpperEntity entity, long deletets)
+    public long del(String name, ObjectNode node, long deletets)
     {
-        String name = entity.fullname;
-        String yaml = this.toYamlString(entity);
+        String yaml = this.toYamlString(node);
         // 重命名yml为del
         // 判断是否删除del
         if (this.etcval.containsKey(name)) {
@@ -66,37 +63,22 @@ public class UpperKeeperOnlyone
         if (deletets == Long.MAX_VALUE) {
             deletets = System.currentTimeMillis();
         }
-        return UpperResult.of(entity, deletets);
+        return deletets;
     }
 
-    public UpperResult pst(UpperEntity entity, JsonNode body)
+    public void updertYml(String name, ObjectNode node)
     {
-        String name = entity.fullname;
-        UpperResult result = entity.pst(body);
-        String yaml = this.toYamlString(entity);
-        // 先写del
-        // 重命名del为yml
+        String yaml = this.toYamlString(node);
+        // - updertConfFile(name, "del", yaml);
+        // - renameConfFile(name, "del", "yml");
         deleteConfFile(name, "del");
         updertConfFile(name, "yml", yaml);
-        return result;
     }
 
-    private String toYamlString(UpperEntity entity)
+    private String toYamlString(ObjectNode node)
     {
-        ObjectNode result = this.mapper.getNodeFactory().objectNode();
-        result.put("fullname", entity.fullname);
-        ObjectNode consumer = result.putObject("consumer");
-        ObjectNode srcqueue = result.putObject("srcqueue");
-        ObjectNode junction = result.putObject("junction");
-        ObjectNode tgtqueue = result.putObject("tgtqueue");
-        ObjectNode producer = result.putObject("producer");
-        entity.consumer.config.toJsonObject(consumer);
-        entity.srcqueue.config.toJsonObject(srcqueue);
-        entity.junction.config.toJsonObject(junction);
-        entity.tgtqueue.config.toJsonObject(tgtqueue);
-        entity.producer.config.toJsonObject(producer);
         try {
-            return this.mapper.writeValueAsString(entity);
+            return this.mapper.writeValueAsString(node);
         } catch (JsonProcessingException e) {
             throw new NeverHappenAssertionError(e);
         }

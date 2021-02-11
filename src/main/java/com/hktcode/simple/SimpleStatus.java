@@ -10,27 +10,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
 
-public class SimpleHolder<E>
+public abstract class SimpleStatus<R extends SimpleResult>
 {
-    private final static Logger logger = LoggerFactory.getLogger(SimpleHolder.class);
-
-    public static <E> SimpleHolder<E> of(E entity)
-    {
-        if (entity == null) {
-            throw new ArgumentNullException("entity");
-        }
-        return new SimpleHolder<>(entity);
-    }
+    private final static Logger logger = LoggerFactory.getLogger(SimpleStatus.class);
 
     private final AtomicReference<SimplePhaser> status;
 
-    public final E entity;
-
-    protected SimpleHolder(E entity)
+    protected SimpleStatus()
     {
         this.status = new AtomicReference<>(SimplePhaserInner.of(Long.MAX_VALUE));
-        this.entity = entity;
     }
 
     public SimplePhaserInner run(SimpleMetric metric) throws InterruptedException
@@ -47,8 +37,7 @@ public class SimpleHolder<E>
         return result;
     }
 
-    public <T extends SimpleResult> //
-    T run(SimplePhaserOuter cmd, SimpleKeeper<E, T> keeper) //
+    public R run(SimplePhaserOuter cmd, BiFunction<SimplePhaserInner, SimplePhaserOuter, R> keeper) //
             throws InterruptedException
     {
         if (cmd == null) {
@@ -69,8 +58,7 @@ public class SimpleHolder<E>
         return future.run(origin, (o, f)->this.apply(o, f, keeper));
     }
 
-    public <R extends SimpleResult> //
-    R cmd(SimplePhaserOuter cmd, SimpleKeeper<E, R> keeper) //
+    public R end(SimplePhaserOuter cmd, BiFunction<SimplePhaserInner, SimplePhaserOuter, R> keeper) //
             throws InterruptedException
     {
         if (cmd == null) {
@@ -100,11 +88,10 @@ public class SimpleHolder<E>
         return future.run(origin, (o, f)->this.apply(o, f, keeper));
     }
 
-    private <R extends SimpleResult> //
-    R apply(SimplePhaserInner origin, SimplePhaserOuter future, SimpleKeeper<E, R> keeper)
+    protected R apply(SimplePhaserInner origin, SimplePhaserOuter future, BiFunction<SimplePhaserInner, SimplePhaserOuter, R> keeper)
     {
         try {
-            R result = keeper.apply(this.entity, origin.deletets);
+            R result = keeper.apply(origin, future);
             origin = SimplePhaserInner.of(result.deletets);
             return result;
         } catch (Exception ex) {
@@ -116,4 +103,6 @@ public class SimpleHolder<E>
             logger.debug("cas(future, origin): origin.deletets={}, return={}", origin.deletets, result);
         }
     }
+
+    public abstract R end(SimplePhaserOuter cmd) throws InterruptedException;
 }

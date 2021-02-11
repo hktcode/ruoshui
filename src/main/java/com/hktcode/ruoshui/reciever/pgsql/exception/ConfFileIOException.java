@@ -3,13 +3,14 @@ package com.hktcode.ruoshui.reciever.pgsql.exception;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.hktcode.jackson.HttpStatusJacksonObjectException;
 import com.hktcode.jackson.JacksonObjectException;
 import com.hktcode.lang.exception.ArgumentNullException;
 import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 
-public class ConfFileIOException extends JacksonObjectException
+public class ConfFileIOException extends HttpStatusJacksonObjectException
 {
     public final static HttpStatus CODE = HttpStatus.VARIANT_ALSO_NEGOTIATES;
 

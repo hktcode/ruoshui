@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Phaser;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 public class SimplePhaserOuter implements SimplePhaser
 {
@@ -63,6 +64,36 @@ public class SimplePhaserOuter implements SimplePhaser
         }
         try {
             return keeper.apply(origin, this);
+        }
+        finally {
+            phase = this.phaser.arriveAndDeregister();
+            if (phase < 0) {
+                logger.error("phaser.arriveAndDeregister: phase={}", phase);
+            }
+            phase = this.phaser.awaitAdvanceInterruptibly(phase);
+            if (phase >= 0) {
+                logger.error("phaser.awaitAvanceInteruptible: phase={}", phase);
+            }
+        }
+    }
+
+
+    public <R extends SimpleResult> R run(Supplier<R> keeper)
+            throws InterruptedException
+    {
+        if (keeper == null) {
+            throw new ArgumentNullException("keeper");
+        }
+        int phase = this.phaser.arrive();
+        if (phase < 0) {
+            logger.error("phaser.arrive: phaser={}", phase);
+        }
+        phase = this.phaser.awaitAdvanceInterruptibly(phase);
+        if (phase < 0) {
+            logger.error("phaser.awaitAdvanceInterruptibly: phaser={}", phase);
+        }
+        try {
+            return keeper.get();
         }
         finally {
             phase = this.phaser.arriveAndDeregister();

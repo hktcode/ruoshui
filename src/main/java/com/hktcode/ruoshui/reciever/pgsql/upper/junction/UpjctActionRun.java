@@ -5,46 +5,47 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.junction;
 
 import com.google.common.collect.ImmutableList;
+import com.hktcode.ruoshui.reciever.pgsql.upper.*;
 import com.hktcode.simple.SimpleAction;
 import com.hktcode.simple.SimpleActionEnd;
-import com.hktcode.simple.SimpleHolder;
 import com.hktcode.queue.Tqueue;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgjdbc.LogicalTxactBeginsMsg;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlKey;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlVal;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperAction;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperEntity;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
+import com.hktcode.simple.SimpleActionRun;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-class UpjctActionRun extends UpperAction
+class UpjctActionRun extends SimpleActionRun<UpjctConfig, UpjctMetric, UpperHolder>
 {
-    public static UpjctActionRun of(SimpleHolder<UpperEntity> holder)
+    public static UpjctActionRun of(UpjctConfig config, UpjctMetric metric, UpperHolder holder)
     {
+        if (config == null) {
+            throw new ArgumentNullException("config");
+        }
+        if (metric == null) {
+            throw new ArgumentNullException("metric");
+        }
         if (holder == null) {
             throw new ArgumentNullException("holder");
         }
-        return new UpjctActionRun(holder);
+        return new UpjctActionRun(config, metric, holder);
     }
 
-    private UpjctActionRun(SimpleHolder<UpperEntity> holder)
+    private UpjctActionRun(UpjctConfig config, UpjctMetric metric, UpperHolder holder)
     {
-        super(holder);
+        super(config, metric, holder);
     }
 
     @Override
-    public SimpleAction<UpperEntity> next() throws InterruptedException
+    public SimpleAction<UpjctConfig, UpjctMetric, UpperHolder> next() throws InterruptedException
     {
-        final UpperEntity entity = this.holder.entity;
-        final UpjctMetric metric = entity.junction.metric;
-        final Tqueue<UpperRecordConsumer> comein = entity.srcqueue;
-        final Tqueue<UpperRecordProducer> getout = entity.tgtqueue;
+        final Tqueue<UpperRecordConsumer> comein = this.holder.srcqueue;
+        final Tqueue<UpperRecordProducer> getout = this.holder.tgtqueue;
         UpperRecordConsumer r = null;
         UpperRecordProducer o = null;
         Iterator<UpperRecordProducer> t //
@@ -60,14 +61,14 @@ class UpjctActionRun extends UpperAction
                 r = comein.poll();
             }
             else {
-                t = this.convert(metric, r).iterator();
+                t = this.convert(r).iterator();
                 r = null;
             }
         }
-        return SimpleActionEnd.of(this.holder);
+        return SimpleActionEnd.of(this.config, this.metric, this.holder);
     }
 
-    private List<UpperRecordProducer> convert(UpjctMetric metric, UpperRecordConsumer record)
+    private List<UpperRecordProducer> convert(UpperRecordConsumer record)
     {
         long lsn = record.lsn;
         LogicalMsg msg = record.msg;

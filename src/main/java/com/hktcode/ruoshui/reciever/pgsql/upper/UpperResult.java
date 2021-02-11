@@ -7,7 +7,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class UpperResult extends SimpleResult
 {
-    public static UpperResult of(UpperEntity entities, long deletets)
+    public static UpperResult of(UpperHolder entities, long deletets)
     {
         if (entities == null) {
             throw new ArgumentNullException("entities");

@@ -3,9 +3,8 @@
  */
 package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
-import com.hktcode.simple.SimpleHolder;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperEntity;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperHolder;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -21,7 +20,7 @@ public class UppdcKafkaCallback implements Callback
 
     public static UppdcKafkaCallback of //
         /* */( LogSequenceNumber lsn //
-        /* */, SimpleHolder<UpperEntity> holder //
+        /* */, UpperHolder holder //
         /* */, Producer<byte[], byte[]> producer //
         /* */)
     {
@@ -37,16 +36,15 @@ public class UppdcKafkaCallback implements Callback
         return new UppdcKafkaCallback(lsn, holder, producer);
     }
 
-
     private final LogSequenceNumber lsn;
 
     private final Producer<byte[], byte[]> producer;
 
-    private final SimpleHolder<UpperEntity> holder;
+    private final UpperHolder holder;
 
     private UppdcKafkaCallback //
         /* */( LogSequenceNumber lsn //
-        /* */, SimpleHolder<UpperEntity> holder //
+        /* */, UpperHolder holder //
         /* */, Producer<byte[], byte[]> producer //
         /* */)
     {
@@ -60,7 +58,7 @@ public class UppdcKafkaCallback implements Callback
     {
         if (ex != null) {
             logger.error("kafka producer send record fail: lsn={}", this.lsn, ex);
-            if (this.holder.entity.producer.metric.callbackRef.compareAndSet(null, ex)) {
+            if (this.holder.producer.metric.callbackRef.compareAndSet(null, ex)) {
                 // kafka客户端的行为好奇怪，不符合一般的Java类调用约定：
                 // 1. 通常Java类中，应该是谁创建谁关闭。
                 //    Kafka的Producer虽然也满足这个条件，但是如果此处ex不是null，必须在此方法中调用close。
@@ -81,7 +79,7 @@ public class UppdcKafkaCallback implements Callback
         }
         else if (this.lsn.asLong() != LogSequenceNumber.INVALID_LSN.asLong()) {
             logger.info("kafka producer send record success: lsn={}", this.lsn);
-            this.holder.entity.consumer.metric.txactionLsn.set(this.lsn.asLong());
+            this.holder.consumer.metric.txactionLsn.set(this.lsn.asLong());
         }
     }
 }

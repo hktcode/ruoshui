@@ -5,9 +5,7 @@ package com.hktcode.ruoshui.reciever.pgsql.upper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.hktcode.simple.SimpleHolder;
 import com.hktcode.simple.SimplePhaserOuter;
-import com.hktcode.simple.Simple;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.upper.storeman.UpperKeeperOnlyone;
 import org.springframework.beans.factory.DisposableBean;
@@ -30,7 +28,7 @@ public class UpperService implements DisposableBean
 
     private final ReadWriteLock locker = new ReentrantReadWriteLock();
 
-    private final ConcurrentHashMap<String, SimpleHolder<UpperEntity>> repmap;
+    private final ConcurrentHashMap<String, UpperHolder> repmap;
 
     public UpperService(@Autowired UpperKeeperOnlyone dricab)
     {
@@ -49,31 +47,18 @@ public class UpperService implements DisposableBean
         }
         long createts = System.currentTimeMillis();
         UpperConfig config = UpperConfig.ofJsonObject(body);
-        UpperEntity entity = UpperEntity.of(createts, name, config);
-        SimpleHolder<UpperEntity> h = SimpleHolder.of(entity);
+        UpperHolder holder = UpperHolder.of(createts, name, config, this.keeper);
 
         Lock lock = this.locker.readLock();
         lock.lock();
         try {
             SimplePhaserOuter cmd = SimplePhaserOuter.of(4);
-            SimpleHolder<UpperEntity> status = this.repmap.putIfAbsent(name, h);
+            UpperHolder status = this.repmap.putIfAbsent(name, holder);
             if (status != null) {
-                UpperResult result = status.run(cmd, UpperEntity::get);
+                UpperResult result = status.get(cmd);
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new UpperResult[]{ result });
             }
-            Thread thread = new Thread(Simple.of(entity.producer, h));
-            thread.setDaemon(false);
-            thread.setName("ruoshui-upper-producer");
-            thread.start();
-            thread = new Thread(Simple.of(entity.junction, h));
-            thread.setDaemon(false);
-            thread.setName("ruoshui-upper-junction");
-            thread.start();
-            thread = new Thread(Simple.of(entity.consumer, h));
-            thread.setDaemon(false);
-            thread.setName("ruoshui-upper-consumer");
-            thread.start();
-            UpperResult result = h.run(cmd, this.keeper::put);
+            UpperResult result = holder.put(cmd);
             return ResponseEntity.ok(new UpperResult[] { result });
         }
         finally {
@@ -89,12 +74,12 @@ public class UpperService implements DisposableBean
         Lock lock = this.locker.readLock();
         lock.lock();
         try {
-            SimpleHolder<UpperEntity> holder = this.repmap.remove(name);
+            UpperHolder holder = this.repmap.remove(name);
             if (holder == null) {
                 return ResponseEntity.notFound().build();
             }
             SimplePhaserOuter del = SimplePhaserOuter.of(4);
-            UpperResult result = holder.run(del, this.keeper::del);
+            UpperResult result = holder.del(del);
             return ResponseEntity.ok(new UpperResult[]{result});
         }
         finally {
@@ -110,12 +95,12 @@ public class UpperService implements DisposableBean
         Lock lock = this.locker.readLock();
         lock.lock();
         try {
-            SimpleHolder<UpperEntity> holder = this.repmap.remove(name);
+            UpperHolder holder = this.repmap.get(name);
             if (holder == null) {
                 return ResponseEntity.notFound().build();
             }
             SimplePhaserOuter cmd = SimplePhaserOuter.of(4);
-            UpperResult result = holder.run(cmd, UpperEntity::get);
+            UpperResult result = holder.get(cmd);
             return ResponseEntity.ok(new UpperResult[] { result });
         }
         finally {
@@ -135,12 +120,12 @@ public class UpperService implements DisposableBean
         Lock lock = this.locker.readLock();
         lock.lock();
         try {
-            SimpleHolder<UpperEntity> status = this.repmap.get(name);
-            if (status == null) {
+            UpperHolder holder = this.repmap.get(name);
+            if (holder == null) {
                 return ResponseEntity.notFound().build();
             }
             SimplePhaserOuter cmd = SimplePhaserOuter.of(4);
-            UpperResult result = status.run(cmd, (e, d)->this.keeper.pst(e, json));
+            UpperResult result = holder.pst(cmd, json);
             return ResponseEntity.ok(new UpperResult[] { result });
         }
         finally {
@@ -155,9 +140,10 @@ public class UpperService implements DisposableBean
         try {
             UpperResult[] result = new UpperResult[this.repmap.size()];
             int index = 0;
-            for (Map.Entry<String, SimpleHolder<UpperEntity>> entry : this.repmap.entrySet()) {
-                SimplePhaserOuter cmd = SimplePhaserOuter.of(4);
-                UpperResult r = entry.getValue().run(cmd, UpperEntity::get);
+            for (Map.Entry<String, UpperHolder> entry : this.repmap.entrySet()) {
+                final SimplePhaserOuter cmd = SimplePhaserOuter.of(4);
+                final UpperHolder holder = entry.getValue();
+                UpperResult r = holder.get(cmd);
                 result[index++] = r;
             }
             return ResponseEntity.ok(result);
@@ -173,9 +159,10 @@ public class UpperService implements DisposableBean
         Lock lock = this.locker.writeLock();
         lock.lock();
         try {
-            for (Map.Entry<String, SimpleHolder<UpperEntity>> entry : this.repmap.entrySet()) {
+            for (Map.Entry<String, UpperHolder> entry : this.repmap.entrySet()) {
                 SimplePhaserOuter cmd = SimplePhaserOuter.of(4);
-                entry.getValue().cmd(cmd, UpperEntity::end);
+                UpperHolder holder = entry.getValue();
+                holder.end(cmd);
             }
         }
         finally {

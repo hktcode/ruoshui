@@ -4,15 +4,14 @@
 
 package com.hktcode.ruoshui.reciever.pgsql.upper.consumer;
 
-import com.hktcode.simple.SimpleAction;
-import com.hktcode.simple.SimpleActionEnd;
-import com.hktcode.simple.SimpleHolder;
-import com.hktcode.queue.Tqueue;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperAction;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperEntity;
+import com.hktcode.queue.Tqueue;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperHolder;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
+import com.hktcode.simple.SimpleAction;
+import com.hktcode.simple.SimpleActionEnd;
+import com.hktcode.simple.SimpleActionRun;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
 import org.postgresql.replication.PGReplicationStream;
@@ -23,32 +22,36 @@ import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class UpcsmActionRun extends UpperAction
+public class UpcsmActionRun extends SimpleActionRun<UpcsmConfig, UpcsmMetric, UpperHolder>
 {
     private static final Logger logger = LoggerFactory.getLogger(UpcsmActionRun.class);
 
-    public static UpcsmActionRun of(SimpleHolder<UpperEntity> holder)
+    public static UpcsmActionRun of(UpcsmConfig config, UpcsmMetric metric, UpperHolder holder)
     {
+        if (config == null) {
+            throw new ArgumentNullException("config");
+        }
+        if (metric == null) {
+            throw new ArgumentNullException("metric");
+        }
         if (holder == null) {
             throw new ArgumentNullException("holder");
         }
-        return new UpcsmActionRun(holder);
+        return new UpcsmActionRun(config, metric, holder);
     }
 
     @Override
-    public SimpleAction<UpperEntity> next() throws InterruptedException, SQLException
+    public SimpleAction<UpcsmConfig, UpcsmMetric, UpperHolder> next() //
+            throws InterruptedException, SQLException
     {
-        final UpperEntity entity = this.holder.entity;
-        final UpcsmConfig config = entity.consumer.config;
-        final UpcsmMetric metric = entity.consumer.metric;
-        try (Connection repl = config.srcProperty.replicaConnection()) {
+        final Tqueue<UpperRecordConsumer> comein = this.holder.srcqueue;
+        try (Connection repl = this.config.srcProperty.replicaConnection()) {
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
-            try (PGReplicationStream slt = config.logicalRepl.start(pgrepl)) {
-                final Tqueue<UpperRecordConsumer> comein = entity.srcqueue;
+            try (PGReplicationStream slt = this.config.logicalRepl.start(pgrepl)) {
                 UpperRecordConsumer r = null;
                 long prevlsn = 0;
                 while (this.holder.run(metric).deletets == Long.MAX_VALUE) {
-                    long currlsn = metric.txactionLsn.get();
+                    long currlsn = this.metric.txactionLsn.get();
                     if (prevlsn != currlsn) {
                         LogSequenceNumber lsn = LogSequenceNumber.valueOf(currlsn);
                         slt.setFlushedLSN(lsn);
@@ -65,9 +68,9 @@ public class UpcsmActionRun extends UpperAction
             }
         }
         logger.info("pgsender complete");
-        metric.statusInfor = "send txation finish record.";
-        metric.endDatetime = System.currentTimeMillis();
-        return SimpleActionEnd.of(this.holder);
+        this.metric.statusInfor = "send txation finish record.";
+        this.metric.endDatetime = System.currentTimeMillis();
+        return SimpleActionEnd.of(this.config, this.metric, this.holder);
     }
 
     private UpperRecordConsumer poll(UpcsmConfig config, UpcsmMetric metric, PGReplicationStream s) //
@@ -93,8 +96,8 @@ public class UpcsmActionRun extends UpperAction
         return null;
     }
 
-    private UpcsmActionRun(SimpleHolder<UpperEntity> holder)
+    private UpcsmActionRun(UpcsmConfig config, UpcsmMetric metric, UpperHolder holder)
     {
-        super(holder);
+        super(config, metric, holder);
     }
 }
