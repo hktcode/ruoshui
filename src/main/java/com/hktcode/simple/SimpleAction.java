@@ -1,6 +1,6 @@
 package com.hktcode.simple;
 
-public class SimpleAction<C extends SimpleConfig, M extends SimpleMetric, H extends SimpleStatus<?>>
+public class SimpleAction<C extends SimpleConfig, M extends SimpleMetric, H extends SimpleEntity<?>>
 {
     protected final C config;
 

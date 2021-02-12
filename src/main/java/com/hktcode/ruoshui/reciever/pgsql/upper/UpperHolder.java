@@ -13,9 +13,12 @@ import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcMetric;
 import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcThread;
 import com.hktcode.ruoshui.reciever.pgsql.upper.storeman.UpperKeeperOnlyone;
 import com.hktcode.simple.SimplePhaserOuter;
-import com.hktcode.simple.SimpleStatus;
+import com.hktcode.simple.SimpleEntity;
+import org.postgresql.replication.LogSequenceNumber;
 
-public class UpperHolder extends SimpleStatus<UpperResult>
+import java.util.concurrent.atomic.AtomicLong;
+
+public class UpperHolder extends SimpleEntity<UpperResult>
 {
     public static UpperHolder of(long createts, String fullname, UpperConfig config, UpperKeeperOnlyone storeman)
     {
@@ -33,12 +36,12 @@ public class UpperHolder extends SimpleStatus<UpperResult>
 
     public final long createts;
     public final String fullname;
-    public final UpcsmThread consumer; // laborer
+    private final UpcsmThread consumer; // laborer
     public final Tqueue<UpperRecordConsumer> srcqueue;
-    public final UpjctThread junction;
+    private final UpjctThread junction;
     public final Tqueue<UpperRecordProducer> tgtqueue;
-    public final UppdcThread producer;
-    public final UpperKeeperOnlyone storeman;
+    private final UppdcThread producer;
+    private final UpperKeeperOnlyone storeman;
 
     private UpperHolder //
         /* */( long createts //
@@ -49,11 +52,12 @@ public class UpperHolder extends SimpleStatus<UpperResult>
     {
         this.createts = createts;
         this.fullname = fullname;
-        this.consumer = UpcsmThread.of(config.consumer, UpcsmMetric.of(), this);
+        AtomicLong txactionLsn = new AtomicLong(LogSequenceNumber.INVALID_LSN.asLong());
+        this.consumer = UpcsmThread.of(config.consumer, UpcsmMetric.of(txactionLsn), this);
         this.srcqueue = Tqueue.of(config.srcqueue, TqueueMetric.of());
         this.junction = UpjctThread.of(config.junction, UpjctMetric.of(), this);
         this.tgtqueue = Tqueue.of(config.tgtqueue, TqueueMetric.of());
-        this.producer = UppdcThread.of(config.producer, UppdcMetric.of(), this);
+        this.producer = UppdcThread.of(config.producer, UppdcMetric.of(txactionLsn), this);
         this.storeman = storeman;
     }
 
@@ -71,7 +75,7 @@ public class UpperHolder extends SimpleStatus<UpperResult>
             }
             deletets = System.currentTimeMillis();
         }
-        return UpperResult.of(this, deletets);
+        return this.toResultNode(deletets);
     }
 
     @Override
@@ -80,7 +84,7 @@ public class UpperHolder extends SimpleStatus<UpperResult>
         if (cmd == null) {
             throw new ArgumentNullException("cmd");
         }
-        return this.run(cmd, (o, f)->this.end(o.deletets));
+        return this.end(cmd, (o, f)->this.end(o.deletets));
     }
 
     public UpperResult get(SimplePhaserOuter cmd) throws InterruptedException
@@ -93,11 +97,11 @@ public class UpperHolder extends SimpleStatus<UpperResult>
 
     public UpperResult put(SimplePhaserOuter cmd) throws InterruptedException
     {
-        this.producer.setName("ruoshui-upper-producer");
+        this.producer.setName(this.fullname + "-upper-producer");
         this.producer.start();
-        this.junction.setName("ruoshui-upper-junction");
+        this.junction.setName(this.fullname + "-upper-junction");
         this.junction.start();
-        this.consumer.setName("ruoshui-upper-consumer");
+        this.consumer.setName(this.fullname + "-upper-consumer");
         this.consumer.start();
         return this.run(cmd, (o, f)->this.put(o.deletets));
     }
@@ -106,7 +110,7 @@ public class UpperHolder extends SimpleStatus<UpperResult>
     {
         ObjectNode node = this.storeman.mapper.createObjectNode();
         this.toConfigNode(node);
-        this.storeman.put(this.fullname, node);
+        this.storeman.updertYml(this.fullname, node);
         return this.toResultNode(deletets);
     }
 
@@ -119,7 +123,7 @@ public class UpperHolder extends SimpleStatus<UpperResult>
     {
         ObjectNode node = this.storeman.mapper.createObjectNode();
         this.toConfigNode(node);
-        deletets = this.storeman.del(this.fullname, node, deletets);
+        deletets = this.storeman.deleteYml(this.fullname, node, deletets);
         return this.toResultNode(deletets);
     }
 
@@ -169,8 +173,15 @@ public class UpperHolder extends SimpleStatus<UpperResult>
         return node;
     }
 
-    public UpperResult toResultNode(long deletets)
+    private UpperResult toResultNode(long deletets)
     {
-        return UpperResult.of(this, deletets);
+        long createts = this.createts;
+        String fullname = this.fullname;
+        ObjectNode consumer = this.consumer.toJsonObject();
+        ObjectNode srcqueue = this.srcqueue.toJsonObject();
+        ObjectNode junction = this.junction.toJsonObject();
+        ObjectNode tgtqueue = this.tgtqueue.toJsonObject();
+        ObjectNode producer = this.producer.toJsonObject();
+        return UpperResult.of(createts, fullname, consumer, srcqueue, junction, tgtqueue, producer, deletets);
     }
 }

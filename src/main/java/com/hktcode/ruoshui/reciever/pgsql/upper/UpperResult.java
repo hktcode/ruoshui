@@ -7,20 +7,38 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class UpperResult extends SimpleResult
 {
-    public static UpperResult of(UpperHolder entities, long deletets)
+    public static UpperResult of //
+            /* */( long createts
+            /* */, String fullname
+            /* */, ObjectNode consumer
+            /* */, ObjectNode srcqueue
+            /* */, ObjectNode junction
+            /* */, ObjectNode tgtqueue
+            /* */, ObjectNode producer
+            /* */, long deletets
+            /* */)
     {
-        if (entities == null) {
-            throw new ArgumentNullException("entities");
+        if (fullname == null) {
+            throw new ArgumentNullException("fullname");
         }
-        long createts = entities.createts;
-        String fullname = entities.fullname;
-        ObjectNode consumer = entities.consumer.toJsonObject();
-        ObjectNode srcqueue = entities.srcqueue.toJsonObject();
-        ObjectNode junction = entities.junction.toJsonObject();
-        ObjectNode tgtqueue = entities.tgtqueue.toJsonObject();
-        ObjectNode producer = entities.producer.toJsonObject();
+        if (consumer == null) {
+            throw new ArgumentNullException("consumer");
+        }
+        if (srcqueue == null) {
+            throw new ArgumentNullException("srcqueue");
+        }
+        if (junction == null) {
+            throw new ArgumentNullException("junction");
+        }
+        if (tgtqueue == null) {
+            throw new ArgumentNullException("tgtqueue");
+        }
+        if (producer == null) {
+            throw new ArgumentNullException("producer");
+        }
         return new UpperResult(createts, fullname, consumer, srcqueue, junction, tgtqueue, producer, deletets);
     }
+
 
     public final ObjectNode consumer;
     public final ObjectNode srcqueue;
@@ -53,6 +71,7 @@ public class UpperResult extends SimpleResult
         if (node == null) {
             throw new ArgumentNullException("node");
         }
+        node.put("fullname", this.fullname);
         node.put("createts", this.createts);
         ObjectNode consumerNode = node.putObject("consumer");
         JacksonObject.copyTo(this.consumer, consumerNode);

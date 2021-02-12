@@ -12,13 +12,13 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 
-public abstract class SimpleStatus<R extends SimpleResult>
+public abstract class SimpleEntity<R extends SimpleResult>
 {
-    private final static Logger logger = LoggerFactory.getLogger(SimpleStatus.class);
+    private final static Logger logger = LoggerFactory.getLogger(SimpleEntity.class);
 
     private final AtomicReference<SimplePhaser> status;
 
-    protected SimpleStatus()
+    protected SimpleEntity()
     {
         this.status = new AtomicReference<>(SimplePhaserInner.of(Long.MAX_VALUE));
     }

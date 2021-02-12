@@ -4,7 +4,6 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperHolder;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -20,36 +19,36 @@ public class UppdcKafkaCallback implements Callback
 
     public static UppdcKafkaCallback of //
         /* */( LogSequenceNumber lsn //
-        /* */, UpperHolder holder //
+        /* */, UppdcMetric metric //
         /* */, Producer<byte[], byte[]> producer //
         /* */)
     {
         if (lsn == null) {
             throw new ArgumentNullException("lsn");
         }
-        if (holder == null) {
-            throw new ArgumentNullException("holder");
+        if (metric == null) {
+            throw new ArgumentNullException("metric");
         }
         if (producer == null) {
             throw new ArgumentNullException("producer");
         }
-        return new UppdcKafkaCallback(lsn, holder, producer);
+        return new UppdcKafkaCallback(lsn, metric, producer);
     }
 
     private final LogSequenceNumber lsn;
 
     private final Producer<byte[], byte[]> producer;
 
-    private final UpperHolder holder;
+    private final UppdcMetric metric;
 
     private UppdcKafkaCallback //
         /* */( LogSequenceNumber lsn //
-        /* */, UpperHolder holder //
+        /* */, UppdcMetric metric //
         /* */, Producer<byte[], byte[]> producer //
         /* */)
     {
         this.lsn = lsn;
-        this.holder = holder;
+        this.metric = metric;
         this.producer = producer;
     }
 
@@ -58,7 +57,7 @@ public class UppdcKafkaCallback implements Callback
     {
         if (ex != null) {
             logger.error("kafka producer send record fail: lsn={}", this.lsn, ex);
-            if (this.holder.producer.metric.callbackRef.compareAndSet(null, ex)) {
+            if (this.metric.callbackRef.compareAndSet(null, ex)) {
                 // kafka客户端的行为好奇怪，不符合一般的Java类调用约定：
                 // 1. 通常Java类中，应该是谁创建谁关闭。
                 //    Kafka的Producer虽然也满足这个条件，但是如果此处ex不是null，必须在此方法中调用close。
@@ -79,7 +78,7 @@ public class UppdcKafkaCallback implements Callback
         }
         else if (this.lsn.asLong() != LogSequenceNumber.INVALID_LSN.asLong()) {
             logger.info("kafka producer send record success: lsn={}", this.lsn);
-            this.holder.consumer.metric.txactionLsn.set(this.lsn.asLong());
+            this.metric.txactionLsn.set(this.lsn.asLong());
         }
     }
 }

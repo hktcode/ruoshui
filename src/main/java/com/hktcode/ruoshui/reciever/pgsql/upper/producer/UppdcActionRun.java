@@ -82,7 +82,7 @@ class UppdcActionRun extends SimpleActionRun<UppdcConfig, UppdcMetric, UpperHold
                         lsn = LogSequenceNumber.valueOf(val.lsnofmsg);
                     }
                     // TODO: kafka生产者的行为好奇怪
-                    kfk.send(r, UppdcKafkaCallback.of(lsn, holder, kfk));
+                    kfk.send(r, UppdcKafkaCallback.of(lsn, metric, kfk));
                     d = null;
                 }
             }

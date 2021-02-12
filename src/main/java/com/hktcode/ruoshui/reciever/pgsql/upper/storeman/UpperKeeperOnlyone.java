@@ -1,7 +1,6 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.storeman;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.google.common.collect.ImmutableMap;
@@ -9,8 +8,6 @@ import com.hktcode.lang.exception.NeverHappenAssertionError;
 import com.hktcode.ruoshui.Ruoshui;
 import com.hktcode.ruoshui.reciever.pgsql.exception.*;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperConfig;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperHolder;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,29 +34,14 @@ public class UpperKeeperOnlyone
         this.mapper = mapper;
     }
 
-    public void put(String name, ObjectNode node)
+    public long deleteYml(String name, ObjectNode node, long deletets)
     {
         String yaml = this.toYamlString(node);
-        // 检查文件 .upsert.yml .delete.yml
-        // - - if .delete.yml exists: delete delete.yml
-        // 先写del
-        // 重命名del为yml
         updertConfFile(name, "yml", yaml);
-        deleteConfFile(name, "del");
-    }
-
-    public long del(String name, ObjectNode node, long deletets)
-    {
-        String yaml = this.toYamlString(node);
-        // 重命名yml为del
-        // 判断是否删除del
+        renameConfFile(name, "yml", "del");
         if (this.etcval.containsKey(name)) {
-            updertConfFile(name, "del", yaml);
-        }
-        else {
             deleteConfFile(name, "del");
         }
-        deleteConfFile(name, "yml");
         if (deletets == Long.MAX_VALUE) {
             deletets = System.currentTimeMillis();
         }
@@ -69,10 +51,8 @@ public class UpperKeeperOnlyone
     public void updertYml(String name, ObjectNode node)
     {
         String yaml = this.toYamlString(node);
-        // - updertConfFile(name, "del", yaml);
-        // - renameConfFile(name, "del", "yml");
-        deleteConfFile(name, "del");
-        updertConfFile(name, "yml", yaml);
+        updertConfFile(name, "del", yaml);
+        renameConfFile(name, "del", "yml");
     }
 
     private String toYamlString(ObjectNode node)
@@ -161,6 +141,44 @@ public class UpperKeeperOnlyone
         } catch (IOException ex) {
             logger.error("io error when deleting file: path={}", path, ex);
             throw new ConfFileIOException(name, path.toString(), ConfFileIOException.CODE, ex);
+        }
+    }
+
+    private static void renameConfFile(String name, String srct, String tgtt)
+    {
+        Path source = getPath(name, srct);
+        Path target = getPath(name, tgtt);
+        Path fullsrc = Paths.get(Ruoshui.HOME, source.toString());
+        Path fulltgt = Paths.get(Ruoshui.HOME, target.toString());
+        CopyOption[] opts = new CopyOption[] {
+                StandardCopyOption.ATOMIC_MOVE,
+                StandardCopyOption.REPLACE_EXISTING,
+        };
+        try {
+            Files.move(fullsrc, fulltgt, opts);
+        } catch (AtomicMoveNotSupportedException ex) {
+            logger.error("", ex); // TODO:
+        } catch (NoSuchFileException ex) {
+            // TODO:
+        } catch (FileSystemLoopException ex) {
+            logger.error("file system loop when move file: source={}, target={}", source, target, ex);
+            throw new ConfFileFileSystemLoopException(name, source.toString(), ex);
+        } catch (AccessDeniedException ex) {
+            logger.error("delete file access denied: source={}, target={}", source, target, ex);
+            throw new ConfFileAccessDeniedException(name, source.toString(), ex);
+        } catch (FileSystemException ex) {
+            // 不可能抛出以下异常，因此统一当作FileSystemException处理
+            // NotDirectoryException
+            // NotLinkException
+            // DirectoryNotEmptyException
+            // FileAlreadyExistsException
+            // 如果上级目录不是一个目录（例如：$RUOSHUI_HOME/var是一个文件）
+            // 会抛出这个FileSystemException，并带有消息：.../var: 不是目录
+            logger.error("file system error when deleting file: source={}, target={}", source, target, ex);
+            throw new ConfFileFileSystemException(name, source.toString(), ConfFileFileSystemException.CODE, ex);
+        } catch (IOException ex) {
+            logger.error("io error when move file: source={}, target={}", source, target, ex);
+            throw new ConfFileIOException(name, source.toString(), ConfFileIOException.CODE, ex);
         }
     }
 }

@@ -31,7 +31,7 @@ public class SimpleMetric extends TqueueMetric implements JacksonObject
         }
         node.put("action_start", this.actionStart);
         node.put("end_datetime", this.endDatetime);
-        ArrayNode throwErrorsNode = node.putArray("throw_erros");
+        ArrayNode throwErrorsNode = node.putArray("throw_errors");
         for (Throwable t: this.throwErrors) {
             throwErrorsNode.addPOJO(t); // TODO:
             //  - cause: []

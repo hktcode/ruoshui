@@ -9,16 +9,20 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class UpcsmMetric extends SimpleMetric
 {
-    public static UpcsmMetric of()
+    public static UpcsmMetric of(AtomicLong txactionLsn)
     {
-        return new UpcsmMetric();
+        if (txactionLsn == null) {
+            throw new ArgumentNullException("txactionLsn");
+        }
+        return new UpcsmMetric(txactionLsn);
     }
 
-    private UpcsmMetric()
+    private UpcsmMetric(AtomicLong txactionLsn)
     {
+        this.txactionLsn = txactionLsn;
     }
 
-    public final AtomicLong txactionLsn = new AtomicLong(0);
+    public final AtomicLong txactionLsn;
 
     public ObjectNode toJsonObject(ObjectNode node)
     {
