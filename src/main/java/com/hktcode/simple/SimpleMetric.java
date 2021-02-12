@@ -33,12 +33,8 @@ public class SimpleMetric extends TqueueMetric implements JacksonObject
         node.put("end_datetime", this.endDatetime);
         ArrayNode throwErrorsNode = node.putArray("throw_errors");
         for (Throwable t: this.throwErrors) {
-            throwErrorsNode.addPOJO(t); // TODO:
-            //  - cause: []
-            //    message: "Failed to update metadata after 60000 ms."
-            //    stack_trace: []
-            //    localized_message: "Failed to update metadata after 60000 ms."
-            //    suppressed: []
+            ObjectNode e = throwErrorsNode.addObject();
+            JacksonObject.toJsonObject(t, e);
         }
         node.put("status_infor", this.statusInfor);
         return node;

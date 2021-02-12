@@ -150,4 +150,44 @@ public interface JacksonObject
             map.put(e.getKey(), e.getValue().asText());
         }
     }
+
+    static ObjectNode toJsonObject(Throwable ex, ObjectNode node)
+    {
+        if (ex == null) {
+            throw new ArgumentNullException("ex");
+        }
+        if (node == null) {
+            throw new ArgumentNullException("node");
+        }
+        if (ex instanceof JacksonObject) {
+            return ((JacksonObject) ex).toJsonObject(node);
+        }
+        ArrayNode causeArray = node.putArray("cause");
+        Throwable cause = ex.getCause();
+        if (cause != null && ex != cause) {
+            ObjectNode causeNode = causeArray.addObject();
+            toJsonObject(cause, causeNode);
+        }
+        node.put("message", ex.getMessage());
+        ArrayNode stackTraceArray = node.putArray("stack_trace");
+        StackTraceElement[] stackTrace = ex.getStackTrace();
+        int index = 0;
+        while (index < stackTrace.length) {
+            StackTraceElement element = stackTrace[index];
+            if (element.getClassName().startsWith("com.hktcode")) {
+                break;
+            }
+            ++index;
+        }
+        for (int i = index; i < stackTrace.length; ++i) {
+            StackTraceElement element = stackTrace[i];
+            ObjectNode stackElement = stackTraceArray.addObject();
+            stackElement.put("class_name", element.getClassName());
+            stackElement.put("file_name", element.getFileName());
+            stackElement.put("method_name", element.getMethodName());
+            stackElement.put("line_number", element.getLineNumber());
+        }
+        node.put("localized_message", ex.getLocalizedMessage());
+        return node;
+    }
 }
