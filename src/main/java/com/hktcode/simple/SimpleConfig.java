@@ -16,17 +16,6 @@ public class SimpleConfig implements JacksonObject
 
     public static final long DEFAULT_LOG_DURATION = 10 * 1000L;
 
-    public static SimpleConfig ofJsonObject(JsonNode json) //
-    {
-        if (json == null) {
-            throw new ArgumentNullException("json");
-        }
-        SimpleConfig result = new SimpleConfig();
-        result.waitTimeout = json.path("wait_timeout").asLong(DEFALUT_WAIT_TIMEOUT);
-        result.logDuration = json.path("log_duration").asLong(DEFAULT_LOG_DURATION);
-        return result;
-    }
-
     public long waitTimeout = DEFALUT_WAIT_TIMEOUT;
 
     // - public long queueLength = DEFALUT_WAIT_TIMEOUT;
