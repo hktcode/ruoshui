@@ -39,7 +39,7 @@ public class UpperKeeperOnlyone
         String yaml = this.toYamlString(node);
         updertConfFile(name, "yml", yaml);
         renameConfFile(name, "yml", "del");
-        if (this.etcval.containsKey(name)) {
+        if (!this.etcval.containsKey(name)) {
             deleteConfFile(name, "del");
         }
         if (deletets == Long.MAX_VALUE) {
