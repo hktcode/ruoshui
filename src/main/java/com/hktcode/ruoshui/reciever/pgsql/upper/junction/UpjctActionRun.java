@@ -44,13 +44,13 @@ class UpjctActionRun extends SimpleActionRun<UpjctConfig, UpjctMetric, UpperHold
     @Override
     public SimpleAction<UpjctConfig, UpjctMetric, UpperHolder> next() throws InterruptedException
     {
-        final Tqueue<UpperRecordConsumer> comein = this.holder.srcqueue;
-        final Tqueue<UpperRecordProducer> getout = this.holder.tgtqueue;
+        final Tqueue<UpperRecordConsumer> comein = this.entity.srcqueue;
+        final Tqueue<UpperRecordProducer> getout = this.entity.tgtqueue;
         UpperRecordConsumer r = null;
         UpperRecordProducer o = null;
         Iterator<UpperRecordProducer> t //
             = ImmutableList.<UpperRecordProducer>of().iterator();
-        while (this.holder.run(metric).deletets == Long.MAX_VALUE) {
+        while (this.entity.run(metric).deletets == Long.MAX_VALUE) {
             if (o != null) {
                 o = getout.push(o);
             }
@@ -65,7 +65,7 @@ class UpjctActionRun extends SimpleActionRun<UpjctConfig, UpjctMetric, UpperHold
                 r = null;
             }
         }
-        return SimpleActionEnd.of(this.config, this.metric, this.holder);
+        return SimpleActionEnd.of(this.config, this.metric, this.entity);
     }
 
     private List<UpperRecordProducer> convert(UpperRecordConsumer record)

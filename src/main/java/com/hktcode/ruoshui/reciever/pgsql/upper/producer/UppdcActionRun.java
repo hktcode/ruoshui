@@ -51,7 +51,7 @@ class UppdcActionRun extends SimpleActionRun<UppdcConfig, UppdcMetric, UpperHold
     @Override
     public SimpleAction<UppdcConfig, UppdcMetric, UpperHolder> next() throws Exception
     {
-        final Tqueue<UpperRecordProducer> getout = this.holder.tgtqueue;
+        final Tqueue<UpperRecordProducer> getout = this.entity.tgtqueue;
         Properties properties = new Properties();
         properties.setProperty("request.timeout.ms", "1000");
         for (Map.Entry<String, String> e : config.kfkProperty.entrySet()) {
@@ -62,7 +62,7 @@ class UppdcActionRun extends SimpleActionRun<UppdcConfig, UppdcMetric, UpperHold
                     config.targetTopic, config.partitionNo, kfk.metrics());
             UpperRecordProducer d = null;
             Exception ex;
-            while (this.holder.run(metric).deletets == Long.MAX_VALUE) {
+            while (this.entity.run(metric).deletets == Long.MAX_VALUE) {
                 if ((ex = metric.callbackRef.get()) != null) {
                     throw ex;
                 } else if (d == null) {
@@ -87,6 +87,6 @@ class UppdcActionRun extends SimpleActionRun<UppdcConfig, UppdcMetric, UpperHold
                 }
             }
         }
-        return SimpleActionEnd.of(this.config, this.metric, this.holder);
+        return SimpleActionEnd.of(this.config, this.metric, this.entity);
     }
 }

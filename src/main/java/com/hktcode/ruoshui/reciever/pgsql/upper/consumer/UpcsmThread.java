@@ -28,6 +28,6 @@ public class UpcsmThread extends SimpleThread<UpcsmConfig, UpcsmMetric, UpperHol
     @Override
     public UpcsmActionRun createAction()
     {
-        return UpcsmActionRun.of(this.config, this.metric, this.holder);
+        return UpcsmActionRun.of(this.config, this.metric, this.entity);
     }
 }

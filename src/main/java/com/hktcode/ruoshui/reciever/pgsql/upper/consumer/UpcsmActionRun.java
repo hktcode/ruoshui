@@ -44,13 +44,13 @@ public class UpcsmActionRun extends SimpleActionRun<UpcsmConfig, UpcsmMetric, Up
     public SimpleAction<UpcsmConfig, UpcsmMetric, UpperHolder> next() //
             throws InterruptedException, SQLException
     {
-        final Tqueue<UpperRecordConsumer> comein = this.holder.srcqueue;
+        final Tqueue<UpperRecordConsumer> comein = this.entity.srcqueue;
         try (Connection repl = this.config.srcProperty.replicaConnection()) {
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
             try (PGReplicationStream slt = this.config.logicalRepl.start(pgrepl)) {
                 UpperRecordConsumer r = null;
                 long prevlsn = 0;
-                while (this.holder.run(metric).deletets == Long.MAX_VALUE) {
+                while (this.entity.run(metric).deletets == Long.MAX_VALUE) {
                     long currlsn = this.metric.txactionLsn.get();
                     if (prevlsn != currlsn) {
                         LogSequenceNumber lsn = LogSequenceNumber.valueOf(currlsn);
@@ -70,7 +70,7 @@ public class UpcsmActionRun extends SimpleActionRun<UpcsmConfig, UpcsmMetric, Up
         logger.info("pgsender complete");
         this.metric.statusInfor = "send txation finish record.";
         this.metric.endDatetime = System.currentTimeMillis();
-        return SimpleActionEnd.of(this.config, this.metric, this.holder);
+        return SimpleActionEnd.of(this.config, this.metric, this.entity);
     }
 
     private UpperRecordConsumer poll(UpcsmConfig config, UpcsmMetric metric, PGReplicationStream s) //
