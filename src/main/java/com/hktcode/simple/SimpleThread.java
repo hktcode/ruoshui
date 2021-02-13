@@ -7,7 +7,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class SimpleThread<C extends SimpleConfig, M extends SimpleMetric, E extends SimpleEntity<?>> //
+public abstract class SimpleThread<C extends SimpleConfig<C, M, E>, M extends SimpleMetric, E extends SimpleEntity<?>> //
         extends Thread implements JacksonObject
 {
     private static final Logger logger = LoggerFactory.getLogger(SimpleThread.class);
@@ -26,14 +26,12 @@ public abstract class SimpleThread<C extends SimpleConfig, M extends SimpleMetri
 
     public final M metric;
 
-    public abstract SimpleActionRun<C, M, E> createAction();
-
     @Override
     public void run()
     {
         this.metric.actionStart = System.currentTimeMillis();
         try {
-            SimpleAction<C, M, E> action = this.createAction();
+            SimpleAction<C, M, E> action = this.config.put(this.metric, this.entity);
             do {
                 SimpleActionRun<C, M, E> a = (SimpleActionRun<C, M, E>)action;
                 try {

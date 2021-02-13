@@ -25,10 +25,4 @@ public class UpjctThread extends SimpleThread<UpjctConfig, UpjctMetric, UpperHol
     {
         super(config, metric, holder);
     }
-
-    @Override
-    public SimpleActionRun<UpjctConfig, UpjctMetric, UpperHolder> createAction()
-    {
-        return UpjctActionRun.of(this.config, this.metric, this.entity);
-    }
 }

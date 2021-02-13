@@ -6,13 +6,14 @@ package com.hktcode.ruoshui.reciever.pgsql.upper.consumer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.hktcode.simple.SimpleConfig;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.entity.LogicalReplConfig;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgConnectionProperty;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperHolder;
+import com.hktcode.simple.SimpleConfig;
 
-public class UpcsmConfig extends SimpleConfig
+public class UpcsmConfig extends SimpleConfig<UpcsmConfig, UpcsmMetric, UpperHolder>
 {
     public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UpcsmConfig.class, "UpcsmConfig.yml");
 
@@ -45,6 +46,19 @@ public class UpcsmConfig extends SimpleConfig
         this.logicalRepl = logicalRepl;
     }
 
+    @Override
+    public UpcsmActionRun put(UpcsmMetric metric, UpperHolder entity)
+    {
+        if (metric == null) {
+            throw new ArgumentNullException("metric");
+        }
+        if (entity == null) {
+            throw new ArgumentNullException("entity");
+        }
+        return UpcsmActionRun.of(this, metric, entity);
+    }
+
+    @Override
     public ObjectNode toJsonObject(ObjectNode node)
     {
         if (node == null) {
