@@ -14,7 +14,7 @@ public abstract class SimpleActionRun<C extends SimpleConfig, M extends SimpleMe
         super(config, metric, entity);
     }
 
-    public abstract SimpleAction<C, M, E> next() throws Exception;
+    public abstract SimpleAction<C, M, E> next() throws Exception, Throwable;
 
     public SimpleAction<C, M, E> next(Throwable throwError) throws InterruptedException
     {

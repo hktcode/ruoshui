@@ -38,7 +38,7 @@ public abstract class SimpleThread<C extends SimpleConfig<C, M, E>, M extends Si
                     action = a.next();
                 } catch (InterruptedException ex) {
                     throw ex;
-                } catch (Exception ex) {
+                } catch (Throwable ex) {
                     logger.error("triple throws exception: ", ex);
                     action = a.next(ex);
                 }

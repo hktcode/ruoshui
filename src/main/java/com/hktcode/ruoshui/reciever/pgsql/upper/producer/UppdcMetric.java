@@ -16,7 +16,7 @@ public class UppdcMetric extends SimpleMetric
         return new UppdcMetric(txactionLsn);
     }
 
-    public final AtomicReference<Exception> callbackRef = new AtomicReference<>();
+    public final AtomicReference<Throwable> callbackRef = new AtomicReference<>();
 
     public final AtomicLong txactionLsn;
 

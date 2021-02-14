@@ -48,7 +48,7 @@ class UppdcActionRunKafka extends UppdcActionRun
     }
 
     @Override
-    public SimpleAction<UppdcConfig, UppdcMetric, UpperHolder> next() throws Exception
+    public SimpleAction<UppdcConfig, UppdcMetric, UpperHolder> next() throws Throwable
     {
         final Tqueue<UpperRecordProducer> getout = this.entity.tgtqueue;
         final UppdcConfigKafka config = (UppdcConfigKafka)this.config;
@@ -61,7 +61,7 @@ class UppdcActionRunKafka extends UppdcActionRun
             logger.info("target_topic={}, partition_no={}, kfk.metrics={}",
                     config.targetTopic, config.partitionNo, kfk.metrics());
             UpperRecordProducer d = null;
-            Exception ex;
+            Throwable ex;
             while (this.entity.run(metric).deletets == Long.MAX_VALUE) {
                 if ((ex = metric.callbackRef.get()) != null) {
                     throw ex;
