@@ -20,6 +20,7 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.util.Locale;
 import java.util.zip.CRC32;
 
 class UppdcActionRunFiles extends UppdcActionRun
@@ -77,7 +78,7 @@ class UppdcActionRunFiles extends UppdcActionRun
             long timeline = r.key.timeline;
             long lsnofcmt = r.key.lsnofcmt;
             long sequence = r.key.sequence;
-            String filename = String.format("%08x%016x%016x.jwal", timeline, lsnofcmt, sequence);
+            String filename = String.format("%08x%016x%016x.jwal", timeline, lsnofcmt, sequence).toUpperCase();
             Path directory = Paths.get(config.walDatapath.toString(), this.entity.fullname);
             Files.createDirectories(directory);
             Path file = Paths.get(directory.toString(), filename);
