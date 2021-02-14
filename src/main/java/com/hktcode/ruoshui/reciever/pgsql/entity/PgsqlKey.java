@@ -3,15 +3,17 @@
  */
 package com.hktcode.ruoshui.reciever.pgsql.entity;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.hktcode.jackson.JacksonObject;
+import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.pgjdbc.PostgreSQL;
 
 import java.math.BigInteger;
 
 /**
  * 用于表示生成在外部队列（例如Kafka）中一条记录的Key.
  */
-public class PgsqlKey
+public class PgsqlKey implements JacksonObject
 {
     /**
      * 生成函数.
@@ -19,9 +21,9 @@ public class PgsqlKey
      * @param lsnofcmt 事务或者快照提交的log sequence number.
      * @param sequence 事务内记录的顺序号.
      */
-    public static PgsqlKey of(long lsnofcmt, long sequence)
+    public static PgsqlKey of(long lsnofcmt, long sequence, long committs)
     {
-        return new PgsqlKey(lsnofcmt, sequence);
+        return new PgsqlKey(lsnofcmt, sequence, committs);
     }
 
     /**
@@ -45,18 +47,31 @@ public class PgsqlKey
     public final long sequence;
 
     /**
+     * 提交的PostgreSQL纪元时间戳.
+     *
+     * 这个值是自PostgreSQL纪元（{@code 2000-01-01}）以来的微秒数.
+     *
+     * 如果是快照，表示该时间后快照生效。如果是不是快照，表示该时间后修改生效.
+     *
+     * @see PostgreSQL#EPOCH
+     */
+    public final long committs;
+
+    /**
      * 构造函数.
      *
      * 目前不支持时间线功能，只是保留时间线作为后续扩展使用.
      *
      * @param lsnofcmt 事务或者快照提交的log sequence number.
      * @param sequence 事务内记录的顺序号.
+     * @param committs 消息提交的PostgreSQL纪元时间戳.
      */
-    private PgsqlKey(long lsnofcmt, long sequence)
+    private PgsqlKey(long lsnofcmt, long sequence, long committs)
     {
         this.timeline = 0;
         this.lsnofcmt = lsnofcmt;
         this.sequence = sequence;
+        this.committs = committs;
     }
 
     /**
@@ -65,7 +80,8 @@ public class PgsqlKey
     @Override
     public String toString()
     {
-        return String.format("%016x%016x|%016x", timeline, lsnofcmt, sequence);
+        String datetime = PostgreSQL.toZonedDatetime(this.committs).toString();
+        return String.format("%016x%016x|%016x|%s", timeline, lsnofcmt, sequence, datetime);
     }
 
     /**
@@ -73,12 +89,17 @@ public class PgsqlKey
      *
      * @return {@link ObjectNode}对象.
      */
-    public ObjectNode toObjectNode()
+    @Override
+    public ObjectNode toJsonObject(ObjectNode node)
     {
-        ObjectNode result = new ObjectNode(JsonNodeFactory.instance);
-        result.put("timeline", timeline);
-        result.put("lsnofcmt", new BigInteger(Long.toUnsignedString(lsnofcmt)));
-        result.put("sequence", sequence);
-        return result;
+        if (node == null) {
+            throw new ArgumentNullException("node");
+        }
+        node.put("timeline", new BigInteger(Long.toUnsignedString(timeline)));
+        node.put("lsnofcmt", new BigInteger(Long.toUnsignedString(lsnofcmt)));
+        node.put("sequence", new BigInteger(Long.toUnsignedString(sequence)));
+        long epoch = PostgreSQL.EPOCH.toInstant().toEpochMilli() * 1000;
+        node.put("committs", new BigInteger(Long.toUnsignedString(committs + epoch)));
+        return node;
     }
 }

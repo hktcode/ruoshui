@@ -35,12 +35,7 @@ public class PgsqlValTxactBegins extends PgsqlValTxaction
         ctx.committs = msg.committs;
         ctx.xidofmsg = msg.xidofmsg;
         ctx.lsnofcmt = msg.lsnofcmt;
-        PgsqlValTxactBegins val = new PgsqlValTxactBegins //
-            /* */( ctx.dbserver //
-            /* */, msg.xidofmsg //
-            /* */, msg.committs //
-            /* */, lsn //
-            /* */);
+        PgsqlValTxactBegins val = new PgsqlValTxactBegins(ctx.dbserver, msg.xidofmsg, lsn);
         return ImmutableList.of(val);
     }
 
@@ -59,17 +54,15 @@ public class PgsqlValTxactBegins extends PgsqlValTxaction
      *
      * @param dbserver 服务器唯一标识.
      * @param xidofmsg 消息所在事务编号.
-     * @param committs 消息提交的PostgreSQL纪元时间戳.
      * @param lsnofmsg 该消息在WAL中的起始位置.
      */
     private PgsqlValTxactBegins //
         /* */( String dbserver //
         /* */, long xidofmsg //
-        /* */, long committs //
         /* */, long lsnofmsg //
         /* */)
     {
-        super(dbserver, lsnofmsg, xidofmsg, committs);
+        super(dbserver, lsnofmsg, xidofmsg);
     }
 
     /**
@@ -94,9 +87,12 @@ public class PgsqlValTxactBegins extends PgsqlValTxaction
      * {@inheritDoc}
      */
     @Override
-    public ObjectNode toObjectNode()
+    public ObjectNode toJsonObject(ObjectNode node)
     {
-        return super.toObjectNode();
+        if (node == null) {
+            throw new ArgumentNullException("node");
+        }
+        return super.toJsonObject(node);
     }
 
     /**

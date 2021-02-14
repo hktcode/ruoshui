@@ -3,9 +3,9 @@
  */
 package com.hktcode.ruoshui.reciever.pgsql.entity;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
+import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.*;
 import org.slf4j.Logger;
@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 /**
  * PostgreSQL写入外部消息队列的值.
  */
-public abstract class PgsqlVal
+public abstract class PgsqlVal implements JacksonObject
 {
     private static final Logger logger = LoggerFactory.getLogger(PgsqlVal.class);
 
@@ -141,9 +141,12 @@ public abstract class PgsqlVal
      *
      * @return {@link ObjectNode}对象.
      */
-    public ObjectNode toObjectNode()
+    @Override
+    public ObjectNode toJsonObject(ObjectNode node)
     {
-        ObjectNode node = new ObjectNode(JsonNodeFactory.instance);
+        if (node == null) {
+            throw new ArgumentNullException("node");
+        }
         node.put("protocol", this.getProtocol());
         node.put("typename", this.getTypename());
         // TODO: node.put("dbserver", this.dbserver);

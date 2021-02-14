@@ -52,7 +52,6 @@ public class PgsqlValTruncateRel extends PgsqlValTxaction
             PgsqlValTruncateRel val = new PgsqlValTruncateRel
                 /* */( ctx.dbserver
                 /* */, ctx.xidofmsg
-                /* */, ctx.committs
                 /* */, relident
                 /* */, relation.dbschema
                 /* */, relation.relation
@@ -137,7 +136,6 @@ public class PgsqlValTruncateRel extends PgsqlValTxaction
     private PgsqlValTruncateRel //
         /* */( String dbserver //
         /* */, long xidofmsg //
-        /* */, long committs //
         /* */, long relident //
         /* */, String dbschema //
         /* */, String relation //
@@ -147,7 +145,7 @@ public class PgsqlValTruncateRel extends PgsqlValTxaction
         /* */, long lsnofmsg //
         /* */)
     {
-        super(dbserver, lsnofmsg, xidofmsg, committs);
+        super(dbserver, lsnofmsg, xidofmsg);
         this.relident = relident;
         this.dbschema = dbschema;
         this.relation = relation;
@@ -207,9 +205,12 @@ public class PgsqlValTruncateRel extends PgsqlValTxaction
      * {@inheritDoc}
      */
     @Override
-    public ObjectNode toObjectNode()
+    public ObjectNode toJsonObject(ObjectNode node)
     {
-        ObjectNode node = super.toObjectNode();
+        if (node == null) {
+            throw new ArgumentNullException("node");
+        }
+        node = super.toJsonObject(node);
         node.put("relident", this.relident);
         node.put("dbschema", this.dbschema);
         node.put("relation", this.relation);

@@ -59,7 +59,6 @@ public class PgsqlValTupleInsert extends PgsqlValXidtuple
         PgsqlValTupleInsert val = new PgsqlValTupleInsert//
             /* */( ctx.dbserver //
             /* */, ctx.xidofmsg //
-            /* */, ctx.committs //
             /* */, msg.relident //
             /* */, relation.dbschema //
             /* */, relation.relation //
@@ -95,7 +94,6 @@ public class PgsqlValTupleInsert extends PgsqlValXidtuple
     private PgsqlValTupleInsert //
         /* */( String dbserver //
         /* */, long xidofmsg //
-        /* */, long committs //
         /* */, long relident //
         /* */, String dbschema //
         /* */, String relation //
@@ -106,7 +104,6 @@ public class PgsqlValTupleInsert extends PgsqlValXidtuple
     {
         super(dbserver //
             , xidofmsg //
-            , committs //
             , relident //
             , dbschema //
             , relation //

@@ -63,7 +63,6 @@ public class PgsqlValTupleDelete extends PgsqlValXidtuple
         PgsqlValTupleDelete val = new PgsqlValTupleDelete//
             /* */( ctx.dbserver //
             /* */, ctx.xidofmsg //
-            /* */, ctx.committs //
             /* */, msg.relident //
             /* */, relation.dbschema //
             /* */, relation.relation //
@@ -99,7 +98,6 @@ public class PgsqlValTupleDelete extends PgsqlValXidtuple
     protected PgsqlValTupleDelete //
         /* */(String dbserver //
         /* */, long xidofmsg //
-        /* */, long committs //
         /* */, long relident //
         /* */, String dbschema //
         /* */, String relation //
@@ -110,7 +108,6 @@ public class PgsqlValTupleDelete extends PgsqlValXidtuple
     {
         super(dbserver //
             , xidofmsg //
-            , committs //
             , relident //
             , dbschema //
             , relation //

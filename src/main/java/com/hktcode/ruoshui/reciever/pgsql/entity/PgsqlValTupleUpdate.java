@@ -66,7 +66,6 @@ public class PgsqlValTupleUpdate extends PgsqlValXidtuple
         PgsqlValTupleUpdate val = new PgsqlValTupleUpdate//
             /* */( ctx.dbserver //
             /* */, ctx.xidofmsg //
-            /* */, ctx.committs //
             /* */, msg.relident //
             /* */, relation.dbschema //
             /* */, relation.relation //
@@ -102,7 +101,6 @@ public class PgsqlValTupleUpdate extends PgsqlValXidtuple
     private PgsqlValTupleUpdate //
         /* */( String dbserver //
         /* */, long xidofmsg //
-        /* */, long committs //
         /* */, long relident //
         /* */, String dbschema //
         /* */, String relation //
@@ -113,7 +111,6 @@ public class PgsqlValTupleUpdate extends PgsqlValXidtuple
     {
         super(dbserver //
             , xidofmsg //
-            , committs //
             , relident //
             , dbschema //
             , relation //

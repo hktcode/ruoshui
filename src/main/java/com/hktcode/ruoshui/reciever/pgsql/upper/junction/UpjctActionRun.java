@@ -92,7 +92,7 @@ class UpjctActionRun extends SimpleActionRun<UpjctConfig, UpjctMetric, UpperHold
         ImmutableList<PgsqlVal> vallist = PgsqlVal.of(lsn, msg, metric.txidContext);
         List<UpperRecordProducer> result = new ArrayList<>();
         for (PgsqlVal val : vallist) {
-            PgsqlKey key = PgsqlKey.of(metric.curLsnofcmt, metric.curSequence++);
+            PgsqlKey key = PgsqlKey.of(metric.curLsnofcmt, metric.curSequence++, metric.txidContext.committs);
             UpperRecordProducer d = UpperRecordProducer.of(key, val);
             result.add(d);
         }

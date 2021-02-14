@@ -37,7 +37,6 @@ public class PgsqlValTxactCommit extends PgsqlValTxaction
         PgsqlValTxactCommit val = new PgsqlValTxactCommit //
             /* */( ctx.dbserver //
             /* */, ctx.xidofmsg
-            /* */, msg.committs //
             /* */, lsn //
             /* */, msg.xidflags
             /* */);
@@ -71,12 +70,11 @@ public class PgsqlValTxactCommit extends PgsqlValTxaction
     private PgsqlValTxactCommit //
         /* */( String dbserver //
         /* */, long xidofmsg //
-        /* */, long committs //
         /* */, long lsnofmsg //
         /* */, long xidflags //
         /* */)
     {
-        super(dbserver, lsnofmsg, xidofmsg, committs);
+        super(dbserver, lsnofmsg, xidofmsg);
         this.xidflags = xidflags;
     }
 
@@ -114,9 +112,12 @@ public class PgsqlValTxactCommit extends PgsqlValTxaction
      * {@inheritDoc}
      */
     @Override
-    public ObjectNode toObjectNode()
+    public ObjectNode toJsonObject(ObjectNode node)
     {
-        ObjectNode result = super.toObjectNode();
+        if (node == null) {
+            throw new ArgumentNullException("node");
+        }
+        ObjectNode result = super.toJsonObject(node);
         result.put("xidflags", new BigInteger(Long.toUnsignedString(this.xidflags)));
         return result;
     }

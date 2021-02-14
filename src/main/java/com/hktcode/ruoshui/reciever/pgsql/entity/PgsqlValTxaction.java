@@ -4,10 +4,9 @@
 package com.hktcode.ruoshui.reciever.pgsql.entity;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.hktcode.pgjdbc.PostgreSQL;
+import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.math.BigInteger;
-import java.time.ZonedDateTime;
 
 /**
  * 表示在事务中的逻辑复制消息.
@@ -28,29 +27,16 @@ public abstract class PgsqlValTxaction extends PgsqlVal
     public final long xidofmsg;
 
     /**
-     * 提交的PostgreSQL纪元时间戳.
-     *
-     * 这个值是自PostgreSQL纪元（{@code 2000-01-01}）以来的微秒数.
-     *
-     * 如果是快照，表示该时间后快照生效。如果是不是快照，表示该时间后修改生效.
-     *
-     * @see PostgreSQL#EPOCH
-     */
-    public final long committs;
-
-    /**
      * 构造函数.
      *
      * @param dbserver 服务器唯一标识.
      * @param xidofmsg 消息所在事务编号.
-     * @param committs 消息提交的PostgreSQL纪元时间戳.
      */
-    protected PgsqlValTxaction(String dbserver, long lsnofmsg, long xidofmsg, long committs)
+    protected PgsqlValTxaction(String dbserver, long lsnofmsg, long xidofmsg)
     {
         super(dbserver);
         this.lsnofmsg = lsnofmsg;
         this.xidofmsg = xidofmsg;
-        this.committs = committs;
     }
 
     /**
@@ -65,8 +51,6 @@ public abstract class PgsqlValTxaction extends PgsqlVal
         super.appendTo(builder);
         builder.append('|');
         builder.append(this.xidofmsg);
-        ZonedDateTime commitdt = PostgreSQL.toZonedDatetime(this.committs);
-        builder.append(commitdt);
         builder.append('|');
         builder.append(this.lsnofmsg);
     }
@@ -76,13 +60,15 @@ public abstract class PgsqlValTxaction extends PgsqlVal
      *
      * @return {@link ObjectNode}对象.
      */
-    public ObjectNode toObjectNode()
+    @Override
+    public ObjectNode toJsonObject(ObjectNode node)
     {
-        ObjectNode node = super.toObjectNode();
+        if (node == null) {
+            throw new ArgumentNullException("node");
+        }
+        node = super.toJsonObject(node);
         node.put("lsnofmsg", new BigInteger(Long.toUnsignedString(this.lsnofmsg)));
         node.put("xidofmsg", new BigInteger(Long.toUnsignedString(this.xidofmsg)));
-        long epoch = PostgreSQL.EPOCH.toInstant().toEpochMilli() * 1000;
-        node.put("committs", committs + epoch);
         return node;
     }
 }

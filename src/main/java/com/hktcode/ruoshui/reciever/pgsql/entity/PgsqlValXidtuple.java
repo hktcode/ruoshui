@@ -6,6 +6,7 @@ package com.hktcode.ruoshui.reciever.pgsql.entity;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
+import com.hktcode.lang.exception.ArgumentNullException;
 
 /**
  * 在事务中的tuple信息.
@@ -52,7 +53,6 @@ public abstract class PgsqlValXidtuple extends PgsqlValTxaction
      *
      * @param dbserver 服务器唯一标识.
      * @param xidofmsg 消息所在事务编号.
-     * @param committs 消息提交的PostgreSQL纪元时间戳.
      * @param relident 关系的标识符oid.
      * @param dbschema 关系所在的schema名称.
      * @param relation 关系名称.
@@ -60,9 +60,8 @@ public abstract class PgsqlValXidtuple extends PgsqlValTxaction
      * @param tupleval 值列表.
      */
     protected PgsqlValXidtuple //
-        /* */(String dbserver //
+        /* */( String dbserver //
         /* */, long xidofmsg //
-        /* */, long committs //
         /* */, long relident //
         /* */, String dbschema //
         /* */, String relation //
@@ -71,7 +70,7 @@ public abstract class PgsqlValXidtuple extends PgsqlValTxaction
         /* */, long lsnofmsg //
         /* */)
     {
-        super(dbserver, lsnofmsg, xidofmsg, committs);
+        super(dbserver, lsnofmsg, xidofmsg);
         this.relident = relident;
         this.dbschema = dbschema;
         this.relation = relation;
@@ -105,9 +104,12 @@ public abstract class PgsqlValXidtuple extends PgsqlValTxaction
      * {@inheritDoc}
      */
     @Override
-    public ObjectNode toObjectNode()
+    public ObjectNode toJsonObject(ObjectNode node)
     {
-        ObjectNode node = super.toObjectNode();
+        if (node == null) {
+            throw new ArgumentNullException("node");
+        }
+        node = super.toJsonObject(node);
         node.put("relident", relident);
         node.put("dbschema", dbschema);
         node.put("relation", relation);

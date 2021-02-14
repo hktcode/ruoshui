@@ -130,8 +130,8 @@ class UppdcActionRunFiles extends UppdcActionRun
 
     private byte[] toBytesArray(UpperRecordProducer record)
     {
-        String keyText = record.key.toObjectNode().toString();
-        String valText = record.val.toObjectNode().toString();
+        String keyText = record.key.toJsonObject().toString();
+        String valText = record.val.toJsonObject().toString();
         return String.format("%s\t%s\n", keyText, valText).getBytes(StandardCharsets.UTF_8);
     }
 

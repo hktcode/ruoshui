@@ -68,8 +68,8 @@ class UppdcActionRunKafka extends UppdcActionRun
                 } else if (d == null) {
                     d = getout.poll();
                 } else {
-                    String keyText = d.key.toObjectNode().toString();
-                    String valText = d.val.toObjectNode().toString();
+                    String keyText = d.key.toJsonObject().toString();
+                    String valText = d.val.toJsonObject().toString();
                     String t = config.targetTopic;
                     int p = config.partitionNo;
                     byte[] k = keyText.getBytes(StandardCharsets.UTF_8);
