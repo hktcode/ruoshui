@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.Ruoshui;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperHolder;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,18 +35,6 @@ public class UppdcConfigFiles extends UppdcConfig
         long maxFilesize = json.path("max_filesize").asLong(DEFAULT_MAX_FILESIZE);
         long maxFiletime = json.path("max_filetime").asLong(DEFAULT_MAX_FILETIME);
         return new UppdcConfigFiles(walDatapath, maxSynctime, maxSyncsize, maxFilesize, maxFiletime);
-    }
-
-    @Override
-    public UppdcActionRun put(UppdcMetric metric, UpperHolder entity)
-    {
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
-        if (entity == null) {
-            throw new ArgumentNullException("entity");
-        }
-        return UppdcActionRunFiles.of(this, (UppdcMetricFiles) metric, entity);
     }
 
     public final Path walDatapath;

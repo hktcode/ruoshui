@@ -7,7 +7,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SimpleThread extends Thread implements JacksonObject
+public class SimpleThread extends Thread implements JacksonObject, Runnable
 {
     private static final Logger logger = LoggerFactory.getLogger(SimpleThread.class);
 

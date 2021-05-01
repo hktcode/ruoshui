@@ -11,7 +11,6 @@ import com.hktcode.kafka.Kafka;
 import com.hktcode.lang.exception.ArgumentIllegalException;
 import com.hktcode.lang.exception.ArgumentNegativeException;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperHolder;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
 import java.util.HashMap;
@@ -49,18 +48,6 @@ public class UppdcConfigKafka extends UppdcConfig
             throw new ArgumentNegativeException("partitionNo", partitionNo);
         }
         return new UppdcConfigKafka(kfkProperty, targetTopic, partitionNo);
-    }
-
-    @Override
-    public UppdcActionRun put(UppdcMetric metric, UpperHolder entity)
-    {
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
-        }
-        if (entity == null) {
-            throw new ArgumentNullException("entity");
-        }
-        return UppdcActionRunKafka.of(this, (UppdcMetricKafka) metric, entity);
     }
 
     public static final String DEFAULT_TARGET_TOPIC = THE_NAME;

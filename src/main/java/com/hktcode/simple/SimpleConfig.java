@@ -10,8 +10,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public abstract class SimpleConfig<C extends SimpleConfig<C, M, E>, M extends SimpleMetric, E extends SimpleEntity<?>>
-        implements JacksonObject
+public abstract class SimpleConfig implements JacksonObject
 {
     public static final long DEFALUT_WAIT_TIMEOUT = 100;
 
@@ -39,8 +38,6 @@ public abstract class SimpleConfig<C extends SimpleConfig<C, M, E>, M extends Si
             this.logDuration = n.asLong(this.logDuration);
         }
     }
-
-    public abstract SimpleAction put(M metric, E entity);
 
     public ObjectNode toJsonObject(ObjectNode node)
     {

@@ -7,11 +7,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperHolder;
-import com.hktcode.simple.SimpleAction;
 import com.hktcode.simple.SimpleConfig;
 
-public abstract class UppdcConfig extends SimpleConfig<UppdcConfig, UppdcMetric, UpperHolder>
+public abstract class UppdcConfig extends SimpleConfig
 {
     public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UppdcConfig.class, "UppdcConfig.yml");
 
@@ -42,9 +40,6 @@ public abstract class UppdcConfig extends SimpleConfig<UppdcConfig, UppdcMetric,
     {
         this.factoryType = factoryType;
     }
-
-    @Override
-    public abstract UppdcActionRun put(UppdcMetric metric, UpperHolder entity);
 
     public ObjectNode toJsonObject(ObjectNode node)
     {
