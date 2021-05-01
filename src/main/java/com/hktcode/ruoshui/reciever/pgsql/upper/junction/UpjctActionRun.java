@@ -42,7 +42,7 @@ class UpjctActionRun extends SimpleActionRun<UpjctConfig, UpjctMetric, UpperHold
     }
 
     @Override
-    public SimpleAction<UpjctConfig, UpjctMetric, UpperHolder> next() throws InterruptedException
+    public SimpleAction next() throws InterruptedException
     {
         final Tqueue<UpperRecordConsumer> comein = this.entity.srcqueue;
         final Tqueue<UpperRecordProducer> getout = this.entity.tgtqueue;

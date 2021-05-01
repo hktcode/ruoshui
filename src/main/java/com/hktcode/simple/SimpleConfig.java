@@ -40,7 +40,7 @@ public abstract class SimpleConfig<C extends SimpleConfig<C, M, E>, M extends Si
         }
     }
 
-    public abstract SimpleAction<C, M, E> put(M metric, E entity);
+    public abstract SimpleAction put(M metric, E entity);
 
     public ObjectNode toJsonObject(ObjectNode node)
     {

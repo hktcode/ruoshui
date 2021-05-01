@@ -52,6 +52,7 @@ public class Tqueue<E> implements JacksonObject
         }
         long maxCapacity = this.config.maxCapacity;
         this.config.pst(node);
+        // FIXME: 此处有BUG，不能让别人无限调小
         if (maxCapacity == this.config.maxCapacity) {
             return;
         }

@@ -41,8 +41,7 @@ public class UpcsmActionRun extends SimpleActionRun<UpcsmConfig, UpcsmMetric, Up
     }
 
     @Override
-    public SimpleAction<UpcsmConfig, UpcsmMetric, UpperHolder> next() //
-            throws InterruptedException, SQLException
+    public SimpleAction next() throws InterruptedException, SQLException
     {
         final Tqueue<UpperRecordConsumer> comein = this.entity.srcqueue;
         try (Connection repl = this.config.srcProperty.replicaConnection()) {
