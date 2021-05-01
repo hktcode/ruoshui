@@ -20,7 +20,7 @@ public class UppdcMetric extends SimpleMetric
 
     public final AtomicLong txactionLsn;
 
-    private UppdcMetric(AtomicLong txactionLsn)
+    protected UppdcMetric(AtomicLong txactionLsn)
     {
         this.txactionLsn = txactionLsn;
     }
