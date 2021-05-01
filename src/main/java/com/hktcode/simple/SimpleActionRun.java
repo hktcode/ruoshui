@@ -34,6 +34,6 @@ public abstract class SimpleActionRun<C extends SimpleConfig, M extends SimpleMe
         while (this.entity.run(metric).deletets == Long.MAX_VALUE) {
             this.entity.end(del);
         }
-        return SimpleActionEnd.of(this.config, this.metric, this.entity);
+        return SimpleActionEnd.of();
     }
 }

@@ -65,7 +65,7 @@ class UpjctActionRun extends SimpleActionRun<UpjctConfig, UpjctMetric, UpperHold
                 r = null;
             }
         }
-        return SimpleActionEnd.of(this.config, this.metric, this.entity);
+        return SimpleActionEnd.of();
     }
 
     private List<UpperRecordProducer> convert(UpperRecordConsumer record)

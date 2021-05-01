@@ -44,7 +44,7 @@ abstract class UppdcActionRun<C extends UppdcConfig, M extends UppdcMetric>
                 }
             }
         }
-        return SimpleActionEnd.of(this.config, this.metric, this.entity);
+        return SimpleActionEnd.of();
     }
 
     protected abstract UppdcSender<?, ?> sender() throws IOException;

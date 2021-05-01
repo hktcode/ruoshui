@@ -69,7 +69,7 @@ public class UpcsmActionRun extends SimpleActionRun<UpcsmConfig, UpcsmMetric, Up
         logger.info("pgsender complete");
         this.metric.statusInfor = "send txation finish record.";
         this.metric.endDatetime = System.currentTimeMillis();
-        return SimpleActionEnd.of(this.config, this.metric, this.entity);
+        return SimpleActionEnd.of();
     }
 
     private UpperRecordConsumer poll(UpcsmConfig config, UpcsmMetric metric, PGReplicationStream s) //
