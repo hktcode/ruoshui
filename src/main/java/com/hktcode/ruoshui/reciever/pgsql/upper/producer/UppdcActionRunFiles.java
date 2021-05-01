@@ -12,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-class UppdcActionRunFiles extends UppdcActionRun<UppdcConfigFiles, UppdcMetricFiles>
+public class UppdcActionRunFiles extends UppdcActionRun<UppdcConfigFiles, UppdcMetricFiles>
 {
     public static UppdcActionRunFiles //
     of(UppdcConfigFiles config, UppdcMetricFiles metric, UpperHolder holder)

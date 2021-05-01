@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-abstract class UppdcActionRun<C extends UppdcConfig, M extends UppdcMetric>
+public abstract class UppdcActionRun<C extends UppdcConfig, M extends UppdcMetric>
         extends SimpleActionRun<C, M, UpperHolder>
 {
     private static final Logger logger = LoggerFactory.getLogger(UppdcActionRun.class);

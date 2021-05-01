@@ -5,15 +5,15 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Tqueue;
 import com.hktcode.queue.TqueueMetric;
+import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmActionRun;
 import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmMetric;
-import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmThread;
+import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctActionRun;
 import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctMetric;
-import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctThread;
-import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcMetric;
-import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcThread;
+import com.hktcode.ruoshui.reciever.pgsql.upper.producer.*;
 import com.hktcode.ruoshui.reciever.pgsql.upper.storeman.UpperKeeperOnlyone;
-import com.hktcode.simple.SimplePhaserOuter;
 import com.hktcode.simple.SimpleEntity;
+import com.hktcode.simple.SimplePhaserOuter;
+import com.hktcode.simple.SimpleThread;
 import org.postgresql.replication.LogSequenceNumber;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -36,11 +36,11 @@ public class UpperHolder extends SimpleEntity<UpperResult>
 
     public final long createts;
     public final String fullname;
-    private final UpcsmThread consumer; // laborer
+    private final SimpleThread consumer; // laborer
     public final Tqueue<UpperRecordConsumer> srcqueue;
-    private final UpjctThread junction;
+    private final SimpleThread junction;
     public final Tqueue<UpperRecordProducer> tgtqueue;
-    private final UppdcThread producer;
+    private final SimpleThread producer;
     private final UpperKeeperOnlyone storeman;
 
     private UpperHolder //
@@ -53,25 +53,30 @@ public class UpperHolder extends SimpleEntity<UpperResult>
         this.createts = createts;
         this.fullname = fullname;
         AtomicLong txactionLsn = new AtomicLong(LogSequenceNumber.INVALID_LSN.asLong());
-        this.consumer = UpcsmThread.of(config.consumer, UpcsmMetric.of(txactionLsn), this);
+        this.consumer = SimpleThread.of(UpcsmActionRun.of(config.consumer, UpcsmMetric.of(txactionLsn), this));
         this.srcqueue = Tqueue.of(config.srcqueue, TqueueMetric.of());
-        this.junction = UpjctThread.of(config.junction, UpjctMetric.of(), this);
+        this.junction = SimpleThread.of(UpjctActionRun.of(config.junction, UpjctMetric.of(), this));
         this.tgtqueue = Tqueue.of(config.tgtqueue, TqueueMetric.of());
-        this.producer = UppdcThread.of(config.producer, UppdcMetric.of(txactionLsn), this);
+        if (config.producer instanceof UppdcConfigKafka) {
+            this.producer = SimpleThread.of(UppdcActionRunKafka.of((UppdcConfigKafka) config.producer, UppdcMetricKafka.of(txactionLsn), this));
+        }
+        else {
+            this.producer = SimpleThread.of(UppdcActionRunFiles.of((UppdcConfigFiles) config.producer, UppdcMetricFiles.of(txactionLsn), this));
+        }
         this.storeman = storeman;
     }
 
     private UpperResult end(long deletets)
     {
         if (deletets == Long.MAX_VALUE) {
-            if (this.consumer.metric.endDatetime == Long.MAX_VALUE) {
-                this.consumer.metric.endDatetime = this.consumer.metric.exeDateTime;
+            if (this.consumer.action.metric.endDatetime == Long.MAX_VALUE) {
+                this.consumer.action.metric.endDatetime = this.consumer.action.metric.exeDateTime;
             }
-            if (this.junction.metric.endDatetime == Long.MAX_VALUE) {
-                this.junction.metric.endDatetime = this.junction.metric.exeDateTime;
+            if (this.junction.action.metric.endDatetime == Long.MAX_VALUE) {
+                this.junction.action.metric.endDatetime = this.junction.action.metric.exeDateTime;
             }
-            if (this.producer.metric.endDatetime == Long.MAX_VALUE) {
-                this.producer.metric.endDatetime = this.producer.metric.exeDateTime;
+            if (this.producer.action.metric.endDatetime == Long.MAX_VALUE) {
+                this.producer.action.metric.endDatetime = this.producer.action.metric.exeDateTime;
             }
             deletets = System.currentTimeMillis();
         }
@@ -165,11 +170,11 @@ public class UpperHolder extends SimpleEntity<UpperResult>
         ObjectNode junction = node.putObject("junction");
         ObjectNode tgtqueue = node.putObject("tgtqueue");
         ObjectNode producer = node.putObject("producer");
-        this.consumer.config.toJsonObject(consumer);
+        this.consumer.action.config.toJsonObject(consumer);
         this.srcqueue.config.toJsonObject(srcqueue);
-        this.junction.config.toJsonObject(junction);
+        this.junction.action.config.toJsonObject(junction);
         this.tgtqueue.config.toJsonObject(tgtqueue);
-        this.producer.config.toJsonObject(producer);
+        this.producer.action.config.toJsonObject(producer);
         return node;
     }
 

@@ -7,31 +7,30 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class SimpleThread<C extends SimpleConfig<C, M, E>, M extends SimpleMetric, E extends SimpleEntity<?>> //
-        extends Thread implements JacksonObject
+public class SimpleThread extends Thread implements JacksonObject
 {
     private static final Logger logger = LoggerFactory.getLogger(SimpleThread.class);
 
-    protected SimpleThread(C config, M metric, E entity)
+    public static SimpleThread of(SimpleActionRun<?, ?, ?> action)
     {
-        this.config = config;
-        this.metric = metric;
-        this.entity = entity;
-        this.setDaemon(false);
+        if (action == null) {
+            throw new ArgumentNullException("action");
+        }
+        return new SimpleThread(action);
     }
 
-    protected final E entity;
+    protected SimpleThread(SimpleActionRun<?, ?, ?> action)
+    {
+        this.action = action;
+    }
 
-    public final C config;
-
-    public final M metric;
+    public SimpleAction<?, ?, ?> action;
 
     @Override
     public void run()
     {
-        this.metric.actionStart = System.currentTimeMillis();
+        this.action.metric.actionStart = System.currentTimeMillis();
         try {
-            SimpleAction<?, ?, ?> action = this.config.put(this.metric, this.entity);
             do {
                 SimpleActionRun<?, ?, ?> a = (SimpleActionRun<?, ?, ?>)action;
                 try {
@@ -55,7 +54,7 @@ public abstract class SimpleThread<C extends SimpleConfig<C, M, E>, M extends Si
         if (node == null) {
             throw new ArgumentNullException("node");
         }
-        this.config.pst(node);
+        this.action.config.pst(node);
     }
 
     @Override
@@ -65,9 +64,9 @@ public abstract class SimpleThread<C extends SimpleConfig<C, M, E>, M extends Si
             throw new ArgumentNullException("node");
         }
         ObjectNode configNode = node.putObject("config");
-        this.config.toJsonObject(configNode);
+        this.action.config.toJsonObject(configNode);
         ObjectNode metricNode = node.putObject("metric");
-        this.metric.toJsonObject(metricNode);
+        this.action.metric.toJsonObject(metricNode);
         return node;
     }
 }

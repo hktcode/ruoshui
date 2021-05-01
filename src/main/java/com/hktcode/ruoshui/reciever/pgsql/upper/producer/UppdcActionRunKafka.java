@@ -7,7 +7,7 @@ package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperHolder;
 
-class UppdcActionRunKafka extends UppdcActionRun<UppdcConfigKafka, UppdcMetricKafka>
+public class UppdcActionRunKafka extends UppdcActionRun<UppdcConfigKafka, UppdcMetricKafka>
 {
     public static UppdcActionRunKafka //
     of(UppdcConfigKafka config, UppdcMetricKafka metric, UpperHolder holder)

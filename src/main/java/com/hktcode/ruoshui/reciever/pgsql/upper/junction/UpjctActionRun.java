@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-class UpjctActionRun extends SimpleActionRun<UpjctConfig, UpjctMetric, UpperHolder>
+public class UpjctActionRun extends SimpleActionRun<UpjctConfig, UpjctMetric, UpperHolder>
 {
     public static UpjctActionRun of(UpjctConfig config, UpjctMetric metric, UpperHolder holder)
     {
