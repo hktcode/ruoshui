@@ -26,7 +26,7 @@ abstract class UppdcActionRun<C extends UppdcConfig, M extends UppdcMetric>
     }
 
     @Override
-    public SimpleAction next() throws Throwable
+    public SimpleAction<C, M, UpperHolder> next() throws Throwable
     {
         final Tqueue<UpperRecordProducer> getout = this.entity.tgtqueue;
         try (UppdcSender<?, ?> sender = this.sender()) {
@@ -44,8 +44,8 @@ abstract class UppdcActionRun<C extends UppdcConfig, M extends UppdcMetric>
                 }
             }
         }
-        return SimpleActionEnd.of();
+        return SimpleActionEnd.of(this.config, this.metric, this.entity);
     }
 
-    protected abstract UppdcSender<?, ?> sender() throws IOException;
+    protected abstract UppdcSender<C, M> sender() throws IOException;
 }

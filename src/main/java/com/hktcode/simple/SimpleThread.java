@@ -31,9 +31,9 @@ public abstract class SimpleThread<C extends SimpleConfig<C, M, E>, M extends Si
     {
         this.metric.actionStart = System.currentTimeMillis();
         try {
-            SimpleAction action = this.config.put(this.metric, this.entity);
+            SimpleAction<?, ?, ?> action = this.config.put(this.metric, this.entity);
             do {
-                SimpleActionRun<C, M, E> a = (SimpleActionRun<C, M, E>)action;
+                SimpleActionRun<?, ?, ?> a = (SimpleActionRun<?, ?, ?>)action;
                 try {
                     action = a.next();
                 } catch (InterruptedException ex) {

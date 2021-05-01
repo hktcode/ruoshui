@@ -41,7 +41,8 @@ public class UpcsmActionRun extends SimpleActionRun<UpcsmConfig, UpcsmMetric, Up
     }
 
     @Override
-    public SimpleAction next() throws InterruptedException, SQLException
+    public SimpleAction<UpcsmConfig, UpcsmMetric, UpperHolder> next() //
+            throws InterruptedException, SQLException
     {
         final Tqueue<UpperRecordConsumer> comein = this.entity.srcqueue;
         try (Connection repl = this.config.srcProperty.replicaConnection()) {
@@ -69,7 +70,7 @@ public class UpcsmActionRun extends SimpleActionRun<UpcsmConfig, UpcsmMetric, Up
         logger.info("pgsender complete");
         this.metric.statusInfor = "send txation finish record.";
         this.metric.endDatetime = System.currentTimeMillis();
-        return SimpleActionEnd.of();
+        return SimpleActionEnd.of(this.config, this.metric, this.entity);
     }
 
     private UpperRecordConsumer poll(UpcsmConfig config, UpcsmMetric metric, PGReplicationStream s) //

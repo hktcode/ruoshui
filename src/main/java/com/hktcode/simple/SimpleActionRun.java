@@ -6,24 +6,17 @@ package com.hktcode.simple;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public abstract class SimpleActionRun<C extends SimpleConfig, M extends SimpleMetric, E extends SimpleEntity<?>> extends SimpleAction
+public abstract class SimpleActionRun<C extends SimpleConfig, M extends SimpleMetric, E extends SimpleEntity<?>>
+        extends SimpleAction<C, M, E>
 {
-    public final C config;
-
-    public final M metric;
-
-    public final E entity;
-
     protected SimpleActionRun(C config, M metric, E entity)
     {
-        this.config = config;
-        this.metric = metric;
-        this.entity = entity;
+        super(config, metric, entity);
     }
 
-    public abstract SimpleAction next() throws Throwable;
+    public abstract SimpleAction<C, M, E> next() throws Throwable;
 
-    public SimpleAction next(Throwable throwError) throws InterruptedException
+    public SimpleActionEnd<C, M, E> next(Throwable throwError) throws InterruptedException
     {
         if (throwError == null) {
             throw new ArgumentNullException("throwError");
@@ -34,6 +27,6 @@ public abstract class SimpleActionRun<C extends SimpleConfig, M extends SimpleMe
         while (this.entity.run(metric).deletets == Long.MAX_VALUE) {
             this.entity.end(del);
         }
-        return SimpleActionEnd.of();
+        return SimpleActionEnd.of(this.config, this.metric, this.entity);
     }
 }

@@ -42,7 +42,8 @@ class UpjctActionRun extends SimpleActionRun<UpjctConfig, UpjctMetric, UpperHold
     }
 
     @Override
-    public SimpleAction next() throws InterruptedException
+    public SimpleAction<UpjctConfig, UpjctMetric, UpperHolder> next() //
+            throws InterruptedException
     {
         final Tqueue<UpperRecordConsumer> comein = this.entity.srcqueue;
         final Tqueue<UpperRecordProducer> getout = this.entity.tgtqueue;
@@ -65,7 +66,7 @@ class UpjctActionRun extends SimpleActionRun<UpjctConfig, UpjctMetric, UpperHold
                 r = null;
             }
         }
-        return SimpleActionEnd.of();
+        return SimpleActionEnd.of(this.config, this.metric, this.entity);
     }
 
     private List<UpperRecordProducer> convert(UpperRecordConsumer record)
