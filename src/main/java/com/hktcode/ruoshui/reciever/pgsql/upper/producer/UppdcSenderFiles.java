@@ -17,6 +17,18 @@ public class UppdcSenderFiles extends UppdcSender<UppdcConfigFiles, UppdcMetricF
 {
     private static final Logger logger = LoggerFactory.getLogger(UppdcSenderFiles.class);
 
+    public static UppdcSenderFiles of(UppdcConfigFiles config, UppdcMetricFiles metric) //
+            throws IOException
+    {
+        if (config == null) {
+            throw new ArgumentNullException("config");
+        }
+        if (metric == null) {
+            throw new ArgumentNullException("metric");
+        }
+        return new UppdcSenderFiles(config, metric);
+    }
+
     private static final OpenOption[] OPTIONS = {
             StandardOpenOption.CREATE_NEW,
             StandardOpenOption.WRITE,
@@ -31,14 +43,9 @@ public class UppdcSenderFiles extends UppdcSender<UppdcConfigFiles, UppdcMetricF
 
     private AsynchronousFileChannel[] handle;
 
-    private final String waldir;
-
-    private UppdcSenderFiles(String waldir, UppdcConfigFiles config, UppdcMetricFiles metric) throws IOException
+    private UppdcSenderFiles(UppdcConfigFiles config, UppdcMetricFiles metric)
     {
         super(config, metric);
-        Path directory = Paths.get(config.walDatapath.toString(), waldir);
-        Files.createDirectories(directory);
-        this.waldir = directory.toString();
     }
 
     @Override
@@ -73,7 +80,7 @@ public class UppdcSenderFiles extends UppdcSender<UppdcConfigFiles, UppdcMetricF
         long lsnofcmt = record.key.lsnofcmt;
         long sequence = record.key.sequence;
         this.metric.curFilename = String.format("%08x%016x%016x.jwal", timeline, lsnofcmt, sequence).toUpperCase();
-        Path file = Paths.get(this.waldir, this.metric.curFilename);
+        Path file = Paths.get(this.config.walDatapath.toString(), this.metric.curFilename);
         logger.info("fopen : curFilename={}", this.metric.curFilename);
         this.handle = new AsynchronousFileChannel[] { AsynchronousFileChannel.open(file, OPTIONS) };
         this.metric.curPosition = 0;

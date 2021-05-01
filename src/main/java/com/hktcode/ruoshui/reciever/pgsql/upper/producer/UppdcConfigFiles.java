@@ -39,7 +39,7 @@ public class UppdcConfigFiles extends UppdcConfig
     }
 
     @Override
-    public UppdcActionRunFiles put(UppdcMetric metric, UpperHolder entity)
+    public UppdcActionRun put(UppdcMetric metric, UpperHolder entity)
     {
         if (metric == null) {
             throw new ArgumentNullException("metric");
@@ -47,7 +47,7 @@ public class UppdcConfigFiles extends UppdcConfig
         if (entity == null) {
             throw new ArgumentNullException("entity");
         }
-        return UppdcActionRunFiles.of(this, metric, entity);
+        return UppdcActionRunFiles.of(this, (UppdcMetricFiles) metric, entity);
     }
 
     public final Path walDatapath;

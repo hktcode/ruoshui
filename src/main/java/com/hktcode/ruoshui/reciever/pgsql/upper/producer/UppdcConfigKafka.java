@@ -52,7 +52,7 @@ public class UppdcConfigKafka extends UppdcConfig
     }
 
     @Override
-    public UppdcActionRunKafka put(UppdcMetric metric, UpperHolder entity)
+    public UppdcActionRun put(UppdcMetric metric, UpperHolder entity)
     {
         if (metric == null) {
             throw new ArgumentNullException("metric");
@@ -60,7 +60,7 @@ public class UppdcConfigKafka extends UppdcConfig
         if (entity == null) {
             throw new ArgumentNullException("entity");
         }
-        return UppdcActionRunKafka.of(this, metric, entity);
+        return UppdcActionRunKafka.of(this, (UppdcMetricKafka) metric, entity);
     }
 
     public static final String DEFAULT_TARGET_TOPIC = THE_NAME;
