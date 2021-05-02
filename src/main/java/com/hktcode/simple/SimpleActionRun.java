@@ -5,6 +5,8 @@
 package com.hktcode.simple;
 
 import com.hktcode.lang.exception.ArgumentNullException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class SimpleActionRun<C extends SimpleConfig, M extends SimpleMetric, E extends SimpleEntity>
         extends SimpleAction<C, M, E>
@@ -25,8 +27,11 @@ public abstract class SimpleActionRun<C extends SimpleConfig, M extends SimpleMe
         this.metric.endDatetime = System.currentTimeMillis();
         SimplePhaserOuter del = SimplePhaserOuter.of(3);
         while (this.entity.run(metric).deletets == Long.MAX_VALUE) {
-            this.entity.end(del);
+            SimpleResult result = this.entity.end(del);
+            logger.info("end: result={}", result);
         }
         return SimpleActionEnd.of(this.config, this.metric, this.entity);
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(SimpleActionRun.class);
 }

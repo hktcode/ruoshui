@@ -66,6 +66,53 @@ public class UpperHolder extends SimpleEntity
         this.storeman = storeman;
     }
 
+    @Override
+    public UpperResult end(SimplePhaserOuter cmd) throws InterruptedException
+    {
+        if (cmd == null) {
+            throw new ArgumentNullException("cmd");
+        }
+        return this.end(cmd, (o, f)->this.end(o.deletets));
+    }
+
+    public UpperResult put(SimplePhaserOuter cmd) throws InterruptedException
+    {
+        if (cmd == null) {
+            throw new ArgumentNullException("cmd");
+        }
+        this.producer.setName(this.fullname + "-upper-producer");
+        this.producer.start();
+        this.junction.setName(this.fullname + "-upper-junction");
+        this.junction.start();
+        this.consumer.setName(this.fullname + "-upper-consumer");
+        this.consumer.start();
+        return this.run(cmd, (o, f)->this.put(o.deletets));
+    }
+
+    public UpperResult del(SimplePhaserOuter cmd) throws InterruptedException
+    {
+        if (cmd == null) {
+            throw new ArgumentNullException("cmd");
+        }
+        return this.run(cmd, (o, f)->this.del(o.deletets));
+    }
+
+    public UpperResult pst(SimplePhaserOuter cmd, JsonNode json) throws InterruptedException
+    {
+        if (json == null) {
+            throw new ArgumentNullException("node");
+        }
+        return this.run(cmd, (o, f)->this.pst(json));
+    }
+
+    public UpperResult get(SimplePhaserOuter cmd) throws InterruptedException
+    {
+        if (cmd == null) {
+            throw new ArgumentNullException("cmd");
+        }
+        return this.run(cmd, (o, f)->this.get(o.deletets));
+    }
+
     private UpperResult end(long deletets)
     {
         if (deletets == Long.MAX_VALUE) {
@@ -80,35 +127,7 @@ public class UpperHolder extends SimpleEntity
             }
             deletets = System.currentTimeMillis();
         }
-        return this.toResultNode(deletets);
-    }
-
-    @Override
-    public UpperResult end(SimplePhaserOuter cmd) throws InterruptedException
-    {
-        if (cmd == null) {
-            throw new ArgumentNullException("cmd");
-        }
-        return this.end(cmd, (o, f)->this.end(o.deletets));
-    }
-
-    public UpperResult get(SimplePhaserOuter cmd) throws InterruptedException
-    {
-        if (cmd == null) {
-            throw new ArgumentNullException("cmd");
-        }
-        return this.run(cmd, (o, f)->this.toResultNode(o.deletets));
-    }
-
-    public UpperResult put(SimplePhaserOuter cmd) throws InterruptedException
-    {
-        this.producer.setName(this.fullname + "-upper-producer");
-        this.producer.start();
-        this.junction.setName(this.fullname + "-upper-junction");
-        this.junction.start();
-        this.consumer.setName(this.fullname + "-upper-consumer");
-        this.consumer.start();
-        return this.run(cmd, (o, f)->this.put(o.deletets));
+        return this.get(deletets);
     }
 
     private UpperResult put(long deletets)
@@ -116,12 +135,7 @@ public class UpperHolder extends SimpleEntity
         ObjectNode node = this.storeman.mapper.createObjectNode();
         this.toConfigNode(node);
         this.storeman.updertYml(this.fullname, node);
-        return this.toResultNode(deletets);
-    }
-
-    public UpperResult del(SimplePhaserOuter cmd) throws InterruptedException
-    {
-        return this.run(cmd, (o, f)->this.del(o.deletets));
+        return this.get(deletets);
     }
 
     private UpperResult del(long deletets)
@@ -129,15 +143,7 @@ public class UpperHolder extends SimpleEntity
         ObjectNode node = this.storeman.mapper.createObjectNode();
         this.toConfigNode(node);
         deletets = this.storeman.deleteYml(this.fullname, node, deletets);
-        return this.toResultNode(deletets);
-    }
-
-    public UpperResult pst(SimplePhaserOuter cmd, JsonNode json) throws InterruptedException
-    {
-        if (json == null) {
-            throw new ArgumentNullException("node");
-        }
-        return this.run(cmd, (o, f)->this.pst(json));
+        return this.get(deletets);
     }
 
     private UpperResult pst(JsonNode node)
@@ -160,7 +166,19 @@ public class UpperHolder extends SimpleEntity
         }
         ObjectNode conf = this.toConfigNode(this.storeman.mapper.createObjectNode());
         this.storeman.updertYml(this.fullname, conf);
-        return this.toResultNode(Long.MAX_VALUE);
+        return this.get(Long.MAX_VALUE);
+    }
+
+    private UpperResult get(long deletets)
+    {
+        long createts = this.createts;
+        String fullname = this.fullname;
+        ObjectNode consumer = this.consumer.toJsonObject();
+        ObjectNode srcqueue = this.srcqueue.toJsonObject();
+        ObjectNode junction = this.junction.toJsonObject();
+        ObjectNode tgtqueue = this.tgtqueue.toJsonObject();
+        ObjectNode producer = this.producer.toJsonObject();
+        return UpperResult.of(createts, fullname, consumer, srcqueue, junction, tgtqueue, producer, deletets);
     }
 
     private ObjectNode toConfigNode(ObjectNode node)
@@ -176,17 +194,5 @@ public class UpperHolder extends SimpleEntity
         this.tgtqueue.config.toJsonObject(tgtqueue);
         this.producer.action.config.toJsonObject(producer);
         return node;
-    }
-
-    private UpperResult toResultNode(long deletets)
-    {
-        long createts = this.createts;
-        String fullname = this.fullname;
-        ObjectNode consumer = this.consumer.toJsonObject();
-        ObjectNode srcqueue = this.srcqueue.toJsonObject();
-        ObjectNode junction = this.junction.toJsonObject();
-        ObjectNode tgtqueue = this.tgtqueue.toJsonObject();
-        ObjectNode producer = this.producer.toJsonObject();
-        return UpperResult.of(createts, fullname, consumer, srcqueue, junction, tgtqueue, producer, deletets);
     }
 }

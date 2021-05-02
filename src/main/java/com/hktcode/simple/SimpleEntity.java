@@ -36,7 +36,7 @@ public abstract class SimpleEntity
         return result;
     }
 
-    public <R extends SimpleResult> //
+    protected <R extends SimpleResult> //
     R run(SimplePhaserOuter cmd, SimpleKeeper<R> keeper) //
             throws InterruptedException
     {
@@ -58,7 +58,7 @@ public abstract class SimpleEntity
         return this.apply(origin, future, keeper);
     }
 
-    public <R extends SimpleResult> //
+    protected  <R extends SimpleResult> //
     R end(SimplePhaserOuter cmd, SimpleKeeper<R> keeper) //
             throws InterruptedException
     {

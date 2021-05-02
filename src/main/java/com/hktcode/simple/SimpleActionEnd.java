@@ -24,6 +24,4 @@ public class SimpleActionEnd<C extends SimpleConfig, M extends SimpleMetric, E e
     {
         super(config, metric, entity);
     }
-
-
 }
