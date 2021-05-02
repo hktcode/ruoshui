@@ -2,10 +2,10 @@ package com.hktcode.simple;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class SimpleActionEnd<C extends SimpleConfig, M extends SimpleMetric, E extends SimpleEntity>
+public class SimpleActionEnd<C extends SimpleConfig, M extends SimpleMetric, E extends SimpleExesvr>
         extends SimpleAction<C, M, E>
 {
-    public static <C extends SimpleConfig, M extends SimpleMetric, E extends SimpleEntity> //
+    public static <C extends SimpleConfig, M extends SimpleMetric, E extends SimpleExesvr> //
     SimpleActionEnd<C, M, E> of(C config, M metric, E entity)
     {
         if (config == null) {

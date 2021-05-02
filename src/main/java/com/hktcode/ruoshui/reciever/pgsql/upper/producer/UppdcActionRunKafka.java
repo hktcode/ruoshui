@@ -5,12 +5,12 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperHolder;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvr;
 
 public class UppdcActionRunKafka extends UppdcActionRun<UppdcConfigKafka, UppdcMetricKafka>
 {
     public static UppdcActionRunKafka //
-    of(UppdcConfigKafka config, UppdcMetricKafka metric, UpperHolder holder)
+    of(UppdcConfigKafka config, UppdcMetricKafka metric, UpperExesvr holder)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -24,7 +24,7 @@ public class UppdcActionRunKafka extends UppdcActionRun<UppdcConfigKafka, UppdcM
         return new UppdcActionRunKafka(config, metric, holder);
     }
 
-    private UppdcActionRunKafka(UppdcConfigKafka config, UppdcMetricKafka metric, UpperHolder holder)
+    private UppdcActionRunKafka(UppdcConfigKafka config, UppdcMetricKafka metric, UpperExesvr holder)
     {
         super(config, metric, holder);
     }

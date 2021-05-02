@@ -5,7 +5,7 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
 import com.hktcode.queue.Tqueue;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperHolder;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvr;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
 import com.hktcode.simple.SimpleAction;
 import com.hktcode.simple.SimpleActionEnd;
@@ -16,17 +16,17 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 public abstract class UppdcActionRun<C extends UppdcConfig, M extends UppdcMetric>
-        extends SimpleActionRun<C, M, UpperHolder>
+        extends SimpleActionRun<C, M, UpperExesvr>
 {
     private static final Logger logger = LoggerFactory.getLogger(UppdcActionRun.class);
 
-    protected UppdcActionRun(C config, M metric, UpperHolder holder)
+    protected UppdcActionRun(C config, M metric, UpperExesvr holder)
     {
         super(config, metric, holder);
     }
 
     @Override
-    public SimpleAction<C, M, UpperHolder> next() throws Throwable
+    public SimpleAction<C, M, UpperExesvr> next() throws Throwable
     {
         final Tqueue<UpperRecordProducer> getout = this.entity.tgtqueue;
         try (UppdcSender sender = this.sender()) {

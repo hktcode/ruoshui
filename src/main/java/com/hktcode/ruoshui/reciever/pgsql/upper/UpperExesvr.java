@@ -11,16 +11,16 @@ import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctActionRun;
 import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctMetric;
 import com.hktcode.ruoshui.reciever.pgsql.upper.producer.*;
 import com.hktcode.ruoshui.reciever.pgsql.upper.storeman.UpperKeeperOnlyone;
-import com.hktcode.simple.SimpleEntity;
+import com.hktcode.simple.SimpleExesvr;
 import com.hktcode.simple.SimplePhaserOuter;
 import com.hktcode.simple.SimpleThread;
 import org.postgresql.replication.LogSequenceNumber;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class UpperHolder extends SimpleEntity
+public class UpperExesvr extends SimpleExesvr
 {
-    public static UpperHolder of(long createts, String fullname, UpperConfig config, UpperKeeperOnlyone storeman)
+    public static UpperExesvr of(long createts, String fullname, UpperConfig config, UpperKeeperOnlyone storeman)
     {
         if (fullname == null) {
             throw new ArgumentNullException("fullname");
@@ -31,7 +31,7 @@ public class UpperHolder extends SimpleEntity
         if (storeman == null) {
             throw new ArgumentNullException("storeman");
         }
-        return new UpperHolder(createts, fullname, config, storeman);
+        return new UpperExesvr(createts, fullname, config, storeman);
     }
 
     public final long createts;
@@ -43,7 +43,7 @@ public class UpperHolder extends SimpleEntity
     private final SimpleThread producer;
     private final UpperKeeperOnlyone storeman;
 
-    private UpperHolder //
+    private UpperExesvr //
         /* */( long createts //
         /* */, String fullname //
         /* */, UpperConfig config //
@@ -80,12 +80,10 @@ public class UpperHolder extends SimpleEntity
         if (cmd == null) {
             throw new ArgumentNullException("cmd");
         }
-        this.producer.setName(this.fullname + "-upper-producer");
-        this.producer.start();
-        this.junction.setName(this.fullname + "-upper-junction");
-        this.junction.start();
-        this.consumer.setName(this.fullname + "-upper-consumer");
-        this.consumer.start();
+        this.submit(this.producer);
+        this.submit(this.junction);
+        this.submit(this.consumer);
+        this.shutdown();
         return this.run(cmd, (o, f)->this.put(o.deletets));
     }
 

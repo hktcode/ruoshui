@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class UpjctActionRun extends SimpleActionRun<UpjctConfig, UpjctMetric, UpperHolder>
+public class UpjctActionRun extends SimpleActionRun<UpjctConfig, UpjctMetric, UpperExesvr>
 {
-    public static UpjctActionRun of(UpjctConfig config, UpjctMetric metric, UpperHolder holder)
+    public static UpjctActionRun of(UpjctConfig config, UpjctMetric metric, UpperExesvr holder)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -36,13 +36,13 @@ public class UpjctActionRun extends SimpleActionRun<UpjctConfig, UpjctMetric, Up
         return new UpjctActionRun(config, metric, holder);
     }
 
-    private UpjctActionRun(UpjctConfig config, UpjctMetric metric, UpperHolder holder)
+    private UpjctActionRun(UpjctConfig config, UpjctMetric metric, UpperExesvr holder)
     {
         super(config, metric, holder);
     }
 
     @Override
-    public SimpleAction<UpjctConfig, UpjctMetric, UpperHolder> next() //
+    public SimpleAction<UpjctConfig, UpjctMetric, UpperExesvr> next() //
             throws InterruptedException
     {
         final Tqueue<UpperRecordConsumer> comein = this.entity.srcqueue;

@@ -9,16 +9,18 @@ import com.hktcode.ruoshui.reciever.pgsql.exception.RuoshuiLockedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class SimpleEntity
+public abstract class SimpleExesvr extends ThreadPoolExecutor
 {
-    private final static Logger logger = LoggerFactory.getLogger(SimpleEntity.class);
+    private final static Logger logger = LoggerFactory.getLogger(SimpleExesvr.class);
 
     private final AtomicReference<SimplePhaser> status;
 
-    protected SimpleEntity()
+    protected SimpleExesvr()
     {
+        super(3, 3, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(1));
         this.status = new AtomicReference<>(SimplePhaserInner.of(Long.MAX_VALUE));
     }
 

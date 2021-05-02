@@ -7,7 +7,7 @@ package com.hktcode.ruoshui.reciever.pgsql.upper.consumer;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.queue.Tqueue;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperHolder;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvr;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
 import com.hktcode.simple.SimpleAction;
 import com.hktcode.simple.SimpleActionEnd;
@@ -22,11 +22,11 @@ import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class UpcsmActionRun extends SimpleActionRun<UpcsmConfig, UpcsmMetric, UpperHolder>
+public class UpcsmActionRun extends SimpleActionRun<UpcsmConfig, UpcsmMetric, UpperExesvr>
 {
     private static final Logger logger = LoggerFactory.getLogger(UpcsmActionRun.class);
 
-    public static UpcsmActionRun of(UpcsmConfig config, UpcsmMetric metric, UpperHolder holder)
+    public static UpcsmActionRun of(UpcsmConfig config, UpcsmMetric metric, UpperExesvr holder)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -41,7 +41,7 @@ public class UpcsmActionRun extends SimpleActionRun<UpcsmConfig, UpcsmMetric, Up
     }
 
     @Override
-    public SimpleAction<UpcsmConfig, UpcsmMetric, UpperHolder> next() //
+    public SimpleAction<UpcsmConfig, UpcsmMetric, UpperExesvr> next() //
             throws InterruptedException, SQLException
     {
         final Tqueue<UpperRecordConsumer> comein = this.entity.srcqueue;
@@ -96,7 +96,7 @@ public class UpcsmActionRun extends SimpleActionRun<UpcsmConfig, UpcsmMetric, Up
         return null;
     }
 
-    private UpcsmActionRun(UpcsmConfig config, UpcsmMetric metric, UpperHolder holder)
+    private UpcsmActionRun(UpcsmConfig config, UpcsmMetric metric, UpperExesvr holder)
     {
         super(config, metric, holder);
     }

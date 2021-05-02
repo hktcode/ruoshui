@@ -5,7 +5,7 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperHolder;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvr;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,7 +15,7 @@ import java.nio.file.Paths;
 public class UppdcActionRunFiles extends UppdcActionRun<UppdcConfigFiles, UppdcMetricFiles>
 {
     public static UppdcActionRunFiles //
-    of(UppdcConfigFiles config, UppdcMetricFiles metric, UpperHolder holder)
+    of(UppdcConfigFiles config, UppdcMetricFiles metric, UpperExesvr holder)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -29,7 +29,7 @@ public class UppdcActionRunFiles extends UppdcActionRun<UppdcConfigFiles, UppdcM
         return new UppdcActionRunFiles(config, metric, holder);
     }
 
-    private UppdcActionRunFiles(UppdcConfigFiles config, UppdcMetricFiles metric, UpperHolder holder)
+    private UppdcActionRunFiles(UppdcConfigFiles config, UppdcMetricFiles metric, UpperExesvr holder)
     {
         super(config, metric, holder);
     }
