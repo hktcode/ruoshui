@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class SimpleEntity<R extends SimpleResult>
+public abstract class SimpleEntity
 {
     private final static Logger logger = LoggerFactory.getLogger(SimpleEntity.class);
 
@@ -36,7 +36,8 @@ public abstract class SimpleEntity<R extends SimpleResult>
         return result;
     }
 
-    public R run(SimplePhaserOuter cmd, SimpleKeeper<R> keeper) //
+    public <R extends SimpleResult> //
+    R run(SimplePhaserOuter cmd, SimpleKeeper<R> keeper) //
             throws InterruptedException
     {
         if (cmd == null) {
@@ -57,7 +58,8 @@ public abstract class SimpleEntity<R extends SimpleResult>
         return this.apply(origin, future, keeper);
     }
 
-    public R end(SimplePhaserOuter cmd, SimpleKeeper<R> keeper) //
+    public <R extends SimpleResult> //
+    R end(SimplePhaserOuter cmd, SimpleKeeper<R> keeper) //
             throws InterruptedException
     {
         if (cmd == null) {
@@ -87,7 +89,8 @@ public abstract class SimpleEntity<R extends SimpleResult>
         return this.apply(origin, future, keeper);
     }
 
-    protected R apply(SimplePhaserInner origin, SimplePhaserOuter future, SimpleKeeper<R> keeper) //
+    protected <R extends SimpleResult> //
+    R apply(SimplePhaserInner origin, SimplePhaserOuter future, SimpleKeeper<R> keeper) //
             throws InterruptedException
     {
         future.acquire();
@@ -110,5 +113,5 @@ public abstract class SimpleEntity<R extends SimpleResult>
         }
     }
 
-    public abstract R end(SimplePhaserOuter cmd) throws InterruptedException;
+    public abstract SimpleResult end(SimplePhaserOuter cmd) throws InterruptedException;
 }

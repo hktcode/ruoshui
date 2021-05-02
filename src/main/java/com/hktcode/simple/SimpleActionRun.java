@@ -6,7 +6,7 @@ package com.hktcode.simple;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public abstract class SimpleActionRun<C extends SimpleConfig, M extends SimpleMetric, E extends SimpleEntity<?>>
+public abstract class SimpleActionRun<C extends SimpleConfig, M extends SimpleMetric, E extends SimpleEntity>
         extends SimpleAction<C, M, E>
 {
     protected SimpleActionRun(C config, M metric, E entity)

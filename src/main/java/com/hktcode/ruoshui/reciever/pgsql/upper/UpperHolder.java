@@ -18,7 +18,7 @@ import org.postgresql.replication.LogSequenceNumber;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class UpperHolder extends SimpleEntity<UpperResult>
+public class UpperHolder extends SimpleEntity
 {
     public static UpperHolder of(long createts, String fullname, UpperConfig config, UpperKeeperOnlyone storeman)
     {
