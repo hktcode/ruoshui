@@ -13,7 +13,7 @@ public interface SimpleActionRun<C extends SimpleConfig, M extends SimpleMetric,
 {
     SimpleAction next(C config, M metric, E exesvc) throws Throwable;
 
-    default SimpleActionEnd next(C config, M metric, E exesvc, Throwable errors)
+    default SimpleAction next(C config, M metric, E exesvc, Throwable errors) //
             throws InterruptedException
     {
         if (config == null) {

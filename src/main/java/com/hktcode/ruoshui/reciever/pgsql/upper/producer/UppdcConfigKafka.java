@@ -11,10 +11,12 @@ import com.hktcode.kafka.Kafka;
 import com.hktcode.lang.exception.ArgumentIllegalException;
 import com.hktcode.lang.exception.ArgumentNegativeException;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static com.hktcode.ruoshui.Ruoshui.THE_NAME;
 
@@ -92,5 +94,17 @@ public class UppdcConfigKafka extends UppdcConfig
         configPropsNode.put("target_topic", this.targetTopic);
         configPropsNode.put("partition_no", this.partitionNo);
         return node;
+    }
+
+    @Override
+    public UppdcWorkerKafka worker(AtomicLong txactionLsn, UpperExesvc exesvc)
+    {
+        if (txactionLsn == null) {
+            throw new ArgumentNullException("txactionLsn");
+        }
+        if (exesvc == null) {
+            throw new ArgumentNullException("exesvc");
+        }
+        return UppdcWorkerKafka.of(this, UppdcMetricKafka.of(txactionLsn), exesvc);
     }
 }

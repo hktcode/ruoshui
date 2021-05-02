@@ -7,7 +7,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
 import com.hktcode.simple.SimpleConfig;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class UppdcConfig extends SimpleConfig
 {
@@ -52,4 +55,7 @@ public abstract class UppdcConfig extends SimpleConfig
         result.put("log_duration", this.logDuration);
         return result;
     }
+
+    @SuppressWarnings("rawtypes")
+    public abstract UppdcWorker worker(AtomicLong txactionLsn, UpperExesvc exesvc);
 }

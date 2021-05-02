@@ -5,13 +5,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Tqueue;
 import com.hktcode.queue.TqueueMetric;
-import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmMetric;
 import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorker;
-import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctMetric;
 import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorker;
-import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcConfigKafka;
-import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcMetricFiles;
-import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcMetricKafka;
 import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorker;
 import com.hktcode.ruoshui.reciever.pgsql.upper.storeman.UpperKeeperOnlyone;
 import com.hktcode.simple.SimpleExesvc;
@@ -42,6 +37,7 @@ public class UpperExesvc extends SimpleExesvc
     public final Tqueue<UpperRecordConsumer> srcqueue;
     private final UpjctWorker junction;
     public final Tqueue<UpperRecordProducer> tgtqueue;
+    @SuppressWarnings("rawtypes")
     private final UppdcWorker producer;
     private final UpperKeeperOnlyone storeman;
 
@@ -55,16 +51,11 @@ public class UpperExesvc extends SimpleExesvc
         this.createts = createts;
         this.fullname = fullname;
         AtomicLong txactionLsn = new AtomicLong(LogSequenceNumber.INVALID_LSN.asLong());
-        this.consumer = UpcsmWorker.of(config.consumer, UpcsmMetric.of(txactionLsn), this);
+        this.consumer = config.consumer.worker(txactionLsn, this);
         this.srcqueue = Tqueue.of(config.srcqueue, TqueueMetric.of());
-        this.junction = UpjctWorker.of(config.junction, UpjctMetric.of(), this);
+        this.junction = config.junction.worker(this);
         this.tgtqueue = Tqueue.of(config.tgtqueue, TqueueMetric.of());
-        if (config.producer instanceof UppdcConfigKafka) {
-            this.producer = UppdcWorker.of(config.producer, UppdcMetricKafka.of(txactionLsn), this);
-        }
-        else {
-            this.producer = UppdcWorker.of(config.producer, UppdcMetricFiles.of(txactionLsn), this);
-        }
+        this.producer = config.producer.worker(txactionLsn, this);
         this.storeman = storeman;
     }
 

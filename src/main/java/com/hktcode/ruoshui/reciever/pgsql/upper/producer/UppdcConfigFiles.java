@@ -8,9 +8,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.Ruoshui;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class UppdcConfigFiles extends UppdcConfig
 {
@@ -74,5 +76,17 @@ public class UppdcConfigFiles extends UppdcConfig
         node.put("max_filesize", this.maxFilesize);
         node.put("max_filetime", this.maxFiletime);
         return node;
+    }
+
+    @Override
+    public UppdcWorkerFiles worker(AtomicLong txactionLsn, UpperExesvc exesvc)
+    {
+        if (txactionLsn == null) {
+            throw new ArgumentNullException("txactionLsn");
+        }
+        if (exesvc == null) {
+            throw new ArgumentNullException("exesvc");
+        }
+        return UppdcWorkerFiles.of(this, UppdcMetricFiles.of(txactionLsn), exesvc);
     }
 }
