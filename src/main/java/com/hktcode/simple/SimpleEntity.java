@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiFunction;
 
 public abstract class SimpleEntity<R extends SimpleResult>
 {
@@ -37,7 +36,7 @@ public abstract class SimpleEntity<R extends SimpleResult>
         return result;
     }
 
-    public R run(SimplePhaserOuter cmd, BiFunction<SimplePhaserInner, SimplePhaserOuter, R> keeper) //
+    public R run(SimplePhaserOuter cmd, SimpleKeeper<R> keeper) //
             throws InterruptedException
     {
         if (cmd == null) {
@@ -58,7 +57,7 @@ public abstract class SimpleEntity<R extends SimpleResult>
         return future.run(origin, (o, f)->this.apply(o, f, keeper));
     }
 
-    public R end(SimplePhaserOuter cmd, BiFunction<SimplePhaserInner, SimplePhaserOuter, R> keeper) //
+    public R end(SimplePhaserOuter cmd, SimpleKeeper<R> keeper) //
             throws InterruptedException
     {
         if (cmd == null) {
@@ -85,22 +84,29 @@ public abstract class SimpleEntity<R extends SimpleResult>
             origin = (SimplePhaserInner)phaser;
             future = origin.cmd(cmd);
         } while (future == cmd && !this.status.compareAndSet(origin, future));
-        return future.run(origin, (o, f)->this.apply(o, f, keeper));
+        return this.apply(origin, future, keeper);
     }
 
-    protected R apply(SimplePhaserInner origin, SimplePhaserOuter future, BiFunction<SimplePhaserInner, SimplePhaserOuter, R> keeper)
+    protected R apply(SimplePhaserInner origin, SimplePhaserOuter future, SimpleKeeper<R> keeper) //
+            throws InterruptedException
     {
+        future.acquire();
         try {
-            R result = keeper.apply(origin, future);
-            origin = SimplePhaserInner.of(result.deletets);
-            return result;
-        } catch (Exception ex) {
-            origin = SimplePhaserInner.of(System.currentTimeMillis());
-            logger.error("", ex); // TODO:
-            throw ex;
-        } finally {
-            boolean result = this.status.compareAndSet(future, origin);
-            logger.debug("cas(future, origin): origin.deletets={}, return={}", origin.deletets, result);
+            try {
+                R result = keeper.apply(origin, future);
+                origin = SimplePhaserInner.of(result.deletets);
+                return result;
+            } catch (Exception ex) {
+                logger.error("", ex); // TODO:
+                origin = SimplePhaserInner.of(System.currentTimeMillis());
+                throw ex;
+            } finally {
+                boolean result = this.status.compareAndSet(future, origin);
+                logger.debug("cas(future, origin): origin.deletets={}, return={}", origin.deletets, result);
+            }
+        }
+        finally {
+            future.release();
         }
     }
 
