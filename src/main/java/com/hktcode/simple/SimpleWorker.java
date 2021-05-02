@@ -7,19 +7,19 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SimpleThread implements JacksonObject, Runnable
+public class SimpleWorker implements JacksonObject, Runnable
 {
-    private static final Logger logger = LoggerFactory.getLogger(SimpleThread.class);
+    private static final Logger logger = LoggerFactory.getLogger(SimpleWorker.class);
 
-    public static SimpleThread of(SimpleActionRun<?, ?, ?> action)
+    public static SimpleWorker of(SimpleActionRun<?, ?, ?> action)
     {
         if (action == null) {
             throw new ArgumentNullException("action");
         }
-        return new SimpleThread(action);
+        return new SimpleWorker(action);
     }
 
-    protected SimpleThread(SimpleActionRun<?, ?, ?> action)
+    protected SimpleWorker(SimpleActionRun<?, ?, ?> action)
     {
         this.action = action;
     }

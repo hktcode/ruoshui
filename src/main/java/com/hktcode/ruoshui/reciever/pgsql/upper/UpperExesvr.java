@@ -13,7 +13,7 @@ import com.hktcode.ruoshui.reciever.pgsql.upper.producer.*;
 import com.hktcode.ruoshui.reciever.pgsql.upper.storeman.UpperKeeperOnlyone;
 import com.hktcode.simple.SimpleExesvr;
 import com.hktcode.simple.SimplePhaserOuter;
-import com.hktcode.simple.SimpleThread;
+import com.hktcode.simple.SimpleWorker;
 import org.postgresql.replication.LogSequenceNumber;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -36,11 +36,11 @@ public class UpperExesvr extends SimpleExesvr
 
     public final long createts;
     public final String fullname;
-    private final SimpleThread consumer; // laborer
+    private final SimpleWorker consumer; // laborer
     public final Tqueue<UpperRecordConsumer> srcqueue;
-    private final SimpleThread junction;
+    private final SimpleWorker junction;
     public final Tqueue<UpperRecordProducer> tgtqueue;
-    private final SimpleThread producer;
+    private final SimpleWorker producer;
     private final UpperKeeperOnlyone storeman;
 
     private UpperExesvr //
@@ -53,15 +53,15 @@ public class UpperExesvr extends SimpleExesvr
         this.createts = createts;
         this.fullname = fullname;
         AtomicLong txactionLsn = new AtomicLong(LogSequenceNumber.INVALID_LSN.asLong());
-        this.consumer = SimpleThread.of(UpcsmActionRun.of(config.consumer, UpcsmMetric.of(txactionLsn), this));
+        this.consumer = SimpleWorker.of(UpcsmActionRun.of(config.consumer, UpcsmMetric.of(txactionLsn), this));
         this.srcqueue = Tqueue.of(config.srcqueue, TqueueMetric.of());
-        this.junction = SimpleThread.of(UpjctActionRun.of(config.junction, UpjctMetric.of(), this));
+        this.junction = SimpleWorker.of(UpjctActionRun.of(config.junction, UpjctMetric.of(), this));
         this.tgtqueue = Tqueue.of(config.tgtqueue, TqueueMetric.of());
         if (config.producer instanceof UppdcConfigKafka) {
-            this.producer = SimpleThread.of(UppdcActionRunKafka.of((UppdcConfigKafka) config.producer, UppdcMetricKafka.of(txactionLsn), this));
+            this.producer = SimpleWorker.of(UppdcActionRunKafka.of((UppdcConfigKafka) config.producer, UppdcMetricKafka.of(txactionLsn), this));
         }
         else {
-            this.producer = SimpleThread.of(UppdcActionRunFiles.of((UppdcConfigFiles) config.producer, UppdcMetricFiles.of(txactionLsn), this));
+            this.producer = SimpleWorker.of(UppdcActionRunFiles.of((UppdcConfigFiles) config.producer, UppdcMetricFiles.of(txactionLsn), this));
         }
         this.storeman = storeman;
     }
