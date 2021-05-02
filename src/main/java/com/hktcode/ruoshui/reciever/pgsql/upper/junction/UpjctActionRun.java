@@ -7,7 +7,6 @@ package com.hktcode.ruoshui.reciever.pgsql.upper.junction;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.ruoshui.reciever.pgsql.upper.*;
 import com.hktcode.simple.SimpleAction;
-import com.hktcode.simple.SimpleActionEnd;
 import com.hktcode.queue.Tqueue;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
@@ -15,14 +14,26 @@ import com.hktcode.pgjdbc.LogicalTxactBeginsMsg;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlKey;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlVal;
 import com.hktcode.simple.SimpleActionRun;
+import com.hktcode.simple.SimpleFinish;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class UpjctActionRun extends SimpleActionRun<UpjctConfig, UpjctMetric, UpperExesvc>
+public class UpjctActionRun implements SimpleActionRun<UpjctConfig, UpjctMetric, UpperExesvc>
 {
-    public static UpjctActionRun of(UpjctConfig config, UpjctMetric metric, UpperExesvc exesvc)
+    public static UpjctActionRun of()
+    {
+        return new UpjctActionRun();
+    }
+
+    private UpjctActionRun()
+    {
+    }
+
+    @Override
+    public SimpleAction next(UpjctConfig config, UpjctMetric metric, UpperExesvc exesvc) //
+            throws InterruptedException
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -33,25 +44,13 @@ public class UpjctActionRun extends SimpleActionRun<UpjctConfig, UpjctMetric, Up
         if (exesvc == null) {
             throw new ArgumentNullException("exesvc");
         }
-        return new UpjctActionRun(config, metric, exesvc);
-    }
-
-    private UpjctActionRun(UpjctConfig config, UpjctMetric metric, UpperExesvc exesvc)
-    {
-        super(config, metric, exesvc);
-    }
-
-    @Override
-    public SimpleAction<UpjctConfig, UpjctMetric, UpperExesvc> next() //
-            throws InterruptedException
-    {
-        final Tqueue<UpperRecordConsumer> comein = this.exesvc.srcqueue;
-        final Tqueue<UpperRecordProducer> getout = this.exesvc.tgtqueue;
         UpperRecordConsumer r = null;
         UpperRecordProducer o = null;
+        final Tqueue<UpperRecordProducer> getout = exesvc.tgtqueue;
+        final Tqueue<UpperRecordConsumer> comein = exesvc.srcqueue;
         Iterator<UpperRecordProducer> t //
             = ImmutableList.<UpperRecordProducer>of().iterator();
-        while (this.exesvc.run(metric).deletets == Long.MAX_VALUE) {
+        while (exesvc.run(metric).deletets == Long.MAX_VALUE) {
             if (o != null) {
                 o = getout.push(o);
             }
@@ -62,14 +61,14 @@ public class UpjctActionRun extends SimpleActionRun<UpjctConfig, UpjctMetric, Up
                 r = comein.poll();
             }
             else {
-                t = this.convert(r).iterator();
+                t = this.convert(metric, r).iterator();
                 r = null;
             }
         }
-        return SimpleActionEnd.of(this.config, this.metric, this.exesvc);
+        return SimpleFinish.of();
     }
 
-    private List<UpperRecordProducer> convert(UpperRecordConsumer record)
+    private List<UpperRecordProducer> convert(UpjctMetric metric, UpperRecordConsumer record)
     {
         long lsn = record.lsn;
         LogicalMsg msg = record.msg;

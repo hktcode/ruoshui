@@ -28,9 +28,9 @@ public class UppdcWorker extends SimpleWorker<UppdcConfig, UppdcMetric, UpperExe
     public UppdcActionRun action()
     {
         if (this.config instanceof UppdcConfigKafka)  {
-            return UppdcActionRunKafka.of((UppdcConfigKafka)config, (UppdcMetricKafka)metric, exesvc);
+            return UppdcActionRunKafka.of();
         } else {
-            return UppdcActionRunFiles.of((UppdcConfigFiles)config, (UppdcMetricFiles)metric, exesvc);
+            return UppdcActionRunFiles.of();
         }
     }
 }

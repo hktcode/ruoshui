@@ -4,35 +4,45 @@
 
 package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
+import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Tqueue;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
 import com.hktcode.simple.SimpleAction;
-import com.hktcode.simple.SimpleActionEnd;
 import com.hktcode.simple.SimpleActionRun;
+import com.hktcode.simple.SimpleFinish;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 public abstract class UppdcActionRun<C extends UppdcConfig, M extends UppdcMetric>
-        extends SimpleActionRun<C, M, UpperExesvc>
+        implements SimpleActionRun<C, M, UpperExesvc>
 {
     private static final Logger logger = LoggerFactory.getLogger(UppdcActionRun.class);
 
-    protected UppdcActionRun(C config, M metric, UpperExesvc exesvc)
+    protected UppdcActionRun()
     {
-        super(config, metric, exesvc);
     }
 
     @Override
-    public SimpleAction<C, M, UpperExesvc> next() throws Throwable
+    public SimpleAction next(C config, M metric, UpperExesvc exesvc) ///
+            throws Throwable
     {
-        final Tqueue<UpperRecordProducer> getout = this.exesvc.tgtqueue;
-        try (UppdcSender sender = this.sender()) {
+        if (config == null) {
+            throw new ArgumentNullException("config");
+        }
+        if (metric == null) {
+            throw new ArgumentNullException("metric");
+        }
+        if (exesvc == null) {
+            throw new ArgumentNullException("exesvc");
+        }
+        final Tqueue<UpperRecordProducer> getout = exesvc.tgtqueue;
+        try (UppdcSender sender = this.sender(config, metric)) {
             UpperRecordProducer d = null;
             Throwable ex;
-            while (this.exesvc.run(metric).deletets == Long.MAX_VALUE) {
+            while (exesvc.run(metric).deletets == Long.MAX_VALUE) {
                 if ((ex = metric.callbackRef.get()) != null) {
                     logger.error("callback throws exception", ex);
                     throw ex;
@@ -44,8 +54,8 @@ public abstract class UppdcActionRun<C extends UppdcConfig, M extends UppdcMetri
                 }
             }
         }
-        return SimpleActionEnd.of(this.config, this.metric, this.exesvc);
+        return SimpleFinish.of();
     }
 
-    protected abstract UppdcSender sender() throws IOException;
+    protected abstract UppdcSender sender(C config, M metric) throws IOException;
 }

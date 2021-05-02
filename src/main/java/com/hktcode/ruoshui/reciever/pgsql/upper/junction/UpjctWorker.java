@@ -27,6 +27,6 @@ public class UpjctWorker extends SimpleWorker<UpjctConfig, UpjctMetric, UpperExe
 
     public UpjctActionRun action()
     {
-        return UpjctActionRun.of(config, metric, exesvc);
+        return UpjctActionRun.of();
     }
 }

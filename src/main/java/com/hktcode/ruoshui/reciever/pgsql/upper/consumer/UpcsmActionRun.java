@@ -10,8 +10,8 @@ import com.hktcode.queue.Tqueue;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
 import com.hktcode.simple.SimpleAction;
-import com.hktcode.simple.SimpleActionEnd;
 import com.hktcode.simple.SimpleActionRun;
+import com.hktcode.simple.SimpleFinish;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
 import org.postgresql.replication.PGReplicationStream;
@@ -22,11 +22,18 @@ import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class UpcsmActionRun extends SimpleActionRun<UpcsmConfig, UpcsmMetric, UpperExesvc>
+public class UpcsmActionRun implements SimpleActionRun<UpcsmConfig, UpcsmMetric, UpperExesvc>
 {
     private static final Logger logger = LoggerFactory.getLogger(UpcsmActionRun.class);
 
-    public static UpcsmActionRun of(UpcsmConfig config, UpcsmMetric metric, UpperExesvc exesvc)
+    public static UpcsmActionRun of()
+    {
+        return new UpcsmActionRun();
+    }
+
+    @Override
+    public SimpleAction next(UpcsmConfig config, UpcsmMetric metric, UpperExesvc exesvc) //
+            throws InterruptedException, SQLException
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -37,21 +44,14 @@ public class UpcsmActionRun extends SimpleActionRun<UpcsmConfig, UpcsmMetric, Up
         if (exesvc == null) {
             throw new ArgumentNullException("exesvc");
         }
-        return new UpcsmActionRun(config, metric, exesvc);
-    }
-
-    @Override
-    public SimpleAction<UpcsmConfig, UpcsmMetric, UpperExesvc> next() //
-            throws InterruptedException, SQLException
-    {
-        final Tqueue<UpperRecordConsumer> comein = this.exesvc.srcqueue;
-        try (Connection repl = this.config.srcProperty.replicaConnection()) {
+        final Tqueue<UpperRecordConsumer> comein = exesvc.srcqueue;
+        try (Connection repl = config.srcProperty.replicaConnection()) {
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
-            try (PGReplicationStream slt = this.config.logicalRepl.start(pgrepl)) {
+            try (PGReplicationStream slt = config.logicalRepl.start(pgrepl)) {
                 UpperRecordConsumer r = null;
                 long prevlsn = 0;
-                while (this.exesvc.run(metric).deletets == Long.MAX_VALUE) {
-                    long currlsn = this.metric.txactionLsn.get();
+                while (exesvc.run(metric).deletets == Long.MAX_VALUE) {
+                    long currlsn = metric.txactionLsn.get();
                     if (prevlsn != currlsn) {
                         LogSequenceNumber lsn = LogSequenceNumber.valueOf(currlsn);
                         slt.setFlushedLSN(lsn);
@@ -60,7 +60,7 @@ public class UpcsmActionRun extends SimpleActionRun<UpcsmConfig, UpcsmMetric, Up
                     }
                     metric.statusInfor = "receive logical replication stream message";
                     if (r == null) {
-                        r = this.poll(config, metric, slt);
+                        r = poll(config, metric, slt);
                     } else if ((r = comein.push(r)) != null) {
                         slt.forceUpdateStatus();
                     }
@@ -68,9 +68,9 @@ public class UpcsmActionRun extends SimpleActionRun<UpcsmConfig, UpcsmMetric, Up
             }
         }
         logger.info("pgsender complete");
-        this.metric.statusInfor = "send txation finish record.";
-        this.metric.endDatetime = System.currentTimeMillis();
-        return SimpleActionEnd.of(this.config, this.metric, this.exesvc);
+        metric.statusInfor = "send txation finish record.";
+        metric.endDatetime = System.currentTimeMillis();
+        return SimpleFinish.of();
     }
 
     private UpperRecordConsumer poll(UpcsmConfig config, UpcsmMetric metric, PGReplicationStream s) //
@@ -96,8 +96,7 @@ public class UpcsmActionRun extends SimpleActionRun<UpcsmConfig, UpcsmMetric, Up
         return null;
     }
 
-    private UpcsmActionRun(UpcsmConfig config, UpcsmMetric metric, UpperExesvc exesvc)
+    private UpcsmActionRun()
     {
-        super(config, metric, exesvc);
     }
 }

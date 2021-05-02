@@ -8,30 +8,35 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class SimpleActionRun<C extends SimpleConfig, M extends SimpleMetric, E extends SimpleExesvc>
-        extends SimpleAction<C, M, E>
+public interface SimpleActionRun<C extends SimpleConfig, M extends SimpleMetric, E extends SimpleExesvc>
+        extends SimpleAction
 {
-    protected SimpleActionRun(C config, M metric, E entity)
-    {
-        super(config, metric, entity);
-    }
+    SimpleAction next(C config, M metric, E exesvc) throws Throwable;
 
-    public abstract SimpleAction<C, M, E> next() throws Throwable;
-
-    public SimpleActionEnd<C, M, E> next(Throwable throwError) throws InterruptedException
+    default SimpleActionEnd next(C config, M metric, E exesvc, Throwable errors)
+            throws InterruptedException
     {
-        if (throwError == null) {
-            throw new ArgumentNullException("throwError");
+        if (config == null) {
+            throw new ArgumentNullException("config");
         }
-        this.metric.throwErrors.add(throwError);
-        this.metric.endDatetime = System.currentTimeMillis();
+        if (metric == null) {
+            throw new ArgumentNullException("metric");
+        }
+        if (exesvc == null) {
+            throw new ArgumentNullException("exesvc");
+        }
+        if (errors == null) {
+            throw new ArgumentNullException("errors");
+        }
+        metric.throwErrors.add(errors);
+        metric.endDatetime = System.currentTimeMillis();
         SimplePhaserOuter del = SimplePhaserOuter.of(3);
-        while (this.exesvc.run(metric).deletets == Long.MAX_VALUE) {
-            SimpleResult result = this.exesvc.end(del);
+        while (exesvc.run(metric).deletets == Long.MAX_VALUE) {
+            SimpleResult result = exesvc.end(del);
             logger.info("end: result={}", result);
         }
-        return SimpleActionEnd.of(this.config, this.metric, this.exesvc);
+        return SimpleFinish.of();
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(SimpleActionRun.class);
+    Logger logger = LoggerFactory.getLogger(SimpleActionRun.class);
 }

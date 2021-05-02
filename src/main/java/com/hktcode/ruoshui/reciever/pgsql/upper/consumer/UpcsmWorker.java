@@ -28,6 +28,6 @@ public class UpcsmWorker extends SimpleWorker<UpcsmConfig, UpcsmMetric, UpperExe
     @Override
     public UpcsmActionRun action()
     {
-        return UpcsmActionRun.of(config, metric, exesvc);
+        return UpcsmActionRun.of();
     }
 }

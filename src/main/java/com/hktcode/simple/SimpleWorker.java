@@ -49,16 +49,17 @@ public abstract class SimpleWorker<C extends SimpleConfig, M extends SimpleMetri
     public void run()
     {
         try {
-            SimpleAction<C, M, E> action = this.action();
+            SimpleAction action = this.action();
             do {
+                @SuppressWarnings("unchecked")
                 SimpleActionRun<C, M, E> a = (SimpleActionRun<C, M, E>) action;
                 try {
-                    action = a.next();
+                    action = a.next(this.config, this.metric, this.exesvc);
                 } catch (InterruptedException ex) {
                     throw ex;
                 } catch (Throwable ex) {
                     logger.error("triple throws exception: ", ex);
-                    action = a.next(ex);
+                    action = a.next(this.config, this.metric, this.exesvc, ex);
                 }
             } while (action instanceof SimpleActionRun);
             logger.info("triple completes");
