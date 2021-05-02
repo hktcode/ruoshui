@@ -11,16 +11,16 @@ import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctActionRun;
 import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctMetric;
 import com.hktcode.ruoshui.reciever.pgsql.upper.producer.*;
 import com.hktcode.ruoshui.reciever.pgsql.upper.storeman.UpperKeeperOnlyone;
-import com.hktcode.simple.SimpleExesvr;
+import com.hktcode.simple.SimpleExesvc;
 import com.hktcode.simple.SimplePhaserOuter;
 import com.hktcode.simple.SimpleWorker;
 import org.postgresql.replication.LogSequenceNumber;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class UpperExesvr extends SimpleExesvr
+public class UpperExesvc extends SimpleExesvc
 {
-    public static UpperExesvr of(long createts, String fullname, UpperConfig config, UpperKeeperOnlyone storeman)
+    public static UpperExesvc of(long createts, String fullname, UpperConfig config, UpperKeeperOnlyone storeman)
     {
         if (fullname == null) {
             throw new ArgumentNullException("fullname");
@@ -31,7 +31,7 @@ public class UpperExesvr extends SimpleExesvr
         if (storeman == null) {
             throw new ArgumentNullException("storeman");
         }
-        return new UpperExesvr(createts, fullname, config, storeman);
+        return new UpperExesvc(createts, fullname, config, storeman);
     }
 
     public final long createts;
@@ -43,7 +43,7 @@ public class UpperExesvr extends SimpleExesvr
     private final SimpleWorker producer;
     private final UpperKeeperOnlyone storeman;
 
-    private UpperExesvr //
+    private UpperExesvc //
         /* */( long createts //
         /* */, String fullname //
         /* */, UpperConfig config //

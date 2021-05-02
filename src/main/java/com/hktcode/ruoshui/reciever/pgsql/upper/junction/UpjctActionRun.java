@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class UpjctActionRun extends SimpleActionRun<UpjctConfig, UpjctMetric, UpperExesvr>
+public class UpjctActionRun extends SimpleActionRun<UpjctConfig, UpjctMetric, UpperExesvc>
 {
-    public static UpjctActionRun of(UpjctConfig config, UpjctMetric metric, UpperExesvr holder)
+    public static UpjctActionRun of(UpjctConfig config, UpjctMetric metric, UpperExesvc exesvc)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -30,28 +30,28 @@ public class UpjctActionRun extends SimpleActionRun<UpjctConfig, UpjctMetric, Up
         if (metric == null) {
             throw new ArgumentNullException("metric");
         }
-        if (holder == null) {
-            throw new ArgumentNullException("holder");
+        if (exesvc == null) {
+            throw new ArgumentNullException("exesvc");
         }
-        return new UpjctActionRun(config, metric, holder);
+        return new UpjctActionRun(config, metric, exesvc);
     }
 
-    private UpjctActionRun(UpjctConfig config, UpjctMetric metric, UpperExesvr holder)
+    private UpjctActionRun(UpjctConfig config, UpjctMetric metric, UpperExesvc exesvc)
     {
-        super(config, metric, holder);
+        super(config, metric, exesvc);
     }
 
     @Override
-    public SimpleAction<UpjctConfig, UpjctMetric, UpperExesvr> next() //
+    public SimpleAction<UpjctConfig, UpjctMetric, UpperExesvc> next() //
             throws InterruptedException
     {
-        final Tqueue<UpperRecordConsumer> comein = this.entity.srcqueue;
-        final Tqueue<UpperRecordProducer> getout = this.entity.tgtqueue;
+        final Tqueue<UpperRecordConsumer> comein = this.exesvc.srcqueue;
+        final Tqueue<UpperRecordProducer> getout = this.exesvc.tgtqueue;
         UpperRecordConsumer r = null;
         UpperRecordProducer o = null;
         Iterator<UpperRecordProducer> t //
             = ImmutableList.<UpperRecordProducer>of().iterator();
-        while (this.entity.run(metric).deletets == Long.MAX_VALUE) {
+        while (this.exesvc.run(metric).deletets == Long.MAX_VALUE) {
             if (o != null) {
                 o = getout.push(o);
             }
@@ -66,7 +66,7 @@ public class UpjctActionRun extends SimpleActionRun<UpjctConfig, UpjctMetric, Up
                 r = null;
             }
         }
-        return SimpleActionEnd.of(this.config, this.metric, this.entity);
+        return SimpleActionEnd.of(this.config, this.metric, this.exesvc);
     }
 
     private List<UpperRecordProducer> convert(UpperRecordConsumer record)

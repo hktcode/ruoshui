@@ -28,7 +28,7 @@ public class UpperService implements DisposableBean
 
     private final ReadWriteLock locker = new ReentrantReadWriteLock();
 
-    private final ConcurrentHashMap<String, UpperExesvr> repmap;
+    private final ConcurrentHashMap<String, UpperExesvc> repmap;
 
     public UpperService(@Autowired UpperKeeperOnlyone dricab)
     {
@@ -47,18 +47,18 @@ public class UpperService implements DisposableBean
         }
         long createts = System.currentTimeMillis();
         UpperConfig config = UpperConfig.ofJsonObject(body);
-        UpperExesvr holder = UpperExesvr.of(createts, name, config, this.keeper);
+        UpperExesvc exesvc = UpperExesvc.of(createts, name, config, this.keeper);
 
         Lock lock = this.locker.readLock();
         lock.lock();
         try {
             SimplePhaserOuter cmd = SimplePhaserOuter.of(4);
-            UpperExesvr status = this.repmap.putIfAbsent(name, holder);
+            UpperExesvc status = this.repmap.putIfAbsent(name, exesvc);
             if (status != null) {
                 UpperResult result = status.get(cmd);
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new UpperResult[]{ result });
             }
-            UpperResult result = holder.put(cmd);
+            UpperResult result = exesvc.put(cmd);
             return ResponseEntity.ok(new UpperResult[] { result });
         }
         finally {
@@ -74,12 +74,12 @@ public class UpperService implements DisposableBean
         Lock lock = this.locker.readLock();
         lock.lock();
         try {
-            UpperExesvr holder = this.repmap.remove(name);
-            if (holder == null) {
+            UpperExesvc exesvc = this.repmap.remove(name);
+            if (exesvc == null) {
                 return ResponseEntity.notFound().build();
             }
             SimplePhaserOuter del = SimplePhaserOuter.of(4);
-            UpperResult result = holder.del(del);
+            UpperResult result = exesvc.del(del);
             return ResponseEntity.ok(new UpperResult[]{result});
         }
         finally {
@@ -95,12 +95,12 @@ public class UpperService implements DisposableBean
         Lock lock = this.locker.readLock();
         lock.lock();
         try {
-            UpperExesvr holder = this.repmap.get(name);
-            if (holder == null) {
+            UpperExesvc exesvc = this.repmap.get(name);
+            if (exesvc == null) {
                 return ResponseEntity.notFound().build();
             }
             SimplePhaserOuter cmd = SimplePhaserOuter.of(4);
-            UpperResult result = holder.get(cmd);
+            UpperResult result = exesvc.get(cmd);
             return ResponseEntity.ok(new UpperResult[] { result });
         }
         finally {
@@ -120,12 +120,12 @@ public class UpperService implements DisposableBean
         Lock lock = this.locker.readLock();
         lock.lock();
         try {
-            UpperExesvr holder = this.repmap.get(name);
-            if (holder == null) {
+            UpperExesvc exesvc = this.repmap.get(name);
+            if (exesvc == null) {
                 return ResponseEntity.notFound().build();
             }
             SimplePhaserOuter cmd = SimplePhaserOuter.of(4);
-            UpperResult result = holder.pst(cmd, json);
+            UpperResult result = exesvc.pst(cmd, json);
             return ResponseEntity.ok(new UpperResult[] { result });
         }
         finally {
@@ -140,10 +140,10 @@ public class UpperService implements DisposableBean
         try {
             UpperResult[] result = new UpperResult[this.repmap.size()];
             int index = 0;
-            for (Map.Entry<String, UpperExesvr> entry : this.repmap.entrySet()) {
+            for (Map.Entry<String, UpperExesvc> entry : this.repmap.entrySet()) {
                 final SimplePhaserOuter cmd = SimplePhaserOuter.of(4);
-                final UpperExesvr holder = entry.getValue();
-                UpperResult r = holder.get(cmd);
+                final UpperExesvc exesvc = entry.getValue();
+                UpperResult r = exesvc.get(cmd);
                 result[index++] = r;
             }
             return ResponseEntity.ok(result);
@@ -159,10 +159,10 @@ public class UpperService implements DisposableBean
         Lock lock = this.locker.writeLock();
         lock.lock();
         try {
-            for (Map.Entry<String, UpperExesvr> entry : this.repmap.entrySet()) {
+            for (Map.Entry<String, UpperExesvc> entry : this.repmap.entrySet()) {
                 SimplePhaserOuter cmd = SimplePhaserOuter.of(4);
-                UpperExesvr holder = entry.getValue();
-                holder.end(cmd);
+                UpperExesvc exesvc = entry.getValue();
+                exesvc.end(cmd);
             }
         }
         finally {

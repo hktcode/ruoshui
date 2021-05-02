@@ -8,12 +8,12 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class SimpleActionRun<C extends SimpleConfig, M extends SimpleMetric, E extends SimpleExesvr>
+public abstract class SimpleActionRun<C extends SimpleConfig, M extends SimpleMetric, E extends SimpleExesvc>
         extends SimpleAction<C, M, E>
 {
-    protected SimpleActionRun(C config, M metric, E entity)
+    protected SimpleActionRun(C config, M metric, E exesvc)
     {
-        super(config, metric, entity);
+        super(config, metric, exesvc);
     }
 
     public abstract SimpleAction<C, M, E> next() throws Throwable;
@@ -26,11 +26,11 @@ public abstract class SimpleActionRun<C extends SimpleConfig, M extends SimpleMe
         this.metric.throwErrors.add(throwError);
         this.metric.endDatetime = System.currentTimeMillis();
         SimplePhaserOuter del = SimplePhaserOuter.of(3);
-        while (this.entity.run(metric).deletets == Long.MAX_VALUE) {
-            SimpleResult result = this.entity.end(del);
+        while (this.exesvc.run(metric).deletets == Long.MAX_VALUE) {
+            SimpleResult result = this.exesvc.end(del);
             logger.info("end: result={}", result);
         }
-        return SimpleActionEnd.of(this.config, this.metric, this.entity);
+        return SimpleActionEnd.of(this.config, this.metric, this.exesvc);
     }
 
     private static final Logger logger = LoggerFactory.getLogger(SimpleActionRun.class);

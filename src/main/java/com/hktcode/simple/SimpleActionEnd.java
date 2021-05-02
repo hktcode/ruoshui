@@ -2,11 +2,11 @@ package com.hktcode.simple;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class SimpleActionEnd<C extends SimpleConfig, M extends SimpleMetric, E extends SimpleExesvr>
+public class SimpleActionEnd<C extends SimpleConfig, M extends SimpleMetric, E extends SimpleExesvc>
         extends SimpleAction<C, M, E>
 {
-    public static <C extends SimpleConfig, M extends SimpleMetric, E extends SimpleExesvr> //
-    SimpleActionEnd<C, M, E> of(C config, M metric, E entity)
+    public static <C extends SimpleConfig, M extends SimpleMetric, E extends SimpleExesvc> //
+    SimpleActionEnd<C, M, E> of(C config, M metric, E exesvc)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -14,14 +14,14 @@ public class SimpleActionEnd<C extends SimpleConfig, M extends SimpleMetric, E e
         if (metric == null) {
             throw new ArgumentNullException("metric");
         }
-        if (entity == null) {
-            throw new ArgumentNullException("entity");
+        if (exesvc == null) {
+            throw new ArgumentNullException("exesvc");
         }
-        return new SimpleActionEnd<>(config, metric, entity);
+        return new SimpleActionEnd<>(config, metric, exesvc);
     }
 
-    protected SimpleActionEnd(C config, M metric, E entity)
+    protected SimpleActionEnd(C config, M metric, E exesvc)
     {
-        super(config, metric, entity);
+        super(config, metric, exesvc);
     }
 }
