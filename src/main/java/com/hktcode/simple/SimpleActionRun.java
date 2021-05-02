@@ -11,9 +11,9 @@ import org.slf4j.LoggerFactory;
 public abstract class SimpleActionRun<C extends SimpleConfig, M extends SimpleMetric, E extends SimpleExesvc>
         extends SimpleAction<C, M, E>
 {
-    protected SimpleActionRun(C config, M metric, E exesvc)
+    protected SimpleActionRun(C config, M metric, E entity)
     {
-        super(config, metric, exesvc);
+        super(config, metric, entity);
     }
 
     public abstract SimpleAction<C, M, E> next() throws Throwable;

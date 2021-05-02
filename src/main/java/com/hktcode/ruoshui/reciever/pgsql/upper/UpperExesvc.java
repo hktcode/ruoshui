@@ -5,15 +5,17 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Tqueue;
 import com.hktcode.queue.TqueueMetric;
-import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmActionRun;
 import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmMetric;
-import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctActionRun;
+import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorker;
 import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctMetric;
-import com.hktcode.ruoshui.reciever.pgsql.upper.producer.*;
+import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorker;
+import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcConfigKafka;
+import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcMetricFiles;
+import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcMetricKafka;
+import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorker;
 import com.hktcode.ruoshui.reciever.pgsql.upper.storeman.UpperKeeperOnlyone;
 import com.hktcode.simple.SimpleExesvc;
 import com.hktcode.simple.SimplePhaserOuter;
-import com.hktcode.simple.SimpleThread;
 import org.postgresql.replication.LogSequenceNumber;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -36,11 +38,11 @@ public class UpperExesvc extends SimpleExesvc
 
     public final long createts;
     public final String fullname;
-    private final SimpleThread consumer; // laborer
+    private final UpcsmWorker consumer; // laborer
     public final Tqueue<UpperRecordConsumer> srcqueue;
-    private final SimpleThread junction;
+    private final UpjctWorker junction;
     public final Tqueue<UpperRecordProducer> tgtqueue;
-    private final SimpleThread producer;
+    private final UppdcWorker producer;
     private final UpperKeeperOnlyone storeman;
 
     private UpperExesvc //
@@ -53,15 +55,15 @@ public class UpperExesvc extends SimpleExesvc
         this.createts = createts;
         this.fullname = fullname;
         AtomicLong txactionLsn = new AtomicLong(LogSequenceNumber.INVALID_LSN.asLong());
-        this.consumer = SimpleThread.of(UpcsmActionRun.of(config.consumer, UpcsmMetric.of(txactionLsn), this));
+        this.consumer = UpcsmWorker.of(config.consumer, UpcsmMetric.of(txactionLsn), this);
         this.srcqueue = Tqueue.of(config.srcqueue, TqueueMetric.of());
-        this.junction = SimpleThread.of(UpjctActionRun.of(config.junction, UpjctMetric.of(), this));
+        this.junction = UpjctWorker.of(config.junction, UpjctMetric.of(), this);
         this.tgtqueue = Tqueue.of(config.tgtqueue, TqueueMetric.of());
         if (config.producer instanceof UppdcConfigKafka) {
-            this.producer = SimpleThread.of(UppdcActionRunKafka.of((UppdcConfigKafka) config.producer, UppdcMetricKafka.of(txactionLsn), this));
+            this.producer = UppdcWorker.of(config.producer, UppdcMetricKafka.of(txactionLsn), this);
         }
         else {
-            this.producer = SimpleThread.of(UppdcActionRunFiles.of((UppdcConfigFiles) config.producer, UppdcMetricFiles.of(txactionLsn), this));
+            this.producer = UppdcWorker.of(config.producer, UppdcMetricFiles.of(txactionLsn), this);
         }
         this.storeman = storeman;
     }
@@ -80,9 +82,9 @@ public class UpperExesvc extends SimpleExesvc
         if (cmd == null) {
             throw new ArgumentNullException("cmd");
         }
-        this.submit(this.producer);
-        this.submit(this.junction);
         this.submit(this.consumer);
+        this.submit(this.junction);
+        this.submit(this.producer);
         this.shutdown();
         return this.run(cmd, (o, f)->this.put(o.deletets));
     }
@@ -114,14 +116,14 @@ public class UpperExesvc extends SimpleExesvc
     private UpperResult end(long deletets)
     {
         if (deletets == Long.MAX_VALUE) {
-            if (this.consumer.action.metric.endDatetime == Long.MAX_VALUE) {
-                this.consumer.action.metric.endDatetime = this.consumer.action.metric.exeDateTime;
+            if (this.consumer.metric.endDatetime == Long.MAX_VALUE) {
+                this.consumer.metric.endDatetime = this.consumer.metric.exeDateTime;
             }
-            if (this.junction.action.metric.endDatetime == Long.MAX_VALUE) {
-                this.junction.action.metric.endDatetime = this.junction.action.metric.exeDateTime;
+            if (this.junction.metric.endDatetime == Long.MAX_VALUE) {
+                this.junction.metric.endDatetime = this.junction.metric.exeDateTime;
             }
-            if (this.producer.action.metric.endDatetime == Long.MAX_VALUE) {
-                this.producer.action.metric.endDatetime = this.producer.action.metric.exeDateTime;
+            if (this.producer.metric.endDatetime == Long.MAX_VALUE) {
+                this.producer.metric.endDatetime = this.producer.metric.exeDateTime;
             }
             deletets = System.currentTimeMillis();
         }
@@ -186,11 +188,11 @@ public class UpperExesvc extends SimpleExesvc
         ObjectNode junction = node.putObject("junction");
         ObjectNode tgtqueue = node.putObject("tgtqueue");
         ObjectNode producer = node.putObject("producer");
-        this.consumer.action.config.toJsonObject(consumer);
+        this.consumer.config.toJsonObject(consumer);
         this.srcqueue.config.toJsonObject(srcqueue);
-        this.junction.action.config.toJsonObject(junction);
+        this.junction.config.toJsonObject(junction);
         this.tgtqueue.config.toJsonObject(tgtqueue);
-        this.producer.action.config.toJsonObject(producer);
+        this.producer.config.toJsonObject(producer);
         return node;
     }
 }
