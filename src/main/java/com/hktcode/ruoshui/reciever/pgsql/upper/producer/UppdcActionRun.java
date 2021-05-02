@@ -29,7 +29,7 @@ public abstract class UppdcActionRun<C extends UppdcConfig, M extends UppdcMetri
     public SimpleAction<C, M, UpperHolder> next() throws Throwable
     {
         final Tqueue<UpperRecordProducer> getout = this.entity.tgtqueue;
-        try (UppdcSender<?, ?> sender = this.sender()) {
+        try (UppdcSender sender = this.sender()) {
             UpperRecordProducer d = null;
             Throwable ex;
             while (this.entity.run(metric).deletets == Long.MAX_VALUE) {
@@ -47,5 +47,5 @@ public abstract class UppdcActionRun<C extends UppdcConfig, M extends UppdcMetri
         return SimpleActionEnd.of(this.config, this.metric, this.entity);
     }
 
-    protected abstract UppdcSender<C, M> sender() throws IOException;
+    protected abstract UppdcSender sender() throws IOException;
 }

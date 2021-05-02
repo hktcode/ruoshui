@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.hktcode.kafka.Kafka.Serializers.BYTES;
 
-public class UppdcSenderKafka extends UppdcSender<UppdcConfigKafka, UppdcMetricKafka>
+public class UppdcSenderKafka extends UppdcSender
 {
     public static UppdcSenderKafka of(UppdcConfigKafka config, UppdcMetricKafka metric)
     {
@@ -28,16 +28,21 @@ public class UppdcSenderKafka extends UppdcSender<UppdcConfigKafka, UppdcMetricK
         return new UppdcSenderKafka(config, metric);
     }
 
+    private final UppdcConfigKafka config;
+
+    private final UppdcMetricKafka metric;
+
     private final Producer<byte[], byte[]> handle;
 
     private UppdcSenderKafka(UppdcConfigKafka config, UppdcMetricKafka metric)
     {
-        super(config, metric);
         Properties properties = new Properties();
         properties.setProperty("request.timeout.ms", "1000");
         for (Map.Entry<String, String> e : config.kfkProperty.entrySet()) {
             properties.setProperty(e.getKey(), e.getValue());
         }
+        this.config = config;
+        this.metric = metric;
         this.handle = new KafkaProducer<>(properties, BYTES, BYTES);
     }
 

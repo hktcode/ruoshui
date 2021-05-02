@@ -13,12 +13,11 @@ import java.nio.channels.CompletionHandler;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 
-public class UppdcSenderFiles extends UppdcSender<UppdcConfigFiles, UppdcMetricFiles>
+public class UppdcSenderFiles extends UppdcSender
 {
     private static final Logger logger = LoggerFactory.getLogger(UppdcSenderFiles.class);
 
-    public static UppdcSenderFiles of(UppdcConfigFiles config, UppdcMetricFiles metric) //
-            throws IOException
+    public static UppdcSenderFiles of(UppdcConfigFiles config, UppdcMetricFiles metric)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -29,23 +28,16 @@ public class UppdcSenderFiles extends UppdcSender<UppdcConfigFiles, UppdcMetricF
         return new UppdcSenderFiles(config, metric);
     }
 
-    private static final OpenOption[] OPTIONS = {
-            StandardOpenOption.CREATE_NEW,
-            StandardOpenOption.WRITE,
-    };
+    private final UppdcConfigFiles config;
 
-    // contentPath -- waldir
-    // reqarg  // 不可变
-    // config  // 不可变
-    // metric  // 不可变
-    // params  // 可变
-    // gauges  // 可变
+    private final UppdcMetricFiles metric;
 
     private AsynchronousFileChannel[] handle;
 
     private UppdcSenderFiles(UppdcConfigFiles config, UppdcMetricFiles metric)
     {
-        super(config, metric);
+        this.config = config;
+        this.metric = metric;
     }
 
     @Override
@@ -61,8 +53,8 @@ public class UppdcSenderFiles extends UppdcSender<UppdcConfigFiles, UppdcMetricF
             this.fopen(record);
         }
         AsynchronousFileChannel channel = this.handle[0];
-        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
-        channel.write(byteBuffer, this.metric.curPosition, record, new FileCompletionHandler(metric));
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        channel.write(buffer, metric.curPosition, record, new Handler(metric));
         this.metric.totalLength += bytes.length;
         this.metric.curPosition += bytes.length;
         this.metric.bufferBytes += bytes.length;
@@ -76,13 +68,19 @@ public class UppdcSenderFiles extends UppdcSender<UppdcConfigFiles, UppdcMetricF
 
     private void fopen(UpperRecordProducer record) throws IOException
     {
+        OpenOption[] options = {
+                StandardOpenOption.CREATE_NEW,
+                StandardOpenOption.WRITE
+        };
         long timeline = record.key.timeline;
         long lsnofcmt = record.key.lsnofcmt;
         long sequence = record.key.sequence;
         this.metric.curFilename = String.format("%08x%016x%016x.jwal", timeline, lsnofcmt, sequence).toUpperCase();
         Path file = Paths.get(this.config.walDatapath.toString(), this.metric.curFilename);
         logger.info("fopen : curFilename={}", this.metric.curFilename);
-        this.handle = new AsynchronousFileChannel[] { AsynchronousFileChannel.open(file, OPTIONS) };
+        this.handle = new AsynchronousFileChannel[] {
+                AsynchronousFileChannel.open(file, options)
+        };
         this.metric.curPosition = 0;
         this.metric.bufferBytes = 0;
     }
@@ -108,11 +106,11 @@ public class UppdcSenderFiles extends UppdcSender<UppdcConfigFiles, UppdcMetricF
         this.metric.bufferBytes = 0;
     }
 
-    private static class FileCompletionHandler implements CompletionHandler<Integer, UpperRecordProducer>
+    private static class Handler implements CompletionHandler<Integer, UpperRecordProducer>
     {
         private final UppdcMetricFiles metric;
 
-        public FileCompletionHandler(UppdcMetricFiles metric)
+        public Handler(UppdcMetricFiles metric)
         {
             this.metric = metric;
         }
