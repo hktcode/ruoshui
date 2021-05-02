@@ -4,12 +4,10 @@
 
 package com.hktcode.simple;
 
-import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Phaser;
-import java.util.function.BiFunction;
 
 public class SimplePhaserOuter implements SimplePhaser
 {
@@ -27,7 +25,7 @@ public class SimplePhaserOuter implements SimplePhaser
         this.phaser = new Phaser(parties);
     }
 
-    public void run() throws InterruptedException
+    public void waiting() throws InterruptedException
     {
         int phase = this.phaser.arriveAndDeregister();
         if (phase < 0) {
@@ -43,16 +41,8 @@ public class SimplePhaserOuter implements SimplePhaser
         }
     }
 
-    public <R extends SimpleResult> //
-    R run(SimplePhaserInner origin, BiFunction<SimplePhaserInner, SimplePhaserOuter, R> keeper)
-            throws InterruptedException
+    public void acquire() throws InterruptedException
     {
-        if (keeper == null) {
-            throw new ArgumentNullException("keeper");
-        }
-        if (origin == null) {
-            throw new ArgumentNullException("origin");
-        }
         int phase = this.phaser.arrive();
         if (phase < 0) {
             logger.error("phaser.arrive: phaser={}", phase);
@@ -61,18 +51,17 @@ public class SimplePhaserOuter implements SimplePhaser
         if (phase < 0) {
             logger.error("phaser.awaitAdvanceInterruptibly: phaser={}", phase);
         }
-        try {
-            return keeper.apply(origin, this);
+    }
+
+    public void release() throws InterruptedException
+    {
+        int phase = this.phaser.arriveAndDeregister();
+        if (phase < 0) {
+            logger.error("phaser.arriveAndDeregister: phaser={}", phase);
         }
-        finally {
-            phase = this.phaser.arriveAndDeregister();
-            if (phase < 0) {
-                logger.error("phaser.arriveAndDeregister: phase={}", phase);
-            }
-            phase = this.phaser.awaitAdvanceInterruptibly(phase);
-            if (phase >= 0) {
-                logger.error("phaser.awaitAvanceInteruptible: phase={}", phase);
-            }
+        phase = this.phaser.awaitAdvanceInterruptibly(phase);
+        if (phase < 0) {
+            logger.error("phaser.awaitAdvanceInterruptibly: phaser={}", phase);
         }
     }
 }

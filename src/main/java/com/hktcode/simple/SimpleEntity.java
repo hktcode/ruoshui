@@ -27,7 +27,7 @@ public abstract class SimpleEntity<R extends SimpleResult>
         SimplePhaser origin;
         while (!((origin = this.status.get()) instanceof SimplePhaserInner)) {
             metric.exeDateTime = System.currentTimeMillis();
-            ((SimplePhaserOuter)origin).run();
+            ((SimplePhaserOuter)origin).waiting();
         }
         SimplePhaserInner result = (SimplePhaserInner) origin;
         if (result.deletets != Long.MAX_VALUE && metric.endDatetime == Long.MAX_VALUE) {
@@ -54,7 +54,7 @@ public abstract class SimpleEntity<R extends SimpleResult>
         if (future == cmd && !this.status.compareAndSet(origin, future)) {
             throw new RuoshuiLockedException();
         }
-        return future.run(origin, (o, f)->this.apply(o, f, keeper));
+        return this.apply(origin, future, keeper);
     }
 
     public R end(SimplePhaserOuter cmd, SimpleKeeper<R> keeper) //
