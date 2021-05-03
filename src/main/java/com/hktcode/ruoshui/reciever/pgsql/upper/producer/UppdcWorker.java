@@ -1,14 +1,32 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
+import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
 import com.hktcode.simple.SimpleWorker;
 
-public abstract class UppdcWorker extends SimpleWorker<UppdcConfig, UppdcMeters, UpperExesvc>
+public class UppdcWorker extends SimpleWorker<UppdcArgval, UppdcMeters, UpperExesvc>
 {
-    protected UppdcWorker(UppdcConfig config, UppdcMeters meters, UpperExesvc exesvc)
+    public static UppdcWorker of(UppdcArgval argval, UppdcMeters meters, UpperExesvc exesvc)
     {
-        super(config, meters, exesvc);
+        if (argval == null) {
+            throw new ArgumentNullException("argval");
+        }
+        if (meters == null) {
+            throw new ArgumentNullException("meters");
+        }
+        if (exesvc == null) {
+            throw new ArgumentNullException("exesvc");
+        }
+        return new UppdcWorker(argval, meters, exesvc);
     }
 
-    public abstract UppdcActionRun action();
+    private UppdcWorker(UppdcArgval argval, UppdcMeters meters, UpperExesvc exesvc)
+    {
+        super(argval, meters, exesvc);
+    }
+
+    public UppdcActionRun action()
+    {
+        return this.argval.actionInfos.get(0).action();
+    }
 }

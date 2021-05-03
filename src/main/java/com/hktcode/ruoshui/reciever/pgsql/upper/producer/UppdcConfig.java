@@ -56,5 +56,5 @@ public abstract class UppdcConfig extends SimpleConfig
         return result;
     }
 
-    public abstract UppdcWorker worker(AtomicLong txactionLsn, UpperExesvc exesvc);
+    public abstract UppdcActionRun action();
 }

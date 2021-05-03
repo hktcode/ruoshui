@@ -79,14 +79,8 @@ public class UppdcConfigFiles extends UppdcConfig
     }
 
     @Override
-    public UppdcWorkerFiles worker(AtomicLong txactionLsn, UpperExesvc exesvc)
+    public UppdcActionRunFiles action()
     {
-        if (txactionLsn == null) {
-            throw new ArgumentNullException("txactionLsn");
-        }
-        if (exesvc == null) {
-            throw new ArgumentNullException("exesvc");
-        }
-        return UppdcWorkerFiles.of(this, UppdcMeters.of(txactionLsn), exesvc);
+        return UppdcActionRunFiles.of(this);
     }
 }

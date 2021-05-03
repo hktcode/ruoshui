@@ -7,18 +7,18 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class SimpleWorker<A extends SimpleConfig, M extends SimpleMeters, E extends SimpleExesvc>
+public abstract class SimpleWorker<A extends SimpleArgval, M extends SimpleMeters, E extends SimpleExesvc>
         implements JacksonObject, Runnable
 {
-    public final A config;
+    public final A argval;
 
     public final M meters;
 
     public final E exesvc;
 
-    protected SimpleWorker(A config, M meters, E exesvc)
+    protected SimpleWorker(A argval, M meters, E exesvc)
     {
-        this.config = config;
+        this.argval = argval;
         this.meters = meters;
         this.exesvc = exesvc;
     }
@@ -28,7 +28,7 @@ public abstract class SimpleWorker<A extends SimpleConfig, M extends SimpleMeter
         if (node == null) {
             throw new ArgumentNullException("node");
         }
-        this.config.pst(node);
+        this.argval.pst(node);
     }
 
     @Override
@@ -38,7 +38,7 @@ public abstract class SimpleWorker<A extends SimpleConfig, M extends SimpleMeter
             throw new ArgumentNullException("node");
         }
         ObjectNode configNode = node.putObject("config");
-        this.config.toJsonObject(configNode);
+        this.argval.toJsonObject(configNode);
         ObjectNode metricNode = node.putObject("metric");
         this.meters.toJsonObject(metricNode);
         return node;

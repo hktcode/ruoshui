@@ -24,6 +24,7 @@ public class UpcsmMeters extends SimpleMeters
     }
 
     public final AtomicLong txactionLsn;
+    public long reportedLsn = 0;
 
     public ObjectNode toJsonObject(ObjectNode node)
     {
@@ -31,8 +32,8 @@ public class UpcsmMeters extends SimpleMeters
             throw new ArgumentNullException("node");
         }
         node = super.toJsonObject(node);
-        LogSequenceNumber lsn = LogSequenceNumber.valueOf(txactionLsn.get());
-        node.put("txaction_lsn", lsn.asString());
+        LogSequenceNumber lsn = LogSequenceNumber.valueOf(this.reportedLsn);
+        node.put("reported_lsn", lsn.asString());
         return node;
     }
 }

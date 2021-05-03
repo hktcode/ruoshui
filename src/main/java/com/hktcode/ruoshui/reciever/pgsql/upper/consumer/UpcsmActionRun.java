@@ -56,14 +56,13 @@ public class UpcsmActionRun implements SimpleActionRun<UpcsmMeters, UpperExesvc>
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
             try (PGReplicationStream slt = config.logicalRepl.start(pgrepl)) {
                 UpperRecordConsumer r = null;
-                long prevlsn = 0;
                 while (exesvc.run(meters).deletets == Long.MAX_VALUE) {
                     long currlsn = meters.txactionLsn.get();
-                    if (prevlsn != currlsn) {
+                    if (meters.reportedLsn != currlsn) {
                         LogSequenceNumber lsn = LogSequenceNumber.valueOf(currlsn);
                         slt.setFlushedLSN(lsn);
                         slt.setAppliedLSN(lsn);
-                        prevlsn = currlsn;
+                        meters.reportedLsn = currlsn;
                     }
                     metric.statusInfor = "receive logical replication stream message";
                     if (r == null) {

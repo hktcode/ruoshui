@@ -178,11 +178,11 @@ public class UpperExesvc extends SimpleExesvc
         ObjectNode junction = node.putObject("junction");
         ObjectNode tgtqueue = node.putObject("tgtqueue");
         ObjectNode producer = node.putObject("producer");
-        this.consumer.config.toJsonObject(consumer);
+        this.consumer.argval.toJsonObject(consumer);
         this.srcqueue.config.toJsonObject(srcqueue);
-        this.junction.config.toJsonObject(junction);
+        this.junction.argval.toJsonObject(junction);
         this.tgtqueue.config.toJsonObject(tgtqueue);
-        this.producer.config.toJsonObject(producer);
+        this.producer.argval.toJsonObject(producer);
         return node;
     }
 }

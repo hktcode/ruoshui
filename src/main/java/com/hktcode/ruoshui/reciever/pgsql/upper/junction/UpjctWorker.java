@@ -4,9 +4,9 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
 import com.hktcode.simple.SimpleWorker;
 
-public class UpjctWorker extends SimpleWorker<UpjctConfig, UpjctMeters, UpperExesvc>
+public class UpjctWorker extends SimpleWorker<UpjctArgval, UpjctMeters, UpperExesvc>
 {
-    public static UpjctWorker of(UpjctConfig config, UpjctMeters meters, UpperExesvc exesvc)
+    public static UpjctWorker of(UpjctArgval config, UpjctMeters meters, UpperExesvc exesvc)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -20,13 +20,13 @@ public class UpjctWorker extends SimpleWorker<UpjctConfig, UpjctMeters, UpperExe
         return new UpjctWorker(config, meters, exesvc);
     }
 
-    private UpjctWorker(UpjctConfig config, UpjctMeters meters, UpperExesvc exesvc)
+    private UpjctWorker(UpjctArgval config, UpjctMeters meters, UpperExesvc exesvc)
     {
         super(config, meters, exesvc);
     }
 
     public UpjctActionRun action()
     {
-        return UpjctActionRun.of(config);
+        return UpjctActionRun.of(argval.actionInfos.get(0));
     }
 }

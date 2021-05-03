@@ -6,9 +6,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.TqueueConfig;
-import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmConfig;
-import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctConfig;
-import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcConfig;
+import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmArgval;
+import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctArgval;
+import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcArgval;
 
 public class UpperConfig
 {
@@ -20,11 +20,11 @@ public class UpperConfig
         schema.put("$schema", "http://json-schema.org/draft-04/schema#");
         schema.put("type", "object");
         ObjectNode propertiesNode = schema.putObject("properties");
-        propertiesNode.set("consumer", UpcsmConfig.SCHEMA);
+        propertiesNode.set("consumer", UpcsmArgval.SCHEMA);
         propertiesNode.set("srcqueue", TqueueConfig.SCHEMA);
-        propertiesNode.set("junction", UpjctConfig.SCHEMA);
+        propertiesNode.set("junction", UpjctArgval.SCHEMA);
         propertiesNode.set("tgtqueue", TqueueConfig.SCHEMA);
-        propertiesNode.set("producer", UppdcConfig.SCHEMA);
+        propertiesNode.set("producer", UppdcArgval.SCHEMA);
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
@@ -33,26 +33,26 @@ public class UpperConfig
         if (jsonNode == null) {
             throw new ArgumentNullException("jsonNode");
         }
-        UpcsmConfig consumer = UpcsmConfig.ofJsonObject(jsonNode.path("consumer"));
+        UpcsmArgval consumer = UpcsmArgval.ofJsonObject(jsonNode.path("consumer"));
         TqueueConfig srcqueue = TqueueConfig.ofJsonObject(jsonNode.path("srcqueue"));
-        UpjctConfig junction = UpjctConfig.ofJsonObject(jsonNode.path("junction"));
+        UpjctArgval junction = UpjctArgval.ofJsonObject(jsonNode.path("junction"));
         TqueueConfig tgtqueue = TqueueConfig.ofJsonObject(jsonNode.path("tgtqueue"));
-        UppdcConfig producer = UppdcConfig.ofJsonObject(jsonNode.path("producer"));
+        UppdcArgval producer = UppdcArgval.ofJsonObject(jsonNode.path("producer"));
         return new UpperConfig(consumer, srcqueue, junction, tgtqueue, producer);
     }
 
-    public final UpcsmConfig consumer; // laborer
+    public final UpcsmArgval consumer; // laborer
     public final TqueueConfig srcqueue;
-    public final UpjctConfig junction;
+    public final UpjctArgval junction;
     public final TqueueConfig tgtqueue;
-    public final UppdcConfig producer;
+    public final UppdcArgval producer;
 
     private UpperConfig //
-            /* */( UpcsmConfig consumer //
+            /* */( UpcsmArgval consumer //
             /* */, TqueueConfig srcqueue //
-            /* */, UpjctConfig junction //
+            /* */, UpjctArgval junction //
             /* */, TqueueConfig tgtqueue //
-            /* */, UppdcConfig producer //
+            /* */, UppdcArgval producer //
             /* */)
     {
         this.consumer = consumer;

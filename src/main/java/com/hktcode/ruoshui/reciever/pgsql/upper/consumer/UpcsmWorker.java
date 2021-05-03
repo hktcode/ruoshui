@@ -4,12 +4,12 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
 import com.hktcode.simple.SimpleWorker;
 
-public class UpcsmWorker extends SimpleWorker<UpcsmConfig, UpcsmMeters, UpperExesvc>
+public class UpcsmWorker extends SimpleWorker<UpcsmArgval, UpcsmMeters, UpperExesvc>
 {
-    public static UpcsmWorker of(UpcsmConfig config, UpcsmMeters meters, UpperExesvc exesvc)
+    public static UpcsmWorker of(UpcsmArgval argval, UpcsmMeters meters, UpperExesvc exesvc)
     {
-        if (config == null) {
-            throw new ArgumentNullException("config");
+        if (argval == null) {
+            throw new ArgumentNullException("argval");
         }
         if (meters == null) {
             throw new ArgumentNullException("meters");
@@ -17,17 +17,17 @@ public class UpcsmWorker extends SimpleWorker<UpcsmConfig, UpcsmMeters, UpperExe
         if (exesvc == null) {
             throw new ArgumentNullException("exesvc");
         }
-        return new UpcsmWorker(config, meters, exesvc);
+        return new UpcsmWorker(argval, meters, exesvc);
     }
 
-    private UpcsmWorker(UpcsmConfig config, UpcsmMeters meters, UpperExesvc exesvc)
+    private UpcsmWorker(UpcsmArgval argval, UpcsmMeters meters, UpperExesvc exesvc)
     {
-        super(config, meters, exesvc);
+        super(argval, meters, exesvc);
     }
 
     @Override
     public UpcsmActionRun action()
     {
-        return UpcsmActionRun.of(this.config);
+        return UpcsmActionRun.of(this.argval.actionInfos.get(0));
     }
 }

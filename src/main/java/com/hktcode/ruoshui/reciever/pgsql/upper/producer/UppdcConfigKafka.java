@@ -97,14 +97,8 @@ public class UppdcConfigKafka extends UppdcConfig
     }
 
     @Override
-    public UppdcWorkerKafka worker(AtomicLong txactionLsn, UpperExesvc exesvc)
+    public UppdcActionRunKafka action()
     {
-        if (txactionLsn == null) {
-            throw new ArgumentNullException("txactionLsn");
-        }
-        if (exesvc == null) {
-            throw new ArgumentNullException("exesvc");
-        }
-        return UppdcWorkerKafka.of(this, UppdcMeters.of(txactionLsn), exesvc);
+        return UppdcActionRunKafka.of(this);
     }
 }

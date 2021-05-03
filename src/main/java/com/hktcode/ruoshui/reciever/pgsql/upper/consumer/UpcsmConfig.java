@@ -10,10 +10,7 @@ import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.entity.LogicalReplConfig;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgConnectionProperty;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
-import com.hktcode.simple.SimpleConfig;
-
-import java.util.concurrent.atomic.AtomicLong;
+import com.hktcode.simple.*;
 
 public class UpcsmConfig extends SimpleConfig
 {
@@ -60,16 +57,5 @@ public class UpcsmConfig extends SimpleConfig
         ObjectNode srcPropertyNode = node.putObject("src_property");
         this.srcProperty.toJsonObject(srcPropertyNode);
         return node;
-    }
-
-    public UpcsmWorker worker(AtomicLong txactionLsn, UpperExesvc exesvc)
-    {
-        if (txactionLsn == null) {
-            throw new ArgumentNullException("txactionLsn");
-        }
-        if (exesvc == null) {
-            throw new ArgumentNullException("exesvc");
-        }
-        return UpcsmWorker.of(this, UpcsmMeters.of(txactionLsn), exesvc);
     }
 }
