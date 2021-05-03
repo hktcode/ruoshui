@@ -7,19 +7,19 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class SimpleWorker<C extends SimpleConfig, M extends SimpleMetric, E extends SimpleExesvc>
+public abstract class SimpleWorker<A extends SimpleConfig, M extends SimpleMeters, E extends SimpleExesvc>
         implements JacksonObject, Runnable
 {
-    public final C config;
+    public final A config;
 
-    public final M metric;
+    public final M meters;
 
     public final E exesvc;
 
-    protected SimpleWorker(C config, M metric, E exesvc)
+    protected SimpleWorker(A config, M meters, E exesvc)
     {
         this.config = config;
-        this.metric = metric;
+        this.meters = meters;
         this.exesvc = exesvc;
     }
 
@@ -40,11 +40,11 @@ public abstract class SimpleWorker<C extends SimpleConfig, M extends SimpleMetri
         ObjectNode configNode = node.putObject("config");
         this.config.toJsonObject(configNode);
         ObjectNode metricNode = node.putObject("metric");
-        this.metric.toJsonObject(metricNode);
+        this.meters.toJsonObject(metricNode);
         return node;
     }
 
-    public abstract SimpleActionRun<C, M, E> action();
+    public abstract SimpleActionRun<M, E> action();
 
     public void run()
     {
@@ -52,14 +52,21 @@ public abstract class SimpleWorker<C extends SimpleConfig, M extends SimpleMetri
             SimpleAction action = this.action();
             do {
                 @SuppressWarnings("unchecked")
-                SimpleActionRun<C, M, E> a = (SimpleActionRun<C, M, E>) action;
+                SimpleActionRun<M, E> a = (SimpleActionRun<M, E>) action;
                 try {
-                    action = a.next(this.config, this.metric, this.exesvc);
+                    action = a.next(this.meters, this.exesvc);
                 } catch (InterruptedException ex) {
                     throw ex;
                 } catch (Throwable ex) {
                     logger.error("triple throws exception: ", ex);
-                    action = a.next(this.config, this.metric, this.exesvc, ex);
+                    meters.throwErrors.add(ex);
+                    meters.endDatetime = System.currentTimeMillis();
+                    SimplePhaserOuter del = SimplePhaserOuter.of(3);
+                    while (exesvc.run(meters).deletets == Long.MAX_VALUE) {
+                        SimpleResult result = exesvc.end(del);
+                        logger.info("end: result={}", result);
+                    }
+                    action = SimpleFinish.of();
                 }
             } while (action instanceof SimpleActionRun);
             logger.info("triple completes");

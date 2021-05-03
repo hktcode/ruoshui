@@ -87,6 +87,6 @@ public class UppdcConfigFiles extends UppdcConfig
         if (exesvc == null) {
             throw new ArgumentNullException("exesvc");
         }
-        return UppdcWorkerFiles.of(this, UppdcMetricFiles.of(txactionLsn), exesvc);
+        return UppdcWorkerFiles.of(this, UppdcMeters.of(txactionLsn), exesvc);
     }
 }

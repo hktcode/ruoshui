@@ -37,7 +37,6 @@ public class UpperExesvc extends SimpleExesvc
     public final Tqueue<UpperRecordConsumer> srcqueue;
     private final UpjctWorker junction;
     public final Tqueue<UpperRecordProducer> tgtqueue;
-    @SuppressWarnings("rawtypes")
     private final UppdcWorker producer;
     private final UpperKeeperOnlyone storeman;
 
@@ -107,14 +106,14 @@ public class UpperExesvc extends SimpleExesvc
     private UpperResult end(long deletets)
     {
         if (deletets == Long.MAX_VALUE) {
-            if (this.consumer.metric.endDatetime == Long.MAX_VALUE) {
-                this.consumer.metric.endDatetime = this.consumer.metric.exeDateTime;
+            if (this.consumer.meters.endDatetime == Long.MAX_VALUE) {
+                this.consumer.meters.endDatetime = this.consumer.meters.exeDatetime;
             }
-            if (this.junction.metric.endDatetime == Long.MAX_VALUE) {
-                this.junction.metric.endDatetime = this.junction.metric.exeDateTime;
+            if (this.junction.meters.endDatetime == Long.MAX_VALUE) {
+                this.junction.meters.endDatetime = this.junction.meters.exeDatetime;
             }
-            if (this.producer.metric.endDatetime == Long.MAX_VALUE) {
-                this.producer.metric.endDatetime = this.producer.metric.exeDateTime;
+            if (this.producer.meters.endDatetime == Long.MAX_VALUE) {
+                this.producer.meters.endDatetime = this.producer.meters.exeDatetime;
             }
             deletets = System.currentTimeMillis();
         }

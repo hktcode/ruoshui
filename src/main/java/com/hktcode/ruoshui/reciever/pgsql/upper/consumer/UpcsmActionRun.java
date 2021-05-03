@@ -22,36 +22,43 @@ import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class UpcsmActionRun implements SimpleActionRun<UpcsmConfig, UpcsmMetric, UpperExesvc>
+public class UpcsmActionRun implements SimpleActionRun<UpcsmMeters, UpperExesvc>
 {
     private static final Logger logger = LoggerFactory.getLogger(UpcsmActionRun.class);
 
-    public static UpcsmActionRun of()
+    private final UpcsmConfig config;
+
+    public static UpcsmActionRun of(UpcsmConfig config)
     {
-        return new UpcsmActionRun();
+        if (config == null) {
+            throw new ArgumentNullException("config");
+        }
+        return new UpcsmActionRun(config);
     }
 
     @Override
-    public SimpleAction next(UpcsmConfig config, UpcsmMetric metric, UpperExesvc exesvc) //
+    public SimpleAction next(UpcsmMeters meters, UpperExesvc exesvc) //
             throws InterruptedException, SQLException
     {
         if (config == null) {
             throw new ArgumentNullException("config");
         }
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
+        if (meters == null) {
+            throw new ArgumentNullException("meters");
         }
         if (exesvc == null) {
             throw new ArgumentNullException("exesvc");
         }
+        UpcsmMetric metric = UpcsmMetric.of();
+        meters.actionInfos.add(metric);
         final Tqueue<UpperRecordConsumer> comein = exesvc.srcqueue;
         try (Connection repl = config.srcProperty.replicaConnection()) {
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
             try (PGReplicationStream slt = config.logicalRepl.start(pgrepl)) {
                 UpperRecordConsumer r = null;
                 long prevlsn = 0;
-                while (exesvc.run(metric).deletets == Long.MAX_VALUE) {
-                    long currlsn = metric.txactionLsn.get();
+                while (exesvc.run(meters).deletets == Long.MAX_VALUE) {
+                    long currlsn = meters.txactionLsn.get();
                     if (prevlsn != currlsn) {
                         LogSequenceNumber lsn = LogSequenceNumber.valueOf(currlsn);
                         slt.setFlushedLSN(lsn);
@@ -96,7 +103,8 @@ public class UpcsmActionRun implements SimpleActionRun<UpcsmConfig, UpcsmMetric,
         return null;
     }
 
-    private UpcsmActionRun()
+    private UpcsmActionRun(UpcsmConfig config)
     {
+        this.config = config;
     }
 }

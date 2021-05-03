@@ -105,6 +105,6 @@ public class UppdcConfigKafka extends UppdcConfig
         if (exesvc == null) {
             throw new ArgumentNullException("exesvc");
         }
-        return UppdcWorkerKafka.of(this, UppdcMetricKafka.of(txactionLsn), exesvc);
+        return UppdcWorkerKafka.of(this, UppdcMeters.of(txactionLsn), exesvc);
     }
 }

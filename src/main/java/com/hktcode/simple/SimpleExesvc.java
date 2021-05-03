@@ -24,16 +24,16 @@ public abstract class SimpleExesvc extends ThreadPoolExecutor
         this.status = new AtomicReference<>(SimplePhaserInner.of(Long.MAX_VALUE));
     }
 
-    public SimplePhaserInner run(SimpleMetric metric) throws InterruptedException
+    public SimplePhaserInner run(SimpleMeters metric) throws InterruptedException
     {
         SimplePhaser origin;
         while (!((origin = this.status.get()) instanceof SimplePhaserInner)) {
-            metric.exeDateTime = System.currentTimeMillis();
+            metric.exeDatetime = System.currentTimeMillis();
             ((SimplePhaserOuter)origin).waiting();
         }
         SimplePhaserInner result = (SimplePhaserInner) origin;
         if (result.deletets != Long.MAX_VALUE && metric.endDatetime == Long.MAX_VALUE) {
-            metric.endDatetime = metric.exeDateTime;
+            metric.endDatetime = metric.exeDatetime;
         }
         return result;
     }

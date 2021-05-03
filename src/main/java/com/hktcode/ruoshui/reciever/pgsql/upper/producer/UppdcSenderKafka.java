@@ -47,7 +47,7 @@ public class UppdcSenderKafka extends UppdcSender
     }
 
     @Override
-    public void send(UpperRecordProducer record)
+    public void send(UppdcMeters meters, UpperRecordProducer record)
     {
         String keyText = record.key.toJsonObject().toString();
         String valText = record.val.toJsonObject().toString();
@@ -62,7 +62,7 @@ public class UppdcSenderKafka extends UppdcSender
             lsn = LogSequenceNumber.valueOf(val.lsnofmsg);
         }
         // TODO: kafka生产者的行为好奇怪
-        this.handle.send(r, new Handler(lsn, this.metric, this.handle));
+        this.handle.send(r, new Handler(lsn, meters, this.handle));
     }
 
     @Override
@@ -79,16 +79,16 @@ public class UppdcSenderKafka extends UppdcSender
 
         private final Producer<byte[], byte[]> producer;
 
-        private final UppdcMetric metric;
+        private final UppdcMeters meters;
 
         public Handler //
             /* */( LogSequenceNumber lsn //
-                /* */, UppdcMetric metric //
-                /* */, Producer<byte[], byte[]> producer //
-                /* */)
+            /* */, UppdcMeters meters //
+            /* */, Producer<byte[], byte[]> producer //
+            /* */)
         {
             this.lsn = lsn;
-            this.metric = metric;
+            this.meters = meters;
             this.producer = producer;
         }
 
@@ -97,7 +97,7 @@ public class UppdcSenderKafka extends UppdcSender
         {
             if (ex != null) {
                 logger.error("kafka producer send record fail: lsn={}", this.lsn, ex);
-                if (this.metric.callbackRef.compareAndSet(null, ex)) {
+                if (this.meters.callbackRef.compareAndSet(null, ex)) {
                     // kafka客户端的行为好奇怪，不符合一般的Java类调用约定：
                     // 1. 通常Java类中，应该是谁创建谁关闭。
                     //    Kafka的Producer虽然也满足这个条件，但是如果此处ex不是null，必须在此方法中调用close。
@@ -118,7 +118,7 @@ public class UppdcSenderKafka extends UppdcSender
             }
             else if (this.lsn.asLong() != LogSequenceNumber.INVALID_LSN.asLong()) {
                 logger.info("kafka producer send record success: lsn={}", this.lsn);
-                this.metric.txactionLsn.set(this.lsn.asLong());
+                this.meters.txactionLsn.set(this.lsn.asLong());
             }
         }
     }

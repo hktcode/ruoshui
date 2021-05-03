@@ -3,30 +3,30 @@ package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
 
-public class UppdcWorkerFiles extends UppdcWorker<UppdcConfigFiles, UppdcMetricFiles>
+public class UppdcWorkerFiles extends UppdcWorker
 {
-    public static UppdcWorkerFiles of(UppdcConfigFiles config, UppdcMetricFiles metric, UpperExesvc exesvc)
+    public static UppdcWorkerFiles of(UppdcConfigFiles config, UppdcMeters meters, UpperExesvc exesvc)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
         }
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
+        if (meters == null) {
+            throw new ArgumentNullException("meters");
         }
         if (exesvc == null) {
             throw new ArgumentNullException("exesvc");
         }
-        return new UppdcWorkerFiles(config, metric, exesvc);
+        return new UppdcWorkerFiles(config, meters, exesvc);
     }
 
-    private UppdcWorkerFiles(UppdcConfigFiles config, UppdcMetricFiles metric, UpperExesvc exesvc)
+    private UppdcWorkerFiles(UppdcConfigFiles config, UppdcMeters meters, UpperExesvc exesvc)
     {
-        super(config, metric, exesvc);
+        super(config, meters, exesvc);
     }
 
     @Override
     public UppdcActionRunFiles action()
     {
-        return UppdcActionRunFiles.of();
+        return UppdcActionRunFiles.of((UppdcConfigFiles) config);
     }
 }

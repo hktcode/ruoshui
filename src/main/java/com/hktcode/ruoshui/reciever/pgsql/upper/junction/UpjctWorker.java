@@ -4,29 +4,29 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
 import com.hktcode.simple.SimpleWorker;
 
-public class UpjctWorker extends SimpleWorker<UpjctConfig, UpjctMetric, UpperExesvc>
+public class UpjctWorker extends SimpleWorker<UpjctConfig, UpjctMeters, UpperExesvc>
 {
-    public static UpjctWorker of(UpjctConfig config, UpjctMetric metric, UpperExesvc exesvc)
+    public static UpjctWorker of(UpjctConfig config, UpjctMeters meters, UpperExesvc exesvc)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
         }
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
+        if (meters == null) {
+            throw new ArgumentNullException("meters");
         }
         if (exesvc == null) {
             throw new ArgumentNullException("exesvc");
         }
-        return new UpjctWorker(config, metric, exesvc);
+        return new UpjctWorker(config, meters, exesvc);
     }
 
-    private UpjctWorker(UpjctConfig config, UpjctMetric metric, UpperExesvc exesvc)
+    private UpjctWorker(UpjctConfig config, UpjctMeters meters, UpperExesvc exesvc)
     {
-        super(config, metric, exesvc);
+        super(config, meters, exesvc);
     }
 
     public UpjctActionRun action()
     {
-        return UpjctActionRun.of();
+        return UpjctActionRun.of(config);
     }
 }

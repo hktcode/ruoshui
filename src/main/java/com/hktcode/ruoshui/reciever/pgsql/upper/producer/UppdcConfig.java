@@ -56,6 +56,5 @@ public abstract class UppdcConfig extends SimpleConfig
         return result;
     }
 
-    @SuppressWarnings("rawtypes")
     public abstract UppdcWorker worker(AtomicLong txactionLsn, UpperExesvc exesvc);
 }

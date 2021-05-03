@@ -1,17 +1,10 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
-import com.hktcode.lang.exception.ArgumentNullException;
-
-import java.util.concurrent.atomic.AtomicLong;
-
 public class UppdcMetricFiles extends UppdcMetric
 {
-    public static UppdcMetricFiles of(AtomicLong txactionLsn)
+    public static UppdcMetricFiles of()
     {
-        if (txactionLsn == null) {
-            throw new ArgumentNullException("txactionLsn");
-        }
-        return new UppdcMetricFiles(txactionLsn);
+        return new UppdcMetricFiles();
     }
 
     /**
@@ -39,9 +32,8 @@ public class UppdcMetricFiles extends UppdcMetric
      */
     public long bufferBytes = 0;
 
-
-    private UppdcMetricFiles(AtomicLong txactionLsn)
+    private UppdcMetricFiles()
     {
-        super(txactionLsn);
+        super();
     }
 }

@@ -20,37 +20,44 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class UpjctActionRun implements SimpleActionRun<UpjctConfig, UpjctMetric, UpperExesvc>
+public class UpjctActionRun implements SimpleActionRun<UpjctMeters, UpperExesvc>
 {
-    public static UpjctActionRun of()
+    public static UpjctActionRun of(UpjctConfig config)
     {
-        return new UpjctActionRun();
+        if (config == null) {
+            throw new ArgumentNullException("config");
+        }
+        return new UpjctActionRun(config);
     }
 
-    private UpjctActionRun()
+    public final UpjctConfig config;
+
+    private UpjctActionRun(UpjctConfig config)
     {
+        this.config = config;
     }
 
     @Override
-    public SimpleAction next(UpjctConfig config, UpjctMetric metric, UpperExesvc exesvc) //
+    public SimpleAction next(UpjctMeters meters, UpperExesvc exesvc) //
             throws InterruptedException
     {
         if (config == null) {
             throw new ArgumentNullException("config");
         }
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
+        if (meters == null) {
+            throw new ArgumentNullException("meters");
         }
         if (exesvc == null) {
             throw new ArgumentNullException("exesvc");
         }
+        UpjctMetric metric = UpjctMetric.of();
         UpperRecordConsumer r = null;
         UpperRecordProducer o = null;
         final Tqueue<UpperRecordProducer> getout = exesvc.tgtqueue;
         final Tqueue<UpperRecordConsumer> comein = exesvc.srcqueue;
         Iterator<UpperRecordProducer> t //
             = ImmutableList.<UpperRecordProducer>of().iterator();
-        while (exesvc.run(metric).deletets == Long.MAX_VALUE) {
+        while (exesvc.run(meters).deletets == Long.MAX_VALUE) {
             if (o != null) {
                 o = getout.push(o);
             }

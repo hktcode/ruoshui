@@ -41,7 +41,7 @@ public class UppdcSenderFiles extends UppdcSender
     }
 
     @Override
-    public void send(UpperRecordProducer record) throws IOException
+    public void send(UppdcMeters meters, UpperRecordProducer record) throws IOException
     {
         if (record == null) {
             throw new ArgumentNullException("record");
@@ -54,7 +54,7 @@ public class UppdcSenderFiles extends UppdcSender
         }
         AsynchronousFileChannel channel = this.handle[0];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        channel.write(buffer, metric.curPosition, record, new Handler(metric));
+        channel.write(buffer, metric.curPosition, record, new Handler(meters));
         this.metric.totalLength += bytes.length;
         this.metric.curPosition += bytes.length;
         this.metric.bufferBytes += bytes.length;
@@ -108,23 +108,23 @@ public class UppdcSenderFiles extends UppdcSender
 
     private static class Handler implements CompletionHandler<Integer, UpperRecordProducer>
     {
-        private final UppdcMetricFiles metric;
+        private final UppdcMeters meters;
 
-        public Handler(UppdcMetricFiles metric)
+        public Handler(UppdcMeters meters)
         {
-            this.metric = metric;
+            this.meters = meters;
         }
 
         @Override
         public void completed(Integer result, UpperRecordProducer attachment) {
             if (attachment.val instanceof PgsqlValTxactCommit) {
-                metric.txactionLsn.set(((PgsqlValTxactCommit) attachment.val).lsnofmsg);
+                meters.txactionLsn.set(((PgsqlValTxactCommit) attachment.val).lsnofmsg);
             }
         }
 
         @Override
         public void failed(Throwable exc, UpperRecordProducer attachment) {
-            metric.callbackRef.compareAndSet(null, exc);
+            meters.callbackRef.compareAndSet(null, exc);
         }
     }
 }

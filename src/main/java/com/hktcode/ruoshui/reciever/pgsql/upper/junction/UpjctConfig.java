@@ -33,6 +33,6 @@ public class UpjctConfig extends SimpleConfig
         if (exesvc == null) {
             throw new ArgumentNullException("exesvc");
         }
-        return UpjctWorker.of(this, UpjctMetric.of(), exesvc);
+        return UpjctWorker.of(this, UpjctMeters.of(), exesvc);
     }
 }

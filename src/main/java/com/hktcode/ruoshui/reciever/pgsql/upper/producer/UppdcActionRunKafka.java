@@ -4,21 +4,28 @@
 
 package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
-public class UppdcActionRunKafka extends UppdcActionRun<UppdcConfigKafka, UppdcMetricKafka>
+import com.hktcode.lang.exception.ArgumentNullException;
+
+public class UppdcActionRunKafka extends UppdcActionRun
 {
-    public static UppdcActionRunKafka of()
+    public static UppdcActionRunKafka of(UppdcConfigKafka config)
     {
-        return new UppdcActionRunKafka();
+        if (config == null) {
+            throw new ArgumentNullException("config");
+        }
+        return new UppdcActionRunKafka(config);
     }
 
-    private UppdcActionRunKafka()
+    private final UppdcConfigKafka config;
+
+    private UppdcActionRunKafka(UppdcConfigKafka config)
     {
-        super();
+        this.config = config;
     }
 
     @Override
-    protected UppdcSenderKafka sender(UppdcConfigKafka config, UppdcMetricKafka metric)
+    protected UppdcSenderKafka sender()
     {
-        return UppdcSenderKafka.of(config, metric);
+        return UppdcSenderKafka.of(config, UppdcMetricKafka.of());
     }
 }

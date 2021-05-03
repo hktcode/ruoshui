@@ -70,6 +70,6 @@ public class UpcsmConfig extends SimpleConfig
         if (exesvc == null) {
             throw new ArgumentNullException("exesvc");
         }
-        return UpcsmWorker.of(this, UpcsmMetric.of(txactionLsn), exesvc);
+        return UpcsmWorker.of(this, UpcsmMeters.of(txactionLsn), exesvc);
     }
 }

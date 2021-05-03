@@ -8,20 +8,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class UppdcMetric extends SimpleMetric
 {
-    public static UppdcMetric of(AtomicLong txactionLsn)
+    protected UppdcMetric()
     {
-        if (txactionLsn == null) {
-            throw new ArgumentNullException("txactionLsn");
-        }
-        return new UppdcMetric(txactionLsn);
-    }
-
-    public final AtomicReference<Throwable> callbackRef = new AtomicReference<>();
-
-    public final AtomicLong txactionLsn;
-
-    protected UppdcMetric(AtomicLong txactionLsn)
-    {
-        this.txactionLsn = txactionLsn;
     }
 }
