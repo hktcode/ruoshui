@@ -27,6 +27,6 @@ public class UpjctWorker extends SimpleWorker<UpjctArgval, UpjctMeters, UpperExe
 
     public UpjctActionRun action()
     {
-        return UpjctActionRun.of(argval.actionInfos.get(0));
+        return this.argval.actionInfos.get(0).action();
     }
 }

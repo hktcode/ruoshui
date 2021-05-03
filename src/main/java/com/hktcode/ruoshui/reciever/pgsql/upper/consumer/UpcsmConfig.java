@@ -58,4 +58,9 @@ public class UpcsmConfig extends SimpleConfig
         this.srcProperty.toJsonObject(srcPropertyNode);
         return node;
     }
+
+    public UpcsmActionRun action()
+    {
+        return UpcsmActionRun.of(this);
+    }
 }

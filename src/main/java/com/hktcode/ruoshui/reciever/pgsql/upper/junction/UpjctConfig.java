@@ -26,4 +26,9 @@ public class UpjctConfig extends SimpleConfig
         this.waitTimeout = waitTimeout;
         this.logDuration = logDuration;
     }
+
+    public UpjctActionRun action()
+    {
+        return UpjctActionRun.of(this);
+    }
 }
