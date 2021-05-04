@@ -10,7 +10,7 @@ import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorkerArgval;
 import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorkerArgval;
 import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorkerArgval;
 
-public class UpperConfig
+public class UpperArgval
 {
     public static final ObjectNode SCHEMA;
 
@@ -28,7 +28,7 @@ public class UpperConfig
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    public static UpperConfig ofJsonObject(JsonNode jsonNode)
+    public static UpperArgval ofJsonObject(JsonNode jsonNode)
     {
         if (jsonNode == null) {
             throw new ArgumentNullException("jsonNode");
@@ -38,7 +38,7 @@ public class UpperConfig
         UpjctWorkerArgval junction = UpjctWorkerArgval.ofJsonObject(jsonNode.path("junction"));
         TqueueConfig tgtqueue = TqueueConfig.ofJsonObject(jsonNode.path("tgtqueue"));
         UppdcWorkerArgval producer = UppdcWorkerArgval.ofJsonObject(jsonNode.path("producer"));
-        return new UpperConfig(consumer, srcqueue, junction, tgtqueue, producer);
+        return new UpperArgval(consumer, srcqueue, junction, tgtqueue, producer);
     }
 
     public final UpcsmWorkerArgval consumer; // laborer
@@ -47,7 +47,7 @@ public class UpperConfig
     public final TqueueConfig tgtqueue;
     public final UppdcWorkerArgval producer;
 
-    private UpperConfig //
+    private UpperArgval //
             /* */(UpcsmWorkerArgval consumer //
             /* */, TqueueConfig srcqueue //
             /* */, UpjctWorkerArgval junction //

@@ -7,7 +7,7 @@ import com.google.common.collect.ImmutableMap;
 import com.hktcode.lang.exception.NeverHappenAssertionError;
 import com.hktcode.ruoshui.Ruoshui;
 import com.hktcode.ruoshui.reciever.pgsql.exception.*;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperConfig;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperArgval;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class UpperKeeperOnlyone
 
     public final YAMLMapper mapper;
 
-    private final ImmutableMap<String, UpperConfig> etcval = ImmutableMap.of();
+    private final ImmutableMap<String, UpperArgval> etcval = ImmutableMap.of();
 
     public UpperKeeperOnlyone(@Autowired YAMLMapper mapper)
     {
