@@ -9,13 +9,11 @@ import com.hktcode.queue.TqueueMetric;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleMetric extends TqueueMetric implements JacksonObject
+public class SimpleWkstepMetric extends TqueueMetric implements JacksonObject
 {
-    public long actionStart = Long.MAX_VALUE;
+    public long wkstepStart = Long.MAX_VALUE;
 
     public long endDatetime = Long.MAX_VALUE;
-
-    public long exeDateTime = 0;
 
     public final List<Throwable> throwErrors = new ArrayList<>();
 
@@ -29,7 +27,7 @@ public class SimpleMetric extends TqueueMetric implements JacksonObject
         if (node == null) {
             throw new ArgumentNullException("node");
         }
-        node.put("action_start", this.actionStart);
+        node.put("wkstep_start", this.wkstepStart);
         node.put("end_datetime", this.endDatetime);
         ArrayNode throwErrorsNode = node.putArray("throw_errors");
         for (Throwable t: this.throwErrors) {

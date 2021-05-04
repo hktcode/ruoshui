@@ -7,7 +7,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class SimpleWorker<A extends SimpleArgval, M extends SimpleMeters, E extends SimpleExesvc>
+public abstract class SimpleWorker<A extends SimpleWorkerArgval, M extends SimpleWorkerMeters, E extends SimpleExesvc>
         implements JacksonObject, Runnable
 {
     public final A argval;
@@ -44,17 +44,17 @@ public abstract class SimpleWorker<A extends SimpleArgval, M extends SimpleMeter
         return node;
     }
 
-    public abstract SimpleActionRun<M, E> action();
+    public abstract SimpleWkstepAction<M, E> action();
 
     public void run()
     {
         try {
-            SimpleAction action = this.action();
+            SimpleWkstep wkstep = this.action();
             do {
                 @SuppressWarnings("unchecked")
-                SimpleActionRun<M, E> a = (SimpleActionRun<M, E>) action;
+                SimpleWkstepAction<M, E> action = (SimpleWkstepAction<M, E>) wkstep;
                 try {
-                    action = a.next(this.meters, this.exesvc);
+                    wkstep = action.next(this.meters, this.exesvc);
                 } catch (InterruptedException ex) {
                     throw ex;
                 } catch (Throwable ex) {
@@ -66,9 +66,9 @@ public abstract class SimpleWorker<A extends SimpleArgval, M extends SimpleMeter
                         SimpleResult result = exesvc.end(del);
                         logger.info("end: result={}", result);
                     }
-                    action = SimpleFinish.of();
+                    wkstep = SimpleWkstepTheEnd.of();
                 }
-            } while (action instanceof SimpleActionRun);
+            } while (wkstep instanceof SimpleWkstepAction);
             logger.info("triple completes");
         } catch (InterruptedException e) {
             logger.error("should never happen", e);

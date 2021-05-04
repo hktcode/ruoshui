@@ -4,9 +4,9 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
 import com.hktcode.simple.SimpleWorker;
 
-public class UppdcWorker extends SimpleWorker<UppdcArgval, UppdcMeters, UpperExesvc>
+public class UppdcWorker extends SimpleWorker<UppdcWorkerArgval, UppdcWorkerMeters, UpperExesvc>
 {
-    public static UppdcWorker of(UppdcArgval argval, UppdcMeters meters, UpperExesvc exesvc)
+    public static UppdcWorker of(UppdcWorkerArgval argval, UppdcWorkerMeters meters, UpperExesvc exesvc)
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");
@@ -20,12 +20,12 @@ public class UppdcWorker extends SimpleWorker<UppdcArgval, UppdcMeters, UpperExe
         return new UppdcWorker(argval, meters, exesvc);
     }
 
-    private UppdcWorker(UppdcArgval argval, UppdcMeters meters, UpperExesvc exesvc)
+    private UppdcWorker(UppdcWorkerArgval argval, UppdcWorkerMeters meters, UpperExesvc exesvc)
     {
         super(argval, meters, exesvc);
     }
 
-    public UppdcActionRun action()
+    public UppdcWkstepAction action()
     {
         return this.argval.actionInfos.get(0).action();
     }

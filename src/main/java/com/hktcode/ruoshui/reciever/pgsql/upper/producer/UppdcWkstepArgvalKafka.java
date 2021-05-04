@@ -11,25 +11,23 @@ import com.hktcode.kafka.Kafka;
 import com.hktcode.lang.exception.ArgumentIllegalException;
 import com.hktcode.lang.exception.ArgumentNegativeException;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static com.hktcode.ruoshui.Ruoshui.THE_NAME;
 
-public class UppdcConfigKafka extends UppdcConfig
+public class UppdcWkstepArgvalKafka extends UppdcWkstepArgval
 {
-    public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UppdcConfigKafka.class, "UppdcConfig.yml");
+    public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UppdcWkstepArgvalKafka.class, "UppdcConfig.yml");
 
-    public static UppdcConfigKafka ofJsonObject(JsonNode json)
+    public static UppdcWkstepArgvalKafka ofJsonObject(JsonNode json)
     {
         if (json == null) {
             throw new ArgumentNullException("json");
         }
-        Map<String, String> kfkMap = UppdcConfigKafka.createDefaultMap();
+        Map<String, String> kfkMap = UppdcWkstepArgvalKafka.createDefaultMap();
         JsonNode kfkNode = json.get("kfk_property");
         if (kfkNode != null) {
             JacksonObject.merge(kfkMap, kfkNode);
@@ -37,19 +35,19 @@ public class UppdcConfigKafka extends UppdcConfig
         ImmutableMap<String, String> kfkProperty = ImmutableMap.copyOf(kfkMap);
         // TODO: 检查properties
 
-        String targetTopic = UppdcConfigKafka.DEFAULT_TARGET_TOPIC;
+        String targetTopic = UppdcWkstepArgvalKafka.DEFAULT_TARGET_TOPIC;
         targetTopic = json.path("target_topic").asText(targetTopic);
         if (!Kafka.TOPIC_PATTERN.matcher(targetTopic).matches()) {
             throw new ArgumentIllegalException("topic name is not match the pattern", "targetTopic", targetTopic); // TODO:
         }
 
-        int partitionNo = UppdcConfigKafka.DEFAULT_PARTITION_NO;
+        int partitionNo = UppdcWkstepArgvalKafka.DEFAULT_PARTITION_NO;
         partitionNo = json.path("partition_no").asInt(partitionNo);
         if (partitionNo < 0) {
             // TODO:
             throw new ArgumentNegativeException("partitionNo", partitionNo);
         }
-        return new UppdcConfigKafka(kfkProperty, targetTopic, partitionNo);
+        return new UppdcWkstepArgvalKafka(kfkProperty, targetTopic, partitionNo);
     }
 
     public static final String DEFAULT_TARGET_TOPIC = THE_NAME;
@@ -68,7 +66,7 @@ public class UppdcConfigKafka extends UppdcConfig
 
     public final int partitionNo;
 
-    private UppdcConfigKafka //
+    private UppdcWkstepArgvalKafka //
         /* */( ImmutableMap<String, String> kfkProperty //
         /* */, String targetTopic //
         /* */, int partitionNo //
@@ -97,8 +95,8 @@ public class UppdcConfigKafka extends UppdcConfig
     }
 
     @Override
-    public UppdcActionRunKafka action()
+    public UppdcWkstepActionKafka action()
     {
-        return UppdcActionRunKafka.of(this);
+        return UppdcWkstepActionKafka.of(this);
     }
 }

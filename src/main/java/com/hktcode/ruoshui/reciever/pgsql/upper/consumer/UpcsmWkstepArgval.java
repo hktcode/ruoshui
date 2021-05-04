@@ -12,11 +12,11 @@ import com.hktcode.ruoshui.reciever.pgsql.entity.LogicalReplConfig;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgConnectionProperty;
 import com.hktcode.simple.*;
 
-public class UpcsmConfig extends SimpleConfig
+public class UpcsmWkstepArgval extends SimpleWkstepArgval
 {
-    public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UpcsmConfig.class, "UpcsmConfig.yml");
+    public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UpcsmWkstepArgval.class, "UpcsmConfig.yml");
 
-    public static UpcsmConfig ofJsonObject(JsonNode json) //
+    public static UpcsmWkstepArgval ofJsonObject(JsonNode json) //
     {
         if (json == null) {
             throw new ArgumentNullException("json");
@@ -27,7 +27,7 @@ public class UpcsmConfig extends SimpleConfig
         JsonNode logicalReplNode = json.path("logical_repl");
         LogicalReplConfig logicalRepl = LogicalReplConfig.of(logicalReplNode);
 
-        UpcsmConfig result = new UpcsmConfig(srcProperty, logicalRepl);
+        UpcsmWkstepArgval result = new UpcsmWkstepArgval(srcProperty, logicalRepl);
         long waitTimeout = json.path("wait_timeout").asLong(DEFALUT_WAIT_TIMEOUT);
         long logDuration = json.path("log_duration").asLong(DEFAULT_LOG_DURATION);
         result.waitTimeout = waitTimeout;
@@ -39,7 +39,7 @@ public class UpcsmConfig extends SimpleConfig
 
     public final LogicalReplConfig logicalRepl;
 
-    protected UpcsmConfig(PgConnectionProperty srcProperty, LogicalReplConfig logicalRepl)
+    protected UpcsmWkstepArgval(PgConnectionProperty srcProperty, LogicalReplConfig logicalRepl)
     {
         this.srcProperty = srcProperty;
         this.logicalRepl = logicalRepl;
@@ -59,8 +59,8 @@ public class UpcsmConfig extends SimpleConfig
         return node;
     }
 
-    public UpcsmActionRun action()
+    public UpcsmWkstepAction action()
     {
-        return UpcsmActionRun.of(this);
+        return UpcsmWkstepAction.of(this);
     }
 }

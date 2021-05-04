@@ -2,23 +2,23 @@ package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.simple.SimpleMeters;
+import com.hktcode.simple.SimpleWorkerMeters;
 import org.postgresql.replication.LogSequenceNumber;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class UppdcMeters extends SimpleMeters
+public class UppdcWorkerMeters extends SimpleWorkerMeters
 {
-    public static UppdcMeters of(AtomicLong txactionLsn)
+    public static UppdcWorkerMeters of(AtomicLong txactionLsn)
     {
         if (txactionLsn == null) {
             throw new ArgumentNullException("txactionLsn");
         }
-        return new UppdcMeters(txactionLsn);
+        return new UppdcWorkerMeters(txactionLsn);
     }
 
-    private UppdcMeters(AtomicLong txactionLsn)
+    private UppdcWorkerMeters(AtomicLong txactionLsn)
     {
         this.txactionLsn = txactionLsn;
     }

@@ -24,7 +24,7 @@ public abstract class SimpleExesvc extends ThreadPoolExecutor
         this.status = new AtomicReference<>(SimplePhaserInner.of(Long.MAX_VALUE));
     }
 
-    public SimplePhaserInner run(SimpleMeters metric) throws InterruptedException
+    public SimplePhaserInner run(SimpleWorkerMeters metric) throws InterruptedException
     {
         SimplePhaser origin;
         while (!((origin = this.status.get()) instanceof SimplePhaserInner)) {

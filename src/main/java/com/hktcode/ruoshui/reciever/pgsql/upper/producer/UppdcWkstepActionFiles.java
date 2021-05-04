@@ -11,19 +11,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class UppdcActionRunFiles extends UppdcActionRun
+public class UppdcWkstepActionFiles extends UppdcWkstepAction
 {
-    public static UppdcActionRunFiles of(UppdcConfigFiles config)
+    public static UppdcWkstepActionFiles of(UppdcWkstepArgvalFiles config)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
         }
-        return new UppdcActionRunFiles(config);
+        return new UppdcWkstepActionFiles(config);
     }
 
-    public final UppdcConfigFiles config;
+    public final UppdcWkstepArgvalFiles config;
 
-    private UppdcActionRunFiles(UppdcConfigFiles config)
+    private UppdcWkstepActionFiles(UppdcWkstepArgvalFiles config)
     {
         this.config = config;
     }
@@ -33,6 +33,6 @@ public class UppdcActionRunFiles extends UppdcActionRun
     {
         Path directory = Paths.get(config.walDatapath.toString());
         Files.createDirectories(directory);
-        return UppdcSenderFiles.of(config, UppdcMetricFiles.of());
+        return UppdcSenderFiles.of(config, UppdcWkstepMetricFiles.of());
     }
 }

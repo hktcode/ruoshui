@@ -8,13 +8,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.Ruoshui;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.atomic.AtomicLong;
 
-public class UppdcConfigFiles extends UppdcConfig
+public class UppdcWkstepArgvalFiles extends UppdcWkstepArgval
 {
     public static final long DEFAULT_MAX_SYNCTIME = 60000;
 
@@ -24,9 +22,9 @@ public class UppdcConfigFiles extends UppdcConfig
 
     public static final long DEFAULT_MAX_FILETIME = 60 * 60 * 1000;
 
-    public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UppdcConfigFiles.class, "UppdcConfig.yml");
+    public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UppdcWkstepArgvalFiles.class, "UppdcConfig.yml");
 
-    public static UppdcConfigFiles ofJsonObject(JsonNode json)
+    public static UppdcWkstepArgvalFiles ofJsonObject(JsonNode json)
     {
         if (json == null) {
             throw new ArgumentNullException("json");
@@ -36,7 +34,7 @@ public class UppdcConfigFiles extends UppdcConfig
         long maxSyncsize = json.path("max_syncsize").asLong(DEFAULT_MAX_SYNCSIZE);
         long maxFilesize = json.path("max_filesize").asLong(DEFAULT_MAX_FILESIZE);
         long maxFiletime = json.path("max_filetime").asLong(DEFAULT_MAX_FILETIME);
-        return new UppdcConfigFiles(walDatapath, maxSynctime, maxSyncsize, maxFilesize, maxFiletime);
+        return new UppdcWkstepArgvalFiles(walDatapath, maxSynctime, maxSyncsize, maxFilesize, maxFiletime);
     }
 
     public final Path walDatapath;
@@ -49,7 +47,7 @@ public class UppdcConfigFiles extends UppdcConfig
 
     public final long maxFiletime;
 
-    private UppdcConfigFiles //
+    private UppdcWkstepArgvalFiles //
         /* */( Path walDatapath
         /* */, long maxSynctime
         /* */, long maxSyncsize
@@ -79,8 +77,8 @@ public class UppdcConfigFiles extends UppdcConfig
     }
 
     @Override
-    public UppdcActionRunFiles action()
+    public UppdcWkstepActionFiles action()
     {
-        return UppdcActionRunFiles.of(this);
+        return UppdcWkstepActionFiles.of(this);
     }
 }

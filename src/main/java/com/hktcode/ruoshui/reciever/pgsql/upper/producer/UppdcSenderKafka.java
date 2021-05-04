@@ -17,7 +17,7 @@ import static com.hktcode.kafka.Kafka.Serializers.BYTES;
 
 public class UppdcSenderKafka extends UppdcSender
 {
-    public static UppdcSenderKafka of(UppdcConfigKafka config, UppdcMetricKafka metric)
+    public static UppdcSenderKafka of(UppdcWkstepArgvalKafka config, UppdcWkstepMetricKafka metric)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -28,13 +28,13 @@ public class UppdcSenderKafka extends UppdcSender
         return new UppdcSenderKafka(config, metric);
     }
 
-    private final UppdcConfigKafka config;
+    private final UppdcWkstepArgvalKafka config;
 
-    private final UppdcMetricKafka metric;
+    private final UppdcWkstepMetricKafka metric;
 
     private final Producer<byte[], byte[]> handle;
 
-    private UppdcSenderKafka(UppdcConfigKafka config, UppdcMetricKafka metric)
+    private UppdcSenderKafka(UppdcWkstepArgvalKafka config, UppdcWkstepMetricKafka metric)
     {
         Properties properties = new Properties();
         properties.setProperty("request.timeout.ms", "1000");
@@ -47,7 +47,7 @@ public class UppdcSenderKafka extends UppdcSender
     }
 
     @Override
-    public void send(UppdcMeters meters, UpperRecordProducer record)
+    public void send(UppdcWorkerMeters meters, UpperRecordProducer record)
     {
         String keyText = record.key.toJsonObject().toString();
         String valText = record.val.toJsonObject().toString();
@@ -79,11 +79,11 @@ public class UppdcSenderKafka extends UppdcSender
 
         private final Producer<byte[], byte[]> producer;
 
-        private final UppdcMeters meters;
+        private final UppdcWorkerMeters meters;
 
         public Handler //
-            /* */( LogSequenceNumber lsn //
-            /* */, UppdcMeters meters //
+            /* */(LogSequenceNumber lsn //
+            /* */, UppdcWorkerMeters meters //
             /* */, Producer<byte[], byte[]> producer //
             /* */)
         {

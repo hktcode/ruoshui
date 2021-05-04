@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public abstract class SimpleConfig implements JacksonObject
+public abstract class SimpleWkstepArgval implements JacksonObject
 {
     public static final long DEFALUT_WAIT_TIMEOUT = 100;
 

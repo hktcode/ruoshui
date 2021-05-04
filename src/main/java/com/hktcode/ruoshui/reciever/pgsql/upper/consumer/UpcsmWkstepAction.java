@@ -9,9 +9,9 @@ import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.queue.Tqueue;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
-import com.hktcode.simple.SimpleAction;
-import com.hktcode.simple.SimpleActionRun;
-import com.hktcode.simple.SimpleFinish;
+import com.hktcode.simple.SimpleWkstep;
+import com.hktcode.simple.SimpleWkstepAction;
+import com.hktcode.simple.SimpleWkstepTheEnd;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
 import org.postgresql.replication.PGReplicationStream;
@@ -22,22 +22,22 @@ import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class UpcsmActionRun implements SimpleActionRun<UpcsmMeters, UpperExesvc>
+public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerMeters, UpperExesvc>
 {
-    private static final Logger logger = LoggerFactory.getLogger(UpcsmActionRun.class);
+    private static final Logger logger = LoggerFactory.getLogger(UpcsmWkstepAction.class);
 
-    private final UpcsmConfig config;
+    private final UpcsmWkstepArgval config;
 
-    public static UpcsmActionRun of(UpcsmConfig config)
+    public static UpcsmWkstepAction of(UpcsmWkstepArgval config)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
         }
-        return new UpcsmActionRun(config);
+        return new UpcsmWkstepAction(config);
     }
 
     @Override
-    public SimpleAction next(UpcsmMeters meters, UpperExesvc exesvc) //
+    public SimpleWkstep next(UpcsmWorkerMeters meters, UpperExesvc exesvc) //
             throws InterruptedException, SQLException
     {
         if (config == null) {
@@ -49,7 +49,7 @@ public class UpcsmActionRun implements SimpleActionRun<UpcsmMeters, UpperExesvc>
         if (exesvc == null) {
             throw new ArgumentNullException("exesvc");
         }
-        UpcsmMetric metric = UpcsmMetric.of();
+        UpcsmWkstepMetric metric = UpcsmWkstepMetric.of();
         meters.actionInfos.add(metric);
         final Tqueue<UpperRecordConsumer> comein = exesvc.srcqueue;
         try (Connection repl = config.srcProperty.replicaConnection()) {
@@ -76,10 +76,10 @@ public class UpcsmActionRun implements SimpleActionRun<UpcsmMeters, UpperExesvc>
         logger.info("pgsender complete");
         metric.statusInfor = "send txation finish record.";
         metric.endDatetime = System.currentTimeMillis();
-        return SimpleFinish.of();
+        return SimpleWkstepTheEnd.of();
     }
 
-    private UpperRecordConsumer poll(UpcsmConfig config, UpcsmMetric metric, PGReplicationStream s) //
+    private UpperRecordConsumer poll(UpcsmWkstepArgval config, UpcsmWkstepMetric metric, PGReplicationStream s) //
             throws SQLException, InterruptedException
     {
         ByteBuffer msg = s.readPending();
@@ -102,7 +102,7 @@ public class UpcsmActionRun implements SimpleActionRun<UpcsmMeters, UpperExesvc>
         return null;
     }
 
-    private UpcsmActionRun(UpcsmConfig config)
+    private UpcsmWkstepAction(UpcsmWkstepArgval config)
     {
         this.config = config;
     }

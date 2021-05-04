@@ -8,24 +8,24 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Tqueue;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
-import com.hktcode.simple.SimpleAction;
-import com.hktcode.simple.SimpleActionRun;
-import com.hktcode.simple.SimpleFinish;
+import com.hktcode.simple.SimpleWkstep;
+import com.hktcode.simple.SimpleWkstepAction;
+import com.hktcode.simple.SimpleWkstepTheEnd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public abstract class UppdcActionRun implements SimpleActionRun<UppdcMeters, UpperExesvc>
+public abstract class UppdcWkstepAction implements SimpleWkstepAction<UppdcWorkerMeters, UpperExesvc>
 {
-    private static final Logger logger = LoggerFactory.getLogger(UppdcActionRun.class);
+    private static final Logger logger = LoggerFactory.getLogger(UppdcWkstepAction.class);
 
-    protected UppdcActionRun()
+    protected UppdcWkstepAction()
     {
     }
 
     @Override
-    public SimpleAction next(UppdcMeters meters, UpperExesvc exesvc) ///
+    public SimpleWkstep next(UppdcWorkerMeters meters, UpperExesvc exesvc) ///
             throws Throwable
     {
         if (meters == null) {
@@ -50,7 +50,7 @@ public abstract class UppdcActionRun implements SimpleActionRun<UppdcMeters, Upp
                 }
             }
         }
-        return SimpleFinish.of();
+        return SimpleWkstepTheEnd.of();
     }
 
     protected abstract UppdcSender sender() throws IOException;

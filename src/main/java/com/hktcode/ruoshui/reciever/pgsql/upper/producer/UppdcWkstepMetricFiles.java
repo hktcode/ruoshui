@@ -1,10 +1,10 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
-public class UppdcMetricFiles extends UppdcMetric
+public class UppdcWkstepMetricFiles extends UppdcWkstepMetric
 {
-    public static UppdcMetricFiles of()
+    public static UppdcWkstepMetricFiles of()
     {
-        return new UppdcMetricFiles();
+        return new UppdcWkstepMetricFiles();
     }
 
     /**
@@ -32,7 +32,7 @@ public class UppdcMetricFiles extends UppdcMetric
      */
     public long bufferBytes = 0;
 
-    private UppdcMetricFiles()
+    private UppdcWkstepMetricFiles()
     {
         super();
     }

@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleMeters implements JacksonObject
+public class SimpleWorkerMeters implements JacksonObject
 {
     public long workerStart = Long.MAX_VALUE;
 
@@ -16,7 +16,7 @@ public class SimpleMeters implements JacksonObject
 
     public long exeDatetime = 0;
 
-    public final List<SimpleMetric> actionInfos = new ArrayList<>();
+    public final List<SimpleWkstepMetric> actionInfos = new ArrayList<>();
 
     public final List<Throwable> throwErrors = new ArrayList<>();
 
@@ -33,7 +33,7 @@ public class SimpleMeters implements JacksonObject
         node.put("worker_start", this.workerStart);
         node.put("end_datetime", this.endDatetime);
         ArrayNode actionInfosNode = node.putArray("action_infos");
-        for (SimpleMetric m: this.actionInfos) {
+        for (SimpleWkstepMetric m: this.actionInfos) {
             ObjectNode n = actionInfosNode.addObject();
             m.toJsonObject(n);
         }

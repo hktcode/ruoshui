@@ -17,7 +17,7 @@ public class UppdcSenderFiles extends UppdcSender
 {
     private static final Logger logger = LoggerFactory.getLogger(UppdcSenderFiles.class);
 
-    public static UppdcSenderFiles of(UppdcConfigFiles config, UppdcMetricFiles metric)
+    public static UppdcSenderFiles of(UppdcWkstepArgvalFiles config, UppdcWkstepMetricFiles metric)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -28,20 +28,20 @@ public class UppdcSenderFiles extends UppdcSender
         return new UppdcSenderFiles(config, metric);
     }
 
-    private final UppdcConfigFiles config;
+    private final UppdcWkstepArgvalFiles config;
 
-    private final UppdcMetricFiles metric;
+    private final UppdcWkstepMetricFiles metric;
 
     private AsynchronousFileChannel[] handle;
 
-    private UppdcSenderFiles(UppdcConfigFiles config, UppdcMetricFiles metric)
+    private UppdcSenderFiles(UppdcWkstepArgvalFiles config, UppdcWkstepMetricFiles metric)
     {
         this.config = config;
         this.metric = metric;
     }
 
     @Override
-    public void send(UppdcMeters meters, UpperRecordProducer record) throws IOException
+    public void send(UppdcWorkerMeters meters, UpperRecordProducer record) throws IOException
     {
         if (record == null) {
             throw new ArgumentNullException("record");
@@ -108,9 +108,9 @@ public class UppdcSenderFiles extends UppdcSender
 
     private static class Handler implements CompletionHandler<Integer, UpperRecordProducer>
     {
-        private final UppdcMeters meters;
+        private final UppdcWorkerMeters meters;
 
-        public Handler(UppdcMeters meters)
+        public Handler(UppdcWorkerMeters meters)
         {
             this.meters = meters;
         }

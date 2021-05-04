@@ -7,16 +7,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
-import com.hktcode.simple.SimpleConfig;
+import com.hktcode.simple.SimpleWkstepArgval;
 
-import java.util.concurrent.atomic.AtomicLong;
-
-public abstract class UppdcConfig extends SimpleConfig
+public abstract class UppdcWkstepArgval extends SimpleWkstepArgval
 {
-    public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UppdcConfig.class, "UppdcConfig.yml");
+    public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UppdcWkstepArgval.class, "UppdcConfig.yml");
 
-    public static UppdcConfig ofJsonObject(JsonNode json)
+    public static UppdcWkstepArgval ofJsonObject(JsonNode json)
     {
         if (json == null) {
             throw new ArgumentNullException("json");
@@ -25,12 +22,12 @@ public abstract class UppdcConfig extends SimpleConfig
         long logDuration = json.path("log_duration").asLong(DEFAULT_LOG_DURATION);
         String factoryType = json.path("factory_type").asText("files");
         JsonNode configPropsNode = json.path("config_props");
-        UppdcConfig result;
+        UppdcWkstepArgval result;
         if (factoryType.equals("kafka")) {
-            result = UppdcConfigKafka.ofJsonObject(configPropsNode);
+            result = UppdcWkstepArgvalKafka.ofJsonObject(configPropsNode);
         }
         else {
-            result = UppdcConfigFiles.ofJsonObject(configPropsNode);
+            result = UppdcWkstepArgvalFiles.ofJsonObject(configPropsNode);
         }
         result.waitTimeout = waitTimeout;
         result.logDuration = logDuration;
@@ -39,7 +36,7 @@ public abstract class UppdcConfig extends SimpleConfig
 
     public final String factoryType;
 
-    protected UppdcConfig(String factoryType)
+    protected UppdcWkstepArgval(String factoryType)
     {
         this.factoryType = factoryType;
     }
@@ -56,5 +53,5 @@ public abstract class UppdcConfig extends SimpleConfig
         return result;
     }
 
-    public abstract UppdcActionRun action();
+    public abstract UppdcWkstepAction action();
 }

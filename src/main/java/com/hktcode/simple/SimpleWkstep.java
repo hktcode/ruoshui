@@ -1,5 +1,5 @@
 package com.hktcode.simple;
 
-public interface SimpleAction
+public interface SimpleWkstep
 {
 }

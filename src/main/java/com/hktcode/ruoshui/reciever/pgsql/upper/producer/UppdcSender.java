@@ -8,5 +8,5 @@ public abstract class UppdcSender implements AutoCloseable
     {
     }
 
-    public abstract void send(UppdcMeters meters, UpperRecordProducer record) throws Exception;
+    public abstract void send(UppdcWorkerMeters meters, UpperRecordProducer record) throws Exception;
 }

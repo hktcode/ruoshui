@@ -6,19 +6,19 @@ package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class UppdcActionRunKafka extends UppdcActionRun
+public class UppdcWkstepActionKafka extends UppdcWkstepAction
 {
-    public static UppdcActionRunKafka of(UppdcConfigKafka config)
+    public static UppdcWkstepActionKafka of(UppdcWkstepArgvalKafka config)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
         }
-        return new UppdcActionRunKafka(config);
+        return new UppdcWkstepActionKafka(config);
     }
 
-    private final UppdcConfigKafka config;
+    private final UppdcWkstepArgvalKafka config;
 
-    private UppdcActionRunKafka(UppdcConfigKafka config)
+    private UppdcWkstepActionKafka(UppdcWkstepArgvalKafka config)
     {
         this.config = config;
     }
@@ -26,6 +26,6 @@ public class UppdcActionRunKafka extends UppdcActionRun
     @Override
     protected UppdcSenderKafka sender()
     {
-        return UppdcSenderKafka.of(config, UppdcMetricKafka.of());
+        return UppdcSenderKafka.of(config, UppdcWkstepMetricKafka.of());
     }
 }

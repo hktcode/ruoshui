@@ -6,39 +6,39 @@ package com.hktcode.ruoshui.reciever.pgsql.upper.junction;
 
 import com.google.common.collect.ImmutableList;
 import com.hktcode.ruoshui.reciever.pgsql.upper.*;
-import com.hktcode.simple.SimpleAction;
+import com.hktcode.simple.SimpleWkstep;
 import com.hktcode.queue.Tqueue;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgjdbc.LogicalTxactBeginsMsg;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlKey;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlVal;
-import com.hktcode.simple.SimpleActionRun;
-import com.hktcode.simple.SimpleFinish;
+import com.hktcode.simple.SimpleWkstepAction;
+import com.hktcode.simple.SimpleWkstepTheEnd;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class UpjctActionRun implements SimpleActionRun<UpjctMeters, UpperExesvc>
+public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerMeters, UpperExesvc>
 {
-    public static UpjctActionRun of(UpjctConfig config)
+    public static UpjctWkstepAction of(UpjctWkstepArgval config)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
         }
-        return new UpjctActionRun(config);
+        return new UpjctWkstepAction(config);
     }
 
-    public final UpjctConfig config;
+    public final UpjctWkstepArgval config;
 
-    private UpjctActionRun(UpjctConfig config)
+    private UpjctWkstepAction(UpjctWkstepArgval config)
     {
         this.config = config;
     }
 
     @Override
-    public SimpleAction next(UpjctMeters meters, UpperExesvc exesvc) //
+    public SimpleWkstep next(UpjctWorkerMeters meters, UpperExesvc exesvc) //
             throws InterruptedException
     {
         if (config == null) {
@@ -50,7 +50,7 @@ public class UpjctActionRun implements SimpleActionRun<UpjctMeters, UpperExesvc>
         if (exesvc == null) {
             throw new ArgumentNullException("exesvc");
         }
-        UpjctMetric metric = UpjctMetric.of();
+        UpjctWkstepMetric metric = UpjctWkstepMetric.of();
         UpperRecordConsumer r = null;
         UpperRecordProducer o = null;
         final Tqueue<UpperRecordProducer> getout = exesvc.tgtqueue;
@@ -72,10 +72,10 @@ public class UpjctActionRun implements SimpleActionRun<UpjctMeters, UpperExesvc>
                 r = null;
             }
         }
-        return SimpleFinish.of();
+        return SimpleWkstepTheEnd.of();
     }
 
-    private List<UpperRecordProducer> convert(UpjctMetric metric, UpperRecordConsumer record)
+    private List<UpperRecordProducer> convert(UpjctWkstepMetric metric, UpperRecordConsumer record)
     {
         long lsn = record.lsn;
         LogicalMsg msg = record.msg;

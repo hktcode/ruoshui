@@ -9,11 +9,11 @@ import com.google.common.collect.ImmutableList;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
-import com.hktcode.simple.SimpleArgval;
+import com.hktcode.simple.SimpleWorkerArgval;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class UppdcArgval implements SimpleArgval
+public class UppdcWorkerArgval implements SimpleWorkerArgval
 {
     public static final ObjectNode SCHEMA;
 
@@ -25,34 +25,34 @@ public class UppdcArgval implements SimpleArgval
         ObjectNode argvalNode = schema.putObject("properties");
         ObjectNode actionInfosNode = argvalNode.putObject("action_infos");
         actionInfosNode.put("type", "array");
-        actionInfosNode.set("items", UppdcConfig.SCHEMA);
+        actionInfosNode.set("items", UppdcWkstepArgval.SCHEMA);
         actionInfosNode.put("maxItems", 1);
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    public static UppdcArgval ofJsonObject(JsonNode json) //
+    public static UppdcWorkerArgval ofJsonObject(JsonNode json) //
     {
         if (json == null) {
             throw new ArgumentNullException("json");
         }
         JsonNode actionInfoNode = json.path("action_info");
         ArrayNode arrayNode;
-        UppdcConfig action;
+        UppdcWkstepArgval action;
         if (actionInfoNode instanceof MissingNode) {
-            action = UppdcConfig.ofJsonObject(MissingNode.getInstance());
+            action = UppdcWkstepArgval.ofJsonObject(MissingNode.getInstance());
         }
         else if ((arrayNode = (ArrayNode)actionInfoNode).size() == 0) {
-            action = UppdcConfig.ofJsonObject(MissingNode.getInstance());
+            action = UppdcWkstepArgval.ofJsonObject(MissingNode.getInstance());
         }
         else {
-            action = UppdcConfig.ofJsonObject(arrayNode.get(0));
+            action = UppdcWkstepArgval.ofJsonObject(arrayNode.get(0));
         }
-        return new UppdcArgval(ImmutableList.of(action));
+        return new UppdcWorkerArgval(ImmutableList.of(action));
     }
 
-    public final ImmutableList<UppdcConfig> actionInfos;
+    public final ImmutableList<UppdcWkstepArgval> actionInfos;
 
-    private UppdcArgval(ImmutableList<UppdcConfig> actionInfos)
+    private UppdcWorkerArgval(ImmutableList<UppdcWkstepArgval> actionInfos)
     {
         this.actionInfos = actionInfos;
     }
@@ -64,7 +64,7 @@ public class UppdcArgval implements SimpleArgval
             throw new ArgumentNullException("node");
         }
         ArrayNode actionInfosNode = node.putArray("action_infos");
-        for (UppdcConfig c: this.actionInfos) {
+        for (UppdcWkstepArgval c: this.actionInfos) {
             ObjectNode n = actionInfosNode.addObject();
             c.toJsonObject(n);
         }
@@ -88,6 +88,6 @@ public class UppdcArgval implements SimpleArgval
         if (exesvc == null) {
             throw new ArgumentNullException("exesvc");
         }
-        return UppdcWorker.of(this, UppdcMeters.of(txactionLsn), exesvc);
+        return UppdcWorker.of(this, UppdcWorkerMeters.of(txactionLsn), exesvc);
     }
 }
