@@ -32,11 +32,8 @@ public class UpperExesvc extends SimpleExesvc
     public final String fullname;
     private final UpperExesvcArgval argval;
     private final UpperExesvcGauges gauges;
-    private final UpcsmWorker consumer; // laborer
     public final Tqueue<UpperRecordConsumer> srcqueue;
-    private final UpjctWorker junction;
     public final Tqueue<UpperRecordProducer> tgtqueue;
-    private final UppdcWorker producer;
     private final UpperKeeperOnlyone keeper;
 
     private UpperExesvc(UpperExesvcArgval argval, UpperKeeperOnlyone keeper)
@@ -46,12 +43,8 @@ public class UpperExesvc extends SimpleExesvc
         this.gauges = UpperExesvcGauges.of();
         this.createts = argval.createts;
         this.fullname = argval.fullname;
-        AtomicLong txactionLsn = new AtomicLong(LogSequenceNumber.INVALID_LSN.asLong());
-        this.consumer = argval.consumer.worker(txactionLsn, this);
         this.srcqueue = Tqueue.of(argval.srcqueue, TqueueMetric.of());
-        this.junction = argval.junction.worker(this);
         this.tgtqueue = Tqueue.of(argval.tgtqueue, TqueueMetric.of());
-        this.producer = argval.producer.worker(txactionLsn, this);
     }
 
     @Override
@@ -68,9 +61,9 @@ public class UpperExesvc extends SimpleExesvc
         if (cmd == null) {
             throw new ArgumentNullException("cmd");
         }
-        this.submit(this.producer);
-        this.submit(this.junction);
-        this.submit(this.consumer);
+        this.submit(UppdcWorker.of(this.argval.producer, this.gauges.producer, this));
+        this.submit(UpjctWorker.of(this.argval.junction, this.gauges.junction, this));
+        this.submit(UpcsmWorker.of(this.argval.consumer, this.gauges.consumer, this));
         this.shutdown();
         return this.run(cmd, (o, f)->this.put(o.deletets));
     }
@@ -102,14 +95,14 @@ public class UpperExesvc extends SimpleExesvc
     private UpperResult end(long deletets)
     {
         if (deletets == Long.MAX_VALUE) {
-            if (this.consumer.meters.endDatetime == Long.MAX_VALUE) {
-                this.consumer.meters.endDatetime = this.consumer.meters.exeDatetime;
+            if (this.gauges.consumer.endDatetime == Long.MAX_VALUE) {
+                this.gauges.consumer.endDatetime = this.gauges.consumer.exeDatetime;
             }
-            if (this.junction.meters.endDatetime == Long.MAX_VALUE) {
-                this.junction.meters.endDatetime = this.junction.meters.exeDatetime;
+            if (this.gauges.junction.endDatetime == Long.MAX_VALUE) {
+                this.gauges.junction.endDatetime = this.gauges.junction.exeDatetime;
             }
-            if (this.producer.meters.endDatetime == Long.MAX_VALUE) {
-                this.producer.meters.endDatetime = this.producer.meters.exeDatetime;
+            if (this.gauges.producer.endDatetime == Long.MAX_VALUE) {
+                this.gauges.producer.endDatetime = this.gauges.producer.exeDatetime;
             }
             deletets = System.currentTimeMillis();
         }
@@ -136,19 +129,19 @@ public class UpperExesvc extends SimpleExesvc
     {
         JsonNode n;
         if ((n = node.get("consumer")) != null) {
-            this.consumer.pst(n);
+            this.argval.consumer.pst(n);
         }
         if ((n = node.get("srcqueue")) != null) {
-            this.srcqueue.pst(n);
+            this.argval.srcqueue.pst(n);
         }
         if ((n = node.get("junction")) != null) {
-            this.junction.pst(n);
+            this.argval.junction.pst(n);
         }
         if ((n = node.get("tgtqueue")) != null) {
-            this.tgtqueue.pst(n);
+            this.argval.tgtqueue.pst(n);
         }
         if ((n = node.get("producer")) != null) {
-            this.producer.pst(n);
+            this.argval.producer.pst(n);
         }
         ObjectNode conf = this.toConfigNode(this.keeper.mapper.createObjectNode());
         this.keeper.updertYml(this.fullname, conf);
@@ -159,11 +152,11 @@ public class UpperExesvc extends SimpleExesvc
     {
         long createts = this.createts;
         String fullname = this.fullname;
-        ObjectNode consumer = this.consumer.toJsonObject();
-        ObjectNode srcqueue = this.srcqueue.toJsonObject();
-        ObjectNode junction = this.junction.toJsonObject();
-        ObjectNode tgtqueue = this.tgtqueue.toJsonObject();
-        ObjectNode producer = this.producer.toJsonObject();
+        ObjectNode consumer = this.argval.consumer.toJsonObject();
+        ObjectNode srcqueue = this.argval.srcqueue.toJsonObject();
+        ObjectNode junction = this.argval.junction.toJsonObject();
+        ObjectNode tgtqueue = this.argval.tgtqueue.toJsonObject();
+        ObjectNode producer = this.argval.producer.toJsonObject();
         return UpperResult.of(createts, fullname, consumer, srcqueue, junction, tgtqueue, producer, deletets);
     }
 
@@ -174,11 +167,11 @@ public class UpperExesvc extends SimpleExesvc
         ObjectNode junction = node.putObject("junction");
         ObjectNode tgtqueue = node.putObject("tgtqueue");
         ObjectNode producer = node.putObject("producer");
-        this.consumer.argval.toJsonObject(consumer);
+        this.argval.consumer.toJsonObject(consumer);
         this.srcqueue.config.toJsonObject(srcqueue);
-        this.junction.argval.toJsonObject(junction);
+        this.argval.junction.toJsonObject(junction);
         this.tgtqueue.config.toJsonObject(tgtqueue);
-        this.producer.argval.toJsonObject(producer);
+        this.argval.producer.toJsonObject(producer);
         return node;
     }
 }
