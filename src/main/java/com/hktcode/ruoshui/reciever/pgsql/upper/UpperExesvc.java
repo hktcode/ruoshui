@@ -17,18 +17,15 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class UpperExesvc extends SimpleExesvc
 {
-    public static UpperExesvc of(long createts, String fullname, UpperExesvcArgval config, UpperKeeperOnlyone storeman)
+    public static UpperExesvc of(UpperExesvcArgval config, UpperKeeperOnlyone storeman)
     {
-        if (fullname == null) {
-            throw new ArgumentNullException("fullname");
-        }
         if (config == null) {
             throw new ArgumentNullException("config");
         }
         if (storeman == null) {
             throw new ArgumentNullException("storeman");
         }
-        return new UpperExesvc(createts, fullname, config, storeman);
+        return new UpperExesvc(config, storeman);
     }
 
     public final long createts;
@@ -41,14 +38,12 @@ public class UpperExesvc extends SimpleExesvc
     private final UpperKeeperOnlyone storeman;
 
     private UpperExesvc //
-        /* */(long createts //
-        /* */, String fullname //
-        /* */, UpperExesvcArgval config //
+        /* */( UpperExesvcArgval config //
         /* */, UpperKeeperOnlyone storeman //
         /* */)
     {
-        this.createts = createts;
-        this.fullname = fullname;
+        this.createts = config.createts;
+        this.fullname = config.fullname;
         AtomicLong txactionLsn = new AtomicLong(LogSequenceNumber.INVALID_LSN.asLong());
         this.consumer = config.consumer.worker(txactionLsn, this);
         this.srcqueue = Tqueue.of(config.srcqueue, TqueueMetric.of());
