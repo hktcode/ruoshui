@@ -18,10 +18,13 @@ public abstract class SimpleExesvc extends ThreadPoolExecutor
 
     private final AtomicReference<SimplePhaser> status;
 
+    protected final SimpleHolderExesvc holder;
+
     protected SimpleExesvc()
     {
         super(3, 3, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(1));
         this.status = new AtomicReference<>(SimplePhaserInner.of(Long.MAX_VALUE));
+        this.holder = SimpleHolderExesvc.of(this.status);
     }
 
     public SimplePhaserInner run(SimpleWorkerMeters metric) throws InterruptedException
