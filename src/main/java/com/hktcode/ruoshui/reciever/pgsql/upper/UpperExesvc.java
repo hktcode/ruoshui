@@ -11,9 +11,6 @@ import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorker;
 import com.hktcode.ruoshui.reciever.pgsql.upper.storeman.UpperKeeperOnlyone;
 import com.hktcode.simple.SimpleExesvc;
 import com.hktcode.simple.SimplePhaserOuter;
-import org.postgresql.replication.LogSequenceNumber;
-
-import java.util.concurrent.atomic.AtomicLong;
 
 public class UpperExesvc extends SimpleExesvc
 {
@@ -29,7 +26,6 @@ public class UpperExesvc extends SimpleExesvc
     }
 
     public final long createts;
-    public final String fullname;
     private final UpperExesvcArgval argval;
     private final UpperExesvcGauges gauges;
     public final Tqueue<UpperRecordConsumer> srcqueue;
@@ -42,7 +38,6 @@ public class UpperExesvc extends SimpleExesvc
         this.keeper = keeper;
         this.gauges = UpperExesvcGauges.of();
         this.createts = argval.createts;
-        this.fullname = argval.fullname;
         this.srcqueue = Tqueue.of(argval.srcqueue, TqueueMetric.of());
         this.tgtqueue = Tqueue.of(argval.tgtqueue, TqueueMetric.of());
     }
@@ -113,7 +108,7 @@ public class UpperExesvc extends SimpleExesvc
     {
         ObjectNode node = this.keeper.mapper.createObjectNode();
         this.toConfigNode(node);
-        this.keeper.updertYml(this.fullname, node);
+        this.keeper.updertYml(this.argval.fullname, node);
         return this.get(deletets);
     }
 
@@ -121,7 +116,7 @@ public class UpperExesvc extends SimpleExesvc
     {
         ObjectNode node = this.keeper.mapper.createObjectNode();
         this.toConfigNode(node);
-        deletets = this.keeper.deleteYml(this.fullname, node, deletets);
+        deletets = this.keeper.deleteYml(this.argval.fullname, node, deletets);
         return this.get(deletets);
     }
 
@@ -144,14 +139,14 @@ public class UpperExesvc extends SimpleExesvc
             this.argval.producer.pst(n);
         }
         ObjectNode conf = this.toConfigNode(this.keeper.mapper.createObjectNode());
-        this.keeper.updertYml(this.fullname, conf);
+        this.keeper.updertYml(this.argval.fullname, conf);
         return this.get(Long.MAX_VALUE);
     }
 
     private UpperResult get(long deletets)
     {
         long createts = this.createts;
-        String fullname = this.fullname;
+        String fullname = this.argval.fullname;
         ObjectNode consumer = this.argval.consumer.toJsonObject();
         ObjectNode srcqueue = this.argval.srcqueue.toJsonObject();
         ObjectNode junction = this.argval.junction.toJsonObject();
