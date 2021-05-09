@@ -31,6 +31,7 @@ public class UpperExesvc extends SimpleExesvc
     public final long createts;
     public final String fullname;
     private final UpperExesvcArgval argval;
+    private final UpperExesvcGauges gauges;
     private final UpcsmWorker consumer; // laborer
     public final Tqueue<UpperRecordConsumer> srcqueue;
     private final UpjctWorker junction;
@@ -42,6 +43,7 @@ public class UpperExesvc extends SimpleExesvc
     {
         this.argval = argval;
         this.keeper = keeper;
+        this.gauges = UpperExesvcGauges.of();
         this.createts = argval.createts;
         this.fullname = argval.fullname;
         AtomicLong txactionLsn = new AtomicLong(LogSequenceNumber.INVALID_LSN.asLong());
