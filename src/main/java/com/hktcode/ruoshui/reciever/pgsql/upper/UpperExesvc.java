@@ -17,15 +17,15 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class UpperExesvc extends SimpleExesvc
 {
-    public static UpperExesvc of(UpperExesvcArgval config, UpperKeeperOnlyone storeman)
+    public static UpperExesvc of(UpperExesvcArgval config, UpperKeeperOnlyone keeper)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
         }
-        if (storeman == null) {
-            throw new ArgumentNullException("storeman");
+        if (keeper == null) {
+            throw new ArgumentNullException("keeper");
         }
-        return new UpperExesvc(config, storeman);
+        return new UpperExesvc(config, keeper);
     }
 
     public final long createts;
@@ -36,11 +36,12 @@ public class UpperExesvc extends SimpleExesvc
     private final UpjctWorker junction;
     public final Tqueue<UpperRecordProducer> tgtqueue;
     private final UppdcWorker producer;
-    private final UpperKeeperOnlyone storeman;
+    private final UpperKeeperOnlyone keeper;
 
-    private UpperExesvc(UpperExesvcArgval argval, UpperKeeperOnlyone storeman)
+    private UpperExesvc(UpperExesvcArgval argval, UpperKeeperOnlyone keeper)
     {
         this.argval = argval;
+        this.keeper = keeper;
         this.createts = argval.createts;
         this.fullname = argval.fullname;
         AtomicLong txactionLsn = new AtomicLong(LogSequenceNumber.INVALID_LSN.asLong());
@@ -49,7 +50,6 @@ public class UpperExesvc extends SimpleExesvc
         this.junction = argval.junction.worker(this);
         this.tgtqueue = Tqueue.of(argval.tgtqueue, TqueueMetric.of());
         this.producer = argval.producer.worker(txactionLsn, this);
-        this.storeman = storeman;
     }
 
     @Override
@@ -116,17 +116,17 @@ public class UpperExesvc extends SimpleExesvc
 
     private UpperResult put(long deletets)
     {
-        ObjectNode node = this.storeman.mapper.createObjectNode();
+        ObjectNode node = this.keeper.mapper.createObjectNode();
         this.toConfigNode(node);
-        this.storeman.updertYml(this.fullname, node);
+        this.keeper.updertYml(this.fullname, node);
         return this.get(deletets);
     }
 
     private UpperResult del(long deletets)
     {
-        ObjectNode node = this.storeman.mapper.createObjectNode();
+        ObjectNode node = this.keeper.mapper.createObjectNode();
         this.toConfigNode(node);
-        deletets = this.storeman.deleteYml(this.fullname, node, deletets);
+        deletets = this.keeper.deleteYml(this.fullname, node, deletets);
         return this.get(deletets);
     }
 
@@ -148,8 +148,8 @@ public class UpperExesvc extends SimpleExesvc
         if ((n = node.get("producer")) != null) {
             this.producer.pst(n);
         }
-        ObjectNode conf = this.toConfigNode(this.storeman.mapper.createObjectNode());
-        this.storeman.updertYml(this.fullname, conf);
+        ObjectNode conf = this.toConfigNode(this.keeper.mapper.createObjectNode());
+        this.keeper.updertYml(this.fullname, conf);
         return this.get(Long.MAX_VALUE);
     }
 
