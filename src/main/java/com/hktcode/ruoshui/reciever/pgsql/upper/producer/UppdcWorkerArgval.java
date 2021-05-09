@@ -3,7 +3,6 @@ package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.jackson.JacksonObject;
@@ -30,23 +29,14 @@ public class UppdcWorkerArgval implements SimpleWorkerArgval
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    public static UppdcWorkerArgval ofJsonObject(JsonNode json) //
+    public static UppdcWorkerArgval ofJsonObject(JsonNode json)
     {
         if (json == null) {
             throw new ArgumentNullException("json");
         }
-        JsonNode actionInfoNode = json.path("action_info");
-        ArrayNode arrayNode;
-        UppdcWkstepArgval action;
-        if (actionInfoNode instanceof MissingNode) {
-            action = UppdcWkstepArgval.ofJsonObject(MissingNode.getInstance());
-        }
-        else if ((arrayNode = (ArrayNode)actionInfoNode).size() == 0) {
-            action = UppdcWkstepArgval.ofJsonObject(MissingNode.getInstance());
-        }
-        else {
-            action = UppdcWkstepArgval.ofJsonObject(arrayNode.get(0));
-        }
+        JsonNode actionInfoNode = json.path("action_infos");
+        JsonNode actionNode = actionInfoNode.path(0);
+        UppdcWkstepArgval action = UppdcWkstepArgval.ofJsonObject(actionNode);
         return new UppdcWorkerArgval(ImmutableList.of(action));
     }
 
