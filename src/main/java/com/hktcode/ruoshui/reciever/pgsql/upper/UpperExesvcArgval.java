@@ -36,16 +36,14 @@ public class UpperExesvcArgval
         if (jsonnode == null) {
             throw new ArgumentNullException("jsonnode");
         }
-        long createts = System.currentTimeMillis();
         UpcsmWorkerArgval consumer = UpcsmWorkerArgval.ofJsonObject(jsonnode.path("consumer"));
         TqueueConfig srcqueue = TqueueConfig.ofJsonObject(jsonnode.path("srcqueue"));
         UpjctWorkerArgval junction = UpjctWorkerArgval.ofJsonObject(jsonnode.path("junction"));
         TqueueConfig tgtqueue = TqueueConfig.ofJsonObject(jsonnode.path("tgtqueue"));
         UppdcWorkerArgval producer = UppdcWorkerArgval.ofJsonObject(jsonnode.path("producer"));
-        return new UpperExesvcArgval(createts, fullname, consumer, srcqueue, junction, tgtqueue, producer);
+        return new UpperExesvcArgval(fullname, consumer, srcqueue, junction, tgtqueue, producer);
     }
 
-    public final long createts;
     public final String fullname;
     public final UpcsmWorkerArgval consumer; // laborer
     public final TqueueConfig srcqueue;
@@ -54,8 +52,7 @@ public class UpperExesvcArgval
     public final UppdcWorkerArgval producer;
 
     private UpperExesvcArgval //
-            /* */( long createts //
-            /* */, String fullname //
+            /* */( String fullname //
             /* */, UpcsmWorkerArgval consumer //
             /* */, TqueueConfig srcqueue //
             /* */, UpjctWorkerArgval junction //
@@ -63,7 +60,6 @@ public class UpperExesvcArgval
             /* */, UppdcWorkerArgval producer //
             /* */)
     {
-        this.createts = createts;
         this.fullname = fullname;
         this.consumer = consumer;
         this.srcqueue = srcqueue;
