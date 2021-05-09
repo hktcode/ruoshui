@@ -28,19 +28,25 @@ public class UpperExesvcArgval
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    public static UpperExesvcArgval ofJsonObject(JsonNode jsonNode)
+    public static UpperExesvcArgval ofJsonObject(String fullname, JsonNode jsonnode)
     {
-        if (jsonNode == null) {
-            throw new ArgumentNullException("jsonNode");
+        if (fullname == null) {
+            throw new ArgumentNullException("fullname");
         }
-        UpcsmWorkerArgval consumer = UpcsmWorkerArgval.ofJsonObject(jsonNode.path("consumer"));
-        TqueueConfig srcqueue = TqueueConfig.ofJsonObject(jsonNode.path("srcqueue"));
-        UpjctWorkerArgval junction = UpjctWorkerArgval.ofJsonObject(jsonNode.path("junction"));
-        TqueueConfig tgtqueue = TqueueConfig.ofJsonObject(jsonNode.path("tgtqueue"));
-        UppdcWorkerArgval producer = UppdcWorkerArgval.ofJsonObject(jsonNode.path("producer"));
-        return new UpperExesvcArgval(consumer, srcqueue, junction, tgtqueue, producer);
+        if (jsonnode == null) {
+            throw new ArgumentNullException("jsonnode");
+        }
+        long createts = System.currentTimeMillis();
+        UpcsmWorkerArgval consumer = UpcsmWorkerArgval.ofJsonObject(jsonnode.path("consumer"));
+        TqueueConfig srcqueue = TqueueConfig.ofJsonObject(jsonnode.path("srcqueue"));
+        UpjctWorkerArgval junction = UpjctWorkerArgval.ofJsonObject(jsonnode.path("junction"));
+        TqueueConfig tgtqueue = TqueueConfig.ofJsonObject(jsonnode.path("tgtqueue"));
+        UppdcWorkerArgval producer = UppdcWorkerArgval.ofJsonObject(jsonnode.path("producer"));
+        return new UpperExesvcArgval(createts, fullname, consumer, srcqueue, junction, tgtqueue, producer);
     }
 
+    public final long createts;
+    public final String fullname;
     public final UpcsmWorkerArgval consumer; // laborer
     public final TqueueConfig srcqueue;
     public final UpjctWorkerArgval junction;
@@ -48,13 +54,17 @@ public class UpperExesvcArgval
     public final UppdcWorkerArgval producer;
 
     private UpperExesvcArgval //
-            /* */(UpcsmWorkerArgval consumer //
+            /* */( long createts //
+            /* */, String fullname //
+            /* */, UpcsmWorkerArgval consumer //
             /* */, TqueueConfig srcqueue //
             /* */, UpjctWorkerArgval junction //
             /* */, TqueueConfig tgtqueue //
             /* */, UppdcWorkerArgval producer //
             /* */)
     {
+        this.createts = createts;
+        this.fullname = fullname;
         this.consumer = consumer;
         this.srcqueue = srcqueue;
         this.junction = junction;
