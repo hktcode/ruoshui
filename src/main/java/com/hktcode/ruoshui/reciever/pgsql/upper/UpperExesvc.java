@@ -30,6 +30,7 @@ public class UpperExesvc extends SimpleExesvc
 
     public final long createts;
     public final String fullname;
+    private final UpperExesvcArgval argval;
     private final UpcsmWorker consumer; // laborer
     public final Tqueue<UpperRecordConsumer> srcqueue;
     private final UpjctWorker junction;
@@ -37,19 +38,17 @@ public class UpperExesvc extends SimpleExesvc
     private final UppdcWorker producer;
     private final UpperKeeperOnlyone storeman;
 
-    private UpperExesvc //
-        /* */( UpperExesvcArgval config //
-        /* */, UpperKeeperOnlyone storeman //
-        /* */)
+    private UpperExesvc(UpperExesvcArgval argval, UpperKeeperOnlyone storeman)
     {
-        this.createts = config.createts;
-        this.fullname = config.fullname;
+        this.argval = argval;
+        this.createts = argval.createts;
+        this.fullname = argval.fullname;
         AtomicLong txactionLsn = new AtomicLong(LogSequenceNumber.INVALID_LSN.asLong());
-        this.consumer = config.consumer.worker(txactionLsn, this);
-        this.srcqueue = Tqueue.of(config.srcqueue, TqueueMetric.of());
-        this.junction = config.junction.worker(this);
-        this.tgtqueue = Tqueue.of(config.tgtqueue, TqueueMetric.of());
-        this.producer = config.producer.worker(txactionLsn, this);
+        this.consumer = argval.consumer.worker(txactionLsn, this);
+        this.srcqueue = Tqueue.of(argval.srcqueue, TqueueMetric.of());
+        this.junction = argval.junction.worker(this);
+        this.tgtqueue = Tqueue.of(argval.tgtqueue, TqueueMetric.of());
+        this.producer = argval.producer.worker(txactionLsn, this);
         this.storeman = storeman;
     }
 
