@@ -72,9 +72,9 @@ public class UpperExesvc extends SimpleExesvc
         if (cmd == null) {
             throw new ArgumentNullException("cmd");
         }
-        this.submit(this.consumer);
-        this.submit(this.junction);
         this.submit(this.producer);
+        this.submit(this.junction);
+        this.submit(this.consumer);
         this.shutdown();
         return this.run(cmd, (o, f)->this.put(o.deletets));
     }
