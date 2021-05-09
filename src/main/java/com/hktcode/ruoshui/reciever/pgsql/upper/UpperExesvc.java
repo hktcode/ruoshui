@@ -25,7 +25,6 @@ public class UpperExesvc extends SimpleExesvc
         return new UpperExesvc(config, keeper);
     }
 
-    public final long createts;
     private final UpperExesvcArgval argval;
     private final UpperExesvcGauges gauges;
     public final Tqueue<UpperRecordConsumer> srcqueue;
@@ -37,7 +36,6 @@ public class UpperExesvc extends SimpleExesvc
         this.argval = argval;
         this.keeper = keeper;
         this.gauges = UpperExesvcGauges.of();
-        this.createts = argval.createts;
         this.srcqueue = Tqueue.of(argval.srcqueue, TqueueMetric.of());
         this.tgtqueue = Tqueue.of(argval.tgtqueue, TqueueMetric.of());
     }
@@ -145,7 +143,7 @@ public class UpperExesvc extends SimpleExesvc
 
     private UpperResult get(long deletets)
     {
-        long createts = this.createts;
+        long createts = this.gauges.createts;
         String fullname = this.argval.fullname;
         ObjectNode consumer = this.argval.consumer.toJsonObject();
         ObjectNode srcqueue = this.argval.srcqueue.toJsonObject();
