@@ -46,7 +46,7 @@ public class UpperService implements DisposableBean
             throw new ArgumentNullException("body");
         }
         long createts = System.currentTimeMillis();
-        UpperArgval config = UpperArgval.ofJsonObject(body);
+        UpperExesvcArgval config = UpperExesvcArgval.ofJsonObject(body);
         UpperExesvc exesvc = UpperExesvc.of(createts, name, config, this.keeper);
 
         Lock lock = this.locker.readLock();

@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class UpperExesvc extends SimpleExesvc
 {
-    public static UpperExesvc of(long createts, String fullname, UpperArgval config, UpperKeeperOnlyone storeman)
+    public static UpperExesvc of(long createts, String fullname, UpperExesvcArgval config, UpperKeeperOnlyone storeman)
     {
         if (fullname == null) {
             throw new ArgumentNullException("fullname");
@@ -43,7 +43,7 @@ public class UpperExesvc extends SimpleExesvc
     private UpperExesvc //
         /* */(long createts //
         /* */, String fullname //
-        /* */, UpperArgval config //
+        /* */, UpperExesvcArgval config //
         /* */, UpperKeeperOnlyone storeman //
         /* */)
     {

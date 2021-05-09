@@ -35,7 +35,7 @@ public class UpperController
     {
         this.service = service;
         final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-        this.upperConfigSchema = factory.getJsonSchema(UpperArgval.SCHEMA);
+        this.upperConfigSchema = factory.getJsonSchema(UpperExesvcArgval.SCHEMA);
     }
 
     @PutMapping("{name}")
