@@ -97,6 +97,8 @@ public abstract class SimpleWorker<A extends SimpleWorkerArgval, M extends Simpl
         } catch (InterruptedException e) {
             logger.error("should never happen", e);
             Thread.currentThread().interrupt();
+        } finally {
+            meters.endDatetime = System.currentTimeMillis();
         }
     }
 
