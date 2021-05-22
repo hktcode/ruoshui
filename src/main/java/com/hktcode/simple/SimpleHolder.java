@@ -8,6 +8,35 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class SimpleHolder
 {
+    public <R extends  SimpleResult> R call(SimpleMethod<R> method) throws InterruptedException
+    {
+        if (method == null) {
+            throw new ArgumentNullException("method");
+        }
+        SimplePhaserOuter newval = SimplePhaserOuter.of(4);
+        SimplePhaser curval = this.atomic.get();
+        if (!(curval instanceof SimplePhaserInner)) {
+            throw new RuntimeException(); //  未来计划：
+        }
+        SimplePhaserInner origin = (SimplePhaserInner)curval;
+        SimplePhaserOuter future = origin.cmd(newval);
+        if (future == newval && !this.atomic.compareAndSet(origin, future)) {
+            throw new RuntimeException(); //  未来计划：
+        }
+        long deletets = origin.deletets;
+        future.acquire();
+        try {
+            return method.call(deletets);
+        }
+        finally {
+            boolean result = atomic.compareAndSet(future, origin);
+            if (!result) {
+                logger.debug("cas(future, origin): origin.deletets={}", deletets);
+            }
+            future.release();
+        }
+    }
+
     public SimplePhaser set(SimplePhaserInner actual) throws InterruptedException
     {
         if (actual == null) {
@@ -32,6 +61,12 @@ public abstract class SimpleHolder
     protected SimpleHolder(AtomicReference<SimplePhaser> atomic)
     {
         this.atomic = atomic;
+    }
+
+    @FunctionalInterface
+    public interface SimpleMethod<R extends SimpleResult>
+    {
+        R call(long deletets);
     }
 
     private static final Logger logger = LoggerFactory.getLogger(SimpleHolder.class);
