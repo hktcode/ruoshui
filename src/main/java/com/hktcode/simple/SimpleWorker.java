@@ -36,23 +36,18 @@ public abstract class SimpleWorker<A extends SimpleWorkerArgval, M extends Simpl
         this.argval.pst(node);
     }
 
-    protected SimplePhaserInner call() throws InterruptedException
+    protected SimplePhaserInner call(long endMillis) throws InterruptedException
     {
-        SimplePhaser origin;
-        while (!((origin = this.atomic.get()) instanceof SimplePhaserInner)) {
-            ((SimplePhaserOuter)origin).waiting();
+        SimplePhaser oldval;
+        while (!((oldval = this.atomic.get()) instanceof SimplePhaserInner)) {
+            ((SimplePhaserOuter)oldval).waiting();
         }
-        return (SimplePhaserInner)origin;
-    }
-
-    protected SimplePhaserInner stop() throws InterruptedException
-    {
-        SimplePhaserInner origin = this.call();
-        SimplePhaserInner future = SimplePhaserInner.of(System.currentTimeMillis());
-        if (origin.deletets == Long.MAX_VALUE && this.atomic.compareAndSet(origin, future)) {
-            return future;
+        SimplePhaserInner origin = (SimplePhaserInner) oldval;
+        if (endMillis == Long.MAX_VALUE || origin.deletets != Long.MAX_VALUE) {
+            return origin;
         }
-        return origin;
+        SimplePhaserInner future = SimplePhaserInner.of(endMillis);
+        return this.atomic.compareAndSet(origin, future) ? future : origin;
     }
 
     @Override
@@ -83,10 +78,11 @@ public abstract class SimpleWorker<A extends SimpleWorkerArgval, M extends Simpl
                     throw ex;
                 } catch (Throwable ex) {
                     logger.error("triple throws exception: ", ex);
+                    long endMillis = System.currentTimeMillis();
                     meters.throwErrors.add(ex);
                     long deletets;
                     do {
-                        deletets = this.stop().deletets;
+                        deletets = this.call(endMillis).deletets;
                     } while (deletets == Long.MAX_VALUE);
                     wkstep = SimpleWkstepTheEnd.of();
                 }
