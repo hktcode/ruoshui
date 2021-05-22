@@ -36,6 +36,25 @@ public abstract class SimpleWorker<A extends SimpleWorkerArgval, M extends Simpl
         this.argval.pst(node);
     }
 
+    protected SimplePhaserInner call() throws InterruptedException
+    {
+        SimplePhaser origin;
+        while (!((origin = this.atomic.get()) instanceof SimplePhaserInner)) {
+            ((SimplePhaserOuter)origin).waiting();
+        }
+        return (SimplePhaserInner)origin;
+    }
+
+    protected SimplePhaserInner stop() throws InterruptedException
+    {
+        SimplePhaserInner origin = this.call();
+        SimplePhaserInner future = SimplePhaserInner.of(System.currentTimeMillis());
+        if (origin.deletets == Long.MAX_VALUE && this.atomic.compareAndSet(origin, future)) {
+            return future;
+        }
+        return origin;
+    }
+
     @Override
     public ObjectNode toJsonObject(ObjectNode node)
     {
