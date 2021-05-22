@@ -84,12 +84,10 @@ public abstract class SimpleWorker<A extends SimpleWorkerArgval, M extends Simpl
                 } catch (Throwable ex) {
                     logger.error("triple throws exception: ", ex);
                     meters.throwErrors.add(ex);
-                    meters.endDatetime = System.currentTimeMillis();
-                    SimplePhaserOuter del = SimplePhaserOuter.of(3);
-                    while (exesvc.run(meters).deletets == Long.MAX_VALUE) {
-                        SimpleResult result = exesvc.end(del);
-                        logger.info("end: result={}", result);
-                    }
+                    long deletets;
+                    do {
+                        deletets = this.stop().deletets;
+                    } while (deletets == Long.MAX_VALUE);
                     wkstep = SimpleWkstepTheEnd.of();
                 }
             } while (wkstep instanceof SimpleWkstepAction);
