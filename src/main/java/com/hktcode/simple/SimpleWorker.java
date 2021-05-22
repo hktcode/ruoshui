@@ -7,6 +7,8 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 public abstract class SimpleWorker<A extends SimpleWorkerArgval, M extends SimpleWorkerMeters, E extends SimpleExesvc>
         implements JacksonObject, Runnable
 {
@@ -16,11 +18,14 @@ public abstract class SimpleWorker<A extends SimpleWorkerArgval, M extends Simpl
 
     public final E exesvc;
 
-    protected SimpleWorker(A argval, M meters, E exesvc)
+    private final AtomicReference<SimplePhaser> atomic;
+
+    protected SimpleWorker(A argval, M meters, E exesvc, AtomicReference<SimplePhaser> atomic)
     {
         this.argval = argval;
         this.meters = meters;
         this.exesvc = exesvc;
+        this.atomic = atomic;
     }
 
     public void pst(JsonNode node)
