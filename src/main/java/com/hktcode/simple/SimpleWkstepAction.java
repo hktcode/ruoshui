@@ -4,8 +4,8 @@
 
 package com.hktcode.simple;
 
-public interface SimpleWkstepAction<M extends SimpleWorkerMeters, E extends SimpleExesvc>
+public interface SimpleWkstepAction<A extends SimpleWorkerArgval, M extends SimpleWorkerMeters>
         extends SimpleWkstep
 {
-    SimpleWkstep next(M meters, E exesvc) throws Throwable;
+    SimpleWkstep next(A argval, M meters, SimpleHolder holder) throws Throwable;
 }

@@ -7,22 +7,19 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class SimpleWorker<A extends SimpleWorkerArgval, M extends SimpleWorkerMeters, E extends SimpleExesvc>
+public abstract class SimpleWorker<A extends SimpleWorkerArgval, M extends SimpleWorkerMeters>
         implements JacksonObject, Runnable
 {
     public final A argval;
 
     public final M meters;
 
-    public final E exesvc;
-
     protected final SimpleHolder holder;
 
-    protected SimpleWorker(A argval, M meters, E exesvc, SimpleHolder holder)
+    protected SimpleWorker(A argval, M meters, SimpleHolder holder)
     {
         this.argval = argval;
         this.meters = meters;
-        this.exesvc = exesvc;
         this.holder = holder;
     }
 
@@ -47,7 +44,7 @@ public abstract class SimpleWorker<A extends SimpleWorkerArgval, M extends Simpl
         return node;
     }
 
-    public abstract SimpleWkstepAction<M, E> action();
+    public abstract SimpleWkstepAction<A, M> action();
 
     public void run()
     {
@@ -55,9 +52,9 @@ public abstract class SimpleWorker<A extends SimpleWorkerArgval, M extends Simpl
             SimpleWkstep wkstep = this.action();
             do {
                 @SuppressWarnings("unchecked")
-                SimpleWkstepAction<M, E> action = (SimpleWkstepAction<M, E>) wkstep;
+                SimpleWkstepAction<A, M> action = (SimpleWkstepAction<A, M>) wkstep;
                 try {
-                    wkstep = action.next(this.meters, this.exesvc);
+                    wkstep = action.next(this.argval, this.meters, this.holder);
                 } catch (InterruptedException ex) {
                     throw ex;
                 } catch (Throwable ex) {
