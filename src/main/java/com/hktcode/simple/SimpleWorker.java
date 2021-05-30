@@ -7,8 +7,6 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 public abstract class SimpleWorker<A extends SimpleWorkerArgval, M extends SimpleWorkerMeters, E extends SimpleExesvc>
         implements JacksonObject, Runnable
 {
@@ -18,14 +16,14 @@ public abstract class SimpleWorker<A extends SimpleWorkerArgval, M extends Simpl
 
     public final E exesvc;
 
-    private final AtomicReference<SimplePhaser> atomic;
+    protected final SimpleHolder holder;
 
-    protected SimpleWorker(A argval, M meters, E exesvc, AtomicReference<SimplePhaser> atomic)
+    protected SimpleWorker(A argval, M meters, E exesvc, SimpleHolder holder)
     {
         this.argval = argval;
         this.meters = meters;
         this.exesvc = exesvc;
-        this.atomic = atomic;
+        this.holder = holder;
     }
 
     public void pst(JsonNode node)
@@ -34,20 +32,6 @@ public abstract class SimpleWorker<A extends SimpleWorkerArgval, M extends Simpl
             throw new ArgumentNullException("node");
         }
         this.argval.pst(node);
-    }
-
-    protected SimplePhaserInner call(long endMillis) throws InterruptedException
-    {
-        SimplePhaser oldval;
-        while (!((oldval = this.atomic.get()) instanceof SimplePhaserInner)) {
-            ((SimplePhaserOuter)oldval).waiting();
-        }
-        SimplePhaserInner origin = (SimplePhaserInner) oldval;
-        if (endMillis == Long.MAX_VALUE || origin.deletets != Long.MAX_VALUE) {
-            return origin;
-        }
-        SimplePhaserInner future = SimplePhaserInner.of(endMillis);
-        return this.atomic.compareAndSet(origin, future) ? future : origin;
     }
 
     @Override
@@ -82,7 +66,7 @@ public abstract class SimpleWorker<A extends SimpleWorkerArgval, M extends Simpl
                     meters.throwErrors.add(ex);
                     long deletets;
                     do {
-                        deletets = this.call(endMillis).deletets;
+                        deletets = this.holder.call(endMillis).deletets;
                     } while (deletets == Long.MAX_VALUE);
                     wkstep = SimpleWkstepTheEnd.of();
                 }
