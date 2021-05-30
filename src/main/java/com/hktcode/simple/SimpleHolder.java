@@ -8,7 +8,13 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class SimpleHolder
 {
-    public <R extends  SimpleResult> R call(SimpleMethod<R> method) //
+    public static SimpleHolder of()
+    {
+        AtomicReference<SimplePhaser> atomic = new AtomicReference<>(SimplePhaserInner.of(Long.MAX_VALUE));
+        return new SimpleHolder(atomic);
+    }
+
+    public <R extends  SimpleResult> R call(long finish, SimpleMethod<R> method) //
             throws InterruptedException
     {
         if (method == null) {
@@ -25,6 +31,9 @@ public class SimpleHolder
             throw new RuntimeException(); //  未来计划：
         }
         long deletets = origin.deletets;
+        if (deletets == Long.MAX_VALUE) {
+            deletets = finish;
+        }
         future.acquire();
         try {
             return method.call(deletets);
