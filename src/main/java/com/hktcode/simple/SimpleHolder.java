@@ -8,7 +8,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class SimpleHolder
 {
-    public <R extends  SimpleResult> R call(SimpleMethod<R> method) throws InterruptedException
+    public <R extends  SimpleResult> R call(SimpleMethod<R> method) //
+            throws InterruptedException
     {
         if (method == null) {
             throw new ArgumentNullException("method");
