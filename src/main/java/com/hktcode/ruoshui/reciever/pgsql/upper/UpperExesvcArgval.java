@@ -10,7 +10,7 @@ import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorkerArgval;
 import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorkerArgval;
 import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorkerArgval;
 
-public class UpperExesvcArgval
+public class UpperExesvcArgval implements JacksonObject
 {
     public static final ObjectNode SCHEMA;
 
@@ -66,5 +66,24 @@ public class UpperExesvcArgval
         this.junction = junction;
         this.tgtqueue = tgtqueue;
         this.producer = producer;
+    }
+
+    @Override
+    public ObjectNode toJsonObject(ObjectNode node)
+    {
+        if (node == null) {
+            throw new ArgumentNullException("node");
+        }
+        ObjectNode c = node.putObject("consumer");
+        this.consumer.toJsonObject(c);
+        ObjectNode s = node.putObject("srcqueue");
+        this.srcqueue.toJsonObject(s);
+        ObjectNode j = node.putObject("junction");
+        this.junction.toJsonObject(j);
+        ObjectNode t = node.putObject("tgtqueue");
+        this.tgtqueue.toJsonObject(t);
+        ObjectNode p = node.putObject("producer");
+        this.producer.toJsonObject(p);
+        return node;
     }
 }

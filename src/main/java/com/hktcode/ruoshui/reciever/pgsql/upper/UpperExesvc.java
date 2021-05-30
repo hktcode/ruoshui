@@ -40,52 +40,57 @@ public class UpperExesvc extends SimpleExesvc
         this.tgtqueue = Tqueue.of(argval.tgtqueue, TqueueMetric.of());
     }
 
-    @Override
-    public UpperResult end(SimplePhaserOuter cmd) throws InterruptedException
+    public UpperResult end(JsonNode jsonnode) throws InterruptedException
     {
-        if (cmd == null) {
-            throw new ArgumentNullException("cmd");
+        if (jsonnode == null) {
+            throw new ArgumentNullException("jsonnode");
         }
-        return this.end(cmd, (o, f)->this.end(o.deletets));
+        long deletets = System.currentTimeMillis();
+        return this.holder.call(deletets, (d)->this.end(d, jsonnode));
     }
 
-    public UpperResult put(SimplePhaserOuter cmd) throws InterruptedException
+    //        this.submit(UppdcWorker.of(this.argval.producer, this.gauges.producer, this));
+    //        this.submit(UpjctWorker.of(this.argval.junction, this.gauges.junction, this));
+    //        this.submit(UpcsmWorker.of(this.argval.consumer, this.gauges.consumer, this));
+    //        this.shutdown();
+
+    public UpperResult put(JsonNode jsonnode) throws InterruptedException
     {
-        if (cmd == null) {
-            throw new ArgumentNullException("cmd");
+        if (jsonnode == null) {
+            throw new ArgumentNullException("jsonnode");
         }
-        this.submit(UppdcWorker.of(this.argval.producer, this.gauges.producer, this));
-        this.submit(UpjctWorker.of(this.argval.junction, this.gauges.junction, this));
-        this.submit(UpcsmWorker.of(this.argval.consumer, this.gauges.consumer, this));
-        this.shutdown();
-        return this.run(cmd, (o, f)->this.put(o.deletets));
+        long deletets = Long.MAX_VALUE;
+        return this.holder.call(deletets, (d)->this.put(d, jsonnode));
     }
 
-    public UpperResult del(SimplePhaserOuter cmd) throws InterruptedException
+    public UpperResult del(JsonNode jsonnode) throws InterruptedException
     {
-        if (cmd == null) {
-            throw new ArgumentNullException("cmd");
+        if (jsonnode == null) {
+            throw new ArgumentNullException("jsonnode");
         }
-        return this.run(cmd, (o, f)->this.del(o.deletets));
+        long deletets = System.currentTimeMillis();
+        return this.holder.call(deletets, (d)->this.del(d, jsonnode));
     }
 
-    public UpperResult pst(SimplePhaserOuter cmd, JsonNode json) throws InterruptedException
+    public UpperResult pst(JsonNode jsonnode) throws InterruptedException
     {
-        if (json == null) {
+        if (jsonnode == null) {
             throw new ArgumentNullException("node");
         }
-        return this.run(cmd, (o, f)->this.pst(json));
+        long deletets = Long.MAX_VALUE;
+        return this.holder.call(deletets, (d)->this.pst(d, jsonnode));
     }
 
-    public UpperResult get(SimplePhaserOuter cmd) throws InterruptedException
+    public UpperResult get(JsonNode jsonnode) throws InterruptedException
     {
-        if (cmd == null) {
-            throw new ArgumentNullException("cmd");
+        if (jsonnode == null) {
+            throw new ArgumentNullException("jsonnode");
         }
-        return this.run(cmd, (o, f)->this.get(o.deletets));
+        long deletets = Long.MAX_VALUE;
+        return this.holder.call(deletets, (d)->this.get(d, jsonnode));
     }
 
-    private UpperResult end(long deletets)
+    private UpperResult end(long deletets, JsonNode jsonnode)
     {
         if (deletets == Long.MAX_VALUE) {
             if (this.gauges.consumer.endDatetime == Long.MAX_VALUE) {
@@ -99,49 +104,49 @@ public class UpperExesvc extends SimpleExesvc
             }
             deletets = System.currentTimeMillis();
         }
-        return this.get(deletets);
+        return this.get(deletets, jsonnode);
     }
 
-    private UpperResult put(long deletets)
+    private UpperResult put(long deletets, JsonNode jsonnode)
     {
         ObjectNode node = this.keeper.mapper.createObjectNode();
         this.toConfigNode(node);
         this.keeper.updertYml(this.argval.fullname, node);
-        return this.get(deletets);
+        return this.get(deletets, jsonnode);
     }
 
-    private UpperResult del(long deletets)
+    private UpperResult del(long deletets, JsonNode jsonnode)
     {
         ObjectNode node = this.keeper.mapper.createObjectNode();
         this.toConfigNode(node);
         deletets = this.keeper.deleteYml(this.argval.fullname, node, deletets);
-        return this.get(deletets);
+        return this.get(deletets, jsonnode);
     }
 
-    private UpperResult pst(JsonNode node)
+    private UpperResult pst(long deletets, JsonNode jsonnode)
     {
         JsonNode n;
-        if ((n = node.get("consumer")) != null) {
+        if ((n = jsonnode.get("consumer")) != null) {
             this.argval.consumer.pst(n);
         }
-        if ((n = node.get("srcqueue")) != null) {
+        if ((n = jsonnode.get("srcqueue")) != null) {
             this.argval.srcqueue.pst(n);
         }
-        if ((n = node.get("junction")) != null) {
+        if ((n = jsonnode.get("junction")) != null) {
             this.argval.junction.pst(n);
         }
-        if ((n = node.get("tgtqueue")) != null) {
+        if ((n = jsonnode.get("tgtqueue")) != null) {
             this.argval.tgtqueue.pst(n);
         }
-        if ((n = node.get("producer")) != null) {
+        if ((n = jsonnode.get("producer")) != null) {
             this.argval.producer.pst(n);
         }
         ObjectNode conf = this.toConfigNode(this.keeper.mapper.createObjectNode());
         this.keeper.updertYml(this.argval.fullname, conf);
-        return this.get(Long.MAX_VALUE);
+        return this.get(deletets, jsonnode);
     }
 
-    private UpperResult get(long deletets)
+    private UpperResult get(long deletets, JsonNode jsonnode)
     {
         long createts = this.gauges.createts;
         String fullname = this.argval.fullname;
