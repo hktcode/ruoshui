@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class SimpleHolder
+public class SimpleHolder
 {
     public <R extends  SimpleResult> R call(SimpleMethod<R> method) //
             throws InterruptedException
@@ -38,23 +38,18 @@ public abstract class SimpleHolder
         }
     }
 
-    public SimplePhaser set(SimplePhaserInner actual) throws InterruptedException
+    public SimplePhaserInner call(long endmillis) throws InterruptedException
     {
-        if (actual == null) {
-            throw new ArgumentNullException("actual");
+        SimplePhaser oldval;
+        while (!((oldval = this.atomic.get()) instanceof SimplePhaserInner)) {
+            ((SimplePhaserOuter)oldval).waiting();
         }
-        SimplePhaser curval = this.atomic.get();
-        if (!(curval instanceof SimplePhaserOuter)) {
-            logger.error("set inner phaser fail: actual={}, curval={}", actual.deletets, curval);
-            return actual;
+        SimplePhaserInner origin = (SimplePhaserInner) oldval;
+        if (endmillis == Long.MAX_VALUE || origin.deletets != Long.MAX_VALUE) {
+            return origin;
         }
-        SimplePhaserOuter future = (SimplePhaserOuter) curval;
-        boolean result = this.atomic.compareAndSet(future, actual);
-        if (!result) {
-            logger.debug("cas(future, origin): origin.deletets={}", actual.deletets);
-        }
-        future.release();
-        return future;
+        SimplePhaserInner future = SimplePhaserInner.of(endmillis);
+        return this.atomic.compareAndSet(origin, future) ? future : origin;
     }
 
     protected final AtomicReference<SimplePhaser> atomic;
