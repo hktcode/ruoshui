@@ -1,12 +1,14 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.consumer;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
+import com.hktcode.queue.Tqueue;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
+import com.hktcode.simple.SimpleHolder;
 import com.hktcode.simple.SimpleWorker;
 
-public class UpcsmWorker extends SimpleWorker<UpcsmWorkerArgval, UpcsmWorkerMeters, UpperExesvc>
+public class UpcsmWorker extends SimpleWorker<UpcsmWorkerArgval, UpcsmWorkerMeters>
 {
-    public static UpcsmWorker of(UpcsmWorkerArgval argval, UpcsmWorkerMeters meters, UpperExesvc exesvc)
+    public static UpcsmWorker of(UpcsmWorkerArgval argval, UpcsmWorkerMeters meters, SimpleHolder holder, Tqueue<UpperRecordConsumer> source)
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");
@@ -14,20 +16,26 @@ public class UpcsmWorker extends SimpleWorker<UpcsmWorkerArgval, UpcsmWorkerMete
         if (meters == null) {
             throw new ArgumentNullException("meters");
         }
-        if (exesvc == null) {
-            throw new ArgumentNullException("exesvc");
+        if (holder == null) {
+            throw new ArgumentNullException("holder");
         }
-        return new UpcsmWorker(argval, meters, exesvc);
+        if (source == null) {
+            throw new ArgumentNullException("source");
+        }
+        return new UpcsmWorker(argval, meters, holder, source);
     }
 
-    private UpcsmWorker(UpcsmWorkerArgval argval, UpcsmWorkerMeters meters, UpperExesvc exesvc)
+    private final Tqueue<UpperRecordConsumer> source;
+
+    private UpcsmWorker(UpcsmWorkerArgval argval, UpcsmWorkerMeters meters, SimpleHolder holder, Tqueue<UpperRecordConsumer> source)
     {
-        super(argval, meters, exesvc);
+        super(argval, meters, holder);
+        this.source = source;
     }
 
     @Override
     public UpcsmWkstepAction action()
     {
-        return this.argval.actionInfos.get(0).action();
+        return this.argval.actionInfos.get(0).action(this.source);
     }
 }

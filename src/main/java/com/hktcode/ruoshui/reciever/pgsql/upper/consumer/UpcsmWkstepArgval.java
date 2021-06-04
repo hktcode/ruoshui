@@ -8,8 +8,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.queue.Tqueue;
 import com.hktcode.ruoshui.reciever.pgsql.entity.LogicalReplConfig;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgConnectionProperty;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
 import com.hktcode.simple.*;
 
 public class UpcsmWkstepArgval extends SimpleWkstepArgval
@@ -59,8 +61,11 @@ public class UpcsmWkstepArgval extends SimpleWkstepArgval
         return node;
     }
 
-    public UpcsmWkstepAction action()
+    public UpcsmWkstepAction action(Tqueue<UpperRecordConsumer> source)
     {
-        return UpcsmWkstepAction.of(this);
+        if (source == null) {
+            throw new ArgumentNullException("source");
+        }
+        return UpcsmWkstepAction.of(source);
     }
 }
