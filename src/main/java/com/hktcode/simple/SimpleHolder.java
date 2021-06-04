@@ -47,17 +47,17 @@ public class SimpleHolder
         }
     }
 
-    public SimplePhaserInner call(long endmillis) throws InterruptedException
+    public SimplePhaserInner call(long finish) throws InterruptedException
     {
         SimplePhaser oldval;
         while (!((oldval = this.atomic.get()) instanceof SimplePhaserInner)) {
             ((SimplePhaserOuter)oldval).waiting();
         }
         SimplePhaserInner origin = (SimplePhaserInner) oldval;
-        if (endmillis == Long.MAX_VALUE || origin.deletets != Long.MAX_VALUE) {
+        if (finish == Long.MAX_VALUE || origin.deletets != Long.MAX_VALUE) {
             return origin;
         }
-        SimplePhaserInner future = SimplePhaserInner.of(endmillis);
+        SimplePhaserInner future = SimplePhaserInner.of(finish);
         return this.atomic.compareAndSet(origin, future) ? future : origin;
     }
 
