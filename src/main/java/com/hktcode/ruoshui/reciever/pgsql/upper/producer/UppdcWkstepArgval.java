@@ -7,7 +7,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.queue.Tqueue;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
 import com.hktcode.simple.SimpleWkstepArgval;
+
+import java.io.IOException;
 
 public abstract class UppdcWkstepArgval extends SimpleWkstepArgval
 {
@@ -53,5 +57,13 @@ public abstract class UppdcWkstepArgval extends SimpleWkstepArgval
         return result;
     }
 
-    public abstract UppdcWkstepAction action();
+    public UppdcWkstepAction action(Tqueue<UpperRecordProducer> target)
+    {
+        if (target == null) {
+            throw new ArgumentNullException("target");
+        }
+        return UppdcWkstepAction.of(target);
+    }
+
+    public abstract UppdcSender sender() throws IOException;
 }

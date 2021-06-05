@@ -9,6 +9,8 @@ import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.Ruoshui;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -77,8 +79,10 @@ public class UppdcWkstepArgvalFiles extends UppdcWkstepArgval
     }
 
     @Override
-    public UppdcWkstepActionFiles action()
+    public UppdcSenderFiles sender() throws IOException
     {
-        return UppdcWkstepActionFiles.of(this);
+        Path directory = Paths.get(this.walDatapath.toString());
+        Files.createDirectories(directory);
+        return UppdcSenderFiles.of(this, UppdcWkstepMetricFiles.of());
     }
 }

@@ -69,15 +69,4 @@ public class UppdcWorkerArgval implements SimpleWorkerArgval
         }
         this.actionInfos.get(0).pst(node);
     }
-
-    public UppdcWorker worker(AtomicLong txactionLsn, UpperExesvc exesvc)
-    {
-        if (txactionLsn == null) {
-            throw new ArgumentNullException("txactionLsn");
-        }
-        if (exesvc == null) {
-            throw new ArgumentNullException("exesvc");
-        }
-        return UppdcWorker.of(this, UppdcWorkerMeters.of(txactionLsn), exesvc);
-    }
 }

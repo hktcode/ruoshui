@@ -6,44 +6,56 @@ package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Tqueue;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
+import com.hktcode.simple.SimpleHolder;
 import com.hktcode.simple.SimpleWkstep;
 import com.hktcode.simple.SimpleWkstepAction;
 import com.hktcode.simple.SimpleWkstepTheEnd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-
-public abstract class UppdcWkstepAction implements SimpleWkstepAction<UppdcWorkerMeters, UpperExesvc>
+public class UppdcWkstepAction implements SimpleWkstepAction<UppdcWorkerArgval, UppdcWorkerMeters>
 {
     private static final Logger logger = LoggerFactory.getLogger(UppdcWkstepAction.class);
 
-    protected UppdcWkstepAction()
+    public static UppdcWkstepAction of(Tqueue<UpperRecordProducer> target)
     {
+        if (target == null) {
+            throw new ArgumentNullException("target");
+        }
+        return new UppdcWkstepAction(target);
     }
 
+    private UppdcWkstepAction(Tqueue<UpperRecordProducer> target)
+    {
+        this.target = target;
+    }
+
+    private final Tqueue<UpperRecordProducer> target;
+
     @Override
-    public SimpleWkstep next(UppdcWorkerMeters meters, UpperExesvc exesvc) ///
+    public SimpleWkstep next(UppdcWorkerArgval argval, UppdcWorkerMeters meters, SimpleHolder holder) ///
             throws Throwable
     {
+        if (argval == null) {
+            throw new ArgumentNullException("argval");
+        }
         if (meters == null) {
             throw new ArgumentNullException("meters");
         }
-        if (exesvc == null) {
-            throw new ArgumentNullException("exesvc");
+        if (holder == null) {
+            throw new ArgumentNullException("holder");
         }
-        try (UppdcSender sender = this.sender()) {
-            final Tqueue<UpperRecordProducer> getout = exesvc.tgtqueue;
+        UppdcWkstepArgval config = argval.actionInfos.get(0);
+        try (UppdcSender sender = config.sender()) {
             UpperRecordProducer d = null;
             Throwable ex;
-            while (exesvc.run(meters).deletets == Long.MAX_VALUE) {
+            while (holder.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
                 if ((ex = meters.callbackRef.get()) != null) {
                     logger.error("callback throws exception", ex);
                     throw ex;
                 } else if (d == null) {
-                    d = getout.poll();
+                    d = this.target.poll();
                 } else {
                     sender.send(meters, d);
                     d = null;
@@ -52,6 +64,4 @@ public abstract class UppdcWkstepAction implements SimpleWkstepAction<UppdcWorke
         }
         return SimpleWkstepTheEnd.of();
     }
-
-    protected abstract UppdcSender sender() throws IOException;
 }
