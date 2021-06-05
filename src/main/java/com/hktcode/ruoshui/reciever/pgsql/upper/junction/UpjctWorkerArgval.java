@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
 import com.hktcode.simple.SimpleWorkerArgval;
 
 public class UpjctWorkerArgval implements SimpleWorkerArgval
@@ -76,13 +75,5 @@ public class UpjctWorkerArgval implements SimpleWorkerArgval
             throw new ArgumentNullException("node");
         }
         this.actionInfos.get(0).pst(node);
-    }
-
-    public UpjctWorker worker(UpperExesvc exesvc)
-    {
-        if (exesvc == null) {
-            throw new ArgumentNullException("exesvc");
-        }
-        return UpjctWorker.of(this, UpjctWorkerMeters.of(), exesvc);
     }
 }

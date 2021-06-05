@@ -6,6 +6,7 @@ package com.hktcode.ruoshui.reciever.pgsql.upper.junction;
 
 import com.google.common.collect.ImmutableList;
 import com.hktcode.ruoshui.reciever.pgsql.upper.*;
+import com.hktcode.simple.SimpleHolder;
 import com.hktcode.simple.SimpleWkstep;
 import com.hktcode.queue.Tqueue;
 import com.hktcode.lang.exception.ArgumentNullException;
@@ -20,44 +21,44 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerMeters, UpperExesvc>
+public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, UpjctWorkerMeters>
 {
-    public static UpjctWkstepAction of(UpjctWkstepArgval config)
+    public static UpjctWkstepAction of(UpperQueues queues)
     {
-        if (config == null) {
-            throw new ArgumentNullException("config");
+        if (queues == null) {
+            throw new ArgumentNullException("queues");
         }
-        return new UpjctWkstepAction(config);
+        return new UpjctWkstepAction(queues);
     }
 
-    public final UpjctWkstepArgval config;
+    public final UpperQueues queues;
 
-    private UpjctWkstepAction(UpjctWkstepArgval config)
+    private UpjctWkstepAction(UpperQueues queues)
     {
-        this.config = config;
+        this.queues = queues;
     }
 
     @Override
-    public SimpleWkstep next(UpjctWorkerMeters meters, UpperExesvc exesvc) //
+    public SimpleWkstep next(UpjctWorkerArgval argval, UpjctWorkerMeters meters, SimpleHolder holder) //
             throws InterruptedException
     {
-        if (config == null) {
-            throw new ArgumentNullException("config");
+        if (argval == null) {
+            throw new ArgumentNullException("argval");
         }
         if (meters == null) {
             throw new ArgumentNullException("meters");
         }
-        if (exesvc == null) {
-            throw new ArgumentNullException("exesvc");
+        if (holder == null) {
+            throw new ArgumentNullException("holder");
         }
         UpjctWkstepMetric metric = UpjctWkstepMetric.of();
         UpperRecordConsumer r = null;
         UpperRecordProducer o = null;
-        final Tqueue<UpperRecordProducer> getout = exesvc.tgtqueue;
-        final Tqueue<UpperRecordConsumer> comein = exesvc.srcqueue;
+        final Tqueue<UpperRecordProducer> getout = this.queues.target;
+        final Tqueue<UpperRecordConsumer> comein = this.queues.source;
         Iterator<UpperRecordProducer> t //
             = ImmutableList.<UpperRecordProducer>of().iterator();
-        while (exesvc.run(meters).deletets == Long.MAX_VALUE) {
+        while (holder.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
             if (o != null) {
                 o = getout.push(o);
             }
