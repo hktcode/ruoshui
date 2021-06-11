@@ -71,7 +71,7 @@ public class SimpleHolder
     @FunctionalInterface
     public interface SimpleMethod<R extends SimpleResult>
     {
-        R call(long deletets);
+        R call(long delete);
     }
 
     private static final Logger logger = LoggerFactory.getLogger(SimpleHolder.class);
