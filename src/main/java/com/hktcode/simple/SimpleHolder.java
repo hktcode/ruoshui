@@ -20,30 +20,30 @@ public class SimpleHolder
         if (method == null) {
             throw new ArgumentNullException("method");
         }
-        SimplePhaserOuter newval = SimplePhaserOuter.of(4);
+        SimplePhaserOuter cmdval = SimplePhaserOuter.of(4);
         SimplePhaser curval = this.atomic.get();
         if (!(curval instanceof SimplePhaserInner)) {
             throw new RuntimeException(); //  未来计划：
         }
-        SimplePhaserInner origin = (SimplePhaserInner)curval;
-        long delete = origin.deletets;
-        SimplePhaserOuter future = origin.cmd(newval);
-        if (future == newval && !this.atomic.compareAndSet(origin, future)) {
+        SimplePhaserInner oldval = (SimplePhaserInner)curval;
+        long delete = oldval.deletets;
+        SimplePhaserOuter newval = oldval.cmd(cmdval);
+        if (newval == cmdval && !this.atomic.compareAndSet(oldval, newval)) {
             throw new RuntimeException(); //  未来计划：
         }
         try {
-            future.acquire();
+            newval.acquire();
             try {
                 R result = method.call(delete);
-                if (result.deletets != origin.deletets) {
-                    origin = SimplePhaserInner.of(result.deletets);
+                if (result.deletets != oldval.deletets) {
+                    oldval = SimplePhaserInner.of(result.deletets);
                 }
                 return result;
             } finally {
-                future.release();
+                newval.release();
             }
         } finally {
-            boolean result = atomic.compareAndSet(future, origin);
+            boolean result = atomic.compareAndSet(newval, oldval);
             if (!result) {
                 logger.debug("cas(future, origin): delete={}", delete);
             }
