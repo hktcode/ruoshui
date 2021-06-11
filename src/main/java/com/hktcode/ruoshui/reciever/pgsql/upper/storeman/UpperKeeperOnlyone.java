@@ -78,11 +78,18 @@ public class UpperKeeperOnlyone
         return deletets;
     }
 
-    public void updertYml(String name, ObjectNode node)
+    public void updertYml(UpperExesvcArgval argval)
     {
+        if (argval == null) {
+            throw new ArgumentNullException("argval");
+        }
+        final String name = argval.fullname;
+        ObjectNode node = mapper.createObjectNode();
+        node = argval.toJsonObject(node);
         String yaml = this.toYamlString(node);
-        updertConfFile(name, "del", yaml);
-        renameConfFile(name, "del", "yml");
+        updertConfFile(name, "tmp", yaml);
+        renameConfFile(name, "tmp", "yml");
+        deleteConfFile(name, "del");
     }
 
     private String toYamlString(ObjectNode node)
