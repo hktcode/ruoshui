@@ -172,4 +172,10 @@ public class UpperExesvc extends SimpleExesvc
         this.argval.producer.toJsonObject(producer);
         return node;
     }
+
+    @FunctionalInterface
+    public interface SimpleKeeper
+    {
+        void call(UpperExesvcArgval argval);
+    }
 }
