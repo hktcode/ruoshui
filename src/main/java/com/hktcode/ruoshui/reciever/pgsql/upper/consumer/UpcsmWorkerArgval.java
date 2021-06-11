@@ -32,7 +32,7 @@ public class UpcsmWorkerArgval implements SimpleWorkerArgval
         if (json == null) {
             throw new ArgumentNullException("json");
         }
-        JsonNode actionInfoNode = json.path("action_info");
+        JsonNode actionInfoNode = json.path("action_infos");
         ArrayNode arrayNode;
         UpcsmWkstepArgval action;
         if (actionInfoNode instanceof MissingNode) {
