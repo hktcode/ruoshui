@@ -19,15 +19,15 @@ public class UpperExesvc extends SimpleExesvc
 
     private final UpperExesvcArgval argval;
     private final UpperExesvcGauges gauges;
-    public final Tqueue<UpperRecordConsumer> srcqueue;
-    public final Tqueue<UpperRecordProducer> tgtqueue;
+    private final UpperQueues queues;
 
     private UpperExesvc(UpperExesvcArgval argval)
     {
         this.argval = argval;
         this.gauges = UpperExesvcGauges.of();
-        this.srcqueue = Tqueue.of(argval.srcqueue, TqueueMetric.of());
-        this.tgtqueue = Tqueue.of(argval.tgtqueue, TqueueMetric.of());
+        Tqueue<UpperRecordConsumer> source = Tqueue.of(argval.srcqueue, TqueueMetric.of());
+        Tqueue<UpperRecordProducer> target = Tqueue.of(argval.tgtqueue, TqueueMetric.of());
+        this.queues = UpperQueues.of(source, target);
     }
 
     //        this.submit(UppdcWorker.of(this.argval.producer, this.gauges.producer, this));
