@@ -35,35 +35,6 @@ public class UpperKeeperOnlyone
         this.mapper = mapper;
     }
 
-    public void doNothing(long deletets, UpperExesvcArgval argval)
-    {
-        if (argval == null) {
-            throw new ArgumentNullException("argval");
-        }
-    }
-
-    public void updeteYml(long deletets, UpperExesvcArgval argval)
-    {
-        if (argval == null) {
-            throw new ArgumentNullException("argval");
-        }
-        final String name = argval.fullname;
-        ObjectNode node = mapper.createObjectNode();
-        node = argval.toJsonObject(node);
-        String yaml = this.toYamlString(node);
-        updertConfFile(name, "tmp", yaml);
-        renameConfFile(name, "tmp", "yml");
-        if (deletets == Long.MAX_VALUE) {
-            deleteConfFile(name, "del");
-        }
-        else if (this.etcval.containsKey(name)) {
-            renameConfFile(name, "yml", "del");
-        }
-        else {
-            deleteConfFile(name, "yml");
-        }
-    }
-
     public void deleteYml(UpperExesvcArgval argval)
     {
         if (argval == null) {
