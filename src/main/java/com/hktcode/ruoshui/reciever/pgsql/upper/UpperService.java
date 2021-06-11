@@ -4,14 +4,15 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.hktcode.simple.SimplePhaserOuter;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.upper.storeman.UpperKeeperOnlyone;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -30,9 +31,12 @@ public class UpperService implements DisposableBean
 
     private final ConcurrentHashMap<String, UpperExesvc> repmap;
 
-    public UpperService(@Autowired UpperKeeperOnlyone dricab)
+    private final ThreadPoolTaskExecutor exesvc;
+
+    public UpperService(@Autowired UpperKeeperOnlyone dricab, @Autowired ThreadPoolTaskExecutor exesvc)
     {
         this.keeper = dricab;
+        this.exesvc = exesvc;
         this.repmap = new ConcurrentHashMap<>();
     }
 
@@ -45,20 +49,21 @@ public class UpperService implements DisposableBean
         if (body == null) {
             throw new ArgumentNullException("body");
         }
-        long createts = System.currentTimeMillis();
         UpperExesvcArgval argval = UpperExesvcArgval.ofJsonObject(name, body);
-        UpperExesvc exesvc = UpperExesvc.of(argval, this.keeper);
+        UpperExesvc exesvc = UpperExesvc.of(argval);
 
         Lock lock = this.locker.readLock();
         lock.lock();
         try {
-            SimplePhaserOuter cmd = SimplePhaserOuter.of(4);
             UpperExesvc status = this.repmap.putIfAbsent(name, exesvc);
             if (status != null) {
-                UpperResult result = status.get(cmd);
+                UpperResult result = status.modify(Long.MAX_VALUE, MissingNode.getInstance(), this.keeper::updertYml);
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new UpperResult[]{ result });
             }
-            UpperResult result = exesvc.put(cmd);
+            this.exesvc.submit(exesvc.producer());
+            this.exesvc.submit(exesvc.junction());
+            this.exesvc.submit(exesvc.consumer());
+            UpperResult result = exesvc.modify(Long.MAX_VALUE, MissingNode.getInstance(), this.keeper::updertYml);
             return ResponseEntity.ok(new UpperResult[] { result });
         }
         finally {
@@ -78,8 +83,8 @@ public class UpperService implements DisposableBean
             if (exesvc == null) {
                 return ResponseEntity.notFound().build();
             }
-            SimplePhaserOuter del = SimplePhaserOuter.of(4);
-            UpperResult result = exesvc.del(del);
+            long finishts = System.currentTimeMillis();
+            UpperResult result = exesvc.modify(finishts, MissingNode.getInstance(), this.keeper::deleteYml);
             return ResponseEntity.ok(new UpperResult[]{result});
         }
         finally {
@@ -99,8 +104,8 @@ public class UpperService implements DisposableBean
             if (exesvc == null) {
                 return ResponseEntity.notFound().build();
             }
-            SimplePhaserOuter cmd = SimplePhaserOuter.of(4);
-            UpperResult result = exesvc.get(cmd);
+            long finishts = Long.MAX_VALUE;
+            UpperResult result = exesvc.modify(finishts, MissingNode.getInstance(), this.keeper::updertYml);
             return ResponseEntity.ok(new UpperResult[] { result });
         }
         finally {
@@ -124,8 +129,8 @@ public class UpperService implements DisposableBean
             if (exesvc == null) {
                 return ResponseEntity.notFound().build();
             }
-            SimplePhaserOuter cmd = SimplePhaserOuter.of(4);
-            UpperResult result = exesvc.pst(cmd, json);
+            long finishts = Long.MAX_VALUE;
+            UpperResult result = exesvc.modify(finishts, json, this.keeper::updertYml);
             return ResponseEntity.ok(new UpperResult[] { result });
         }
         finally {
@@ -140,10 +145,10 @@ public class UpperService implements DisposableBean
         try {
             UpperResult[] result = new UpperResult[this.repmap.size()];
             int index = 0;
+            long finishts = Long.MAX_VALUE;
             for (Map.Entry<String, UpperExesvc> entry : this.repmap.entrySet()) {
-                final SimplePhaserOuter cmd = SimplePhaserOuter.of(4);
                 final UpperExesvc exesvc = entry.getValue();
-                UpperResult r = exesvc.get(cmd);
+                UpperResult r = exesvc.modify(finishts, MissingNode.getInstance(), this.keeper::updertYml);
                 result[index++] = r;
             }
             return ResponseEntity.ok(result);
@@ -160,9 +165,9 @@ public class UpperService implements DisposableBean
         lock.lock();
         try {
             for (Map.Entry<String, UpperExesvc> entry : this.repmap.entrySet()) {
-                SimplePhaserOuter cmd = SimplePhaserOuter.of(4);
+                long finishts = System.currentTimeMillis();
                 UpperExesvc exesvc = entry.getValue();
-                exesvc.end(cmd);
+                exesvc.modify(finishts, MissingNode.getInstance(), this.keeper::updertYml);
             }
         }
         finally {
