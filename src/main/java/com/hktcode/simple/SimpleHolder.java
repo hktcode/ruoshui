@@ -26,24 +26,27 @@ public class SimpleHolder
             throw new RuntimeException(); //  未来计划：
         }
         SimplePhaserInner origin = (SimplePhaserInner)curval;
+        long delete = origin.deletets;
         SimplePhaserOuter future = origin.cmd(newval);
         if (future == newval && !this.atomic.compareAndSet(origin, future)) {
             throw new RuntimeException(); //  未来计划：
         }
-        long deletets = origin.deletets;
-        if (deletets == Long.MAX_VALUE) {
-            deletets = finish;
-        }
-        future.acquire();
         try {
-            return method.call(deletets);
-        }
-        finally {
+            future.acquire();
+            try {
+                R result = method.call(delete);
+                if (result.deletets != origin.deletets) {
+                    origin = SimplePhaserInner.of(result.deletets);
+                }
+                return result;
+            } finally {
+                future.release();
+            }
+        } finally {
             boolean result = atomic.compareAndSet(future, origin);
             if (!result) {
-                logger.debug("cas(future, origin): origin.deletets={}", deletets);
+                logger.debug("cas(future, origin): delete={}", delete);
             }
-            future.release();
         }
     }
 
