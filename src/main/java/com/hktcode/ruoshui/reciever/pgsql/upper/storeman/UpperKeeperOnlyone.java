@@ -64,18 +64,25 @@ public class UpperKeeperOnlyone
         }
     }
 
-    public long deleteYml(String name, ObjectNode node, long deletets)
+    public void deleteYml(UpperExesvcArgval argval)
     {
+        if (argval == null) {
+            throw new ArgumentNullException("argval");
+        }
+        final String name = argval.fullname;
+        ObjectNode node = mapper.createObjectNode();
+        node = argval.toJsonObject(node);
         String yaml = this.toYamlString(node);
-        updertConfFile(name, "yml", yaml);
-        renameConfFile(name, "yml", "del");
-        if (!this.etcval.containsKey(name)) {
+        if (this.etcval.containsKey(name)) {
+            updertConfFile(name, "tmp", yaml);
+            renameConfFile(name, "tmp", "yml");
+            renameConfFile(name, "yml", "del");
+        }
+        else {
+            deleteConfFile(name, "yml");
+            deleteConfFile(name, "tmp");
             deleteConfFile(name, "del");
         }
-        if (deletets == Long.MAX_VALUE) {
-            deletets = System.currentTimeMillis();
-        }
-        return deletets;
     }
 
     public void updertYml(UpperExesvcArgval argval)
