@@ -14,7 +14,7 @@ public class SimpleHolder
         return new SimpleHolder(atomic);
     }
 
-    public <R extends  SimpleResult> R call(long finish, SimpleMethod<R> method) //
+    public <R extends  SimpleResult> R call(SimpleMethod<R> method) //
             throws InterruptedException
     {
         if (method == null) {
