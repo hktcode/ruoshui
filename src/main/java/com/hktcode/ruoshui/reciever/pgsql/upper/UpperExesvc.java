@@ -123,7 +123,7 @@ public class UpperExesvc extends SimpleExesvc
         return this.get(deletets, jsonnode);
     }
 
-    private UpperResult pst(long deletets, JsonNode jsonnode)
+    private UpperResult modify(long deletets, long finishts, JsonNode jsonnode, SimpleKeeper storeman)
     {
         JsonNode n;
         if ((n = jsonnode.get("consumer")) != null) {
@@ -141,13 +141,10 @@ public class UpperExesvc extends SimpleExesvc
         if ((n = jsonnode.get("producer")) != null) {
             this.argval.producer.pst(n);
         }
-        ObjectNode conf = this.toConfigNode(this.keeper.mapper.createObjectNode());
-        this.keeper.updertYml(this.argval.fullname, conf);
-        return this.get(deletets, jsonnode);
-    }
-
-    private UpperResult get(long deletets, JsonNode jsonnode)
-    {
+        if (deletets == Long.MAX_VALUE) {
+            deletets = finishts;
+        }
+        storeman.call(this.argval);
         long createts = this.gauges.createts;
         String fullname = this.argval.fullname;
         ObjectNode consumer = this.argval.consumer.toJsonObject();
