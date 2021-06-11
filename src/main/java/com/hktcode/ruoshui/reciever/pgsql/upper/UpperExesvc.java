@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Tqueue;
 import com.hktcode.queue.TqueueMetric;
+import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorker;
+import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorker;
+import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorker;
 import com.hktcode.simple.SimpleExesvc;
 
 public class UpperExesvc extends SimpleExesvc
@@ -30,10 +33,20 @@ public class UpperExesvc extends SimpleExesvc
         this.queues = UpperQueues.of(source, target);
     }
 
-    //        this.submit(UppdcWorker.of(this.argval.producer, this.gauges.producer, this));
-    //        this.submit(UpjctWorker.of(this.argval.junction, this.gauges.junction, this));
-    //        this.submit(UpcsmWorker.of(this.argval.consumer, this.gauges.consumer, this));
-    //        this.shutdown();
+    public UpcsmWorker consumer()
+    {
+        return UpcsmWorker.of(this.argval.consumer, this.gauges.consumer, this.holder, this.queues.source);
+    }
+
+    public UpjctWorker junction()
+    {
+        return UpjctWorker.of(this.argval.junction, this.gauges.junction, this.holder, this.queues);
+    }
+
+    public UppdcWorker producer()
+    {
+        return UppdcWorker.of(this.argval.producer, this.gauges.producer, this.holder, this.queues.target);
+    }
 
     public UpperResult modify(long finishts, JsonNode jsonnode, SimpleKeeper storeman)
             throws InterruptedException
