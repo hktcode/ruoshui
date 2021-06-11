@@ -12,15 +12,12 @@ import com.hktcode.simple.SimpleHolder;
 
 public class UpperExesvc
 {
-    public static UpperExesvc of(UpperExesvcArgval config, SimpleHolder holder)
+    public static UpperExesvc of(UpperExesvcArgval config)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
         }
-        if (holder == null) {
-            throw new ArgumentNullException("holder");
-        }
-        return new UpperExesvc(config, holder);
+        return new UpperExesvc(config);
     }
 
     private final UpperExesvcArgval argval;
@@ -28,14 +25,14 @@ public class UpperExesvc
     private final UpperQueues queues;
     private final SimpleHolder holder;
 
-    private UpperExesvc(UpperExesvcArgval argval, SimpleHolder holder)
+    private UpperExesvc(UpperExesvcArgval argval)
     {
         this.argval = argval;
         this.gauges = UpperExesvcGauges.of();
         Tqueue<UpperRecordConsumer> source = Tqueue.of(argval.srcqueue, TqueueMetric.of());
         Tqueue<UpperRecordProducer> target = Tqueue.of(argval.tgtqueue, TqueueMetric.of());
         this.queues = UpperQueues.of(source, target);
-        this.holder = holder;
+        this.holder = SimpleHolder.of();
     }
 
     public UpcsmWorker consumer()
