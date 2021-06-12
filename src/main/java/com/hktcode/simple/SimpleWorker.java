@@ -3,7 +3,8 @@ package com.hktcode.simple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class SimpleWorker<A extends SimpleWorkerArgval, M extends SimpleWorkerMeters> implements Runnable
+public abstract class SimpleWorker<A extends SimpleWorkerArgval<A, M>, M extends SimpleWorkerMeters>
+        implements Runnable
 {
     public final A argval;
 
@@ -18,12 +19,10 @@ public abstract class SimpleWorker<A extends SimpleWorkerArgval, M extends Simpl
         this.holder = holder;
     }
 
-    public abstract SimpleWkstepAction<A, M> action();
-
     public void run()
     {
         try {
-            SimpleWkstep wkstep = this.action();
+            SimpleWkstep wkstep = this.argval.action();
             do {
                 @SuppressWarnings("unchecked")
                 SimpleWkstepAction<A, M> action = (SimpleWkstepAction<A, M>) wkstep;
