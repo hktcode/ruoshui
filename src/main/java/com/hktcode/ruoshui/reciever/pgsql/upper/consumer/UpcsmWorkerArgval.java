@@ -8,9 +8,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.queue.Tqueue;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
 import com.hktcode.simple.SimpleWorkerArgval;
 
-public class UpcsmWorkerArgval implements SimpleWorkerArgval
+public class UpcsmWorkerArgval implements SimpleWorkerArgval<UpcsmWorkerArgval, UpcsmWorkerMeters>
 {
     public static final ObjectNode SCHEMA;
 
@@ -27,10 +29,13 @@ public class UpcsmWorkerArgval implements SimpleWorkerArgval
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    public static UpcsmWorkerArgval ofJsonObject(JsonNode json) //
+    public static UpcsmWorkerArgval ofJsonObject(JsonNode json, Tqueue<UpperRecordConsumer> push) //
     {
         if (json == null) {
             throw new ArgumentNullException("json");
+        }
+        if (push == null) {
+            throw new ArgumentNullException("push");
         }
         JsonNode actionInfoNode = json.path("action_infos");
         ArrayNode arrayNode;
@@ -44,14 +49,17 @@ public class UpcsmWorkerArgval implements SimpleWorkerArgval
         else {
             action = UpcsmWkstepArgval.ofJsonObject(arrayNode.get(0));
         }
-        return new UpcsmWorkerArgval(ImmutableList.of(action));
+        return new UpcsmWorkerArgval(ImmutableList.of(action), push);
     }
 
     public final ImmutableList<UpcsmWkstepArgval> actionInfos;
 
-    private UpcsmWorkerArgval(ImmutableList<UpcsmWkstepArgval> actionInfos)
+    private final Tqueue<UpperRecordConsumer> offerTqueue;
+
+    private UpcsmWorkerArgval(ImmutableList<UpcsmWkstepArgval> actionInfos, Tqueue<UpperRecordConsumer> offerTqueue)
     {
         this.actionInfos = actionInfos;
+        this.offerTqueue = offerTqueue;
     }
 
     @Override
@@ -68,12 +76,17 @@ public class UpcsmWorkerArgval implements SimpleWorkerArgval
         return node;
     }
 
-    @Override
     public void pst(JsonNode node)
     {
         if (node == null) {
             throw new ArgumentNullException("node");
         }
         this.actionInfos.get(0).pst(node);
+    }
+
+    @Override
+    public UpcsmWkstepAction action()
+    {
+        return this.actionInfos.get(0).action(this.offerTqueue);
     }
 }
