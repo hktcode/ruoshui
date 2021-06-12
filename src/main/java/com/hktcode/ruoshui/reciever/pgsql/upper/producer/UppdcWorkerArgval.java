@@ -7,10 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperExesvc;
 import com.hktcode.simple.SimpleWorkerArgval;
-
-import java.util.concurrent.atomic.AtomicLong;
 
 public class UppdcWorkerArgval implements SimpleWorkerArgval
 {
