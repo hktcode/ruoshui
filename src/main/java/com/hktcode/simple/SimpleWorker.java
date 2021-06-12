@@ -1,11 +1,27 @@
 package com.hktcode.simple;
 
+import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class SimpleWorker<A extends SimpleWorkerArgval<A, M>, M extends SimpleWorkerMeters>
+public class SimpleWorker<A extends SimpleWorkerArgval<A, M>, M extends SimpleWorkerMeters>
         implements Runnable
 {
+    public static <A extends SimpleWorkerArgval<A, M>, M extends SimpleWorkerMeters> //
+    SimpleWorker<A, M> of(A argval, M meters, SimpleAtomic holder)
+    {
+        if (argval == null) {
+            throw new ArgumentNullException("argval");
+        }
+        if (meters == null) {
+            throw new ArgumentNullException("meters");
+        }
+        if (holder == null) {
+            throw new ArgumentNullException("holder");
+        }
+        return new SimpleWorker<>(argval, meters, holder);
+    }
+
     public final A argval;
 
     public final M meters;
