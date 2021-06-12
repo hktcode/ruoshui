@@ -64,9 +64,9 @@ public class SimpleAtomic
         return this.atomic.compareAndSet(origin, future) ? future : origin;
     }
 
-    protected final AtomicReference<SimplePhaser> atomic;
+    private final AtomicReference<SimplePhaser> atomic;
 
-    protected SimpleAtomic(AtomicReference<SimplePhaser> atomic)
+    private SimpleAtomic(AtomicReference<SimplePhaser> atomic)
     {
         this.atomic = atomic;
     }
