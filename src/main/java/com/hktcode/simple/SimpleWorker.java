@@ -1,47 +1,21 @@
 package com.hktcode.simple;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.hktcode.jackson.JacksonObject;
-import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class SimpleWorker<A extends SimpleWorkerArgval, M extends SimpleWorkerMeters>
-        implements JacksonObject, Runnable
+public abstract class SimpleWorker<A extends SimpleWorkerArgval, M extends SimpleWorkerMeters> implements Runnable
 {
     public final A argval;
 
     public final M meters;
 
-    protected final SimpleAtomic holder;
+    private final SimpleAtomic holder;
 
     protected SimpleWorker(A argval, M meters, SimpleAtomic holder)
     {
         this.argval = argval;
         this.meters = meters;
         this.holder = holder;
-    }
-
-    public void pst(JsonNode node)
-    {
-        if (node == null) {
-            throw new ArgumentNullException("node");
-        }
-        this.argval.pst(node);
-    }
-
-    @Override
-    public ObjectNode toJsonObject(ObjectNode node)
-    {
-        if (node == null) {
-            throw new ArgumentNullException("node");
-        }
-        ObjectNode configNode = node.putObject("config");
-        this.argval.toJsonObject(configNode);
-        ObjectNode metricNode = node.putObject("metric");
-        this.meters.toJsonObject(metricNode);
-        return node;
     }
 
     public abstract SimpleWkstepAction<A, M> action();
