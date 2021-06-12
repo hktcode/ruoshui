@@ -7,9 +7,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.queue.Tqueue;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
 import com.hktcode.simple.SimpleWorkerArgval;
 
-public class UppdcWorkerArgval implements SimpleWorkerArgval
+public class UppdcWorkerArgval implements SimpleWorkerArgval<UppdcWorkerArgval, UppdcWorkerMeters>
 {
     public static final ObjectNode SCHEMA;
 
@@ -26,22 +28,28 @@ public class UppdcWorkerArgval implements SimpleWorkerArgval
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    public static UppdcWorkerArgval ofJsonObject(JsonNode json)
+    public static UppdcWorkerArgval ofJsonObject(JsonNode json, Tqueue<UpperRecordProducer> poll)
     {
         if (json == null) {
             throw new ArgumentNullException("json");
         }
+        if (poll == null) {
+            throw new ArgumentNullException("poll");
+        }
         JsonNode actionInfoNode = json.path("action_infos");
         JsonNode actionNode = actionInfoNode.path(0);
         UppdcWkstepArgval action = UppdcWkstepArgval.ofJsonObject(actionNode);
-        return new UppdcWorkerArgval(ImmutableList.of(action));
+        return new UppdcWorkerArgval(ImmutableList.of(action), poll);
     }
 
     public final ImmutableList<UppdcWkstepArgval> actionInfos;
 
-    private UppdcWorkerArgval(ImmutableList<UppdcWkstepArgval> actionInfos)
+    private final Tqueue<UpperRecordProducer> fetchTqueue;
+
+    private UppdcWorkerArgval(ImmutableList<UppdcWkstepArgval> actionInfos, Tqueue<UpperRecordProducer> fetchTqueue)
     {
         this.actionInfos = actionInfos;
+        this.fetchTqueue = fetchTqueue;
     }
 
     @Override
@@ -58,12 +66,17 @@ public class UppdcWorkerArgval implements SimpleWorkerArgval
         return node;
     }
 
-    @Override
     public void pst(JsonNode node)
     {
         if (node == null) {
             throw new ArgumentNullException("node");
         }
         this.actionInfos.get(0).pst(node);
+    }
+
+    @Override
+    public UppdcWkstepAction action()
+    {
+        return this.actionInfos.get(0).action(this.fetchTqueue);
     }
 }
