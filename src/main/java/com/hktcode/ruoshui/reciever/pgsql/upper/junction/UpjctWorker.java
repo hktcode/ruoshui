@@ -1,13 +1,12 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.junction;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperQueues;
 import com.hktcode.simple.SimpleAtomic;
 import com.hktcode.simple.SimpleWorker;
 
 public class UpjctWorker extends SimpleWorker<UpjctWorkerArgval, UpjctWorkerMeters>
 {
-    public static UpjctWorker of(UpjctWorkerArgval config, UpjctWorkerMeters meters, SimpleAtomic holder, UpperQueues queues)
+    public static UpjctWorker of(UpjctWorkerArgval config, UpjctWorkerMeters meters, SimpleAtomic holder)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -18,23 +17,11 @@ public class UpjctWorker extends SimpleWorker<UpjctWorkerArgval, UpjctWorkerMete
         if (holder == null) {
             throw new ArgumentNullException("holder");
         }
-        if (queues == null) {
-            throw new ArgumentNullException("queues");
-        }
-        return new UpjctWorker(config, meters, holder, queues);
+        return new UpjctWorker(config, meters, holder);
     }
 
-    private final UpperQueues queues;
-
-    private UpjctWorker(UpjctWorkerArgval config, UpjctWorkerMeters meters, SimpleAtomic holder, UpperQueues queues)
+    private UpjctWorker(UpjctWorkerArgval config, UpjctWorkerMeters meters, SimpleAtomic holder)
     {
         super(config, meters, holder);
-        this.queues = queues;
-    }
-
-    @Override
-    public UpjctWkstepAction action()
-    {
-        return this.argval.actionInfos.get(0).action(this.queues);
     }
 }
