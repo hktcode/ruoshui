@@ -1,9 +1,9 @@
 package com.hktcode.simple;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.hktcode.jackson.JacksonObject;
 
-public interface SimpleWorkerArgval extends JacksonObject
+public interface SimpleWorkerArgval<A extends SimpleWorkerArgval<A, M>, M extends SimpleWorkerMeters>
+        extends JacksonObject
 {
-    void pst(JsonNode json);
+    SimpleWkstepAction<A, M> action();
 }
