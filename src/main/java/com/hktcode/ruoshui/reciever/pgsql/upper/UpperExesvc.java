@@ -3,10 +3,14 @@ package com.hktcode.ruoshui.reciever.pgsql.upper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorker;
-import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorker;
-import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorker;
+import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorkerArgval;
+import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorkerMeters;
+import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorkerArgval;
+import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorkerMeters;
+import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorkerArgval;
+import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorkerMeters;
 import com.hktcode.simple.SimpleAtomic;
+import com.hktcode.simple.SimpleWorker;
 
 public class UpperExesvc
 {
@@ -29,19 +33,19 @@ public class UpperExesvc
         this.holder = SimpleAtomic.of();
     }
 
-    public UpcsmWorker consumer()
+    public SimpleWorker<UpcsmWorkerArgval, UpcsmWorkerMeters> consumer()
     {
-        return UpcsmWorker.of(this.argval.consumer, this.gauges.consumer, this.holder);
+        return SimpleWorker.of(this.argval.consumer, this.gauges.consumer, this.holder);
     }
 
-    public UpjctWorker junction()
+    public SimpleWorker<UpjctWorkerArgval, UpjctWorkerMeters> junction()
     {
-        return UpjctWorker.of(this.argval.junction, this.gauges.junction, this.holder);
+        return SimpleWorker.of(this.argval.junction, this.gauges.junction, this.holder);
     }
 
-    public UppdcWorker producer()
+    public SimpleWorker<UppdcWorkerArgval, UppdcWorkerMeters> producer()
     {
-        return UppdcWorker.of(this.argval.producer, this.gauges.producer, this.holder);
+        return SimpleWorker.of(this.argval.producer, this.gauges.producer, this.holder);
     }
 
     public UpperResult modify(long finishts, JsonNode jsonnode, SimpleKeeper storeman)
