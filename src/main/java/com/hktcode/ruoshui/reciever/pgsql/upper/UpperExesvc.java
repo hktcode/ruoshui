@@ -3,8 +3,6 @@ package com.hktcode.ruoshui.reciever.pgsql.upper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.queue.Tqueue;
-import com.hktcode.queue.TqueueMetric;
 import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorker;
 import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorker;
 import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorker;
@@ -22,32 +20,28 @@ public class UpperExesvc
 
     private final UpperExesvcArgval argval;
     private final UpperExesvcGauges gauges;
-    private final UpperQueues queues;
     private final SimpleAtomic holder;
 
     private UpperExesvc(UpperExesvcArgval argval)
     {
         this.argval = argval;
         this.gauges = UpperExesvcGauges.of();
-        Tqueue<UpperRecordConsumer> source = Tqueue.of(argval.srcqueue, TqueueMetric.of());
-        Tqueue<UpperRecordProducer> target = Tqueue.of(argval.tgtqueue, TqueueMetric.of());
-        this.queues = UpperQueues.of(source, target);
         this.holder = SimpleAtomic.of();
     }
 
     public UpcsmWorker consumer()
     {
-        return UpcsmWorker.of(this.argval.consumer, this.gauges.consumer, this.holder, this.queues.source);
+        return UpcsmWorker.of(this.argval.consumer, this.gauges.consumer, this.holder);
     }
 
     public UpjctWorker junction()
     {
-        return UpjctWorker.of(this.argval.junction, this.gauges.junction, this.holder, this.queues);
+        return UpjctWorker.of(this.argval.junction, this.gauges.junction, this.holder);
     }
 
     public UppdcWorker producer()
     {
-        return UppdcWorker.of(this.argval.producer, this.gauges.producer, this.holder, this.queues.target);
+        return UppdcWorker.of(this.argval.producer, this.gauges.producer, this.holder);
     }
 
     public UpperResult modify(long finishts, JsonNode jsonnode, SimpleKeeper storeman)
