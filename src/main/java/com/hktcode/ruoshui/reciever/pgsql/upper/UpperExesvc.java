@@ -8,7 +8,7 @@ import com.hktcode.queue.TqueueMetric;
 import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorker;
 import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorker;
 import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorker;
-import com.hktcode.simple.SimpleHolder;
+import com.hktcode.simple.SimpleAtomic;
 
 public class UpperExesvc
 {
@@ -23,7 +23,7 @@ public class UpperExesvc
     private final UpperExesvcArgval argval;
     private final UpperExesvcGauges gauges;
     private final UpperQueues queues;
-    private final SimpleHolder holder;
+    private final SimpleAtomic holder;
 
     private UpperExesvc(UpperExesvcArgval argval)
     {
@@ -32,7 +32,7 @@ public class UpperExesvc
         Tqueue<UpperRecordConsumer> source = Tqueue.of(argval.srcqueue, TqueueMetric.of());
         Tqueue<UpperRecordProducer> target = Tqueue.of(argval.tgtqueue, TqueueMetric.of());
         this.queues = UpperQueues.of(source, target);
-        this.holder = SimpleHolder.of();
+        this.holder = SimpleAtomic.of();
     }
 
     public UpcsmWorker consumer()

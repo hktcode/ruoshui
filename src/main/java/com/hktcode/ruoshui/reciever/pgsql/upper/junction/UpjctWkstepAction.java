@@ -6,7 +6,7 @@ package com.hktcode.ruoshui.reciever.pgsql.upper.junction;
 
 import com.google.common.collect.ImmutableList;
 import com.hktcode.ruoshui.reciever.pgsql.upper.*;
-import com.hktcode.simple.SimpleHolder;
+import com.hktcode.simple.SimpleAtomic;
 import com.hktcode.simple.SimpleWkstep;
 import com.hktcode.queue.Tqueue;
 import com.hktcode.lang.exception.ArgumentNullException;
@@ -39,7 +39,7 @@ public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, 
     }
 
     @Override
-    public SimpleWkstep next(UpjctWorkerArgval argval, UpjctWorkerMeters meters, SimpleHolder holder) //
+    public SimpleWkstep next(UpjctWorkerArgval argval, UpjctWorkerMeters meters, SimpleAtomic holder) //
             throws InterruptedException
     {
         if (argval == null) {

@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.queue.Tqueue;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
-import com.hktcode.simple.SimpleHolder;
+import com.hktcode.simple.SimpleAtomic;
 import com.hktcode.simple.SimpleWkstep;
 import com.hktcode.simple.SimpleWkstepAction;
 import com.hktcode.simple.SimpleWkstepTheEnd;
@@ -37,7 +37,7 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
     }
 
     @Override
-    public SimpleWkstep next(UpcsmWorkerArgval argval, UpcsmWorkerMeters meters, SimpleHolder holder) //
+    public SimpleWkstep next(UpcsmWorkerArgval argval, UpcsmWorkerMeters meters, SimpleAtomic holder) //
             throws InterruptedException, SQLException
     {
         if (argval == null) {

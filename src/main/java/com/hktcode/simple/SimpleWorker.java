@@ -14,9 +14,9 @@ public abstract class SimpleWorker<A extends SimpleWorkerArgval, M extends Simpl
 
     public final M meters;
 
-    protected final SimpleHolder holder;
+    protected final SimpleAtomic holder;
 
-    protected SimpleWorker(A argval, M meters, SimpleHolder holder)
+    protected SimpleWorker(A argval, M meters, SimpleAtomic holder)
     {
         this.argval = argval;
         this.meters = meters;

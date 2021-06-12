@@ -6,12 +6,12 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class SimpleHolder
+public class SimpleAtomic
 {
-    public static SimpleHolder of()
+    public static SimpleAtomic of()
     {
         AtomicReference<SimplePhaser> atomic = new AtomicReference<>(SimplePhaserInner.of(Long.MAX_VALUE));
-        return new SimpleHolder(atomic);
+        return new SimpleAtomic(atomic);
     }
 
     public <R extends  SimpleResult> R call(SimpleMethod<R> method) //
@@ -66,7 +66,7 @@ public class SimpleHolder
 
     protected final AtomicReference<SimplePhaser> atomic;
 
-    protected SimpleHolder(AtomicReference<SimplePhaser> atomic)
+    protected SimpleAtomic(AtomicReference<SimplePhaser> atomic)
     {
         this.atomic = atomic;
     }
@@ -77,5 +77,5 @@ public class SimpleHolder
         R call(long delete);
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(SimpleHolder.class);
+    private static final Logger logger = LoggerFactory.getLogger(SimpleAtomic.class);
 }

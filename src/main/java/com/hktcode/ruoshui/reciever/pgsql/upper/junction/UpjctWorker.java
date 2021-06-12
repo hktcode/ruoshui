@@ -2,12 +2,12 @@ package com.hktcode.ruoshui.reciever.pgsql.upper.junction;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperQueues;
-import com.hktcode.simple.SimpleHolder;
+import com.hktcode.simple.SimpleAtomic;
 import com.hktcode.simple.SimpleWorker;
 
 public class UpjctWorker extends SimpleWorker<UpjctWorkerArgval, UpjctWorkerMeters>
 {
-    public static UpjctWorker of(UpjctWorkerArgval config, UpjctWorkerMeters meters, SimpleHolder holder, UpperQueues queues)
+    public static UpjctWorker of(UpjctWorkerArgval config, UpjctWorkerMeters meters, SimpleAtomic holder, UpperQueues queues)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -26,7 +26,7 @@ public class UpjctWorker extends SimpleWorker<UpjctWorkerArgval, UpjctWorkerMete
 
     private final UpperQueues queues;
 
-    private UpjctWorker(UpjctWorkerArgval config, UpjctWorkerMeters meters, SimpleHolder holder, UpperQueues queues)
+    private UpjctWorker(UpjctWorkerArgval config, UpjctWorkerMeters meters, SimpleAtomic holder, UpperQueues queues)
     {
         super(config, meters, holder);
         this.queues = queues;

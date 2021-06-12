@@ -7,7 +7,7 @@ package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Tqueue;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
-import com.hktcode.simple.SimpleHolder;
+import com.hktcode.simple.SimpleAtomic;
 import com.hktcode.simple.SimpleWkstep;
 import com.hktcode.simple.SimpleWkstepAction;
 import com.hktcode.simple.SimpleWkstepTheEnd;
@@ -34,7 +34,7 @@ public class UppdcWkstepAction implements SimpleWkstepAction<UppdcWorkerArgval, 
     private final Tqueue<UpperRecordProducer> target;
 
     @Override
-    public SimpleWkstep next(UppdcWorkerArgval argval, UppdcWorkerMeters meters, SimpleHolder holder) ///
+    public SimpleWkstep next(UppdcWorkerArgval argval, UppdcWorkerMeters meters, SimpleAtomic holder) ///
             throws Throwable
     {
         if (argval == null) {

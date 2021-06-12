@@ -3,12 +3,12 @@ package com.hktcode.ruoshui.reciever.pgsql.upper.consumer;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Tqueue;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
-import com.hktcode.simple.SimpleHolder;
+import com.hktcode.simple.SimpleAtomic;
 import com.hktcode.simple.SimpleWorker;
 
 public class UpcsmWorker extends SimpleWorker<UpcsmWorkerArgval, UpcsmWorkerMeters>
 {
-    public static UpcsmWorker of(UpcsmWorkerArgval argval, UpcsmWorkerMeters meters, SimpleHolder holder, Tqueue<UpperRecordConsumer> source)
+    public static UpcsmWorker of(UpcsmWorkerArgval argval, UpcsmWorkerMeters meters, SimpleAtomic holder, Tqueue<UpperRecordConsumer> source)
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");
@@ -27,7 +27,7 @@ public class UpcsmWorker extends SimpleWorker<UpcsmWorkerArgval, UpcsmWorkerMete
 
     private final Tqueue<UpperRecordConsumer> source;
 
-    private UpcsmWorker(UpcsmWorkerArgval argval, UpcsmWorkerMeters meters, SimpleHolder holder, Tqueue<UpperRecordConsumer> source)
+    private UpcsmWorker(UpcsmWorkerArgval argval, UpcsmWorkerMeters meters, SimpleAtomic holder, Tqueue<UpperRecordConsumer> source)
     {
         super(argval, meters, holder);
         this.source = source;
