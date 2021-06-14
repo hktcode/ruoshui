@@ -38,6 +38,7 @@ public class UppdcSenderFiles extends UppdcSender
     {
         this.argval = argval;
         this.gauges = gauges;
+        this.handle = new AsynchronousFileChannel[0];
     }
 
     @Override
