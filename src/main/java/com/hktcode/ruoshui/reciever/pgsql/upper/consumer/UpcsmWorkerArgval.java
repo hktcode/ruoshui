@@ -12,7 +12,7 @@ import com.hktcode.queue.Tqueue;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
 import com.hktcode.simple.SimpleWorkerArgval;
 
-public class UpcsmWorkerArgval implements SimpleWorkerArgval<UpcsmWorkerArgval, UpcsmWorkerMeters>
+public class UpcsmWorkerArgval implements SimpleWorkerArgval<UpcsmWorkerArgval, UpcsmWorkerGauges>
 {
     public static final ObjectNode SCHEMA;
 

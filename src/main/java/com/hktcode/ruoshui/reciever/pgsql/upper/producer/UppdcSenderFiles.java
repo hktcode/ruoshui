@@ -41,7 +41,7 @@ public class UppdcSenderFiles extends UppdcSender
     }
 
     @Override
-    public void send(UppdcWorkerMeters meters, UpperRecordProducer record) throws IOException
+    public void send(UppdcWorkerGauges meters, UpperRecordProducer record) throws IOException
     {
         if (record == null) {
             throw new ArgumentNullException("record");
@@ -108,9 +108,9 @@ public class UppdcSenderFiles extends UppdcSender
 
     private static class Handler implements CompletionHandler<Integer, UpperRecordProducer>
     {
-        private final UppdcWorkerMeters meters;
+        private final UppdcWorkerGauges meters;
 
-        public Handler(UppdcWorkerMeters meters)
+        public Handler(UppdcWorkerGauges meters)
         {
             this.meters = meters;
         }

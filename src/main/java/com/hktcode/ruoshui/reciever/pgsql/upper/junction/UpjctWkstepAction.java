@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, UpjctWorkerMeters>
+public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, UpjctWorkerGauges>
 {
     public static UpjctWkstepAction of(UpperQueues queues)
     {
@@ -39,7 +39,7 @@ public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, 
     }
 
     @Override
-    public SimpleWkstep next(UpjctWorkerArgval argval, UpjctWorkerMeters meters, SimpleAtomic holder) //
+    public SimpleWkstep next(UpjctWorkerArgval argval, UpjctWorkerGauges meters, SimpleAtomic holder) //
             throws InterruptedException
     {
         if (argval == null) {

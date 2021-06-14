@@ -22,7 +22,7 @@ import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, UpcsmWorkerMeters>
+public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, UpcsmWorkerGauges>
 {
     private static final Logger logger = LoggerFactory.getLogger(UpcsmWkstepAction.class);
 
@@ -37,7 +37,7 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
     }
 
     @Override
-    public SimpleWkstep next(UpcsmWorkerArgval argval, UpcsmWorkerMeters meters, SimpleAtomic holder) //
+    public SimpleWkstep next(UpcsmWorkerArgval argval, UpcsmWorkerGauges meters, SimpleAtomic holder) //
             throws InterruptedException, SQLException
     {
         if (argval == null) {

@@ -4,10 +4,10 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SimpleWorker<A extends SimpleWorkerArgval<A, M>, M extends SimpleWorkerMeters>
+public class SimpleWorker<A extends SimpleWorkerArgval<A, M>, M extends SimpleWorkerGauges>
         implements Runnable
 {
-    public static <A extends SimpleWorkerArgval<A, M>, M extends SimpleWorkerMeters> //
+    public static <A extends SimpleWorkerArgval<A, M>, M extends SimpleWorkerGauges> //
     SimpleWorker<A, M> of(A argval, M meters, SimpleAtomic holder)
     {
         if (argval == null) {

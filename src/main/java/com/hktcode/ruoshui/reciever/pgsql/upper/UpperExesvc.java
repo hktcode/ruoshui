@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorkerArgval;
-import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorkerMeters;
+import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorkerGauges;
 import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorkerArgval;
-import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorkerMeters;
+import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorkerGauges;
 import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorkerArgval;
-import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorkerMeters;
+import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorkerGauges;
 import com.hktcode.simple.SimpleAtomic;
 import com.hktcode.simple.SimpleWorker;
 
@@ -33,17 +33,17 @@ public class UpperExesvc
         this.holder = SimpleAtomic.of();
     }
 
-    public SimpleWorker<UpcsmWorkerArgval, UpcsmWorkerMeters> consumer()
+    public SimpleWorker<UpcsmWorkerArgval, UpcsmWorkerGauges> consumer()
     {
         return SimpleWorker.of(this.argval.consumer, this.gauges.consumer, this.holder);
     }
 
-    public SimpleWorker<UpjctWorkerArgval, UpjctWorkerMeters> junction()
+    public SimpleWorker<UpjctWorkerArgval, UpjctWorkerGauges> junction()
     {
         return SimpleWorker.of(this.argval.junction, this.gauges.junction, this.holder);
     }
 
-    public SimpleWorker<UppdcWorkerArgval, UppdcWorkerMeters> producer()
+    public SimpleWorker<UppdcWorkerArgval, UppdcWorkerGauges> producer()
     {
         return SimpleWorker.of(this.argval.producer, this.gauges.producer, this.holder);
     }

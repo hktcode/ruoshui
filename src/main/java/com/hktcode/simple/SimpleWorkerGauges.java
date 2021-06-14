@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleWorkerMeters implements JacksonObject
+public class SimpleWorkerGauges implements JacksonObject
 {
     public long workerStart = Long.MAX_VALUE;
 

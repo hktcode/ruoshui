@@ -14,7 +14,7 @@ import com.hktcode.simple.SimpleWkstepTheEnd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UppdcWkstepAction implements SimpleWkstepAction<UppdcWorkerArgval, UppdcWorkerMeters>
+public class UppdcWkstepAction implements SimpleWkstepAction<UppdcWorkerArgval, UppdcWorkerGauges>
 {
     private static final Logger logger = LoggerFactory.getLogger(UppdcWkstepAction.class);
 
@@ -34,7 +34,7 @@ public class UppdcWkstepAction implements SimpleWkstepAction<UppdcWorkerArgval, 
     private final Tqueue<UpperRecordProducer> target;
 
     @Override
-    public SimpleWkstep next(UppdcWorkerArgval argval, UppdcWorkerMeters meters, SimpleAtomic holder) ///
+    public SimpleWkstep next(UppdcWorkerArgval argval, UppdcWorkerGauges meters, SimpleAtomic holder) ///
             throws Throwable
     {
         if (argval == null) {

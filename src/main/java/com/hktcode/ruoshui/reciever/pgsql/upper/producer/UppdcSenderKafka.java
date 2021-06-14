@@ -47,7 +47,7 @@ public class UppdcSenderKafka extends UppdcSender
     }
 
     @Override
-    public void send(UppdcWorkerMeters meters, UpperRecordProducer record)
+    public void send(UppdcWorkerGauges meters, UpperRecordProducer record)
     {
         String keyText = record.key.toJsonObject().toString();
         String valText = record.val.toJsonObject().toString();
@@ -79,11 +79,11 @@ public class UppdcSenderKafka extends UppdcSender
 
         private final Producer<byte[], byte[]> producer;
 
-        private final UppdcWorkerMeters meters;
+        private final UppdcWorkerGauges meters;
 
         public Handler //
             /* */(LogSequenceNumber lsn //
-            /* */, UppdcWorkerMeters meters //
+            /* */, UppdcWorkerGauges meters //
             /* */, Producer<byte[], byte[]> producer //
             /* */)
         {

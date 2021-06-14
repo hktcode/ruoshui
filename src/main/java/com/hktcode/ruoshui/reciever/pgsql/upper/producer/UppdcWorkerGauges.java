@@ -1,29 +1,31 @@
-package com.hktcode.ruoshui.reciever.pgsql.upper.consumer;
+package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.simple.SimpleWorkerMeters;
+import com.hktcode.simple.SimpleWorkerGauges;
 import org.postgresql.replication.LogSequenceNumber;
 
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class UpcsmWorkerMeters extends SimpleWorkerMeters
+public class UppdcWorkerGauges extends SimpleWorkerGauges
 {
-    public static UpcsmWorkerMeters of(AtomicLong txactionLsn)
+    public static UppdcWorkerGauges of(AtomicLong txactionLsn)
     {
         if (txactionLsn == null) {
             throw new ArgumentNullException("txactionLsn");
         }
-        return new UpcsmWorkerMeters(txactionLsn);
+        return new UppdcWorkerGauges(txactionLsn);
     }
 
-    private UpcsmWorkerMeters(AtomicLong txactionLsn)
+    private UppdcWorkerGauges(AtomicLong txactionLsn)
     {
         this.txactionLsn = txactionLsn;
     }
 
     public final AtomicLong txactionLsn;
-    public long reportedLsn = 0;
+
+    public final AtomicReference<Throwable> callbackRef = new AtomicReference<>();
 
     public ObjectNode toJsonObject(ObjectNode node)
     {
@@ -31,8 +33,8 @@ public class UpcsmWorkerMeters extends SimpleWorkerMeters
             throw new ArgumentNullException("node");
         }
         node = super.toJsonObject(node);
-        LogSequenceNumber lsn = LogSequenceNumber.valueOf(this.reportedLsn);
-        node.put("reported_lsn", lsn.asString());
+        LogSequenceNumber lsn = LogSequenceNumber.valueOf(txactionLsn.get());
+        node.put("txaction_lsn", lsn.asString());
         return node;
     }
 }

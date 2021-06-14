@@ -11,7 +11,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperQueues;
 import com.hktcode.simple.SimpleWorkerArgval;
 
-public class UpjctWorkerArgval implements SimpleWorkerArgval<UpjctWorkerArgval, UpjctWorkerMeters>
+public class UpjctWorkerArgval implements SimpleWorkerArgval<UpjctWorkerArgval, UpjctWorkerGauges>
 {
     public static final ObjectNode SCHEMA;
 
