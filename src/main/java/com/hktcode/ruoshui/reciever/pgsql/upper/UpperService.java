@@ -29,7 +29,7 @@ public class UpperService implements DisposableBean
 
     private final ReadWriteLock locker = new ReentrantReadWriteLock();
 
-    private final ConcurrentHashMap<String, UpperExesvc> repmap;
+    private final ConcurrentHashMap<String, UpperHolder> repmap;
 
     private final ThreadPoolTaskExecutor exesvc;
 
@@ -49,13 +49,13 @@ public class UpperService implements DisposableBean
         if (body == null) {
             throw new ArgumentNullException("body");
         }
-        UpperExesvcArgval argval = UpperExesvcArgval.ofJsonObject(name, body);
-        UpperExesvc exesvc = UpperExesvc.of(argval);
+        UpperHolderArgval argval = UpperHolderArgval.ofJsonObject(name, body);
+        UpperHolder exesvc = UpperHolder.of(argval);
 
         Lock lock = this.locker.readLock();
         lock.lock();
         try {
-            UpperExesvc status = this.repmap.putIfAbsent(name, exesvc);
+            UpperHolder status = this.repmap.putIfAbsent(name, exesvc);
             if (status != null) {
                 UpperResult result = status.modify(Long.MAX_VALUE, MissingNode.getInstance(), this.keeper::updertYml);
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new UpperResult[]{ result });
@@ -79,7 +79,7 @@ public class UpperService implements DisposableBean
         Lock lock = this.locker.readLock();
         lock.lock();
         try {
-            UpperExesvc exesvc = this.repmap.remove(name);
+            UpperHolder exesvc = this.repmap.remove(name);
             if (exesvc == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -100,7 +100,7 @@ public class UpperService implements DisposableBean
         Lock lock = this.locker.readLock();
         lock.lock();
         try {
-            UpperExesvc exesvc = this.repmap.get(name);
+            UpperHolder exesvc = this.repmap.get(name);
             if (exesvc == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -125,7 +125,7 @@ public class UpperService implements DisposableBean
         Lock lock = this.locker.readLock();
         lock.lock();
         try {
-            UpperExesvc exesvc = this.repmap.get(name);
+            UpperHolder exesvc = this.repmap.get(name);
             if (exesvc == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -146,8 +146,8 @@ public class UpperService implements DisposableBean
             UpperResult[] result = new UpperResult[this.repmap.size()];
             int index = 0;
             long finishts = Long.MAX_VALUE;
-            for (Map.Entry<String, UpperExesvc> entry : this.repmap.entrySet()) {
-                final UpperExesvc exesvc = entry.getValue();
+            for (Map.Entry<String, UpperHolder> entry : this.repmap.entrySet()) {
+                final UpperHolder exesvc = entry.getValue();
                 UpperResult r = exesvc.modify(finishts, MissingNode.getInstance(), this.keeper::updertYml);
                 result[index++] = r;
             }
@@ -164,9 +164,9 @@ public class UpperService implements DisposableBean
         Lock lock = this.locker.writeLock();
         lock.lock();
         try {
-            for (Map.Entry<String, UpperExesvc> entry : this.repmap.entrySet()) {
+            for (Map.Entry<String, UpperHolder> entry : this.repmap.entrySet()) {
                 long finishts = System.currentTimeMillis();
-                UpperExesvc exesvc = entry.getValue();
+                UpperHolder exesvc = entry.getValue();
                 exesvc.modify(finishts, MissingNode.getInstance(), this.keeper::updertYml);
             }
         }

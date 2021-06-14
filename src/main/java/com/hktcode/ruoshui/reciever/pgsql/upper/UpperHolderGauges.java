@@ -6,11 +6,11 @@ import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorkerGauges;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class UpperExesvcGauges
+public class UpperHolderGauges
 {
-    public static UpperExesvcGauges of()
+    public static UpperHolderGauges of()
     {
-        return new UpperExesvcGauges();
+        return new UpperHolderGauges();
     }
 
     public final long createts;
@@ -21,7 +21,7 @@ public class UpperExesvcGauges
 
     public final UppdcWorkerGauges producer;
 
-    private UpperExesvcGauges()
+    private UpperHolderGauges()
     {
         this.createts = System.currentTimeMillis();
         AtomicLong txactionLsn = new AtomicLong(0L);

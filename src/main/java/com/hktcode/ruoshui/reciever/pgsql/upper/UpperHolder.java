@@ -12,24 +12,24 @@ import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorkerGauges;
 import com.hktcode.simple.SimpleAtomic;
 import com.hktcode.simple.SimpleWorker;
 
-public class UpperExesvc
+public class UpperHolder
 {
-    public static UpperExesvc of(UpperExesvcArgval argval)
+    public static UpperHolder of(UpperHolderArgval argval)
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");
         }
-        return new UpperExesvc(argval);
+        return new UpperHolder(argval);
     }
 
-    private final UpperExesvcArgval argval;
-    private final UpperExesvcGauges gauges;
+    private final UpperHolderArgval argval;
+    private final UpperHolderGauges gauges;
     private final SimpleAtomic atomic;
 
-    private UpperExesvc(UpperExesvcArgval argval)
+    private UpperHolder(UpperHolderArgval argval)
     {
         this.argval = argval;
-        this.gauges = UpperExesvcGauges.of();
+        this.gauges = UpperHolderGauges.of();
         this.atomic = SimpleAtomic.of();
     }
 
@@ -95,6 +95,6 @@ public class UpperExesvc
     @FunctionalInterface
     public interface SimpleKeeper
     {
-        void call(UpperExesvcArgval argval);
+        void call(UpperHolderArgval argval);
     }
 }
