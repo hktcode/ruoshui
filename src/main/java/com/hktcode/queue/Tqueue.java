@@ -14,29 +14,29 @@ import java.util.concurrent.TimeUnit;
 
 public class Tqueue<E> implements JacksonObject
 {
-    public static <E> Tqueue<E> of(TqueueArgval argval, TqueueGauges metric) //
+    public static <E> Tqueue<E> of(TqueueArgval argval, TqueueGauges gauges) //
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");
         }
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
+        if (gauges == null) {
+            throw new ArgumentNullException("gauges");
         }
         LinkedBlockingQueue<E> tqueue = new LinkedBlockingQueue<>(argval.maxCapacity);
-        return new Tqueue<>(tqueue, argval, metric);
+        return new Tqueue<>(tqueue, argval, gauges);
     }
 
     private static final Logger logger = LoggerFactory.getLogger(Tqueue.class);
 
     private BlockingQueue<E> tqueue;
     public final TqueueArgval argval;
-    public final TqueueGauges metric;
+    public final TqueueGauges gauges;
 
-    private Tqueue(BlockingQueue<E> tqueue, TqueueArgval argval, TqueueGauges metric)
+    private Tqueue(BlockingQueue<E> tqueue, TqueueArgval argval, TqueueGauges gauges)
     {
         this.tqueue = tqueue;
         this.argval = argval;
-        this.metric = metric;
+        this.gauges = gauges;
     }
 
     public int size()
@@ -68,15 +68,15 @@ public class Tqueue<E> implements JacksonObject
         long startsMillis = System.currentTimeMillis();
         E record = this.tqueue.poll(waitTimeout, TimeUnit.MILLISECONDS);
         long finishMillis = System.currentTimeMillis();
-        metric.fetchMillis += (finishMillis - startsMillis);
-        ++metric.fetchCounts;
+        gauges.fetchMillis += (finishMillis - startsMillis);
+        ++gauges.fetchCounts;
         if (record != null) {
-            ++metric.fetchRecord;
+            ++gauges.fetchRecord;
         }
-        else if (finishMillis - metric.fetchLogger >= logDuration) {
+        else if (finishMillis - gauges.fetchLogger >= logDuration) {
             logger.info("tqueue.poll timeout: waitTimeout={}, logDuration={}" //
                     , waitTimeout, logDuration);
-            metric.fetchLogger = finishMillis;
+            gauges.fetchLogger = finishMillis;
         }
         return record;
     }
@@ -88,16 +88,16 @@ public class Tqueue<E> implements JacksonObject
         long startsMillis = System.currentTimeMillis();
         boolean success = this.tqueue.offer(record, waitTimeout, TimeUnit.MILLISECONDS);
         long finishMillis = System.currentTimeMillis();
-        metric.offerMillis += (finishMillis - startsMillis);
-        ++metric.offerCounts;
+        gauges.offerMillis += (finishMillis - startsMillis);
+        ++gauges.offerCounts;
         if (success) {
-            ++metric.offerRecord;
+            ++gauges.offerRecord;
             return null;
         }
-        else if (finishMillis - metric.offerLogger >= logDuration) {
+        else if (finishMillis - gauges.offerLogger >= logDuration) {
             logger.info("tqueue.push timeout: waitTimeout={}, logDuration={}" //
                     , waitTimeout, logDuration);
-            metric.offerLogger = finishMillis;
+            gauges.offerLogger = finishMillis;
         }
         return record;
     }
@@ -110,7 +110,7 @@ public class Tqueue<E> implements JacksonObject
         ObjectNode configNode = node.putObject("config");
         this.argval.toJsonObject(configNode);
         ObjectNode metricNode = node.putObject("metric");
-        this.metric.toJsonObject(metricNode);
+        this.gauges.toJsonObject(metricNode);
         metricNode.set("record_count", new LongNode(this.tqueue.size()));
         return node;
     }
