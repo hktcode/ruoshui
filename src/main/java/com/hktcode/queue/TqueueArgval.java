@@ -12,7 +12,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class TqueueArgval implements JacksonObject
 {
-    public static final ObjectNode SCHEMA = JacksonObject.getFromResource(TqueueArgval.class, "TqueueConfig.yml");
+    public static final ObjectNode SCHEMA = JacksonObject.getFromResource(TqueueArgval.class, "TqueueArgval.yml");
 
     public static final long DEFALUT_WAIT_TIMEOUT = 100;
 
