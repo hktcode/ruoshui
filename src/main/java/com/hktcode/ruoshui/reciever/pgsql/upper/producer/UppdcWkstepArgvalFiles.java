@@ -83,6 +83,6 @@ public class UppdcWkstepArgvalFiles extends UppdcWkstepArgval
     {
         Path directory = Paths.get(this.walDatapath.toString());
         Files.createDirectories(directory);
-        return UppdcSenderFiles.of(this, UppdcWkstepMetricFiles.of());
+        return UppdcSenderFiles.of(this, UppdcWkstepGaugesFiles.of());
     }
 }

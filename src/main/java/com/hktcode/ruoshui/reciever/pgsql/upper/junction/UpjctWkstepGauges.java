@@ -1,19 +1,19 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.junction;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.hktcode.simple.SimpleWkstepMetric;
+import com.hktcode.simple.SimpleWkstepGauges;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.entity.LogicalTxactContext;
 import org.postgresql.replication.LogSequenceNumber;
 
-public class UpjctWkstepMetric extends SimpleWkstepMetric
+public class UpjctWkstepGauges extends SimpleWkstepGauges
 {
-    public static UpjctWkstepMetric of()
+    public static UpjctWkstepGauges of()
     {
-        return new UpjctWkstepMetric();
+        return new UpjctWkstepGauges();
     }
 
-    private UpjctWkstepMetric()
+    private UpjctWkstepGauges()
     {
     }
 

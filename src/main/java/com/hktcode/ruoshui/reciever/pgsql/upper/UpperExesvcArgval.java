@@ -7,7 +7,7 @@ import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Tqueue;
 import com.hktcode.queue.TqueueConfig;
-import com.hktcode.queue.TqueueMetric;
+import com.hktcode.queue.TqueueGauges;
 import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorkerArgval;
 import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorkerArgval;
 import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorkerArgval;
@@ -40,8 +40,8 @@ public class UpperExesvcArgval implements JacksonObject
         }
         TqueueConfig srcqueue = TqueueConfig.ofJsonObject(jsonnode.path("srcqueue"));
         TqueueConfig tgtqueue = TqueueConfig.ofJsonObject(jsonnode.path("tgtqueue"));
-        Tqueue<UpperRecordConsumer> source = Tqueue.of(srcqueue, TqueueMetric.of());
-        Tqueue<UpperRecordProducer> target = Tqueue.of(tgtqueue, TqueueMetric.of());
+        Tqueue<UpperRecordConsumer> source = Tqueue.of(srcqueue, TqueueGauges.of());
+        Tqueue<UpperRecordProducer> target = Tqueue.of(tgtqueue, TqueueGauges.of());
         UpperQueues queues = UpperQueues.of(source, target);
         UpcsmWorkerArgval consumer = UpcsmWorkerArgval.ofJsonObject(jsonnode.path("consumer"), source);
         UpjctWorkerArgval junction = UpjctWorkerArgval.ofJsonObject(jsonnode.path("junction"), queues);

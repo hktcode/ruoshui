@@ -97,6 +97,6 @@ public class UppdcWkstepArgvalKafka extends UppdcWkstepArgval
     @Override
     public UppdcSenderKafka sender()
     {
-        return UppdcSenderKafka.of(this, UppdcWkstepMetricKafka.of());
+        return UppdcSenderKafka.of(this, UppdcWkstepGaugesKafka.of());
     }
 }

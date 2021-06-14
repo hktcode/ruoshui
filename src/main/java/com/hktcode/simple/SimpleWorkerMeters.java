@@ -16,7 +16,7 @@ public class SimpleWorkerMeters implements JacksonObject
 
     public long exeDatetime = 0;
 
-    public final List<SimpleWkstepMetric> actionInfos = new ArrayList<>();
+    public final List<SimpleWkstepGauges> actionInfos = new ArrayList<>();
 
     public final List<Throwable> throwErrors = new ArrayList<>();
 
@@ -33,7 +33,7 @@ public class SimpleWorkerMeters implements JacksonObject
         node.put("worker_start", this.workerStart);
         node.put("end_datetime", this.endDatetime);
         ArrayNode actionInfosNode = node.putArray("action_infos");
-        for (SimpleWkstepMetric m: this.actionInfos) {
+        for (SimpleWkstepGauges m: this.actionInfos) {
             ObjectNode n = actionInfosNode.addObject();
             m.toJsonObject(n);
         }

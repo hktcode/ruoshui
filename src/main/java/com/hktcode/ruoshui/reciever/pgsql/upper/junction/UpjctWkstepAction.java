@@ -51,7 +51,7 @@ public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, 
         if (holder == null) {
             throw new ArgumentNullException("holder");
         }
-        UpjctWkstepMetric metric = UpjctWkstepMetric.of();
+        UpjctWkstepGauges metric = UpjctWkstepGauges.of();
         UpperRecordConsumer r = null;
         UpperRecordProducer o = null;
         final Tqueue<UpperRecordProducer> getout = this.queues.target;
@@ -76,7 +76,7 @@ public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, 
         return SimpleWkstepTheEnd.of();
     }
 
-    private List<UpperRecordProducer> convert(UpjctWkstepMetric metric, UpperRecordConsumer record)
+    private List<UpperRecordProducer> convert(UpjctWkstepGauges metric, UpperRecordConsumer record)
     {
         long lsn = record.lsn;
         LogicalMsg msg = record.msg;

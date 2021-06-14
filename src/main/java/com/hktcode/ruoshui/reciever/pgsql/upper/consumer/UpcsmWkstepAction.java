@@ -50,7 +50,7 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
             throw new ArgumentNullException("holder");
         }
         UpcsmWkstepArgval config = argval.actionInfos.get(0);
-        UpcsmWkstepMetric metric = UpcsmWkstepMetric.of();
+        UpcsmWkstepGauges metric = UpcsmWkstepGauges.of();
         meters.actionInfos.add(metric);
         try (Connection repl = config.srcProperty.replicaConnection()) {
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
@@ -79,7 +79,7 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
         return SimpleWkstepTheEnd.of();
     }
 
-    private UpperRecordConsumer poll(UpcsmWkstepArgval config, UpcsmWkstepMetric metric, PGReplicationStream s) //
+    private UpperRecordConsumer poll(UpcsmWkstepArgval config, UpcsmWkstepGauges metric, PGReplicationStream s) //
             throws SQLException, InterruptedException
     {
         ByteBuffer msg = s.readPending();

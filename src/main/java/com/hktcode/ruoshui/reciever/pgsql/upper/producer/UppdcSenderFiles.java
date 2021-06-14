@@ -17,7 +17,7 @@ public class UppdcSenderFiles extends UppdcSender
 {
     private static final Logger logger = LoggerFactory.getLogger(UppdcSenderFiles.class);
 
-    public static UppdcSenderFiles of(UppdcWkstepArgvalFiles config, UppdcWkstepMetricFiles metric)
+    public static UppdcSenderFiles of(UppdcWkstepArgvalFiles config, UppdcWkstepGaugesFiles metric)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -30,11 +30,11 @@ public class UppdcSenderFiles extends UppdcSender
 
     private final UppdcWkstepArgvalFiles config;
 
-    private final UppdcWkstepMetricFiles metric;
+    private final UppdcWkstepGaugesFiles metric;
 
     private AsynchronousFileChannel[] handle;
 
-    private UppdcSenderFiles(UppdcWkstepArgvalFiles config, UppdcWkstepMetricFiles metric)
+    private UppdcSenderFiles(UppdcWkstepArgvalFiles config, UppdcWkstepGaugesFiles metric)
     {
         this.config = config;
         this.metric = metric;

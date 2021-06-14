@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.queue.TqueueMetric;
+import com.hktcode.queue.TqueueGauges;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleWkstepMetric extends TqueueMetric implements JacksonObject
+public class SimpleWkstepGauges extends TqueueGauges implements JacksonObject
 {
     public long wkstepStart = Long.MAX_VALUE;
 

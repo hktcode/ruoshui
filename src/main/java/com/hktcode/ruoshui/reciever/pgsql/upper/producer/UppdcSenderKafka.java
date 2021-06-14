@@ -17,7 +17,7 @@ import static com.hktcode.kafka.Kafka.Serializers.BYTES;
 
 public class UppdcSenderKafka extends UppdcSender
 {
-    public static UppdcSenderKafka of(UppdcWkstepArgvalKafka config, UppdcWkstepMetricKafka metric)
+    public static UppdcSenderKafka of(UppdcWkstepArgvalKafka config, UppdcWkstepGaugesKafka metric)
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -30,11 +30,11 @@ public class UppdcSenderKafka extends UppdcSender
 
     private final UppdcWkstepArgvalKafka config;
 
-    private final UppdcWkstepMetricKafka metric;
+    private final UppdcWkstepGaugesKafka metric;
 
     private final Producer<byte[], byte[]> handle;
 
-    private UppdcSenderKafka(UppdcWkstepArgvalKafka config, UppdcWkstepMetricKafka metric)
+    private UppdcSenderKafka(UppdcWkstepArgvalKafka config, UppdcWkstepGaugesKafka metric)
     {
         Properties properties = new Properties();
         properties.setProperty("request.timeout.ms", "1000");

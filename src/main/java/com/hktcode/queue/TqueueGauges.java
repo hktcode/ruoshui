@@ -5,11 +5,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class TqueueMetric implements JacksonObject
+public class TqueueGauges implements JacksonObject
 {
-    public static TqueueMetric of()
+    public static TqueueGauges of()
     {
-        return new TqueueMetric();
+        return new TqueueGauges();
     }
 
     public long fetchCounts = 0;
