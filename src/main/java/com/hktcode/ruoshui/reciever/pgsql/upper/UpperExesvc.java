@@ -14,12 +14,12 @@ import com.hktcode.simple.SimpleWorker;
 
 public class UpperExesvc
 {
-    public static UpperExesvc of(UpperExesvcArgval config)
+    public static UpperExesvc of(UpperExesvcArgval argval)
     {
-        if (config == null) {
-            throw new ArgumentNullException("config");
+        if (argval == null) {
+            throw new ArgumentNullException("argval");
         }
-        return new UpperExesvc(config);
+        return new UpperExesvc(argval);
     }
 
     private final UpperExesvcArgval argval;
