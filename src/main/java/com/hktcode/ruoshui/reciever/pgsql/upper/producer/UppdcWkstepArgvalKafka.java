@@ -82,13 +82,13 @@ public class UppdcWkstepArgvalKafka extends UppdcWkstepArgval
             throw new ArgumentNullException("node");
         }
         ObjectNode result = super.toJsonObject(node);
-        ObjectNode configPropsNode = result.putObject("config_props");
-        ObjectNode kfkPropertyNode = configPropsNode.putObject("kfk_property");
+        ObjectNode senderPropsNode = result.putObject("sender_props");
+        ObjectNode kfkPropertyNode = senderPropsNode.putObject("kfk_property");
         for (Map.Entry<String, String> entry : this.kfkProperty.entrySet()) {
             kfkPropertyNode.put(entry.getKey(), entry.getValue());
         }
-        configPropsNode.put("target_topic", this.targetTopic);
-        configPropsNode.put("partition_no", this.partitionNo);
+        senderPropsNode.put("target_topic", this.targetTopic);
+        senderPropsNode.put("partition_no", this.partitionNo);
         return node;
     }
 
