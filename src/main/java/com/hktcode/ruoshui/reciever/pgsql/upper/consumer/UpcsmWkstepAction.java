@@ -31,7 +31,7 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
     public static UpcsmWkstepAction of(Tqueue<UpperRecordConsumer> source)
     {
         if (source == null) {
-            throw new ArgumentNullException("config");
+            throw new ArgumentNullException("source");
         }
         return new UpcsmWkstepAction(source);
     }
