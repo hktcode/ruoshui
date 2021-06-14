@@ -29,13 +29,13 @@ public class UpperController
 
     private final UpperService service;
 
-    private final JsonSchema upperConfigSchema;
+    private final JsonSchema upperArgvalSchema;
 
     public UpperController(@Autowired UpperService service) throws ProcessingException
     {
         this.service = service;
         final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-        this.upperConfigSchema = factory.getJsonSchema(UpperExesvcArgval.SCHEMA);
+        this.upperArgvalSchema = factory.getJsonSchema(UpperExesvcArgval.SCHEMA);
     }
 
     @PutMapping("{name}")
@@ -54,7 +54,7 @@ public class UpperController
         if (!NAME_PATTERN.matcher(name).matches()) {
             throw new RuoshuiNameFormatException(name);
         }
-        ProcessingReport report = upperConfigSchema.validate(body);
+        ProcessingReport report = upperArgvalSchema.validate(body);
         if (!report.isSuccess()) {
             throw new JsonSchemaValidationImplException(report);
         }
