@@ -41,7 +41,7 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
             throws InterruptedException, SQLException
     {
         if (argval == null) {
-            throw new ArgumentNullException("config");
+            throw new ArgumentNullException("argval");
         }
         if (meters == null) {
             throw new ArgumentNullException("meters");
@@ -49,12 +49,12 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
         if (holder == null) {
             throw new ArgumentNullException("holder");
         }
-        UpcsmWkstepArgval config = argval.actionInfos.get(0);
+        UpcsmWkstepArgval params = argval.actionInfos.get(0);
         UpcsmWkstepGauges metric = UpcsmWkstepGauges.of();
         meters.actionInfos.add(metric);
-        try (Connection repl = config.srcProperty.replicaConnection()) {
+        try (Connection repl = params.srcProperty.replicaConnection()) {
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
-            try (PGReplicationStream slt = config.logicalRepl.start(pgrepl)) {
+            try (PGReplicationStream slt = params.logicalRepl.start(pgrepl)) {
                 UpperRecordConsumer r = null;
                 while (holder.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
                     long currlsn = meters.txactionLsn.get();
@@ -66,7 +66,7 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
                     }
                     metric.statusInfor = "receive logical replication stream message";
                     if (r == null) {
-                        r = poll(config, metric, slt);
+                        r = poll(params, metric, slt);
                     } else if ((r = source.push(r)) != null) {
                         slt.forceUpdateStatus();
                     }
@@ -79,7 +79,7 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
         return SimpleWkstepTheEnd.of();
     }
 
-    private UpperRecordConsumer poll(UpcsmWkstepArgval config, UpcsmWkstepGauges metric, PGReplicationStream s) //
+    private UpperRecordConsumer poll(UpcsmWkstepArgval argval, UpcsmWkstepGauges metric, PGReplicationStream s) //
             throws SQLException, InterruptedException
     {
         ByteBuffer msg = s.readPending();
@@ -90,8 +90,8 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
             LogicalMsg val = LogicalMsg.ofLogicalWal(msg);
             return UpperRecordConsumer.of(key, val);
         }
-        long waitTimeout = config.waitTimeout;
-        long logDuration = config.logDuration;
+        long waitTimeout = argval.waitTimeout;
+        long logDuration = argval.logDuration;
         Thread.sleep(waitTimeout);
         metric.fetchMillis += waitTimeout;
         long currMillis = System.currentTimeMillis();
