@@ -34,7 +34,7 @@ public class UppdcWkstepAction implements SimpleWkstepAction<UppdcWorkerArgval, 
     private final Tqueue<UpperRecordProducer> target;
 
     @Override
-    public SimpleWkstep next(UppdcWorkerArgval argval, UppdcWorkerGauges gauges, SimpleAtomic holder) ///
+    public SimpleWkstep next(UppdcWorkerArgval argval, UppdcWorkerGauges gauges, SimpleAtomic atomic) ///
             throws Throwable
     {
         if (argval == null) {
@@ -43,14 +43,14 @@ public class UppdcWkstepAction implements SimpleWkstepAction<UppdcWorkerArgval, 
         if (gauges == null) {
             throw new ArgumentNullException("gauges");
         }
-        if (holder == null) {
-            throw new ArgumentNullException("holder");
+        if (atomic == null) {
+            throw new ArgumentNullException("atomic");
         }
         UppdcWkstepArgval params = argval.actionInfos.get(0);
         try (UppdcSender sender = params.sender()) {
             UpperRecordProducer d = null;
             Throwable ex;
-            while (holder.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
+            while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
                 if ((ex = gauges.callbackRef.get()) != null) {
                     logger.error("callback throws exception", ex);
                     throw ex;
