@@ -24,8 +24,6 @@ public class UppdcWkstepArgvalFiles extends UppdcWkstepArgval
 
     public static final long DEFAULT_MAX_FILETIME = 60 * 60 * 1000;
 
-    public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UppdcWkstepArgvalFiles.class, "UppdcArgval.yml");
-
     public static UppdcWkstepArgvalFiles ofJsonObject(JsonNode json)
     {
         if (json == null) {
