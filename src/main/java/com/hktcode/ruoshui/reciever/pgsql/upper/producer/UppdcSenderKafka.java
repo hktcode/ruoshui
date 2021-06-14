@@ -17,31 +17,31 @@ import static com.hktcode.kafka.Kafka.Serializers.BYTES;
 
 public class UppdcSenderKafka extends UppdcSender
 {
-    public static UppdcSenderKafka of(UppdcWkstepArgvalKafka config, UppdcWkstepGaugesKafka metric)
+    public static UppdcSenderKafka of(UppdcWkstepArgvalKafka argval, UppdcWkstepGaugesKafka metric)
     {
-        if (config == null) {
-            throw new ArgumentNullException("config");
+        if (argval == null) {
+            throw new ArgumentNullException("argval");
         }
         if (metric == null) {
             throw new ArgumentNullException("metric");
         }
-        return new UppdcSenderKafka(config, metric);
+        return new UppdcSenderKafka(argval, metric);
     }
 
-    private final UppdcWkstepArgvalKafka config;
+    private final UppdcWkstepArgvalKafka argval;
 
     private final UppdcWkstepGaugesKafka metric;
 
     private final Producer<byte[], byte[]> handle;
 
-    private UppdcSenderKafka(UppdcWkstepArgvalKafka config, UppdcWkstepGaugesKafka metric)
+    private UppdcSenderKafka(UppdcWkstepArgvalKafka argval, UppdcWkstepGaugesKafka metric)
     {
         Properties properties = new Properties();
         properties.setProperty("request.timeout.ms", "1000");
-        for (Map.Entry<String, String> e : config.kfkProperty.entrySet()) {
+        for (Map.Entry<String, String> e : argval.kfkProperty.entrySet()) {
             properties.setProperty(e.getKey(), e.getValue());
         }
-        this.config = config;
+        this.argval = argval;
         this.metric = metric;
         this.handle = new KafkaProducer<>(properties, BYTES, BYTES);
     }
@@ -51,8 +51,8 @@ public class UppdcSenderKafka extends UppdcSender
     {
         String keyText = record.key.toJsonObject().toString();
         String valText = record.val.toJsonObject().toString();
-        String t = config.targetTopic;
-        int p = config.partitionNo;
+        String t = argval.targetTopic;
+        int p = argval.partitionNo;
         byte[] k = keyText.getBytes(StandardCharsets.UTF_8);
         byte[] v = valText.getBytes(StandardCharsets.UTF_8);
         ProducerRecord<byte[], byte[]> r = new ProducerRecord<>(t, p, k, v);
