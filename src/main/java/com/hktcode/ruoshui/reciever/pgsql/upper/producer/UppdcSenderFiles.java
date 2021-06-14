@@ -17,26 +17,26 @@ public class UppdcSenderFiles extends UppdcSender
 {
     private static final Logger logger = LoggerFactory.getLogger(UppdcSenderFiles.class);
 
-    public static UppdcSenderFiles of(UppdcWkstepArgvalFiles config, UppdcWkstepGaugesFiles metric)
+    public static UppdcSenderFiles of(UppdcWkstepArgvalFiles argval, UppdcWkstepGaugesFiles metric)
     {
-        if (config == null) {
-            throw new ArgumentNullException("config");
+        if (argval == null) {
+            throw new ArgumentNullException("argval");
         }
         if (metric == null) {
             throw new ArgumentNullException("metric");
         }
-        return new UppdcSenderFiles(config, metric);
+        return new UppdcSenderFiles(argval, metric);
     }
 
-    private final UppdcWkstepArgvalFiles config;
+    private final UppdcWkstepArgvalFiles argval;
 
     private final UppdcWkstepGaugesFiles metric;
 
     private AsynchronousFileChannel[] handle;
 
-    private UppdcSenderFiles(UppdcWkstepArgvalFiles config, UppdcWkstepGaugesFiles metric)
+    private UppdcSenderFiles(UppdcWkstepArgvalFiles argval, UppdcWkstepGaugesFiles metric)
     {
-        this.config = config;
+        this.argval = argval;
         this.metric = metric;
     }
 
@@ -58,10 +58,10 @@ public class UppdcSenderFiles extends UppdcSender
         this.metric.totalLength += bytes.length;
         this.metric.curPosition += bytes.length;
         this.metric.bufferBytes += bytes.length;
-        if (this.metric.curPosition >= this.config.maxFilesize) {
+        if (this.metric.curPosition >= this.argval.maxFilesize) {
             this.close();
         }
-        else if (this.metric.bufferBytes >= config.maxSyncsize) {
+        else if (this.metric.bufferBytes >= argval.maxSyncsize) {
             this.fsync();
         }
     }
@@ -76,7 +76,7 @@ public class UppdcSenderFiles extends UppdcSender
         long lsnofcmt = record.key.lsnofcmt;
         long sequence = record.key.sequence;
         this.metric.curFilename = String.format("%08x%016x%016x.jwal", timeline, lsnofcmt, sequence).toUpperCase();
-        Path file = Paths.get(this.config.walDatapath.toString(), this.metric.curFilename);
+        Path file = Paths.get(this.argval.walDatapath.toString(), this.metric.curFilename);
         logger.info("fopen : curFilename={}", this.metric.curFilename);
         this.handle = new AsynchronousFileChannel[] {
                 AsynchronousFileChannel.open(file, options)
