@@ -10,9 +10,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 
-public class TqueueConfig implements JacksonObject
+public class TqueueArgval implements JacksonObject
 {
-    public static final ObjectNode SCHEMA = JacksonObject.getFromResource(TqueueConfig.class, "TqueueConfig.yml");
+    public static final ObjectNode SCHEMA = JacksonObject.getFromResource(TqueueArgval.class, "TqueueConfig.yml");
 
     public static final long DEFALUT_WAIT_TIMEOUT = 100;
 
@@ -20,12 +20,12 @@ public class TqueueConfig implements JacksonObject
 
     public static final int DEFALUT_MAX_CAPACITY = 1024;
 
-    public static TqueueConfig ofJsonObject(JsonNode json) //
+    public static TqueueArgval ofJsonObject(JsonNode json) //
     {
         if (json == null) {
             throw new ArgumentNullException("json");
         }
-        TqueueConfig result = new TqueueConfig();
+        TqueueArgval result = new TqueueArgval();
         result.waitTimeout = json.path("wait_timeout").asLong(DEFALUT_WAIT_TIMEOUT);
         result.logDuration = json.path("log_duration").asLong(DEFAULT_LOG_DURATION);
         result.maxCapacity = json.path("max_capacity").asInt(DEFALUT_MAX_CAPACITY);

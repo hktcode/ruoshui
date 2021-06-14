@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Tqueue<E> implements JacksonObject
 {
-    public static <E> Tqueue<E> of(TqueueConfig config, TqueueGauges metric) //
+    public static <E> Tqueue<E> of(TqueueArgval config, TqueueGauges metric) //
     {
         if (config == null) {
             throw new ArgumentNullException("config");
@@ -29,10 +29,10 @@ public class Tqueue<E> implements JacksonObject
     private static final Logger logger = LoggerFactory.getLogger(Tqueue.class);
 
     private BlockingQueue<E> tqueue;
-    public final TqueueConfig config;
+    public final TqueueArgval config;
     public final TqueueGauges metric;
 
-    private Tqueue(BlockingQueue<E> tqueue, TqueueConfig config, TqueueGauges metric)
+    private Tqueue(BlockingQueue<E> tqueue, TqueueArgval config, TqueueGauges metric)
     {
         this.tqueue = tqueue;
         this.config = config;

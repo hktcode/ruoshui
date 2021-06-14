@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Tqueue;
-import com.hktcode.queue.TqueueConfig;
+import com.hktcode.queue.TqueueArgval;
 import com.hktcode.queue.TqueueGauges;
 import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorkerArgval;
 import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorkerArgval;
@@ -23,9 +23,9 @@ public class UpperExesvcArgval implements JacksonObject
         schema.put("type", "object");
         ObjectNode propertiesNode = schema.putObject("properties");
         propertiesNode.set("consumer", UpcsmWorkerArgval.SCHEMA);
-        propertiesNode.set("srcqueue", TqueueConfig.SCHEMA);
+        propertiesNode.set("srcqueue", TqueueArgval.SCHEMA);
         propertiesNode.set("junction", UpjctWorkerArgval.SCHEMA);
-        propertiesNode.set("tgtqueue", TqueueConfig.SCHEMA);
+        propertiesNode.set("tgtqueue", TqueueArgval.SCHEMA);
         propertiesNode.set("producer", UppdcWorkerArgval.SCHEMA);
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
@@ -38,8 +38,8 @@ public class UpperExesvcArgval implements JacksonObject
         if (jsonnode == null) {
             throw new ArgumentNullException("jsonnode");
         }
-        TqueueConfig srcqueue = TqueueConfig.ofJsonObject(jsonnode.path("srcqueue"));
-        TqueueConfig tgtqueue = TqueueConfig.ofJsonObject(jsonnode.path("tgtqueue"));
+        TqueueArgval srcqueue = TqueueArgval.ofJsonObject(jsonnode.path("srcqueue"));
+        TqueueArgval tgtqueue = TqueueArgval.ofJsonObject(jsonnode.path("tgtqueue"));
         Tqueue<UpperRecordConsumer> source = Tqueue.of(srcqueue, TqueueGauges.of());
         Tqueue<UpperRecordProducer> target = Tqueue.of(tgtqueue, TqueueGauges.of());
         UpperQueues queues = UpperQueues.of(source, target);
@@ -51,17 +51,17 @@ public class UpperExesvcArgval implements JacksonObject
 
     public final String fullname;
     public final UpcsmWorkerArgval consumer; // laborer
-    public final TqueueConfig srcqueue;
+    public final TqueueArgval srcqueue;
     public final UpjctWorkerArgval junction;
-    public final TqueueConfig tgtqueue;
+    public final TqueueArgval tgtqueue;
     public final UppdcWorkerArgval producer;
 
     private UpperExesvcArgval //
-            /* */( String fullname //
+            /* */(String fullname //
             /* */, UpcsmWorkerArgval consumer //
-            /* */, TqueueConfig srcqueue //
+            /* */, TqueueArgval srcqueue //
             /* */, UpjctWorkerArgval junction //
-            /* */, TqueueConfig tgtqueue //
+            /* */, TqueueArgval tgtqueue //
             /* */, UppdcWorkerArgval producer //
             /* */)
     {
