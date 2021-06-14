@@ -16,7 +16,7 @@ import com.hktcode.simple.*;
 
 public class UpcsmWkstepArgval extends SimpleWkstepArgval
 {
-    public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UpcsmWkstepArgval.class, "UpcsmConfig.yml");
+    public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UpcsmWkstepArgval.class, "UpcsmArgval.yml");
 
     public static UpcsmWkstepArgval ofJsonObject(JsonNode json) //
     {

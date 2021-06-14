@@ -20,7 +20,7 @@ import static com.hktcode.ruoshui.Ruoshui.THE_NAME;
 
 public class UppdcWkstepArgvalKafka extends UppdcWkstepArgval
 {
-    public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UppdcWkstepArgvalKafka.class, "UppdcConfig.yml");
+    public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UppdcWkstepArgvalKafka.class, "UppdcArgval.yml");
 
     public static UppdcWkstepArgvalKafka ofJsonObject(JsonNode json)
     {

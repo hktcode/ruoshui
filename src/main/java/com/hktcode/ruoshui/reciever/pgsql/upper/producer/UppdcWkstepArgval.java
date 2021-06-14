@@ -15,7 +15,7 @@ import java.io.IOException;
 
 public abstract class UppdcWkstepArgval extends SimpleWkstepArgval
 {
-    public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UppdcWkstepArgval.class, "UppdcConfig.yml");
+    public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UppdcWkstepArgval.class, "UppdcArgval.yml");
 
     public static UppdcWkstepArgval ofJsonObject(JsonNode json)
     {

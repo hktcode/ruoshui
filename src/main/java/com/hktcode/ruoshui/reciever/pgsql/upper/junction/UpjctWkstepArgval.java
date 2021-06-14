@@ -9,7 +9,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 
 public class UpjctWkstepArgval extends SimpleWkstepArgval
 {
-    public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UpjctWkstepArgval.class, "UpjctConfig.yml");
+    public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UpjctWkstepArgval.class, "UpjctArgval.yml");
 
     public static UpjctWkstepArgval ofJsonObject(JsonNode json)
     {
