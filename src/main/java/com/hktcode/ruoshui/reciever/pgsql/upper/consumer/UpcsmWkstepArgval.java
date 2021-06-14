@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Tqueue;
-import com.hktcode.ruoshui.reciever.pgsql.entity.LogicalReplConfig;
+import com.hktcode.ruoshui.reciever.pgsql.entity.LogicalReplArgval;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgConnectionProperty;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
 import com.hktcode.simple.*;
@@ -27,7 +27,7 @@ public class UpcsmWkstepArgval extends SimpleWkstepArgval
         PgConnectionProperty srcProperty = PgConnectionProperty.ofJsonObject(srcPropertyNode);
 
         JsonNode logicalReplNode = json.path("logical_repl");
-        LogicalReplConfig logicalRepl = LogicalReplConfig.of(logicalReplNode);
+        LogicalReplArgval logicalRepl = LogicalReplArgval.of(logicalReplNode);
 
         UpcsmWkstepArgval result = new UpcsmWkstepArgval(srcProperty, logicalRepl);
         long waitTimeout = json.path("wait_timeout").asLong(DEFALUT_WAIT_TIMEOUT);
@@ -39,9 +39,9 @@ public class UpcsmWkstepArgval extends SimpleWkstepArgval
 
     public final PgConnectionProperty srcProperty;
 
-    public final LogicalReplConfig logicalRepl;
+    public final LogicalReplArgval logicalRepl;
 
-    protected UpcsmWkstepArgval(PgConnectionProperty srcProperty, LogicalReplConfig logicalRepl)
+    protected UpcsmWkstepArgval(PgConnectionProperty srcProperty, LogicalReplArgval logicalRepl)
     {
         this.srcProperty = srcProperty;
         this.logicalRepl = logicalRepl;

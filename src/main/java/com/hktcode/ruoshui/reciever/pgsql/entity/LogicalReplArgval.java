@@ -29,9 +29,9 @@ import static com.hktcode.ruoshui.Ruoshui.THE_NAME;
 /**
  * PostgreSQL逻辑复制流配置类.
  */
-public class LogicalReplConfig implements JacksonObject
+public class LogicalReplArgval implements JacksonObject
 {
-    private static final Logger logger = LoggerFactory.getLogger(LogicalReplConfig.class);
+    private static final Logger logger = LoggerFactory.getLogger(LogicalReplArgval.class);
 
     /**
      * 默认的复制槽名称.
@@ -44,14 +44,14 @@ public class LogicalReplConfig implements JacksonObject
     private static final String DEFAULT_PUBLICATION_NAME = THE_NAME;
 
     /**
-     * 根据{@link JsonNode}构建{@link LogicalReplConfig}.
+     * 根据{@link JsonNode}构建{@link LogicalReplArgval}.
      *
      * @param node {@link JsonNode}对象.
      *
-     * @return 根据{@code node}构建的{@link LogicalReplConfig}对象.
+     * @return 根据{@code node}构建的{@link LogicalReplArgval}对象.
      * @throws ArgumentNullException if {@code node} is {@code null}.
      */
-    public static LogicalReplConfig of(JsonNode node)
+    public static LogicalReplArgval of(JsonNode node)
     {
         if (node == null) {
             throw new ArgumentNullException("node");
@@ -73,7 +73,7 @@ public class LogicalReplConfig implements JacksonObject
             list[j] = publicationNames.get(j).asText();
         }
         ImmutableList<String> n = ImmutableList.copyOf(list);
-        return new LogicalReplConfig(s, i, p, n);
+        return new LogicalReplArgval(s, i, p, n);
     }
 
     /**
@@ -110,7 +110,7 @@ public class LogicalReplConfig implements JacksonObject
      * @param startPosition 复制槽开始位置.
      * @param publicationNames 发布名称列表.
      */
-    private LogicalReplConfig //
+    private LogicalReplArgval //
         /* */( String slotName
         /* */, int statusInterval
         /* */, long startPosition
