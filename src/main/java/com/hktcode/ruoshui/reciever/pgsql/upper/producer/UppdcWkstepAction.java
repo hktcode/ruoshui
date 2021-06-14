@@ -46,8 +46,8 @@ public class UppdcWkstepAction implements SimpleWkstepAction<UppdcWorkerArgval, 
         if (holder == null) {
             throw new ArgumentNullException("holder");
         }
-        UppdcWkstepArgval config = argval.actionInfos.get(0);
-        try (UppdcSender sender = config.sender()) {
+        UppdcWkstepArgval params = argval.actionInfos.get(0);
+        try (UppdcSender sender = params.sender()) {
             UpperRecordProducer d = null;
             Throwable ex;
             while (holder.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
