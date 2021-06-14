@@ -17,31 +17,31 @@ public class UppdcSenderFiles extends UppdcSender
 {
     private static final Logger logger = LoggerFactory.getLogger(UppdcSenderFiles.class);
 
-    public static UppdcSenderFiles of(UppdcWkstepArgvalFiles argval, UppdcWkstepGaugesFiles metric)
+    public static UppdcSenderFiles of(UppdcWkstepArgvalFiles argval, UppdcWkstepGaugesFiles gauges)
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");
         }
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
+        if (gauges == null) {
+            throw new ArgumentNullException("gauges");
         }
-        return new UppdcSenderFiles(argval, metric);
+        return new UppdcSenderFiles(argval, gauges);
     }
 
     private final UppdcWkstepArgvalFiles argval;
 
-    private final UppdcWkstepGaugesFiles metric;
+    private final UppdcWkstepGaugesFiles gauges;
 
     private AsynchronousFileChannel[] handle;
 
-    private UppdcSenderFiles(UppdcWkstepArgvalFiles argval, UppdcWkstepGaugesFiles metric)
+    private UppdcSenderFiles(UppdcWkstepArgvalFiles argval, UppdcWkstepGaugesFiles gauges)
     {
         this.argval = argval;
-        this.metric = metric;
+        this.gauges = gauges;
     }
 
     @Override
-    public void send(UppdcWorkerGauges meters, UpperRecordProducer record) throws IOException
+    public void send(UppdcWorkerGauges gauges, UpperRecordProducer record) throws IOException
     {
         if (record == null) {
             throw new ArgumentNullException("record");
@@ -54,14 +54,14 @@ public class UppdcSenderFiles extends UppdcSender
         }
         AsynchronousFileChannel channel = this.handle[0];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        channel.write(buffer, metric.curPosition, record, new Handler(meters));
-        this.metric.totalLength += bytes.length;
-        this.metric.curPosition += bytes.length;
-        this.metric.bufferBytes += bytes.length;
-        if (this.metric.curPosition >= this.argval.maxFilesize) {
+        channel.write(buffer, this.gauges.curPosition, record, new Handler(gauges));
+        this.gauges.totalLength += bytes.length;
+        this.gauges.curPosition += bytes.length;
+        this.gauges.bufferBytes += bytes.length;
+        if (this.gauges.curPosition >= this.argval.maxFilesize) {
             this.close();
         }
-        else if (this.metric.bufferBytes >= argval.maxSyncsize) {
+        else if (this.gauges.bufferBytes >= argval.maxSyncsize) {
             this.fsync();
         }
     }
@@ -75,27 +75,27 @@ public class UppdcSenderFiles extends UppdcSender
         long timeline = record.key.timeline;
         long lsnofcmt = record.key.lsnofcmt;
         long sequence = record.key.sequence;
-        this.metric.curFilename = String.format("%08x%016x%016x.jwal", timeline, lsnofcmt, sequence).toUpperCase();
-        Path file = Paths.get(this.argval.walDatapath.toString(), this.metric.curFilename);
-        logger.info("fopen : curFilename={}", this.metric.curFilename);
+        this.gauges.curFilename = String.format("%08x%016x%016x.jwal", timeline, lsnofcmt, sequence).toUpperCase();
+        Path file = Paths.get(this.argval.walDatapath.toString(), this.gauges.curFilename);
+        logger.info("fopen : curFilename={}", this.gauges.curFilename);
         this.handle = new AsynchronousFileChannel[] {
                 AsynchronousFileChannel.open(file, options)
         };
-        this.metric.curPosition = 0;
-        this.metric.bufferBytes = 0;
+        this.gauges.curPosition = 0;
+        this.gauges.bufferBytes = 0;
     }
 
     @Override
     public void close() throws IOException
     {
         for (AsynchronousFileChannel c : this.handle) {
-            logger.info("close : curFilename={}", this.metric.curFilename);
+            logger.info("close : curFilename={}", this.gauges.curFilename);
             c.close();
         }
         this.handle = new AsynchronousFileChannel[0];
-        this.metric.curFilename = "";
-        this.metric.bufferBytes = 0;
-        this.metric.curPosition = 0;
+        this.gauges.curFilename = "";
+        this.gauges.bufferBytes = 0;
+        this.gauges.curPosition = 0;
     }
 
     private void fsync() throws IOException
@@ -103,28 +103,28 @@ public class UppdcSenderFiles extends UppdcSender
         for (AsynchronousFileChannel c : this.handle) {
             c.force(false);
         }
-        this.metric.bufferBytes = 0;
+        this.gauges.bufferBytes = 0;
     }
 
     private static class Handler implements CompletionHandler<Integer, UpperRecordProducer>
     {
-        private final UppdcWorkerGauges meters;
+        private final UppdcWorkerGauges gauges;
 
-        public Handler(UppdcWorkerGauges meters)
+        public Handler(UppdcWorkerGauges gauges)
         {
-            this.meters = meters;
+            this.gauges = gauges;
         }
 
         @Override
         public void completed(Integer result, UpperRecordProducer attachment) {
             if (attachment.val instanceof PgsqlValTxactCommit) {
-                meters.txactionLsn.set(((PgsqlValTxactCommit) attachment.val).lsnofmsg);
+                gauges.txactionLsn.set(((PgsqlValTxactCommit) attachment.val).lsnofmsg);
             }
         }
 
         @Override
         public void failed(Throwable exc, UpperRecordProducer attachment) {
-            meters.callbackRef.compareAndSet(null, exc);
+            gauges.callbackRef.compareAndSet(null, exc);
         }
     }
 }

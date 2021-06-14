@@ -17,24 +17,24 @@ import static com.hktcode.kafka.Kafka.Serializers.BYTES;
 
 public class UppdcSenderKafka extends UppdcSender
 {
-    public static UppdcSenderKafka of(UppdcWkstepArgvalKafka argval, UppdcWkstepGaugesKafka metric)
+    public static UppdcSenderKafka of(UppdcWkstepArgvalKafka argval, UppdcWkstepGaugesKafka gauges)
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");
         }
-        if (metric == null) {
-            throw new ArgumentNullException("metric");
+        if (gauges == null) {
+            throw new ArgumentNullException("gauges");
         }
-        return new UppdcSenderKafka(argval, metric);
+        return new UppdcSenderKafka(argval, gauges);
     }
 
     private final UppdcWkstepArgvalKafka argval;
 
-    private final UppdcWkstepGaugesKafka metric;
+    private final UppdcWkstepGaugesKafka gauges;
 
     private final Producer<byte[], byte[]> handle;
 
-    private UppdcSenderKafka(UppdcWkstepArgvalKafka argval, UppdcWkstepGaugesKafka metric)
+    private UppdcSenderKafka(UppdcWkstepArgvalKafka argval, UppdcWkstepGaugesKafka gauges)
     {
         Properties properties = new Properties();
         properties.setProperty("request.timeout.ms", "1000");
@@ -42,12 +42,12 @@ public class UppdcSenderKafka extends UppdcSender
             properties.setProperty(e.getKey(), e.getValue());
         }
         this.argval = argval;
-        this.metric = metric;
+        this.gauges = gauges;
         this.handle = new KafkaProducer<>(properties, BYTES, BYTES);
     }
 
     @Override
-    public void send(UppdcWorkerGauges meters, UpperRecordProducer record)
+    public void send(UppdcWorkerGauges gauges, UpperRecordProducer record)
     {
         String keyText = record.key.toJsonObject().toString();
         String valText = record.val.toJsonObject().toString();
@@ -62,7 +62,7 @@ public class UppdcSenderKafka extends UppdcSender
             lsn = LogSequenceNumber.valueOf(val.lsnofmsg);
         }
         // TODO: kafka生产者的行为好奇怪
-        this.handle.send(r, new Handler(lsn, meters, this.handle));
+        this.handle.send(r, new Handler(lsn, gauges, this.handle));
     }
 
     @Override
@@ -79,16 +79,16 @@ public class UppdcSenderKafka extends UppdcSender
 
         private final Producer<byte[], byte[]> producer;
 
-        private final UppdcWorkerGauges meters;
+        private final UppdcWorkerGauges gauges;
 
         public Handler //
             /* */(LogSequenceNumber lsn //
-            /* */, UppdcWorkerGauges meters //
+            /* */, UppdcWorkerGauges gauges //
             /* */, Producer<byte[], byte[]> producer //
             /* */)
         {
             this.lsn = lsn;
-            this.meters = meters;
+            this.gauges = gauges;
             this.producer = producer;
         }
 
@@ -97,7 +97,7 @@ public class UppdcSenderKafka extends UppdcSender
         {
             if (ex != null) {
                 logger.error("kafka producer send record fail: lsn={}", this.lsn, ex);
-                if (this.meters.callbackRef.compareAndSet(null, ex)) {
+                if (this.gauges.callbackRef.compareAndSet(null, ex)) {
                     // kafka客户端的行为好奇怪，不符合一般的Java类调用约定：
                     // 1. 通常Java类中，应该是谁创建谁关闭。
                     //    Kafka的Producer虽然也满足这个条件，但是如果此处ex不是null，必须在此方法中调用close。
@@ -118,7 +118,7 @@ public class UppdcSenderKafka extends UppdcSender
             }
             else if (this.lsn.asLong() != LogSequenceNumber.INVALID_LSN.asLong()) {
                 logger.info("kafka producer send record success: lsn={}", this.lsn);
-                this.meters.txactionLsn.set(this.lsn.asLong());
+                this.gauges.txactionLsn.set(this.lsn.asLong());
             }
         }
     }
