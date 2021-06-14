@@ -4,34 +4,34 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SimpleWorker<A extends SimpleWorkerArgval<A, M>, M extends SimpleWorkerGauges>
+public class SimpleWorker<A extends SimpleWorkerArgval<A, G>, G extends SimpleWorkerGauges>
         implements Runnable
 {
-    public static <A extends SimpleWorkerArgval<A, M>, M extends SimpleWorkerGauges> //
-    SimpleWorker<A, M> of(A argval, M meters, SimpleAtomic holder)
+    public static <A extends SimpleWorkerArgval<A, G>, G extends SimpleWorkerGauges> //
+    SimpleWorker<A, G> of(A argval, G gauges, SimpleAtomic holder)
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");
         }
-        if (meters == null) {
-            throw new ArgumentNullException("meters");
+        if (gauges == null) {
+            throw new ArgumentNullException("gauges");
         }
         if (holder == null) {
             throw new ArgumentNullException("holder");
         }
-        return new SimpleWorker<>(argval, meters, holder);
+        return new SimpleWorker<>(argval, gauges, holder);
     }
 
     public final A argval;
 
-    public final M meters;
+    public final G gauges;
 
     private final SimpleAtomic holder;
 
-    protected SimpleWorker(A argval, M meters, SimpleAtomic holder)
+    protected SimpleWorker(A argval, G gauges, SimpleAtomic holder)
     {
         this.argval = argval;
-        this.meters = meters;
+        this.gauges = gauges;
         this.holder = holder;
     }
 
@@ -41,15 +41,15 @@ public class SimpleWorker<A extends SimpleWorkerArgval<A, M>, M extends SimpleWo
             SimpleWkstep wkstep = this.argval.action();
             do {
                 @SuppressWarnings("unchecked")
-                SimpleWkstepAction<A, M> action = (SimpleWkstepAction<A, M>) wkstep;
+                SimpleWkstepAction<A, G> action = (SimpleWkstepAction<A, G>) wkstep;
                 try {
-                    wkstep = action.next(this.argval, this.meters, this.holder);
+                    wkstep = action.next(this.argval, this.gauges, this.holder);
                 } catch (InterruptedException ex) {
                     throw ex;
                 } catch (Throwable ex) {
                     logger.error("triple throws exception: ", ex);
                     long endMillis = System.currentTimeMillis();
-                    meters.throwErrors.add(ex);
+                    gauges.throwErrors.add(ex);
                     long deletets;
                     do {
                         deletets = this.holder.call(endMillis).deletets;
@@ -62,7 +62,7 @@ public class SimpleWorker<A extends SimpleWorkerArgval<A, M>, M extends SimpleWo
             logger.error("should never happen", e);
             Thread.currentThread().interrupt();
         } finally {
-            meters.endDatetime = System.currentTimeMillis();
+            gauges.endDatetime = System.currentTimeMillis();
         }
     }
 
