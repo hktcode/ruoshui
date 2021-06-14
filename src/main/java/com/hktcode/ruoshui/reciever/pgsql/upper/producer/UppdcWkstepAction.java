@@ -34,14 +34,14 @@ public class UppdcWkstepAction implements SimpleWkstepAction<UppdcWorkerArgval, 
     private final Tqueue<UpperRecordProducer> target;
 
     @Override
-    public SimpleWkstep next(UppdcWorkerArgval argval, UppdcWorkerGauges meters, SimpleAtomic holder) ///
+    public SimpleWkstep next(UppdcWorkerArgval argval, UppdcWorkerGauges gauges, SimpleAtomic holder) ///
             throws Throwable
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");
         }
-        if (meters == null) {
-            throw new ArgumentNullException("meters");
+        if (gauges == null) {
+            throw new ArgumentNullException("gauges");
         }
         if (holder == null) {
             throw new ArgumentNullException("holder");
@@ -51,13 +51,13 @@ public class UppdcWkstepAction implements SimpleWkstepAction<UppdcWorkerArgval, 
             UpperRecordProducer d = null;
             Throwable ex;
             while (holder.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
-                if ((ex = meters.callbackRef.get()) != null) {
+                if ((ex = gauges.callbackRef.get()) != null) {
                     logger.error("callback throws exception", ex);
                     throw ex;
                 } else if (d == null) {
                     d = this.target.poll();
                 } else {
-                    sender.send(meters, d);
+                    sender.send(gauges, d);
                     d = null;
                 }
             }
