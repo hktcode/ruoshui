@@ -25,13 +25,13 @@ public abstract class UppdcWkstepArgval extends SimpleWkstepArgval
         long waitTimeout = json.path("wait_timeout").asLong(DEFALUT_WAIT_TIMEOUT);
         long logDuration = json.path("log_duration").asLong(DEFAULT_LOG_DURATION);
         String factoryType = json.path("factory_type").asText("files");
-        JsonNode configPropsNode = json.path("config_props");
+        JsonNode senderPropsNode = json.path("sender_props");
         UppdcWkstepArgval result;
         if (factoryType.equals("kafka")) {
-            result = UppdcWkstepArgvalKafka.ofJsonObject(configPropsNode);
+            result = UppdcWkstepArgvalKafka.ofJsonObject(senderPropsNode);
         }
         else {
-            result = UppdcWkstepArgvalFiles.ofJsonObject(configPropsNode);
+            result = UppdcWkstepArgvalFiles.ofJsonObject(senderPropsNode);
         }
         result.waitTimeout = waitTimeout;
         result.logDuration = logDuration;
