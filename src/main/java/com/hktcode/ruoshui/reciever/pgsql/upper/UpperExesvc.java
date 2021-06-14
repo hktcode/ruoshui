@@ -24,28 +24,28 @@ public class UpperExesvc
 
     private final UpperExesvcArgval argval;
     private final UpperExesvcGauges gauges;
-    private final SimpleAtomic holder;
+    private final SimpleAtomic atomic;
 
     private UpperExesvc(UpperExesvcArgval argval)
     {
         this.argval = argval;
         this.gauges = UpperExesvcGauges.of();
-        this.holder = SimpleAtomic.of();
+        this.atomic = SimpleAtomic.of();
     }
 
     public SimpleWorker<UpcsmWorkerArgval, UpcsmWorkerGauges> consumer()
     {
-        return SimpleWorker.of(this.argval.consumer, this.gauges.consumer, this.holder);
+        return SimpleWorker.of(this.argval.consumer, this.gauges.consumer, this.atomic);
     }
 
     public SimpleWorker<UpjctWorkerArgval, UpjctWorkerGauges> junction()
     {
-        return SimpleWorker.of(this.argval.junction, this.gauges.junction, this.holder);
+        return SimpleWorker.of(this.argval.junction, this.gauges.junction, this.atomic);
     }
 
     public SimpleWorker<UppdcWorkerArgval, UppdcWorkerGauges> producer()
     {
-        return SimpleWorker.of(this.argval.producer, this.gauges.producer, this.holder);
+        return SimpleWorker.of(this.argval.producer, this.gauges.producer, this.atomic);
     }
 
     public UpperResult modify(long finishts, JsonNode jsonnode, SimpleKeeper storeman)
@@ -57,7 +57,7 @@ public class UpperExesvc
         if (storeman == null) {
             throw new ArgumentNullException("storeman");
         }
-        return this.holder.call((d)->this.modify(d, finishts, jsonnode, storeman));
+        return this.atomic.call((d)->this.modify(d, finishts, jsonnode, storeman));
     }
 
     private UpperResult modify(long deletets, long finishts, JsonNode jsonnode, SimpleKeeper storeman)
