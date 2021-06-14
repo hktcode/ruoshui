@@ -39,19 +39,19 @@ public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, 
     }
 
     @Override
-    public SimpleWkstep next(UpjctWorkerArgval argval, UpjctWorkerGauges meters, SimpleAtomic holder) //
+    public SimpleWkstep next(UpjctWorkerArgval argval, UpjctWorkerGauges gauges, SimpleAtomic holder) //
             throws InterruptedException
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");
         }
-        if (meters == null) {
-            throw new ArgumentNullException("meters");
+        if (gauges == null) {
+            throw new ArgumentNullException("gauges");
         }
         if (holder == null) {
             throw new ArgumentNullException("holder");
         }
-        UpjctWkstepGauges metric = UpjctWkstepGauges.of();
+        UpjctWkstepGauges meters = UpjctWkstepGauges.of();
         UpperRecordConsumer r = null;
         UpperRecordProducer o = null;
         final Tqueue<UpperRecordProducer> getout = this.queues.target;
@@ -69,14 +69,14 @@ public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, 
                 r = comein.poll();
             }
             else {
-                t = this.convert(metric, r).iterator();
+                t = this.convert(meters, r).iterator();
                 r = null;
             }
         }
         return SimpleWkstepTheEnd.of();
     }
 
-    private List<UpperRecordProducer> convert(UpjctWkstepGauges metric, UpperRecordConsumer record)
+    private List<UpperRecordProducer> convert(UpjctWkstepGauges gauges, UpperRecordConsumer record)
     {
         long lsn = record.lsn;
         LogicalMsg msg = record.msg;
@@ -93,14 +93,14 @@ public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, 
         // 此时LSN不是严格自增长.
 
         if (msg instanceof LogicalTxactBeginsMsg) {
-            metric.curLsnofcmt = ((LogicalTxactBeginsMsg) msg).lsnofcmt;
-            metric.curSequence = 1;
+            gauges.curLsnofcmt = ((LogicalTxactBeginsMsg) msg).lsnofcmt;
+            gauges.curSequence = 1;
         }
 
-        ImmutableList<PgsqlVal> vallist = PgsqlVal.of(lsn, msg, metric.txidContext);
+        ImmutableList<PgsqlVal> vallist = PgsqlVal.of(lsn, msg, gauges.txidContext);
         List<UpperRecordProducer> result = new ArrayList<>();
         for (PgsqlVal val : vallist) {
-            PgsqlKey key = PgsqlKey.of(metric.curLsnofcmt, metric.curSequence++, metric.txidContext.committs);
+            PgsqlKey key = PgsqlKey.of(gauges.curLsnofcmt, gauges.curSequence++, gauges.txidContext.committs);
             UpperRecordProducer d = UpperRecordProducer.of(key, val);
             result.add(d);
         }
