@@ -8,7 +8,7 @@ public class SimpleWorker<A extends SimpleWorkerArgval<A, G>, G extends SimpleWo
         implements Runnable
 {
     public static <A extends SimpleWorkerArgval<A, G>, G extends SimpleWorkerGauges> //
-    SimpleWorker<A, G> of(A argval, G gauges, SimpleAtomic holder)
+    SimpleWorker<A, G> of(A argval, G gauges, SimpleAtomic atomic)
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");
@@ -16,23 +16,23 @@ public class SimpleWorker<A extends SimpleWorkerArgval<A, G>, G extends SimpleWo
         if (gauges == null) {
             throw new ArgumentNullException("gauges");
         }
-        if (holder == null) {
-            throw new ArgumentNullException("holder");
+        if (atomic == null) {
+            throw new ArgumentNullException("atomic");
         }
-        return new SimpleWorker<>(argval, gauges, holder);
+        return new SimpleWorker<>(argval, gauges, atomic);
     }
 
     public final A argval;
 
     public final G gauges;
 
-    private final SimpleAtomic holder;
+    private final SimpleAtomic atomic;
 
-    protected SimpleWorker(A argval, G gauges, SimpleAtomic holder)
+    protected SimpleWorker(A argval, G gauges, SimpleAtomic atomic)
     {
         this.argval = argval;
         this.gauges = gauges;
-        this.holder = holder;
+        this.atomic = atomic;
     }
 
     public void run()
@@ -43,7 +43,7 @@ public class SimpleWorker<A extends SimpleWorkerArgval<A, G>, G extends SimpleWo
                 @SuppressWarnings("unchecked")
                 SimpleWkstepAction<A, G> action = (SimpleWkstepAction<A, G>) wkstep;
                 try {
-                    wkstep = action.next(this.argval, this.gauges, this.holder);
+                    wkstep = action.next(this.argval, this.gauges, this.atomic);
                 } catch (InterruptedException ex) {
                     throw ex;
                 } catch (Throwable ex) {
@@ -52,7 +52,7 @@ public class SimpleWorker<A extends SimpleWorkerArgval<A, G>, G extends SimpleWo
                     gauges.throwErrors.add(ex);
                     long deletets;
                     do {
-                        deletets = this.holder.call(endMillis).deletets;
+                        deletets = this.atomic.call(endMillis).deletets;
                     } while (deletets == Long.MAX_VALUE);
                     wkstep = SimpleWkstepTheEnd.of();
                 }
