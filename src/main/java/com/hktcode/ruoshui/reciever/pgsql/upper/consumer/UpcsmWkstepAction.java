@@ -37,7 +37,7 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
     }
 
     @Override
-    public SimpleWkstep next(UpcsmWorkerArgval argval, UpcsmWorkerGauges gauges, SimpleAtomic holder) //
+    public SimpleWkstep next(UpcsmWorkerArgval argval, UpcsmWorkerGauges gauges, SimpleAtomic atomic) //
             throws InterruptedException, SQLException
     {
         if (argval == null) {
@@ -46,8 +46,8 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
         if (gauges == null) {
             throw new ArgumentNullException("gauges");
         }
-        if (holder == null) {
-            throw new ArgumentNullException("holder");
+        if (atomic == null) {
+            throw new ArgumentNullException("atomic");
         }
         UpcsmWkstepArgval params = argval.actionInfos.get(0);
         UpcsmWkstepGauges meters = UpcsmWkstepGauges.of();
@@ -56,7 +56,7 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
             try (PGReplicationStream slt = params.logicalRepl.start(pgrepl)) {
                 UpperRecordConsumer r = null;
-                while (holder.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
+                while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
                     long currlsn = gauges.txactionLsn.get();
                     if (gauges.reportedLsn != currlsn) {
                         LogSequenceNumber lsn = LogSequenceNumber.valueOf(currlsn);
