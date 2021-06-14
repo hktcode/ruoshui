@@ -39,7 +39,7 @@ public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, 
     }
 
     @Override
-    public SimpleWkstep next(UpjctWorkerArgval argval, UpjctWorkerGauges gauges, SimpleAtomic holder) //
+    public SimpleWkstep next(UpjctWorkerArgval argval, UpjctWorkerGauges gauges, SimpleAtomic atomic) //
             throws InterruptedException
     {
         if (argval == null) {
@@ -48,8 +48,8 @@ public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, 
         if (gauges == null) {
             throw new ArgumentNullException("gauges");
         }
-        if (holder == null) {
-            throw new ArgumentNullException("holder");
+        if (atomic == null) {
+            throw new ArgumentNullException("atomic");
         }
         UpjctWkstepGauges meters = UpjctWkstepGauges.of();
         UpperRecordConsumer r = null;
@@ -58,7 +58,7 @@ public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, 
         final Tqueue<UpperRecordConsumer> comein = this.queues.source;
         Iterator<UpperRecordProducer> t //
             = ImmutableList.<UpperRecordProducer>of().iterator();
-        while (holder.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
+        while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
             if (o != null) {
                 o = getout.push(o);
             }
