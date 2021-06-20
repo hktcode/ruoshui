@@ -53,14 +53,13 @@ public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, 
         gauges.actionInfos.add(g);
         List<UpperRecordConsumer> crhs = gauges.fetchMetric.list(), clhs;
         List<UpperRecordProducer> plhs = gauges.offerMetric.list(), prhs;
-        int curCapacity = gauges.offerMetric.xqueue.maxCapacity;
+        int curCapacity = argval.offerXqueue.maxCapacity;
         int spins = 0;
         long ln, lt = System.currentTimeMillis();
         Iterator<UpperRecordProducer> piter = plhs.iterator();
         Iterator<UpperRecordConsumer> citer = crhs.iterator();
         while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
-            int size = plhs.size();
-            int capacity = gauges.offerMetric.xqueue.maxCapacity;
+            int size = plhs.size(), capacity = argval.offerXqueue.maxCapacity;
             long ld = a.logDuration;
             if (    (size > 0)
                  // 未来计划：支持bufferCount和maxDuration
