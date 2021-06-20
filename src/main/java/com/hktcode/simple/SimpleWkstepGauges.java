@@ -17,11 +17,6 @@ public class SimpleWkstepGauges extends TqueueGauges implements JacksonObject
 
     public final List<Throwable> throwErrors = new ArrayList<>();
 
-    /**
-     * 描述当前状态的信息.
-     */
-    public String statusInfor = "";
-
     public ObjectNode toJsonObject(ObjectNode node)
     {
         if (node == null) {
@@ -34,7 +29,6 @@ public class SimpleWkstepGauges extends TqueueGauges implements JacksonObject
             ObjectNode e = throwErrorsNode.addObject();
             JacksonObject.toJsonObject(t, e);
         }
-        node.put("status_infor", this.statusInfor);
         return node;
     }
 }
