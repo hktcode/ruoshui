@@ -30,7 +30,6 @@ public class UpcsmWorkerGauges extends SimpleWorkerGauges
     }
 
     public final AtomicLong txactionLsn;
-    public long reportedLsn = 0;
     public final Xqueue.Offer<UpperRecordConsumer> offerMetric;
     public final Xqueue.Spins spinsMetric;
 
@@ -40,8 +39,6 @@ public class UpcsmWorkerGauges extends SimpleWorkerGauges
             throw new ArgumentNullException("node");
         }
         node = super.toJsonObject(node);
-        LogSequenceNumber lsn = LogSequenceNumber.valueOf(this.reportedLsn);
-        node.put("reported_lsn", lsn.asString());
         return node;
     }
 }
