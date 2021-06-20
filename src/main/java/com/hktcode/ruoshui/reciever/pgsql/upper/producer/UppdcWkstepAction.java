@@ -44,7 +44,7 @@ public class UppdcWkstepAction implements SimpleWkstepAction<UppdcWorkerArgval, 
         }
         UppdcWkstepArgval a = argval.actionInfos.get(0);
         UppdcWkstepGauges g = UppdcWkstepGauges.of();
-        gauges.actionInfos.add(g);
+        gauges.wkstep.add(g);
         Throwable ex;
         List<UpperRecordProducer> lhs, rhs = gauges.fetchMetric.list();
         int spins = 0;

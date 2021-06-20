@@ -49,7 +49,7 @@ public class SimpleWorker<A extends SimpleWorkerArgval<A, G>, G extends SimpleWo
                 } catch (Throwable ex) {
                     logger.error("triple throws exception: ", ex);
                     long endMillis = System.currentTimeMillis();
-                    gauges.throwErrors.add(ex);
+                    gauges.errors.add(ex);
                     long deletets;
                     do {
                         deletets = this.atomic.call(endMillis).deletets;
@@ -62,7 +62,7 @@ public class SimpleWorker<A extends SimpleWorkerArgval<A, G>, G extends SimpleWo
             logger.error("should never happen", e);
             Thread.currentThread().interrupt();
         } finally {
-            gauges.endDatetime = System.currentTimeMillis();
+            gauges.finish = System.currentTimeMillis();
         }
     }
 

@@ -93,7 +93,7 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
             }
         }
         logger.info("pgsender complete");
-        gauges.endDatetime = System.currentTimeMillis();
+        gauges.finish = System.currentTimeMillis();
         return SimpleWkstepTheEnd.of();
     }
 

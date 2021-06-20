@@ -50,7 +50,7 @@ public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, 
         }
         UpjctWkstepArgval a = argval.actionInfos.get(0);
         UpjctWkstepGauges g = UpjctWkstepGauges.of();
-        gauges.actionInfos.add(g);
+        gauges.wkstep.add(g);
         List<UpperRecordConsumer> crhs = gauges.fetchMetric.list(), clhs;
         List<UpperRecordProducer> plhs = gauges.offerMetric.list(), prhs;
         int curCapacity = argval.offerXqueue.maxCapacity;
