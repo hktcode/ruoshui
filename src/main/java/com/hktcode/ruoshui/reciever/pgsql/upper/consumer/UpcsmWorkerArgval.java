@@ -17,13 +17,20 @@ public class UpcsmWorkerArgval implements SimpleWorkerArgval<UpcsmWorkerArgval, 
 {
     public static final ObjectNode SCHEMA;
 
+    private static final String ACTIONS_INFO = "actions_info";
+    private static final String MAX_CAPACITY = "max_capacity";
+    private static final String WAIT_TIMEOUT = "wait_timeout";
+    private static final String SPINS_MAXCNT = "spins_maxcnt";
+    private static final String LOG_DURATION = "log_duration";
+    // - private static final String[] METRIC_NAMES;
+
     static
     {
         ObjectNode schema = new ObjectNode(JsonNodeFactory.instance);
         schema.put("$schema", "http://json-schema.org/draft-04/schema#");
         schema.put("type", "object");
         ObjectNode argvalNode = schema.putObject("properties");
-        ObjectNode actionInfosNode = argvalNode.putObject("action_infos");
+        ObjectNode actionInfosNode = argvalNode.putObject("actions_info");
         actionInfosNode.put("type", "array");
         actionInfosNode.set("items", UpcsmWkstepArgval.SCHEMA);
         actionInfosNode.put("maxItems", 1);
@@ -42,13 +49,13 @@ public class UpcsmWorkerArgval implements SimpleWorkerArgval<UpcsmWorkerArgval, 
         spins.waitTimeout = json.path("wait_timeout").asLong(Spins.WAIT_TIMEOUT);
         spins.spinsMaxcnt = json.path("spins_maxcnt").asLong(Spins.SPINS_MAXCNT);
 
-        JsonNode actionInfosNode = json.path("action_infos");
+        JsonNode actionsInfoNode = json.path("actions_info");
         ArrayNode arrayNode;
         UpcsmWkstepArgval action;
-        if (actionInfosNode instanceof MissingNode) {
+        if (actionsInfoNode instanceof MissingNode) {
             action = UpcsmWkstepArgval.ofJsonObject(MissingNode.getInstance());
         }
-        else if ((arrayNode = (ArrayNode)actionInfosNode).size() == 0) {
+        else if ((arrayNode = (ArrayNode)actionsInfoNode).size() == 0) {
             action = UpcsmWkstepArgval.ofJsonObject(MissingNode.getInstance());
         }
         else {
@@ -85,7 +92,7 @@ public class UpcsmWorkerArgval implements SimpleWorkerArgval<UpcsmWorkerArgval, 
         if (node == null) {
             throw new ArgumentNullException("node");
         }
-        ArrayNode actionInfosNode = node.putArray("action_infos");
+        ArrayNode actionInfosNode = node.putArray("actions_info");
         for (UpcsmWkstepArgval c: this.actionInfos) {
             ObjectNode n = actionInfosNode.addObject();
             c.toJsonObject(n);
