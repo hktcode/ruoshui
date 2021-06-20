@@ -1,11 +1,8 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.junction;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.ImmutableList;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Xqueue;
@@ -25,55 +22,33 @@ public class UpjctWorkerArgval implements SimpleWorkerArgval<UpjctWorkerArgval, 
         ObjectNode argvalNode = schema.putObject("properties");
         ObjectNode actionInfosNode = argvalNode.putObject("action_infos");
         actionInfosNode.put("type", "array");
-        actionInfosNode.set("items", UpjctWkstepArgval.SCHEMA);
+        // - actionInfosNode.set("items", UpjctWkstepArgval.SCHEMA);
         actionInfosNode.put("maxItems", 1);
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    public static UpjctWorkerArgval ofJsonObject(JsonNode json, Xqueue<UpperRecordConsumer> poll) //
+    public static UpjctWorkerArgval ofJsonObject(JsonNode json, Xqueue<UpperRecordConsumer> recver) //
     {
         if (json == null) {
             throw new ArgumentNullException("json");
         }
-        if (poll == null) {
-            throw new ArgumentNullException("poll");
+        if (recver == null) {
+            throw new ArgumentNullException("recver");
         }
-        JsonNode actionInfosNode = json.path("action_infos");
-        int maxCapacity = json.path("max_capacity").asInt(Xqueue.MAX_CAPACITY);
-        ArrayNode arrayNode;
-        UpjctWkstepArgval action;
-        if (actionInfosNode instanceof MissingNode) {
-            action = UpjctWkstepArgval.ofJsonObject(MissingNode.getInstance());
-        }
-        else if ((arrayNode = (ArrayNode)actionInfosNode).size() == 0) {
-            action = UpjctWkstepArgval.ofJsonObject(MissingNode.getInstance());
-        }
-        else {
-            action = UpjctWkstepArgval.ofJsonObject(arrayNode.get(0));
-        }
-        Xqueue<UpperRecordProducer> push = Xqueue.of(maxCapacity);
-        return new UpjctWorkerArgval(ImmutableList.of(action), poll, push);
+        Xqueue<UpperRecordProducer> sender = Xqueue.of(json.path("sender"));
+        UpjctWorkerArgval result = new UpjctWorkerArgval(recver, sender);
+        result.xspins.pst(json.path("xspins"));
+        return result;
     }
 
-    public final ImmutableList<UpjctWkstepArgval> actionInfos;
-    public final Xqueue<UpperRecordConsumer> fetchXqueue;
-    public final Xqueue<UpperRecordProducer> offerXqueue;
+    public final Xqueue.Spins xspins = Xqueue.Spins.of();
+    public final Xqueue<UpperRecordConsumer> recver;
+    public final Xqueue<UpperRecordProducer> sender;
 
-    public final Xqueue.Spins spinsArgval = Xqueue.Spins.of();
-
-    // wkstep
-    // xqueue
-    // xspins
-
-    private UpjctWorkerArgval //
-        /**/( ImmutableList<UpjctWkstepArgval> actionInfos //
-            , Xqueue<UpperRecordConsumer> fetchXqueue //
-            , Xqueue<UpperRecordProducer> offerXqueue //
-    )
+    private UpjctWorkerArgval(Xqueue<UpperRecordConsumer> recver, Xqueue<UpperRecordProducer> sender)
     {
-        this.actionInfos = actionInfos;
-        this.fetchXqueue = fetchXqueue;
-        this.offerXqueue = offerXqueue;
+        this.recver = recver;
+        this.sender = sender;
     }
 
     @Override
@@ -81,11 +56,6 @@ public class UpjctWorkerArgval implements SimpleWorkerArgval<UpjctWorkerArgval, 
     {
         if (node == null) {
             throw new ArgumentNullException("node");
-        }
-        ArrayNode actionInfosNode = node.putArray("action_infos");
-        for (UpjctWkstepArgval c: this.actionInfos) {
-            ObjectNode n = actionInfosNode.addObject();
-            c.toJsonObject(n);
         }
         return node;
     }
@@ -95,12 +65,11 @@ public class UpjctWorkerArgval implements SimpleWorkerArgval<UpjctWorkerArgval, 
         if (node == null) {
             throw new ArgumentNullException("node");
         }
-        this.actionInfos.get(0).pst(node);
     }
 
     @Override
     public UpjctWkstepAction action()
     {
-        return this.actionInfos.get(0).action();
+        return UpjctWkstepAction.of();
     }
 }

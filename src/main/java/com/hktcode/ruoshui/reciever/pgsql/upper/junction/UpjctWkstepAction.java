@@ -48,22 +48,19 @@ public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, 
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
-        UpjctWkstepArgval a = argval.actionInfos.get(0);
-        UpjctWkstepGauges g = UpjctWkstepGauges.of();
-        gauges.wkstep.add(g);
-        List<UpperRecordConsumer> crhs = gauges.fetchMetric.list(), clhs;
-        List<UpperRecordProducer> plhs = gauges.offerMetric.list(), prhs;
-        int curCapacity = argval.offerXqueue.maxCapacity;
+        List<UpperRecordConsumer> crhs = gauges.recver.list(), clhs;
+        List<UpperRecordProducer> plhs = gauges.sender.list(), prhs;
+        int curCapacity = argval.sender.maxCapacity;
         int spins = 0;
         long ln, lt = System.currentTimeMillis();
         Iterator<UpperRecordProducer> piter = plhs.iterator();
         Iterator<UpperRecordConsumer> citer = crhs.iterator();
         while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
-            int size = plhs.size(), capacity = argval.offerXqueue.maxCapacity;
-            long ld = a.logDuration;
+            int size = plhs.size(), capacity = argval.sender.maxCapacity;
+            long ld = argval.xspins.logDuration;
             if (    (size > 0)
                  // 未来计划：支持bufferCount和maxDuration
-                 && (prhs = gauges.offerMetric.push(plhs)) != plhs
+                 && (prhs = gauges.sender.push(plhs)) != plhs
                  && (curCapacity != capacity || (plhs = prhs) == null)
             ) {
                 plhs = new ArrayList<>(capacity);
@@ -71,30 +68,30 @@ public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, 
                 spins = 0;
                 lt = System.currentTimeMillis();
             } else if (size >= capacity) {
-                gauges.spinsMetric.spins(spins++);
+                gauges.xspins.spins(spins++);
             } else if (piter.hasNext()) {
                 plhs.add(piter.next());
                 spins = 0;
                 lt = System.currentTimeMillis();
             } else if (citer.hasNext()) {
-                piter = this.convert(g, citer.next()).iterator();
+                piter = this.convert(gauges, citer.next()).iterator();
                 lt = System.currentTimeMillis();
-            } else if ((clhs = gauges.fetchMetric.poll(crhs)) != crhs) {
+            } else if ((clhs = gauges.recver.poll(crhs)) != crhs) {
                 crhs = clhs;
                 citer = crhs.iterator();
             } else if (lt + ld >= (ln = System.currentTimeMillis())) {
                 logger.info("logDuration={}", ld);
                 lt = ln;
             } else {
-                gauges.spinsMetric.spins(spins++);
+                gauges.xspins.spins(spins++);
             }
         }
         logger.info("upjct complete");
-        g.endDatetime = System.currentTimeMillis();
+        gauges.finish = System.currentTimeMillis();
         return SimpleWkstepTheEnd.of();
     }
 
-    private List<UpperRecordProducer> convert(UpjctWkstepGauges gauges, UpperRecordConsumer record)
+    private List<UpperRecordProducer> convert(UpjctWorkerGauges gauges, UpperRecordConsumer record)
     {
         long lsn = record.lsn;
         LogicalMsg msg = record.msg;
@@ -111,14 +108,14 @@ public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, 
         // 此时LSN不是严格自增长.
 
         if (msg instanceof LogicalTxactBeginsMsg) {
-            gauges.curLsnofcmt = ((LogicalTxactBeginsMsg) msg).lsnofcmt;
-            gauges.curSequence = 1;
+            gauges.curlsn = ((LogicalTxactBeginsMsg) msg).lsnofcmt;
+            gauges.curseq = 1;
         }
 
-        ImmutableList<PgsqlVal> vallist = PgsqlVal.of(lsn, msg, gauges.txidContext);
+        ImmutableList<PgsqlVal> vallist = PgsqlVal.of(lsn, msg, gauges.xidenv);
         List<UpperRecordProducer> result = new ArrayList<>();
         for (PgsqlVal val : vallist) {
-            PgsqlKey key = PgsqlKey.of(gauges.curLsnofcmt, gauges.curSequence++, gauges.txidContext.committs);
+            PgsqlKey key = PgsqlKey.of(gauges.curlsn, gauges.curseq++, gauges.xidenv.committs);
             UpperRecordProducer d = UpperRecordProducer.of(key, val);
             result.add(d);
         }

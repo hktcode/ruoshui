@@ -1,7 +1,6 @@
 package com.hktcode.queue;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.hktcode.lang.exception.ArgumentNegativeException;
 import com.hktcode.lang.exception.ArgumentNullException;
 
 import java.util.ArrayList;
