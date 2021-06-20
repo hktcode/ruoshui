@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.hktcode.kafka.Kafka.Serializers.BYTES;
 
-public class UppdcSenderKafka extends UppdcSender
+public class UppdcSenderKafka implements UppdcSender
 {
     public static UppdcSenderKafka of(UppdcWkstepArgvalKafka argval, UppdcWkstepGaugesKafka gauges)
     {

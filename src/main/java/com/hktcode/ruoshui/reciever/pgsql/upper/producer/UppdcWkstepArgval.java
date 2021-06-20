@@ -57,12 +57,9 @@ public abstract class UppdcWkstepArgval extends SimpleWkstepArgval
         return result;
     }
 
-    public UppdcWkstepAction action(Tqueue<UpperRecordProducer> target)
+    public UppdcWkstepAction action()
     {
-        if (target == null) {
-            throw new ArgumentNullException("target");
-        }
-        return UppdcWkstepAction.of(target);
+        return UppdcWkstepAction.of();
     }
 
     public abstract UppdcSender sender() throws IOException;

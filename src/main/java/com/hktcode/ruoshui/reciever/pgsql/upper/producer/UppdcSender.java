@@ -2,11 +2,7 @@ package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
 
-public abstract class UppdcSender implements AutoCloseable
+public interface UppdcSender extends AutoCloseable
 {
-    protected UppdcSender()
-    {
-    }
-
-    public abstract void send(UppdcWorkerGauges gauges, UpperRecordProducer record) throws Exception;
+    void send(UppdcWorkerGauges gauges, UpperRecordProducer record) throws Exception;
 }

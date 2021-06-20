@@ -7,7 +7,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.queue.Tqueue;
+import com.hktcode.queue.Xqueue;
+import com.hktcode.queue.Xqueue.Spins;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
 import com.hktcode.simple.SimpleWorkerArgval;
 
@@ -28,7 +29,7 @@ public class UppdcWorkerArgval implements SimpleWorkerArgval<UppdcWorkerArgval, 
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    public static UppdcWorkerArgval ofJsonObject(JsonNode json, Tqueue<UpperRecordProducer> poll)
+    public static UppdcWorkerArgval ofJsonObject(JsonNode json, Xqueue<UpperRecordProducer> poll)
     {
         if (json == null) {
             throw new ArgumentNullException("json");
@@ -39,17 +40,25 @@ public class UppdcWorkerArgval implements SimpleWorkerArgval<UppdcWorkerArgval, 
         JsonNode actionInfoNode = json.path("action_infos");
         JsonNode actionNode = actionInfoNode.path(0);
         UppdcWkstepArgval action = UppdcWkstepArgval.ofJsonObject(actionNode);
-        return new UppdcWorkerArgval(ImmutableList.of(action), poll);
+
+        Spins spins = Xqueue.Spins.of();
+        spins.waitTimeout = json.path("wait_timeout").asLong(Spins.WAIT_TIMEOUT);
+        spins.spinsMaxcnt = json.path("spins_maxcnt").asLong(Spins.SPINS_MAXCNT);
+
+        return new UppdcWorkerArgval(ImmutableList.of(action), poll, spins);
     }
 
     public final ImmutableList<UppdcWkstepArgval> actionInfos;
 
-    private final Tqueue<UpperRecordProducer> fetchTqueue;
+    public final Xqueue<UpperRecordProducer> fetchXqueue;
 
-    private UppdcWorkerArgval(ImmutableList<UppdcWkstepArgval> actionInfos, Tqueue<UpperRecordProducer> fetchTqueue)
+    public final Xqueue.Spins spinsArgval;
+
+    private UppdcWorkerArgval(ImmutableList<UppdcWkstepArgval> actionInfos, Xqueue<UpperRecordProducer> fetchXqueue, Xqueue.Spins spins)
     {
         this.actionInfos = actionInfos;
-        this.fetchTqueue = fetchTqueue;
+        this.fetchXqueue = fetchXqueue;
+        this.spinsArgval = spins;
     }
 
     @Override
@@ -77,6 +86,6 @@ public class UppdcWorkerArgval implements SimpleWorkerArgval<UppdcWorkerArgval, 
     @Override
     public UppdcWkstepAction action()
     {
-        return this.actionInfos.get(0).action(this.fetchTqueue);
+        return this.actionInfos.get(0).action();
     }
 }

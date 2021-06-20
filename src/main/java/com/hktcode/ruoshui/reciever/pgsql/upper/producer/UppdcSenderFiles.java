@@ -13,7 +13,7 @@ import java.nio.channels.CompletionHandler;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 
-public class UppdcSenderFiles extends UppdcSender
+public class UppdcSenderFiles implements UppdcSender
 {
     private static final Logger logger = LoggerFactory.getLogger(UppdcSenderFiles.class);
 
