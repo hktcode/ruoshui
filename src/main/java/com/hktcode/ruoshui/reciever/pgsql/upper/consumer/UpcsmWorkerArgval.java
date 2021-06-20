@@ -1,11 +1,8 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.consumer;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.ImmutableList;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Xqueue;
@@ -17,13 +14,6 @@ public class UpcsmWorkerArgval implements SimpleWorkerArgval<UpcsmWorkerArgval, 
 {
     public static final ObjectNode SCHEMA;
 
-    private static final String ACTIONS_INFO = "actions_info";
-    private static final String MAX_CAPACITY = "max_capacity";
-    private static final String WAIT_TIMEOUT = "wait_timeout";
-    private static final String SPINS_MAXCNT = "spins_maxcnt";
-    private static final String LOG_DURATION = "log_duration";
-    // - private static final String[] METRIC_NAMES;
-
     static
     {
         ObjectNode schema = new ObjectNode(JsonNodeFactory.instance);
@@ -32,58 +22,35 @@ public class UpcsmWorkerArgval implements SimpleWorkerArgval<UpcsmWorkerArgval, 
         ObjectNode argvalNode = schema.putObject("properties");
         ObjectNode actionInfosNode = argvalNode.putObject("actions_info");
         actionInfosNode.put("type", "array");
-        actionInfosNode.set("items", UpcsmWkstepArgval.SCHEMA);
+        actionInfosNode.set("items", UpcsmRecverArgval.SCHEMA);
         actionInfosNode.put("maxItems", 1);
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    public static UpcsmWorkerArgval ofJsonObject(JsonNode json) //
+    public static UpcsmWorkerArgval of(JsonNode json) //
     {
         if (json == null) {
             throw new ArgumentNullException("json");
         }
-        int maxCapacity = json.path("max_capacity").asInt(Xqueue.MAX_CAPACITY);
-        Xqueue<UpperRecordConsumer> push = Xqueue.of(maxCapacity);
-
-        Spins spins = Spins.of();
-        spins.waitTimeout = json.path("wait_timeout").asLong(Spins.WAIT_TIMEOUT);
-        spins.spinsMaxcnt = json.path("spins_maxcnt").asLong(Spins.SPINS_MAXCNT);
-
-        JsonNode actionsInfoNode = json.path("actions_info");
-        ArrayNode arrayNode;
-        UpcsmWkstepArgval action;
-        if (actionsInfoNode instanceof MissingNode) {
-            action = UpcsmWkstepArgval.ofJsonObject(MissingNode.getInstance());
-        }
-        else if ((arrayNode = (ArrayNode)actionsInfoNode).size() == 0) {
-            action = UpcsmWkstepArgval.ofJsonObject(MissingNode.getInstance());
-        }
-        else {
-            action = UpcsmWkstepArgval.ofJsonObject(arrayNode.get(0));
-        }
-        return new UpcsmWorkerArgval(ImmutableList.of(action), push, spins);
+        Xqueue<UpperRecordConsumer> sender = Xqueue.of(json.path("sender"));
+        UpcsmRecverArgval recver = UpcsmRecverArgval.of(json.path("recver"));
+        UpcsmWorkerArgval result = new UpcsmWorkerArgval(recver, sender);
+        result.xspins.pst(json.path("xspins"));
+        return result;
     }
 
-    public final ImmutableList<UpcsmWkstepArgval> actionInfos;
+    public final Spins xspins = Spins.of();
 
-    public final Xqueue<UpperRecordConsumer> offerXqueue;
+    public final Xqueue<UpperRecordConsumer> sender;
 
-    public final Spins spinsArgval;
+    public final UpcsmRecverArgval recver;
 
-    public long logDuration = SimpleWorkerArgval.LOG_DURATION;
-    // - public final PgConnectionProperty srcProperty;
-    // - public final LogicalReplArgval logicalRepl;
     // - public int bufferCount;
 
-    private UpcsmWorkerArgval //
-        /**/( ImmutableList<UpcsmWkstepArgval> actionInfos //
-            , Xqueue<UpperRecordConsumer> offerXqueue //
-            , Spins spinsArgval //
-    )
+    private UpcsmWorkerArgval(UpcsmRecverArgval recver, Xqueue<UpperRecordConsumer> sender)
     {
-        this.actionInfos = actionInfos;
-        this.offerXqueue = offerXqueue;
-        this.spinsArgval = spinsArgval;
+        this.sender = sender;
+        this.recver = recver;
     }
 
     @Override
@@ -91,11 +58,6 @@ public class UpcsmWorkerArgval implements SimpleWorkerArgval<UpcsmWorkerArgval, 
     {
         if (node == null) {
             throw new ArgumentNullException("node");
-        }
-        ArrayNode actionInfosNode = node.putArray("actions_info");
-        for (UpcsmWkstepArgval c: this.actionInfos) {
-            ObjectNode n = actionInfosNode.addObject();
-            c.toJsonObject(n);
         }
         return node;
     }
@@ -105,12 +67,12 @@ public class UpcsmWorkerArgval implements SimpleWorkerArgval<UpcsmWorkerArgval, 
         if (node == null) {
             throw new ArgumentNullException("node");
         }
-        this.actionInfos.get(0).pst(node);
+        // this.actionInfos.get(0).pst(node);
     }
 
     @Override
     public UpcsmWkstepAction action()
     {
-        return this.actionInfos.get(0).action();
+        return UpcsmWkstepAction.of();
     }
 }

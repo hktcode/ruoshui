@@ -25,8 +25,8 @@ public class UpcsmWorkerGauges extends SimpleWorkerGauges
     private UpcsmWorkerGauges(UpcsmWorkerArgval argval, AtomicLong xidlsn)
     {
         this.txactionLsn = xidlsn;
-        this.offerMetric = argval.offerXqueue.offerXqueue();
-        this.spinsMetric = argval.spinsArgval;
+        this.offerMetric = argval.sender.offerXqueue();
+        this.spinsMetric = argval.xspins;
     }
 
     public final AtomicLong txactionLsn;

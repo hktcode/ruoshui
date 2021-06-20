@@ -46,28 +46,29 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
-        UpcsmWkstepArgval a = argval.actionInfos.get(0);
         UpcsmWkstepGauges g = UpcsmWkstepGauges.of();
         gauges.actionInfos.add(g);
         UpperRecordConsumer r;
-        int curCapacity = argval.offerXqueue.maxCapacity;
+        int curCapacity = argval.sender.maxCapacity;
         List<UpperRecordConsumer> rhs, lhs = new ArrayList<>(curCapacity);
         int spins = 0, spinsStatus = Xqueue.Spins.RESET;
-        long now, logtime = System.currentTimeMillis();
-        try (Connection repl = a.srcProperty.replicaConnection()) {
+        long now, logtime = System.currentTimeMillis(), prelsn = 0;
+        UpcsmRecverArgval recver = argval.recver;
+        try (Connection repl = recver.srcProperty.replicaConnection()) {
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
-            try (PGReplicationStream slt = a.logicalRepl.start(pgrepl)) {
+            try (PGReplicationStream slt = recver.logicalRepl.start(pgrepl)) {
                 while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
-                    long n = gauges.txactionLsn.get(); // 未来计划：此处可以提高性能
-                    if (gauges.reportedLsn != n) {
+                    // 未来计划：此处可以提高性能
+                    long n = gauges.txactionLsn.get();
+                    if (prelsn != n) {
                         LogSequenceNumber lsn = LogSequenceNumber.valueOf(n);
                         slt.setFlushedLSN(lsn);
                         slt.setAppliedLSN(lsn);
-                        gauges.reportedLsn = n;
+                        prelsn = n;
                     }
                     int size = lhs.size();
-                    int capacity = argval.offerXqueue.maxCapacity;
-                    long logDuration = a.logDuration;
+                    int capacity = argval.sender.maxCapacity;
+                    long logDuration = argval.xspins.logDuration;
                     if (    (size > 0)
                          // 未来计划：支持bufferCount和maxDuration
                          && (rhs = gauges.offerMetric.push(lhs)) != lhs

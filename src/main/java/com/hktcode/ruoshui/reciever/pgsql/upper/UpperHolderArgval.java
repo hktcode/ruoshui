@@ -34,8 +34,8 @@ public class UpperHolderArgval implements JacksonObject
         if (jsonnode == null) {
             throw new ArgumentNullException("jsonnode");
         }
-        UpcsmWorkerArgval consumer = UpcsmWorkerArgval.ofJsonObject(jsonnode.path("consumer"));
-        Xqueue<UpperRecordConsumer> fetchXqueue = consumer.offerXqueue;
+        UpcsmWorkerArgval consumer = UpcsmWorkerArgval.of(jsonnode.path("consumer"));
+        Xqueue<UpperRecordConsumer> fetchXqueue = consumer.sender;
         UpjctWorkerArgval junction = UpjctWorkerArgval.ofJsonObject(jsonnode.path("junction"), fetchXqueue);
         Xqueue<UpperRecordProducer> offerXqueue = junction.offerXqueue;
         UppdcWorkerArgval producer = UppdcWorkerArgval.ofJsonObject(jsonnode.path("producer"), offerXqueue);
