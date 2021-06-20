@@ -29,7 +29,7 @@ public class UpperHolder
     private UpperHolder(UpperHolderArgval argval)
     {
         this.argval = argval;
-        this.gauges = UpperHolderGauges.of();
+        this.gauges = UpperHolderGauges.of(argval);
         this.atomic = SimpleAtomic.of();
     }
 
@@ -66,14 +66,8 @@ public class UpperHolder
         if ((n = jsonnode.get("consumer")) != null) {
             this.argval.consumer.pst(n);
         }
-        if ((n = jsonnode.get("srcqueue")) != null) {
-            this.argval.srcqueue.pst(n);
-        }
         if ((n = jsonnode.get("junction")) != null) {
             this.argval.junction.pst(n);
-        }
-        if ((n = jsonnode.get("tgtqueue")) != null) {
-            this.argval.tgtqueue.pst(n);
         }
         if ((n = jsonnode.get("producer")) != null) {
             this.argval.producer.pst(n);
@@ -85,11 +79,9 @@ public class UpperHolder
         long createts = this.gauges.createts;
         String fullname = this.argval.fullname;
         ObjectNode consumer = this.argval.consumer.toJsonObject();
-        ObjectNode srcqueue = this.argval.srcqueue.toJsonObject();
         ObjectNode junction = this.argval.junction.toJsonObject();
-        ObjectNode tgtqueue = this.argval.tgtqueue.toJsonObject();
         ObjectNode producer = this.argval.producer.toJsonObject();
-        return UpperResult.of(createts, fullname, consumer, srcqueue, junction, tgtqueue, producer, deletets);
+        return UpperResult.of(createts, fullname, consumer, junction, producer, deletets);
     }
 
     @FunctionalInterface
