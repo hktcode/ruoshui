@@ -46,8 +46,6 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
-        UpcsmWkstepGauges g = UpcsmWkstepGauges.of();
-        gauges.actionInfos.add(g);
         UpperRecordConsumer r;
         int curCapacity = argval.sender.maxCapacity;
         List<UpperRecordConsumer> rhs, lhs = new ArrayList<>(curCapacity);
@@ -59,7 +57,7 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
             try (PGReplicationStream slt = recver.logicalRepl.start(pgrepl)) {
                 while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
                     // 未来计划：此处可以提高性能
-                    long n = gauges.txactionLsn.get();
+                    long n = gauges.xidlsn.get();
                     if (prelsn != n) {
                         LogSequenceNumber lsn = LogSequenceNumber.valueOf(n);
                         slt.setFlushedLSN(lsn);
@@ -71,14 +69,14 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
                     long logDuration = argval.xspins.logDuration;
                     if (    (size > 0)
                          // 未来计划：支持bufferCount和maxDuration
-                         && (rhs = gauges.offerMetric.push(lhs)) != lhs
+                         && (rhs = gauges.sender.push(lhs)) != lhs
                          && (curCapacity != capacity || (lhs = rhs) == null)
                     ) {
                         lhs = new ArrayList<>(capacity);
                         curCapacity = capacity;
                         spins = 0;
                         logtime = System.currentTimeMillis();
-                    } else if (size < capacity && (r = poll(g, slt)) != null) {
+                    } else if (size < capacity && (r = poll(gauges, slt)) != null) {
                         lhs.add(r);
                         spins = 0;
                         logtime = System.currentTimeMillis();
@@ -89,25 +87,25 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
                         if (spinsStatus == Xqueue.Spins.SLEEP) {
                             slt.forceUpdateStatus();
                         }
-                        spinsStatus = gauges.spinsMetric.spins(spins++);
+                        spinsStatus = gauges.xspins.spins(spins++);
                     }
                 }
             }
         }
         logger.info("pgsender complete");
-        g.endDatetime = System.currentTimeMillis();
+        gauges.endDatetime = System.currentTimeMillis();
         return SimpleWkstepTheEnd.of();
     }
 
-    private UpperRecordConsumer poll(UpcsmWkstepGauges gauges, PGReplicationStream s) //
+    private UpperRecordConsumer poll(UpcsmWorkerGauges gauges, PGReplicationStream s) //
             throws SQLException
     {
         ByteBuffer msg = s.readPending();
-        ++gauges.fetchCounts;
+        ++gauges.recver.trycnt;
         if (msg == null) {
             return null;
         }
-        ++gauges.fetchRecord;
+        ++gauges.recver.rowcnt;
         long key = s.getLastReceiveLSN().asLong();
         LogicalMsg val = LogicalMsg.ofLogicalWal(msg);
         return UpperRecordConsumer.of(key, val);
