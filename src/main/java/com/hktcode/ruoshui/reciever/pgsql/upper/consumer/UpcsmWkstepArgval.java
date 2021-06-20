@@ -10,13 +10,12 @@ import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.entity.LogicalReplArgval;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgConnectionProperty;
-import com.hktcode.simple.*;
 
-public class UpcsmWkstepArgval extends SimpleWkstepArgval
+public class UpcsmWkstepArgval
 {
     public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UpcsmWkstepArgval.class, "UpcsmArgval.yml");
 
-    public static UpcsmWkstepArgval ofJsonObject(JsonNode json) //
+    public static UpcsmWkstepArgval of(JsonNode json) //
     {
         if (json == null) {
             throw new ArgumentNullException("json");
@@ -27,12 +26,7 @@ public class UpcsmWkstepArgval extends SimpleWkstepArgval
         JsonNode logicalReplNode = json.path("logical_repl");
         LogicalReplArgval logicalRepl = LogicalReplArgval.of(logicalReplNode);
 
-        UpcsmWkstepArgval result = new UpcsmWkstepArgval(srcProperty, logicalRepl);
-        long waitTimeout = json.path("wait_timeout").asLong(DEFALUT_WAIT_TIMEOUT);
-        long logDuration = json.path("log_duration").asLong(DEFAULT_LOG_DURATION);
-        result.waitTimeout = waitTimeout;
-        result.logDuration = logDuration;
-        return result;
+        return new UpcsmWkstepArgval(srcProperty, logicalRepl);
     }
 
     public final PgConnectionProperty srcProperty;
@@ -45,22 +39,21 @@ public class UpcsmWkstepArgval extends SimpleWkstepArgval
         this.logicalRepl = logicalRepl;
     }
 
-    @Override
-    public ObjectNode toJsonObject(ObjectNode node)
-    {
-        if (node == null) {
-            throw new ArgumentNullException("node");
-        }
-        node = super.toJsonObject(node);
-        ObjectNode logicalReplNode = node.putObject("logical_repl");
-        this.logicalRepl.toJsonObject(logicalReplNode);
-        ObjectNode srcPropertyNode = node.putObject("src_property");
-        this.srcProperty.toJsonObject(srcPropertyNode);
-        return node;
-    }
+    // - @Override
+    // - public ObjectNode toJsonObject(ObjectNode node)
+    // - {
+    // -     if (node == null) {
+    // -         throw new ArgumentNullException("node");
+    // -     }
+    // -     ObjectNode logicalReplNode = node.putObject("logical_repl");
+    // -     this.logicalRepl.toJsonObject(logicalReplNode);
+    // -     ObjectNode srcPropertyNode = node.putObject("src_property");
+    // -     this.srcProperty.toJsonObject(srcPropertyNode);
+    // -     return node;
+    // - }
 
-    public UpcsmWkstepAction action()
-    {
-        return UpcsmWkstepAction.of();
-    }
+    // - public UpcsmWkstepAction action()
+    // - {
+    // -     return UpcsmWkstepAction.of();
+    // - }
 }
