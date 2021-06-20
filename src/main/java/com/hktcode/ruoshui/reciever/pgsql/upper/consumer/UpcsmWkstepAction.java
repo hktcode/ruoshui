@@ -50,7 +50,7 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
         UpcsmWkstepGauges g = UpcsmWkstepGauges.of();
         gauges.actionInfos.add(g);
         UpperRecordConsumer r;
-        int curCapacity = gauges.offerMetric.xqueue.maxCapacity;
+        int curCapacity = argval.offerXqueue.maxCapacity;
         List<UpperRecordConsumer> rhs, lhs = new ArrayList<>(curCapacity);
         int spins = 0, spinsStatus = Xqueue.Spins.RESET;
         long now, logtime = System.currentTimeMillis();
@@ -66,7 +66,7 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
                         gauges.reportedLsn = n;
                     }
                     int size = lhs.size();
-                    int capacity = gauges.offerMetric.xqueue.maxCapacity;
+                    int capacity = argval.offerXqueue.maxCapacity;
                     long logDuration = a.logDuration;
                     if (    (size > 0)
                          // 未来计划：支持bufferCount和maxDuration
