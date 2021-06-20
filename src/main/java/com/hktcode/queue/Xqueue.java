@@ -121,6 +121,8 @@ public class Xqueue<E>
 
         public static final long SPINS_MAXCNT = 1024;
 
+        public static final long LOG_DURATION = 5 * 60 * 1000;
+
         public static Spins of()
         {
             return new Spins();
@@ -132,9 +134,9 @@ public class Xqueue<E>
         public static final int SLEEP = 3;
 
         // config
-        public long waitTimeout = 128;
-        public long spinsMaxcnt = 1024;
-        // - public long logDuration;
+        public long waitTimeout = WAIT_TIMEOUT;
+        public long spinsMaxcnt = SPINS_MAXCNT;
+        public long logDuration = LOG_DURATION;
 
         // gauges
         public long spinsCounts = 0;
