@@ -139,6 +139,7 @@ public class Xqueue<E>
         public long spinsCounts = 0;
         public long yieldCounts = 0;
         public long sleepCounts = 0;
+        public long yieldMillis = 0;
         public long sleepMillis = 0;
         public long spinsStarts = 0;
 
@@ -149,22 +150,25 @@ public class Xqueue<E>
         public int spins(long spins) throws InterruptedException
         {
             if (spins > spinsMaxcnt) {
+                long starts = System.currentTimeMillis();
                 ++sleepCounts;
-                long duration = System.currentTimeMillis() - spinsStarts;
+                long duration = starts - spinsStarts;
                 long millis = this.waitTimeout - duration;
                 millis = millis > 0 ? millis : 0;
                 Thread.sleep(millis);
-                sleepMillis += millis;
+                long finish = System.currentTimeMillis();
+                sleepMillis += finish - starts;
                 return RESET;
-            }
-            if ((spinsCounts + yieldCounts) % 2 == 0) {
+            } else if ((spinsCounts + yieldCounts) % 2 == 0) {
                 ++spinsCounts;
                 spinsStarts = spins == 0 ? System.currentTimeMillis() : spinsStarts;
                 return spins == spinsMaxcnt ? SLEEP : YIELD;
-            }
-            else {
+            } else {
+                long starts = System.currentTimeMillis();
                 ++yieldCounts;
                 Thread.yield();
+                long finish = System.currentTimeMillis();
+                yieldMillis += finish + starts;
                 return spins == spinsMaxcnt ? SLEEP : SPINS;
             }
         }
