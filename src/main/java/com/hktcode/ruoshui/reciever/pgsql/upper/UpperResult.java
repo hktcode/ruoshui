@@ -11,9 +11,7 @@ public class UpperResult extends SimpleResult
             /* */( long createts
             /* */, String fullname
             /* */, ObjectNode consumer
-            /* */, ObjectNode srcqueue
             /* */, ObjectNode junction
-            /* */, ObjectNode tgtqueue
             /* */, ObjectNode producer
             /* */, long deletets
             /* */)
@@ -24,44 +22,32 @@ public class UpperResult extends SimpleResult
         if (consumer == null) {
             throw new ArgumentNullException("consumer");
         }
-        if (srcqueue == null) {
-            throw new ArgumentNullException("srcqueue");
-        }
         if (junction == null) {
             throw new ArgumentNullException("junction");
-        }
-        if (tgtqueue == null) {
-            throw new ArgumentNullException("tgtqueue");
         }
         if (producer == null) {
             throw new ArgumentNullException("producer");
         }
-        return new UpperResult(createts, fullname, consumer, srcqueue, junction, tgtqueue, producer, deletets);
+        return new UpperResult(createts, fullname, consumer, junction, producer, deletets);
     }
 
 
     public final ObjectNode consumer;
-    public final ObjectNode srcqueue;
     public final ObjectNode junction;
-    public final ObjectNode tgtqueue;
     public final ObjectNode producer;
 
     private UpperResult //
             /* */( long createts
             /* */, String fullname
             /* */, ObjectNode consumer
-            /* */, ObjectNode srcqueue
             /* */, ObjectNode junction
-            /* */, ObjectNode tgtqueue
             /* */, ObjectNode producer
             /* */, long deletets
             /* */)
     {
         super(fullname, createts, deletets);
         this.consumer = consumer;
-        this.srcqueue = srcqueue;
         this.junction = junction;
-        this.tgtqueue = tgtqueue;
         this.producer = producer;
     }
 
@@ -75,12 +61,8 @@ public class UpperResult extends SimpleResult
         node.put("createts", this.createts);
         ObjectNode consumerNode = node.putObject("consumer");
         JacksonObject.copyTo(this.consumer, consumerNode);
-        ObjectNode srcqueueNode = node.putObject("srcqueue");
-        JacksonObject.copyTo(this.srcqueue, srcqueueNode);
         ObjectNode junctionNode = node.putObject("junction");
         JacksonObject.copyTo(this.junction, junctionNode);
-        ObjectNode tgtqueueNode = node.putObject("tgtqueue");
-        JacksonObject.copyTo(this.tgtqueue, tgtqueueNode);
         ObjectNode producerNode = node.putObject("producer");
         JacksonObject.copyTo(this.producer, producerNode);
         node.put("deletets", this.deletets);
