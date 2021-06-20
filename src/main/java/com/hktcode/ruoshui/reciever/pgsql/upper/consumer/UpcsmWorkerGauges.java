@@ -2,6 +2,8 @@ package com.hktcode.ruoshui.reciever.pgsql.upper.consumer;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.queue.Xqueue;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
 import com.hktcode.simple.SimpleWorkerGauges;
 import org.postgresql.replication.LogSequenceNumber;
 
@@ -9,21 +11,28 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class UpcsmWorkerGauges extends SimpleWorkerGauges
 {
-    public static UpcsmWorkerGauges of(AtomicLong txactionLsn)
+    public static UpcsmWorkerGauges of(UpcsmWorkerArgval argval, AtomicLong xidlsn)
     {
-        if (txactionLsn == null) {
-            throw new ArgumentNullException("txactionLsn");
+        if (argval == null) {
+            throw new ArgumentNullException("argval");
         }
-        return new UpcsmWorkerGauges(txactionLsn);
+        if (xidlsn == null) {
+            throw new ArgumentNullException("xidlsn");
+        }
+        return new UpcsmWorkerGauges(argval, xidlsn);
     }
 
-    private UpcsmWorkerGauges(AtomicLong txactionLsn)
+    private UpcsmWorkerGauges(UpcsmWorkerArgval argval, AtomicLong xidlsn)
     {
-        this.txactionLsn = txactionLsn;
+        this.txactionLsn = xidlsn;
+        this.offerMetric = argval.offerXqueue.offerXqueue();
+        this.spinsMetric = argval.spinsArgval;
     }
 
     public final AtomicLong txactionLsn;
     public long reportedLsn = 0;
+    public final Xqueue.Offer<UpperRecordConsumer> offerMetric;
+    public final Xqueue.Spins spinsMetric;
 
     public ObjectNode toJsonObject(ObjectNode node)
     {

@@ -6,7 +6,7 @@ package com.hktcode.ruoshui.reciever.pgsql.upper.consumer;
 
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
-import com.hktcode.queue.Tqueue;
+import com.hktcode.queue.Xqueue;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
 import com.hktcode.simple.SimpleAtomic;
 import com.hktcode.simple.SimpleWkstep;
@@ -21,19 +21,16 @@ import org.slf4j.LoggerFactory;
 import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, UpcsmWorkerGauges>
 {
     private static final Logger logger = LoggerFactory.getLogger(UpcsmWkstepAction.class);
 
-    private final Tqueue<UpperRecordConsumer> source;
-
-    public static UpcsmWkstepAction of(Tqueue<UpperRecordConsumer> source)
+    public static UpcsmWkstepAction of()
     {
-        if (source == null) {
-            throw new ArgumentNullException("source");
-        }
-        return new UpcsmWkstepAction(source);
+        return new UpcsmWkstepAction();
     }
 
     @Override
@@ -49,61 +46,73 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
-        UpcsmWkstepArgval params = argval.actionInfos.get(0);
-        UpcsmWkstepGauges meters = UpcsmWkstepGauges.of();
-        gauges.actionInfos.add(meters);
-        try (Connection repl = params.srcProperty.replicaConnection()) {
+        UpcsmWkstepArgval a = argval.actionInfos.get(0);
+        UpcsmWkstepGauges g = UpcsmWkstepGauges.of();
+        gauges.actionInfos.add(g);
+        UpperRecordConsumer r;
+        int curCapacity = gauges.offerMetric.xqueue.maxCapacity;
+        List<UpperRecordConsumer> rhs, lhs = new ArrayList<>(curCapacity);
+        int spins = 0, spinsStatus = Xqueue.Spins.RESET;
+        long now, logtime = System.currentTimeMillis();
+        try (Connection repl = a.srcProperty.replicaConnection()) {
             PgConnection pgrepl = repl.unwrap(PgConnection.class);
-            try (PGReplicationStream slt = params.logicalRepl.start(pgrepl)) {
-                UpperRecordConsumer r = null;
+            try (PGReplicationStream slt = a.logicalRepl.start(pgrepl)) {
                 while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
-                    long currlsn = gauges.txactionLsn.get();
-                    if (gauges.reportedLsn != currlsn) {
-                        LogSequenceNumber lsn = LogSequenceNumber.valueOf(currlsn);
+                    long n = gauges.txactionLsn.get(); // 未来计划：此处可以提高性能
+                    if (gauges.reportedLsn != n) {
+                        LogSequenceNumber lsn = LogSequenceNumber.valueOf(n);
                         slt.setFlushedLSN(lsn);
                         slt.setAppliedLSN(lsn);
-                        gauges.reportedLsn = currlsn;
+                        gauges.reportedLsn = n;
                     }
-                    meters.statusInfor = "receive logical replication stream message";
-                    if (r == null) {
-                        r = poll(params, meters, slt);
-                    } else if ((r = source.push(r)) != null) {
-                        slt.forceUpdateStatus();
+                    int size = lhs.size();
+                    int capacity = gauges.offerMetric.xqueue.maxCapacity;
+                    long logDuration = a.logDuration;
+                    if (    (size > 0)
+                         // 未来计划：支持bufferCount和maxDuration
+                         && (rhs = gauges.offerMetric.push(lhs)) != lhs
+                         && (curCapacity != capacity || (lhs = rhs) == null)
+                    ) {
+                        lhs = new ArrayList<>(capacity);
+                        curCapacity = capacity;
+                        spins = 0;
+                        logtime = System.currentTimeMillis();
+                    } else if (size < capacity && (r = poll(g, slt)) != null) {
+                        lhs.add(r);
+                        spins = 0;
+                        logtime = System.currentTimeMillis();
+                    } else if (logtime + logDuration >= (now = System.currentTimeMillis())) {
+                        logger.info("logDuration={}", logDuration);
+                        logtime = now;
+                    } else {
+                        if (spinsStatus == Xqueue.Spins.SLEEP) {
+                            slt.forceUpdateStatus();
+                        }
+                        spinsStatus = gauges.spinsMetric.spins(spins++);
                     }
                 }
             }
         }
         logger.info("pgsender complete");
-        meters.statusInfor = "send txation finish record.";
-        meters.endDatetime = System.currentTimeMillis();
+        g.endDatetime = System.currentTimeMillis();
         return SimpleWkstepTheEnd.of();
     }
 
-    private UpperRecordConsumer poll(UpcsmWkstepArgval argval, UpcsmWkstepGauges gauges, PGReplicationStream s) //
-            throws SQLException, InterruptedException
+    private UpperRecordConsumer poll(UpcsmWkstepGauges gauges, PGReplicationStream s) //
+            throws SQLException
     {
         ByteBuffer msg = s.readPending();
         ++gauges.fetchCounts;
-        if (msg != null) {
-            ++gauges.fetchRecord;
-            long key = s.getLastReceiveLSN().asLong();
-            LogicalMsg val = LogicalMsg.ofLogicalWal(msg);
-            return UpperRecordConsumer.of(key, val);
+        if (msg == null) {
+            return null;
         }
-        long waitTimeout = argval.waitTimeout;
-        long logDuration = argval.logDuration;
-        Thread.sleep(waitTimeout);
-        gauges.fetchMillis += waitTimeout;
-        long currMillis = System.currentTimeMillis();
-        if (currMillis - gauges.logDatetime >= logDuration) {
-            logger.info("readPending() returns null: waitTimeout={}, logDuration={}", waitTimeout, logDuration);
-            gauges.logDatetime = currMillis;
-        }
-        return null;
+        ++gauges.fetchRecord;
+        long key = s.getLastReceiveLSN().asLong();
+        LogicalMsg val = LogicalMsg.ofLogicalWal(msg);
+        return UpperRecordConsumer.of(key, val);
     }
 
-    private UpcsmWkstepAction(Tqueue<UpperRecordConsumer> source)
+    private UpcsmWkstepAction()
     {
-        this.source = source;
     }
 }

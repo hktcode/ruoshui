@@ -8,7 +8,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.queue.Tqueue;
+import com.hktcode.queue.Xqueue;
+import com.hktcode.queue.Xqueue.Spins;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
 import com.hktcode.simple.SimpleWorkerArgval;
 
@@ -29,37 +30,53 @@ public class UpcsmWorkerArgval implements SimpleWorkerArgval<UpcsmWorkerArgval, 
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    public static UpcsmWorkerArgval ofJsonObject(JsonNode json, Tqueue<UpperRecordConsumer> push) //
+    public static UpcsmWorkerArgval ofJsonObject(JsonNode json) //
     {
         if (json == null) {
             throw new ArgumentNullException("json");
         }
-        if (push == null) {
-            throw new ArgumentNullException("push");
-        }
-        JsonNode actionInfoNode = json.path("action_infos");
+        int maxCapacity = json.path("max_capacity").asInt(Xqueue.MAX_CAPACITY);
+        Xqueue<UpperRecordConsumer> push = Xqueue.of(maxCapacity);
+
+        Spins spins = Spins.of();
+        spins.waitTimeout = json.path("wait_timeout").asLong(Spins.WAIT_TIMEOUT);
+        spins.spinsMaxcnt = json.path("spins_maxcnt").asLong(Spins.SPINS_MAXCNT);
+
+        JsonNode actionInfosNode = json.path("action_infos");
         ArrayNode arrayNode;
         UpcsmWkstepArgval action;
-        if (actionInfoNode instanceof MissingNode) {
+        if (actionInfosNode instanceof MissingNode) {
             action = UpcsmWkstepArgval.ofJsonObject(MissingNode.getInstance());
         }
-        else if ((arrayNode = (ArrayNode)actionInfoNode).size() == 0) {
+        else if ((arrayNode = (ArrayNode)actionInfosNode).size() == 0) {
             action = UpcsmWkstepArgval.ofJsonObject(MissingNode.getInstance());
         }
         else {
             action = UpcsmWkstepArgval.ofJsonObject(arrayNode.get(0));
         }
-        return new UpcsmWorkerArgval(ImmutableList.of(action), push);
+        return new UpcsmWorkerArgval(ImmutableList.of(action), push, spins);
     }
 
     public final ImmutableList<UpcsmWkstepArgval> actionInfos;
 
-    private final Tqueue<UpperRecordConsumer> offerTqueue;
+    public final Xqueue<UpperRecordConsumer> offerXqueue;
 
-    private UpcsmWorkerArgval(ImmutableList<UpcsmWkstepArgval> actionInfos, Tqueue<UpperRecordConsumer> offerTqueue)
+    public final Spins spinsArgval;
+
+    public long logDuration = SimpleWorkerArgval.LOG_DURATION;
+    // - public final PgConnectionProperty srcProperty;
+    // - public final LogicalReplArgval logicalRepl;
+    // - public int bufferCount;
+
+    private UpcsmWorkerArgval //
+        /**/( ImmutableList<UpcsmWkstepArgval> actionInfos //
+            , Xqueue<UpperRecordConsumer> offerXqueue //
+            , Spins spinsArgval //
+    )
     {
         this.actionInfos = actionInfos;
-        this.offerTqueue = offerTqueue;
+        this.offerXqueue = offerXqueue;
+        this.spinsArgval = spinsArgval;
     }
 
     @Override
@@ -87,6 +104,6 @@ public class UpcsmWorkerArgval implements SimpleWorkerArgval<UpcsmWorkerArgval, 
     @Override
     public UpcsmWkstepAction action()
     {
-        return this.actionInfos.get(0).action(this.offerTqueue);
+        return this.actionInfos.get(0).action();
     }
 }
