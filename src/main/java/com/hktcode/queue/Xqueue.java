@@ -1,5 +1,6 @@
 package com.hktcode.queue;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.hktcode.lang.exception.ArgumentNegativeException;
 import com.hktcode.lang.exception.ArgumentNullException;
 
@@ -9,12 +10,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class Xqueue<E>
 {
-    public static <E> Xqueue<E> of(int maxCapacity)
+    public static <E> Xqueue<E> of(JsonNode json)
     {
-        if (maxCapacity <= 0) {
-            throw new ArgumentNegativeException("maxCapacity", maxCapacity);
+        if (json == null) {
+            throw new ArgumentNullException("json");
         }
-        return new Xqueue<>(maxCapacity);
+        return new Xqueue<>(json.asInt(MAX_CAPACITY));
     }
 
     public static final int MAX_CAPACITY = 1024;
@@ -148,6 +149,16 @@ public class Xqueue<E>
 
         private Spins()
         {
+        }
+
+        public void pst(JsonNode json)
+        {
+            if (json == null) {
+                throw new ArgumentNullException("json");
+            }
+            waitTimeout = json.path("wait_timeout").asLong(waitTimeout);
+            spinsMaxcnt = json.path("spins_maxcnt").asLong(spinsMaxcnt);
+            logDuration = json.path("log_duration").asLong(logDuration);
         }
 
         public int spins(long spins) throws InterruptedException
