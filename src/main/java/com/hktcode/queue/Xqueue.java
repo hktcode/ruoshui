@@ -98,6 +98,7 @@ public class Xqueue<E>
             if (rhs == null) {
                 throw new ArgumentNullException("rhs");
             }
+            rhs.clear();
             ++this.trycnt;
             List<E> lhs = this.xqueue.atomic.get();
             if (lhs.isEmpty()) {
