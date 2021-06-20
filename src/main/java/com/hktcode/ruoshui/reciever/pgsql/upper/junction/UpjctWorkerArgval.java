@@ -8,7 +8,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperQueues;
+import com.hktcode.queue.Xqueue;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
 import com.hktcode.simple.SimpleWorkerArgval;
 
 public class UpjctWorkerArgval implements SimpleWorkerArgval<UpjctWorkerArgval, UpjctWorkerGauges>
@@ -28,37 +30,50 @@ public class UpjctWorkerArgval implements SimpleWorkerArgval<UpjctWorkerArgval, 
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    public static UpjctWorkerArgval ofJsonObject(JsonNode json, UpperQueues upperQueues) //
+    public static UpjctWorkerArgval ofJsonObject(JsonNode json, Xqueue<UpperRecordConsumer> poll) //
     {
         if (json == null) {
             throw new ArgumentNullException("json");
         }
-        if (upperQueues == null) {
-            throw new ArgumentNullException("upperQueues");
+        if (poll == null) {
+            throw new ArgumentNullException("poll");
         }
-        JsonNode actionInfoNode = json.path("action_info");
+        JsonNode actionInfosNode = json.path("action_infos");
+        int maxCapacity = json.path("max_capacity").asInt(Xqueue.MAX_CAPACITY);
         ArrayNode arrayNode;
         UpjctWkstepArgval action;
-        if (actionInfoNode instanceof MissingNode) {
+        if (actionInfosNode instanceof MissingNode) {
             action = UpjctWkstepArgval.ofJsonObject(MissingNode.getInstance());
         }
-        else if ((arrayNode = (ArrayNode)actionInfoNode).size() == 0) {
+        else if ((arrayNode = (ArrayNode)actionInfosNode).size() == 0) {
             action = UpjctWkstepArgval.ofJsonObject(MissingNode.getInstance());
         }
         else {
             action = UpjctWkstepArgval.ofJsonObject(arrayNode.get(0));
         }
-        return new UpjctWorkerArgval(ImmutableList.of(action), upperQueues);
+        Xqueue<UpperRecordProducer> push = Xqueue.of(maxCapacity);
+        return new UpjctWorkerArgval(ImmutableList.of(action), poll, push);
     }
 
     public final ImmutableList<UpjctWkstepArgval> actionInfos;
+    public final Xqueue<UpperRecordConsumer> fetchXqueue;
+    public final Xqueue<UpperRecordProducer> offerXqueue;
 
-    private final UpperQueues upperQueues;
+    public final Xqueue.Spins spinsArgval = Xqueue.Spins.of();
 
-    private UpjctWorkerArgval(ImmutableList<UpjctWkstepArgval> actionInfos, UpperQueues upperQueues)
+    // wkstep
+    // xqueue
+    // xspins
+
+    private UpjctWorkerArgval //
+        /**/( ImmutableList<UpjctWkstepArgval> actionInfos //
+            , Xqueue<UpperRecordConsumer> fetchXqueue //
+            , Xqueue<UpperRecordProducer> offerXqueue //
+    )
     {
         this.actionInfos = actionInfos;
-        this.upperQueues = upperQueues;
+        this.fetchXqueue = fetchXqueue;
+        this.offerXqueue = offerXqueue;
     }
 
     @Override
@@ -86,6 +101,6 @@ public class UpjctWorkerArgval implements SimpleWorkerArgval<UpjctWorkerArgval, 
     @Override
     public UpjctWkstepAction action()
     {
-        return this.actionInfos.get(0).action(this.upperQueues);
+        return this.actionInfos.get(0).action();
     }
 }

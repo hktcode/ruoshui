@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableList;
 import com.hktcode.ruoshui.reciever.pgsql.upper.*;
 import com.hktcode.simple.SimpleAtomic;
 import com.hktcode.simple.SimpleWkstep;
-import com.hktcode.queue.Tqueue;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgjdbc.LogicalTxactBeginsMsg;
@@ -16,6 +15,8 @@ import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlKey;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlVal;
 import com.hktcode.simple.SimpleWkstepAction;
 import com.hktcode.simple.SimpleWkstepTheEnd;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -23,19 +24,15 @@ import java.util.List;
 
 public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, UpjctWorkerGauges>
 {
-    public static UpjctWkstepAction of(UpperQueues queues)
+    private static final Logger logger = LoggerFactory.getLogger(UpjctWkstepAction.class);
+
+    public static UpjctWkstepAction of()
     {
-        if (queues == null) {
-            throw new ArgumentNullException("queues");
-        }
-        return new UpjctWkstepAction(queues);
+        return new UpjctWkstepAction();
     }
 
-    public final UpperQueues queues;
-
-    private UpjctWkstepAction(UpperQueues queues)
+    private UpjctWkstepAction()
     {
-        this.queues = queues;
     }
 
     @Override
@@ -51,28 +48,50 @@ public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, 
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
-        UpjctWkstepGauges meters = UpjctWkstepGauges.of();
-        UpperRecordConsumer r = null;
-        UpperRecordProducer o = null;
-        final Tqueue<UpperRecordProducer> getout = this.queues.target;
-        final Tqueue<UpperRecordConsumer> comein = this.queues.source;
-        Iterator<UpperRecordProducer> t //
-            = ImmutableList.<UpperRecordProducer>of().iterator();
+        UpjctWkstepArgval a = argval.actionInfos.get(0);
+        UpjctWkstepGauges g = UpjctWkstepGauges.of();
+        gauges.actionInfos.add(g);
+        List<UpperRecordConsumer> crhs = gauges.fetchMetric.list(), clhs;
+        List<UpperRecordProducer> plhs = gauges.offerMetric.list(), prhs;
+        int curCapacity = gauges.offerMetric.xqueue.maxCapacity;
+        int spins = 0;
+        long ln, lt = System.currentTimeMillis();
+        Iterator<UpperRecordProducer> piter = plhs.iterator();
+        Iterator<UpperRecordConsumer> citer = crhs.iterator();
         while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
-            if (o != null) {
-                o = getout.push(o);
-            }
-            else if (t.hasNext()) {
-                o = t.next();
-            }
-            else if (r == null) {
-                r = comein.poll();
-            }
-            else {
-                t = this.convert(meters, r).iterator();
-                r = null;
+            int size = plhs.size();
+            int capacity = gauges.offerMetric.xqueue.maxCapacity;
+            long ld = a.logDuration;
+            if (    (size > 0)
+                 // 未来计划：支持bufferCount和maxDuration
+                 && (prhs = gauges.offerMetric.push(plhs)) != plhs
+                 && (curCapacity != capacity || (plhs = prhs) == null)
+            ) {
+                plhs = new ArrayList<>(capacity);
+                curCapacity = capacity;
+                spins = 0;
+                lt = System.currentTimeMillis();
+            } else if (size >= capacity) {
+                gauges.spinsMetric.spins(spins++);
+            } else if (piter.hasNext()) {
+                plhs.add(piter.next());
+                spins = 0;
+                lt = System.currentTimeMillis();
+            } else if (citer.hasNext()) {
+                piter = this.convert(g, citer.next()).iterator();
+                lt = System.currentTimeMillis();
+            } else if ((clhs = gauges.fetchMetric.poll(crhs)) != crhs) {
+                crhs = clhs;
+                citer = crhs.iterator();
+            } else if (lt + ld >= (ln = System.currentTimeMillis())) {
+                logger.info("logDuration={}", ld);
+                lt = ln;
+            } else {
+                gauges.spinsMetric.spins(spins++);
             }
         }
+        logger.info("upjct complete");
+        g.endDatetime = System.currentTimeMillis();
         return SimpleWkstepTheEnd.of();
     }
 

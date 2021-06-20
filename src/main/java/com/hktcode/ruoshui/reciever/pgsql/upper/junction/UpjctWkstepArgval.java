@@ -2,7 +2,6 @@ package com.hktcode.ruoshui.reciever.pgsql.upper.junction;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperQueues;
 import com.hktcode.simple.SimpleWkstepArgval;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
@@ -28,8 +27,8 @@ public class UpjctWkstepArgval extends SimpleWkstepArgval
         this.logDuration = logDuration;
     }
 
-    public UpjctWkstepAction action(UpperQueues queues)
+    public UpjctWkstepAction action()
     {
-        return UpjctWkstepAction.of(queues);
+        return UpjctWkstepAction.of();
     }
 }
