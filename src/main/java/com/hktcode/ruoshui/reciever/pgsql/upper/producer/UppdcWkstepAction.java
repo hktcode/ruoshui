@@ -42,33 +42,24 @@ public class UppdcWkstepAction implements SimpleWkstepAction<UppdcWorkerArgval, 
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
-        UppdcWkstepArgval a = argval.actionInfos.get(0);
-        UppdcWkstepGauges g = UppdcWkstepGauges.of();
-        gauges.wkstep.add(g);
-        Throwable ex;
-        List<UpperRecordProducer> lhs, rhs = gauges.fetchMetric.list();
-        int spins = 0;
-        long now, logtime = System.currentTimeMillis();
+        List<UpperRecordProducer> lhs, rhs = argval.recver.list();
+        long now, prelog = System.currentTimeMillis(), spins = 0;
         Iterator<UpperRecordProducer> iter = rhs.iterator();
-        try (UppdcSender sender = a.sender()) {
+        try (UppdcSender.Client client = argval.sender.client()) {
             while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
-                long logDuration = a.logDuration;
-                if ((ex = gauges.callbackRef.get()) != null) {
-                    logger.error("callback throws exception", ex);
-                    throw ex;
-                } else if (iter.hasNext()) {
+                long l = argval.xspins.logDuration;
+                if (iter.hasNext()) {
                     // 未来计划：send方法支持数组，发送多个记录，提高性能
-                    sender.send(gauges, iter.next());
-                } else if ((lhs = gauges.fetchMetric.poll(rhs)) != rhs) {
+                    client.send(iter.next());
+                } else if ((lhs = gauges.recver.poll(rhs)) != rhs) {
                     rhs = lhs;
                     iter = rhs.iterator();
-                } else if (logtime + logDuration >= (now = System.currentTimeMillis())) {
-                    logger.info("write to logDuration={}", logDuration);
-                    logtime = now;
+                } else if (prelog + l >= (now = System.currentTimeMillis())) {
+                    logger.info("write to logDuration={}", l);
+                    prelog = now;
                 } else {
-                    gauges.spinsMetric.spins(spins++);
+                    gauges.xspins.spins(spins++);
                 }
-
             }
         }
         return SimpleWkstepTheEnd.of();

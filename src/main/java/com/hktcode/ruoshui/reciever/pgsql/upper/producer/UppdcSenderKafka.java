@@ -1,103 +1,140 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.collect.ImmutableMap;
+import com.hktcode.jackson.JacksonObject;
+import com.hktcode.kafka.Kafka;
+import com.hktcode.lang.exception.ArgumentIllegalException;
+import com.hktcode.lang.exception.ArgumentNegativeException;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlValTxactCommit;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
 import org.apache.kafka.clients.producer.*;
-import org.postgresql.replication.LogSequenceNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static com.hktcode.kafka.Kafka.Serializers.BYTES;
+import static com.hktcode.ruoshui.Ruoshui.THE_NAME;
 
-public class UppdcSenderKafka implements UppdcSender
+public class UppdcSenderKafka extends UppdcSender
 {
-    public static UppdcSenderKafka of(UppdcWkstepArgvalKafka argval, UppdcWkstepGaugesKafka gauges)
+    private static final Logger logger = LoggerFactory.getLogger(UppdcSenderKafka.class);
+
+    public static final String TARGET_TOPIC = THE_NAME;
+
+    public static final int PARTITION_NO = 0;
+
+    public static UppdcSenderKafka of(JsonNode json)
     {
-        if (argval == null) {
-            throw new ArgumentNullException("argval");
+        if (json == null) {
+            throw new ArgumentNullException("json");
         }
-        if (gauges == null) {
-            throw new ArgumentNullException("gauges");
+        Map<String, String> kfkMap = createDefaultMap();
+        JsonNode kfkNode = json.get("kfk_property");
+        if (kfkNode != null) {
+            JacksonObject.merge(kfkMap, kfkNode);
         }
-        return new UppdcSenderKafka(argval, gauges);
-    }
+        ImmutableMap<String, String> kfkProperty = ImmutableMap.copyOf(kfkMap);
+        // TODO: 检查properties
 
-    private final UppdcWkstepArgvalKafka argval;
+        UppdcSenderKafka result =  new UppdcSenderKafka(kfkProperty);
 
-    private final UppdcWkstepGaugesKafka gauges;
-
-    private final Producer<byte[], byte[]> handle;
-
-    private UppdcSenderKafka(UppdcWkstepArgvalKafka argval, UppdcWkstepGaugesKafka gauges)
-    {
-        Properties properties = new Properties();
-        properties.setProperty("request.timeout.ms", "1000");
-        for (Map.Entry<String, String> e : argval.kfkProperty.entrySet()) {
-            properties.setProperty(e.getKey(), e.getValue());
+        String targetTopic = json.path("target_topic").asText(result.targetTopic);
+        if (!Kafka.TOPIC_PATTERN.matcher(targetTopic).matches()) {
+            throw new ArgumentIllegalException("topic name is not match the pattern", "targetTopic", targetTopic); // TODO:
         }
-        this.argval = argval;
-        this.gauges = gauges;
-        this.handle = new KafkaProducer<>(properties, BYTES, BYTES);
-    }
+        result.targetTopic = targetTopic;
 
-    @Override
-    public void send(UppdcWorkerGauges gauges, UpperRecordProducer record)
-    {
-        String keyText = record.key.toJsonObject().toString();
-        String valText = record.val.toJsonObject().toString();
-        String t = argval.targetTopic;
-        int p = argval.partitionNo;
-        byte[] k = keyText.getBytes(StandardCharsets.UTF_8);
-        byte[] v = valText.getBytes(StandardCharsets.UTF_8);
-        ProducerRecord<byte[], byte[]> r = new ProducerRecord<>(t, p, k, v);
-        LogSequenceNumber lsn = LogSequenceNumber.INVALID_LSN;
-        if (record.val instanceof PgsqlValTxactCommit) {
-            PgsqlValTxactCommit val = (PgsqlValTxactCommit)record.val;
-            lsn = LogSequenceNumber.valueOf(val.lsnofmsg);
+        int partitionNo = json.path("partition_no").asInt(result.partitionNo);
+        if (partitionNo < 0) {
+            // TODO:
+            throw new ArgumentNegativeException("partitionNo", partitionNo);
         }
-        // TODO: kafka生产者的行为好奇怪
-        this.handle.send(r, new Handler(lsn, gauges, this.handle));
+        result.partitionNo = partitionNo;
+        return result;
     }
 
     @Override
-    public void close()
+    public Client client()
     {
-        this.handle.close();
+        return new Client(this);
     }
 
-    private static class Handler implements Callback
+    private static Map<String, String> createDefaultMap()
     {
-        private static final Logger logger = LoggerFactory.getLogger(Handler.class);
+        Map<String, String> result = new HashMap<>();
+        result.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        return result;
+    }
 
-        private final LogSequenceNumber lsn;
+    private UppdcSenderKafka(ImmutableMap<String, String> kfkProperty)
+    {
+        super();
+        this.kfkProperty = kfkProperty;
+    }
 
-        private final Producer<byte[], byte[]> producer;
+    // handle
+    private final List<Producer<byte[], byte[]>> innerHandle = new ArrayList<>(1);
 
-        private final UppdcWorkerGauges gauges;
+    // argval
+    public final ImmutableMap<String, String> kfkProperty;
 
-        public Handler //
-            /* */(LogSequenceNumber lsn //
-            /* */, UppdcWorkerGauges gauges //
-            /* */, Producer<byte[], byte[]> producer //
-            /* */)
+    public String targetTopic = TARGET_TOPIC;
+
+    public int partitionNo = PARTITION_NO;
+
+    public class Client implements UppdcSender.Client
+    {
+        private final UppdcSenderKafka squeue;
+
+        private Client(UppdcSenderKafka squeue)
         {
-            this.lsn = lsn;
-            this.gauges = gauges;
-            this.producer = producer;
+            this.squeue = squeue;
+            Properties properties = new Properties();
+            properties.setProperty("request.timeout.ms", "1000");
+            for (Map.Entry<String, String> e : kfkProperty.entrySet()) {
+                properties.setProperty(e.getKey(), e.getValue());
+            }
+            this.squeue.innerHandle.add(new KafkaProducer<>(properties, BYTES, BYTES));
         }
 
         @Override
-        public void onCompletion(RecordMetadata metadata, Exception ex)
+        public void send(UpperRecordProducer record) throws Throwable
+        {
+            Throwable ex = this.squeue.callbackRef.get();
+            if (ex != null) {
+                throw ex;
+            }
+            String keyText = record.key.toJsonObject().toString();
+            String valText = record.val.toJsonObject().toString();
+            String t = this.squeue.targetTopic;
+            int p = this.squeue.partitionNo;
+            byte[] k = keyText.getBytes(StandardCharsets.UTF_8);
+            byte[] v = valText.getBytes(StandardCharsets.UTF_8);
+            ProducerRecord<byte[], byte[]> r = new ProducerRecord<>(t, p, k, v);
+            // TODO: kafka生产者的行为好奇怪
+            Producer<byte[], byte[]> d = this.squeue.innerHandle.get(0);
+            d.send(r, (m, e)->this.onCompletion(record, e));
+        }
+
+        @Override
+        public void close()
+        {
+            for (Producer<byte[], byte[]> handle: this.squeue.innerHandle) {
+                handle.close(0, TimeUnit.MILLISECONDS);
+            }
+            this.squeue.innerHandle.clear();
+        }
+
+        private void onCompletion(UpperRecordProducer record, Exception ex)
         {
             if (ex != null) {
-                logger.error("kafka producer send record fail: lsn={}", this.lsn, ex);
-                if (this.gauges.callbackRef.compareAndSet(null, ex)) {
+                logger.error("kafka producer send record fail: lsn={}", record, ex);
+                if (this.squeue.callbackRef.compareAndSet(null, ex)) {
                     // kafka客户端的行为好奇怪，不符合一般的Java类调用约定：
                     // 1. 通常Java类中，应该是谁创建谁关闭。
                     //    Kafka的Producer虽然也满足这个条件，但是如果此处ex不是null，必须在此方法中调用close。
@@ -113,12 +150,13 @@ public class UppdcSenderKafka implements UppdcSender
                     //	     at org.apache.kafka.clients.producer.internals.Sender.run(Sender.java:185) [kafka-clients-1.1.0.jar:na]
                     //	     at java.lang.Thread.run(Thread.java:745) [na:1.8.0_121]
                     // 从这两方面来看，Kafka客户端的设计并不合理
-                    this.producer.close(0, TimeUnit.MILLISECONDS);
+                    this.close();
                 }
             }
-            else if (this.lsn.asLong() != LogSequenceNumber.INVALID_LSN.asLong()) {
-                logger.info("kafka producer send record success: lsn={}", this.lsn);
-                this.gauges.txactionLsn.set(this.lsn.asLong());
+            else if (record.val instanceof PgsqlValTxactCommit) {
+                long lsn = ((PgsqlValTxactCommit)record.val).lsnofmsg;
+                logger.info("kafka producer send record success: lsn={}", lsn);
+                this.squeue.txactionLsn.set(lsn);
             }
         }
     }

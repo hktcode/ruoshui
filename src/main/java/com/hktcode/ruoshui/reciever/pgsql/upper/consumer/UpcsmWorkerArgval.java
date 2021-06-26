@@ -45,8 +45,6 @@ public class UpcsmWorkerArgval implements SimpleWorkerArgval<UpcsmWorkerArgval, 
 
     public final UpcsmRecverArgval recver;
 
-    // - public int bufferCount;
-
     private UpcsmWorkerArgval(UpcsmRecverArgval recver, Xqueue<UpperRecordConsumer> sender)
     {
         this.sender = sender;

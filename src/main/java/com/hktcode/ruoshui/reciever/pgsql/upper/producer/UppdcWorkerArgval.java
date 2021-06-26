@@ -1,14 +1,11 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.ImmutableList;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Xqueue;
-import com.hktcode.queue.Xqueue.Spins;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
 import com.hktcode.simple.SimpleWorkerArgval;
 
@@ -24,41 +21,35 @@ public class UppdcWorkerArgval implements SimpleWorkerArgval<UppdcWorkerArgval, 
         ObjectNode argvalNode = schema.putObject("properties");
         ObjectNode actionInfosNode = argvalNode.putObject("action_infos");
         actionInfosNode.put("type", "array");
-        actionInfosNode.set("items", UppdcWkstepArgval.SCHEMA);
+        actionInfosNode.set("items", UppdcSender.SCHEMA);
         actionInfosNode.put("maxItems", 1);
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    public static UppdcWorkerArgval ofJsonObject(JsonNode json, Xqueue<UpperRecordProducer> poll)
+    public static UppdcWorkerArgval ofJsonObject(JsonNode json, Xqueue<UpperRecordProducer> recver)
     {
         if (json == null) {
             throw new ArgumentNullException("json");
         }
-        if (poll == null) {
-            throw new ArgumentNullException("poll");
+        if (recver == null) {
+            throw new ArgumentNullException("recver");
         }
-        JsonNode actionInfoNode = json.path("action_infos");
-        JsonNode actionNode = actionInfoNode.path(0);
-        UppdcWkstepArgval action = UppdcWkstepArgval.ofJsonObject(actionNode);
-
-        Spins spins = Xqueue.Spins.of();
-        spins.waitTimeout = json.path("wait_timeout").asLong(Spins.WAIT_TIMEOUT);
-        spins.spinsMaxcnt = json.path("spins_maxcnt").asLong(Spins.SPINS_MAXCNT);
-
-        return new UppdcWorkerArgval(ImmutableList.of(action), poll, spins);
+        UppdcSender sender = UppdcSender.of(json.path("sender"));
+        UppdcWorkerArgval result = new UppdcWorkerArgval(sender, recver);
+        result.xspins.pst(json.path("xspins"));
+        return result;
     }
 
-    public final ImmutableList<UppdcWkstepArgval> actionInfos;
+    public final UppdcSender sender;
 
-    public final Xqueue<UpperRecordProducer> fetchXqueue;
+    public final Xqueue<UpperRecordProducer> recver;
 
-    public final Xqueue.Spins spinsArgval;
+    public final Xqueue.Spins xspins = Xqueue.Spins.of();
 
-    private UppdcWorkerArgval(ImmutableList<UppdcWkstepArgval> actionInfos, Xqueue<UpperRecordProducer> fetchXqueue, Xqueue.Spins spins)
+    private UppdcWorkerArgval(UppdcSender sender, Xqueue<UpperRecordProducer> recver)
     {
-        this.actionInfos = actionInfos;
-        this.fetchXqueue = fetchXqueue;
-        this.spinsArgval = spins;
+        this.sender = sender;
+        this.recver = recver;
     }
 
     @Override
@@ -66,11 +57,6 @@ public class UppdcWorkerArgval implements SimpleWorkerArgval<UppdcWorkerArgval, 
     {
         if (node == null) {
             throw new ArgumentNullException("node");
-        }
-        ArrayNode actionInfosNode = node.putArray("action_infos");
-        for (UppdcWkstepArgval c: this.actionInfos) {
-            ObjectNode n = actionInfosNode.addObject();
-            c.toJsonObject(n);
         }
         return node;
     }
@@ -80,12 +66,11 @@ public class UppdcWorkerArgval implements SimpleWorkerArgval<UppdcWorkerArgval, 
         if (node == null) {
             throw new ArgumentNullException("node");
         }
-        this.actionInfos.get(0).pst(node);
     }
 
     @Override
     public UppdcWkstepAction action()
     {
-        return this.actionInfos.get(0).action();
+        return UppdcWkstepAction.of();
     }
 }

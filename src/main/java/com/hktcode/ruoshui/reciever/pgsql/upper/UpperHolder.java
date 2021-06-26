@@ -35,6 +35,7 @@ public class UpperHolder
 
     public SimpleWorker<UpcsmWorkerArgval, UpcsmWorkerGauges> consumer()
     {
+        // - return SimpleWorker.of(this.argval.srcprops, this.argval.consumer, this.argval.srcqueue, this.atomic);
         return SimpleWorker.of(this.argval.consumer, this.gauges.consumer, this.atomic);
     }
 

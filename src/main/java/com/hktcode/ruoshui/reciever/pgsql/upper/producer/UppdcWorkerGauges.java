@@ -5,38 +5,29 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Xqueue;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
 import com.hktcode.simple.SimpleWorkerGauges;
-import org.postgresql.replication.LogSequenceNumber;
-
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class UppdcWorkerGauges extends SimpleWorkerGauges
 {
-    public static UppdcWorkerGauges of(UppdcWorkerArgval argval, AtomicLong xidlsn)
+    public static UppdcWorkerGauges of(UppdcWorkerArgval argval)
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");
         }
-        if (xidlsn == null) {
-            throw new ArgumentNullException("xidlsn");
-        }
-        return new UppdcWorkerGauges(argval, xidlsn);
+        return new UppdcWorkerGauges(argval);
     }
 
-    private UppdcWorkerGauges(UppdcWorkerArgval argval, AtomicLong xidlsn)
+    private UppdcWorkerGauges(UppdcWorkerArgval argval)
     {
-        this.txactionLsn = xidlsn;
-        this.fetchMetric = argval.fetchXqueue.fetchXqueue();
-        this.spinsMetric = argval.spinsArgval;
+        this.recver = argval.recver.fetchXqueue();
+        this.xspins = argval.xspins;
+        this.sender = argval.sender;
     }
 
-    public final AtomicLong txactionLsn;
+    public final Xqueue.Fetch<UpperRecordProducer> recver;
 
-    public final AtomicReference<Throwable> callbackRef = new AtomicReference<>();
+    public final Xqueue.Spins xspins;
 
-    public final Xqueue.Fetch<UpperRecordProducer> fetchMetric;
-
-    public final Xqueue.Spins spinsMetric;
+    public final UppdcSender sender;
 
     public ObjectNode toJsonObject(ObjectNode node)
     {
@@ -44,8 +35,8 @@ public class UppdcWorkerGauges extends SimpleWorkerGauges
             throw new ArgumentNullException("node");
         }
         node = super.toJsonObject(node);
-        LogSequenceNumber lsn = LogSequenceNumber.valueOf(txactionLsn.get());
-        node.put("txaction_lsn", lsn.asString());
+        // - LogSequenceNumber lsn = LogSequenceNumber.valueOf(xidlsn.get());
+        // - node.put("txaction_lsn", lsn.asString());
         return node;
     }
 }

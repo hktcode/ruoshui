@@ -23,6 +23,8 @@ public class Xqueue<E>
 
     public int maxCapacity;
 
+    // - public long bufferCount;
+
     private Xqueue(int maxCapacity)
     {
         this.maxCapacity = maxCapacity;
@@ -39,30 +41,22 @@ public class Xqueue<E>
         return new Fetch<>(this);
     }
 
-    private static abstract class Queue<E>
+    public List<E> list()
     {
-        public final Xqueue<E> xqueue;
-
-        protected Queue(Xqueue<E> xqueue)
-        {
-            this.xqueue = xqueue;
-        }
-
-        public List<E> list()
-        {
-            return new ArrayList<>(xqueue.maxCapacity);
-        }
+        return new ArrayList<>(this.maxCapacity);
     }
 
-    public static class Offer<E> extends Queue<E>
+    public static class Offer<E>
     {
+        private final Xqueue<E> xqueue;
+
         public long trycnt = 0;
         public long bufcnt = 0;
         public long rowcnt = 0;
 
         private Offer(Xqueue<E> xqueue)
         {
-            super(xqueue);
+            this.xqueue = xqueue;
         }
 
         public List<E> push(List<E> lhs)
@@ -82,15 +76,17 @@ public class Xqueue<E>
         }
     }
 
-    public static class Fetch<E> extends Queue<E>
+    public static class Fetch<E>
     {
+        private final Xqueue<E> xqueue;
+
         public long trycnt = 0;
         public long bufcnt = 0;
         public long rowcnt = 0;
 
         private Fetch(Xqueue<E> xqueue)
         {
-            super(xqueue);
+            this.xqueue = xqueue;
         }
 
         public List<E> poll(List<E> rhs)

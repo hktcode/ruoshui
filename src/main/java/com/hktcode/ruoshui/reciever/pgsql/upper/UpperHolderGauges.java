@@ -28,9 +28,9 @@ public class UpperHolderGauges
     private UpperHolderGauges(UpperHolderArgval argval)
     {
         this.createts = System.currentTimeMillis();
-        AtomicLong txactionLsn = new AtomicLong(0L);
-        this.consumer = UpcsmWorkerGauges.of(argval.consumer, txactionLsn);
+        AtomicLong xidlsn = argval.producer.sender.txactionLsn;
+        this.consumer = UpcsmWorkerGauges.of(argval.consumer, xidlsn);
         this.junction = UpjctWorkerGauges.of(argval.junction);
-        this.producer = UppdcWorkerGauges.of(argval.producer, txactionLsn);
+        this.producer = UppdcWorkerGauges.of(argval.producer);
     }
 }

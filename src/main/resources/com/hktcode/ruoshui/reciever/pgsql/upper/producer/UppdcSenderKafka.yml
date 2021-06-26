@@ -1,12 +1,11 @@
 $schema: http://json-schema.org/draft-04/schema#
 type: object
 properties:
+  sender_class: { type: string, enum: ['kafka']}
   kfk_property:
     type: object
     properties:
       bootstrap.servers: { type: string, default: "localhost:9092" }
-    patternProperties: { "^.*$": { "type": "string" } }
+      patternProperties: { "^.*$": { "type": "string" } }
   target_topic: { type: string, "default": "ruoshui-upper" } #TODO: parttern
   partition_no: { type: integer, default: 0, minimum: 0, maximum: 2147483647 }
-  wait_timeout: { type: integer, default: 100, minimum: 10, maximum: 9223372036854775807 }
-  log_duration: { type: integer, default: 30000, minimum: 0, maximum: 9223372036854775807 }

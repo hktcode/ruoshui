@@ -1,0 +1,8 @@
+$schema: http://json-schema.org/draft-04/schema#
+type: object
+properties:
+  sender_class: { type: string, enum: ['files']}
+  max_synctime: { type: integer, minimum: 10, maximum: 9223372036854775807 }
+  max_syncsize: { type: integer, minimum: 1024, maximum: 9223372036854775807 }
+  max_filesize: { type: integer, minimum: 1024, maximum: 9223372036854775807 }
+  max_filetime: { type: integer, minimum: 1024, maximum: 9223372036854775807 }

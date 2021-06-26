@@ -48,8 +48,8 @@ public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, 
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
-        List<UpperRecordConsumer> crhs = gauges.recver.list(), clhs;
-        List<UpperRecordProducer> plhs = gauges.sender.list(), prhs;
+        List<UpperRecordConsumer> crhs = argval.recver.list(), clhs;
+        List<UpperRecordProducer> plhs = argval.sender.list(), prhs;
         int curCapacity = argval.sender.maxCapacity;
         int spins = 0;
         long ln, lt = System.currentTimeMillis();
