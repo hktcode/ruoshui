@@ -45,6 +45,7 @@ public class UpperHolderArgval implements JacksonObject
         return new UpperHolderArgval(fullname, consumer, junction, producer);
     }
 
+    public final long createts;
     public final String fullname;
     public final UpcsmWorkerArgval consumer; // laborer
     public final UpjctWorkerArgval junction;
@@ -57,6 +58,7 @@ public class UpperHolderArgval implements JacksonObject
             /* */, UppdcWorkerArgval producer //
             /* */)
     {
+        this.createts = System.currentTimeMillis();
         this.fullname = fullname;
         this.consumer = consumer;
         this.junction = junction;

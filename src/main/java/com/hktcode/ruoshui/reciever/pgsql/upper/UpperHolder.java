@@ -20,30 +20,28 @@ public class UpperHolder
     }
 
     private final UpperHolderArgval argval;
-    private final UpperHolderGauges gauges;
     private final SimpleAtomic atomic;
 
     private UpperHolder(UpperHolderArgval argval)
     {
         this.argval = argval;
-        this.gauges = UpperHolderGauges.of(argval);
         this.atomic = SimpleAtomic.of();
     }
 
     public SimpleWorker<UpcsmWorkerArgval, UpcsmWorkerArgval> consumer()
     {
         // - return SimpleWorker.of(this.argval.srcprops, this.argval.consumer, this.argval.srcqueue, this.atomic);
-        return SimpleWorker.of(this.argval.consumer, this.gauges.consumer, this.atomic);
+        return SimpleWorker.of(this.argval.consumer, this.argval.consumer, this.atomic);
     }
 
     public SimpleWorker<UpjctWorkerArgval, UpjctWorkerArgval> junction()
     {
-        return SimpleWorker.of(this.argval.junction, this.gauges.junction, this.atomic);
+        return SimpleWorker.of(this.argval.junction, this.argval.junction, this.atomic);
     }
 
     public SimpleWorker<UppdcWorkerArgval, UppdcWorkerArgval> producer()
     {
-        return SimpleWorker.of(this.argval.producer, this.gauges.producer, this.atomic);
+        return SimpleWorker.of(this.argval.producer, this.argval.producer, this.atomic);
     }
 
     public UpperResult modify(long finishts, JsonNode jsonnode, SimpleKeeper storeman)
@@ -74,7 +72,7 @@ public class UpperHolder
             deletets = finishts;
         }
         storeman.call(this.argval);
-        long createts = this.gauges.createts;
+        long createts = this.argval.createts;
         String fullname = this.argval.fullname;
         ObjectNode consumer = this.argval.consumer.toJsonObject();
         ObjectNode junction = this.argval.junction.toJsonObject();
