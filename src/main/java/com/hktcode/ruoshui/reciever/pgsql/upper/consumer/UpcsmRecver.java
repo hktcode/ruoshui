@@ -17,11 +17,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class UpcsmRecverArgval
+public class UpcsmRecver
 {
-    public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UpcsmRecverArgval.class, "UpcsmRecver.yml");
+    public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UpcsmRecver.class, "UpcsmRecver.yml");
 
-    public static UpcsmRecverArgval of(JsonNode json, AtomicLong xidlsn) //
+    public static UpcsmRecver of(JsonNode json, AtomicLong xidlsn) //
     {
         if (json == null) {
             throw new ArgumentNullException("json");
@@ -36,7 +36,7 @@ public class UpcsmRecverArgval
         JsonNode logicalReplNode = json.path("logical_repl");
         LogicalReplArgval logicalRepl = LogicalReplArgval.of(logicalReplNode);
 
-        return new UpcsmRecverArgval(srcProperty, logicalRepl, xidlsn);
+        return new UpcsmRecver(srcProperty, logicalRepl, xidlsn);
     }
 
     // argval
@@ -54,7 +54,7 @@ public class UpcsmRecverArgval
     private final AtomicLong xidlsn;
 
 
-    private UpcsmRecverArgval(PgConnectionProperty srcProperty, LogicalReplArgval logicalRepl, AtomicLong xidlsn)
+    private UpcsmRecver(PgConnectionProperty srcProperty, LogicalReplArgval logicalRepl, AtomicLong xidlsn)
     {
         this.srcProperty = srcProperty;
         this.logicalRepl = logicalRepl;
@@ -68,7 +68,7 @@ public class UpcsmRecverArgval
 
     public static class Client implements AutoCloseable
     {
-        private final UpcsmRecverArgval recver;
+        private final UpcsmRecver recver;
 
         private final Connection pgrepl;
 
@@ -76,7 +76,7 @@ public class UpcsmRecverArgval
 
         private long prelsn = 0;
 
-        private Client(UpcsmRecverArgval recver) throws SQLException
+        private Client(UpcsmRecver recver) throws SQLException
         {
             this.recver = recver;
             Connection conn = recver.srcProperty.replicaConnection();

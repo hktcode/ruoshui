@@ -6,9 +6,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Xqueue;
-import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorkerArgval;
-import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorkerArgval;
-import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorkerArgval;
+import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorker;
+import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorker;
+import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorker;
 import com.hktcode.simple.SimpleAtomic;
 import com.hktcode.simple.SimpleWorker;
 
@@ -24,9 +24,9 @@ public class UpperHolder implements JacksonObject
         schema.put("$schema", "http://json-schema.org/draft-04/schema#");
         schema.put("type", "object");
         ObjectNode propertiesNode = schema.putObject("properties");
-        propertiesNode.set("consumer", UpcsmWorkerArgval.SCHEMA);
-        propertiesNode.set("junction", UpjctWorkerArgval.SCHEMA);
-        propertiesNode.set("producer", UppdcWorkerArgval.SCHEMA);
+        propertiesNode.set("consumer", UpcsmWorker.SCHEMA);
+        propertiesNode.set("junction", UpjctWorker.SCHEMA);
+        propertiesNode.set("producer", UppdcWorker.SCHEMA);
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
@@ -39,26 +39,26 @@ public class UpperHolder implements JacksonObject
             throw new ArgumentNullException("jsonnode");
         }
         AtomicLong xidlsn = new AtomicLong(0L);
-        UpcsmWorkerArgval consumer = UpcsmWorkerArgval.of(jsonnode.path("consumer"), xidlsn);
+        UpcsmWorker consumer = UpcsmWorker.of(jsonnode.path("consumer"), xidlsn);
         Xqueue<UpperRecordConsumer> fetchXqueue = consumer.sender;
-        UpjctWorkerArgval junction = UpjctWorkerArgval.ofJsonObject(jsonnode.path("junction"), fetchXqueue);
+        UpjctWorker junction = UpjctWorker.ofJsonObject(jsonnode.path("junction"), fetchXqueue);
         Xqueue<UpperRecordProducer> offerXqueue = junction.sender;
-        UppdcWorkerArgval producer = UppdcWorkerArgval.ofJsonObject(jsonnode.path("producer"), offerXqueue, xidlsn);
+        UppdcWorker producer = UppdcWorker.ofJsonObject(jsonnode.path("producer"), offerXqueue, xidlsn);
         return new UpperHolder(fullname, consumer, junction, producer);
     }
 
     public final long createts;
     public final String fullname;
-    public final UpcsmWorkerArgval consumer; // laborer
-    public final UpjctWorkerArgval junction;
-    public final UppdcWorkerArgval producer;
+    public final UpcsmWorker consumer; // laborer
+    public final UpjctWorker junction;
+    public final UppdcWorker producer;
     private final SimpleAtomic atomic;
 
     private UpperHolder //
         /* */(String fullname //
-            /* */, UpcsmWorkerArgval consumer //
-            /* */, UpjctWorkerArgval junction //
-            /* */, UppdcWorkerArgval producer //
+            /* */, UpcsmWorker consumer //
+            /* */, UpjctWorker junction //
+            /* */, UppdcWorker producer //
             /* */)
     {
         this.createts = System.currentTimeMillis();
@@ -69,18 +69,18 @@ public class UpperHolder implements JacksonObject
         this.atomic = SimpleAtomic.of();
     }
 
-    public SimpleWorker<UpcsmWorkerArgval, UpcsmWorkerArgval> consumer()
+    public SimpleWorker<UpcsmWorker, UpcsmWorker> consumer()
     {
         // - return SimpleWorker.of(this.argval.srcprops, this.argval.consumer, this.argval.srcqueue, this.atomic);
         return SimpleWorker.of(this.consumer, this.consumer, this.atomic);
     }
 
-    public SimpleWorker<UpjctWorkerArgval, UpjctWorkerArgval> junction()
+    public SimpleWorker<UpjctWorker, UpjctWorker> junction()
     {
         return SimpleWorker.of(this.junction, this.junction, this.atomic);
     }
 
-    public SimpleWorker<UppdcWorkerArgval, UppdcWorkerArgval> producer()
+    public SimpleWorker<UppdcWorker, UppdcWorker> producer()
     {
         return SimpleWorker.of(this.producer, this.producer, this.atomic);
     }

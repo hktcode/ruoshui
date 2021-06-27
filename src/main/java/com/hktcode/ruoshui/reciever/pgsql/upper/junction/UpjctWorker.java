@@ -22,9 +22,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class UpjctWorkerArgval extends SimpleWorkerGauges //
-        implements SimpleWorkerArgval<UpjctWorkerArgval, UpjctWorkerArgval>
-                 , SimpleWkstepAction<UpjctWorkerArgval, UpjctWorkerArgval>
+public class UpjctWorker extends SimpleWorkerGauges //
+        implements SimpleWorkerArgval<UpjctWorker, UpjctWorker>
+                 , SimpleWkstepAction<UpjctWorker, UpjctWorker>
 {
     public static final ObjectNode SCHEMA;
 
@@ -41,7 +41,7 @@ public class UpjctWorkerArgval extends SimpleWorkerGauges //
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    public static UpjctWorkerArgval ofJsonObject(JsonNode json, Xqueue<UpperRecordConsumer> recver) //
+    public static UpjctWorker ofJsonObject(JsonNode json, Xqueue<UpperRecordConsumer> recver) //
     {
         if (json == null) {
             throw new ArgumentNullException("json");
@@ -50,7 +50,7 @@ public class UpjctWorkerArgval extends SimpleWorkerGauges //
             throw new ArgumentNullException("recver");
         }
         Xqueue<UpperRecordProducer> sender = Xqueue.of(json.path("sender"));
-        UpjctWorkerArgval result = new UpjctWorkerArgval(recver, sender);
+        UpjctWorker result = new UpjctWorker(recver, sender);
         result.xspins.pst(json.path("xspins"));
         return result;
     }
@@ -67,7 +67,7 @@ public class UpjctWorkerArgval extends SimpleWorkerGauges //
     public long curseq = 0;
     public final LogicalTxactContext xidenv = LogicalTxactContext.of();
 
-    private UpjctWorkerArgval(Xqueue<UpperRecordConsumer> recver, Xqueue<UpperRecordProducer> sender)
+    private UpjctWorker(Xqueue<UpperRecordConsumer> recver, Xqueue<UpperRecordProducer> sender)
     {
         this.recver = recver;
         this.sender = sender;
@@ -90,14 +90,14 @@ public class UpjctWorkerArgval extends SimpleWorkerGauges //
     }
 
     @Override
-    public UpjctWorkerArgval action()
+    public UpjctWorker action()
     {
         return this;
     }
 
 
     @Override
-    public SimpleWkstep next(UpjctWorkerArgval argval, UpjctWorkerArgval gauges, SimpleAtomic atomic) //
+    public SimpleWkstep next(UpjctWorker argval, UpjctWorker gauges, SimpleAtomic atomic) //
             throws InterruptedException
     {
         if (argval == null) {
@@ -154,7 +154,7 @@ public class UpjctWorkerArgval extends SimpleWorkerGauges //
         return SimpleWkstepTheEnd.of();
     }
 
-    private List<UpperRecordProducer> convert(UpjctWorkerArgval gauges, UpperRecordConsumer record)
+    private List<UpperRecordProducer> convert(UpjctWorker gauges, UpperRecordConsumer record)
     {
         long lsn = record.lsn;
         LogicalMsg msg = record.msg;
@@ -185,5 +185,5 @@ public class UpjctWorkerArgval extends SimpleWorkerGauges //
         return ImmutableList.copyOf(result);
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(UpjctWorkerArgval.class);
+    private static final Logger logger = LoggerFactory.getLogger(UpjctWorker.class);
 }

@@ -17,9 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class UpcsmWorkerArgval extends SimpleWorkerGauges //
-        implements SimpleWorkerArgval<UpcsmWorkerArgval, UpcsmWorkerArgval>
-        , SimpleWkstepAction<UpcsmWorkerArgval, UpcsmWorkerArgval>
+public class UpcsmWorker extends SimpleWorkerGauges //
+        implements SimpleWorkerArgval<UpcsmWorker, UpcsmWorker>
+        , SimpleWkstepAction<UpcsmWorker, UpcsmWorker>
 {
     public static final ObjectNode SCHEMA;
 
@@ -31,12 +31,12 @@ public class UpcsmWorkerArgval extends SimpleWorkerGauges //
         ObjectNode argvalNode = schema.putObject("properties");
         ObjectNode actionInfosNode = argvalNode.putObject("actions_info");
         actionInfosNode.put("type", "array");
-        actionInfosNode.set("items", UpcsmRecverArgval.SCHEMA);
+        actionInfosNode.set("items", UpcsmRecver.SCHEMA);
         actionInfosNode.put("maxItems", 1);
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    public static UpcsmWorkerArgval of(JsonNode json, AtomicLong xidlsn) //
+    public static UpcsmWorker of(JsonNode json, AtomicLong xidlsn) //
     {
         if (json == null) {
             throw new ArgumentNullException("json");
@@ -45,8 +45,8 @@ public class UpcsmWorkerArgval extends SimpleWorkerGauges //
             throw new ArgumentNullException("xidlsn");
         }
         Xqueue<UpperRecordConsumer> sender = Xqueue.of(json.path("sender"));
-        UpcsmRecverArgval recver = UpcsmRecverArgval.of(json.path("recver"), xidlsn);
-        UpcsmWorkerArgval result = new UpcsmWorkerArgval(recver, sender);
+        UpcsmRecver recver = UpcsmRecver.of(json.path("recver"), xidlsn);
+        UpcsmWorker result = new UpcsmWorker(recver, sender);
         result.xspins.pst(json.path("xspins"));
         return result;
     }
@@ -55,10 +55,10 @@ public class UpcsmWorkerArgval extends SimpleWorkerGauges //
 
     public final Xqueue<UpperRecordConsumer> sender;
 
-    public final UpcsmRecverArgval recver;
+    public final UpcsmRecver recver;
 
     @Override
-    public SimpleWkstep next(UpcsmWorkerArgval argval, UpcsmWorkerArgval gauges, SimpleAtomic atomic) //
+    public SimpleWkstep next(UpcsmWorker argval, UpcsmWorker gauges, SimpleAtomic atomic) //
             throws InterruptedException, SQLException
     {
         if (argval == null) {
@@ -76,7 +76,7 @@ public class UpcsmWorkerArgval extends SimpleWorkerGauges //
         int spins = 0, spinsStatus = Xqueue.Spins.RESET;
         long now, logtime = System.currentTimeMillis();
         final Xqueue.Offer<UpperRecordConsumer> sender = gauges.sender.offerXqueue();
-        try (UpcsmRecverArgval.Client client = argval.recver.client()) {
+        try (UpcsmRecver.Client client = argval.recver.client()) {
             while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
                 // 未来计划：此处可以提高性能
                 int size = lhs.size();
@@ -111,7 +111,7 @@ public class UpcsmWorkerArgval extends SimpleWorkerGauges //
         return SimpleWkstepTheEnd.of();
     }
 
-    private UpcsmWorkerArgval(UpcsmRecverArgval recver, Xqueue<UpperRecordConsumer> sender)
+    private UpcsmWorker(UpcsmRecver recver, Xqueue<UpperRecordConsumer> sender)
     {
         this.sender = sender;
         this.recver = recver;
@@ -135,10 +135,10 @@ public class UpcsmWorkerArgval extends SimpleWorkerGauges //
     }
 
     @Override
-    public UpcsmWorkerArgval action()
+    public UpcsmWorker action()
     {
         return this;
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(UpcsmWorkerArgval.class);
+    private static final Logger logger = LoggerFactory.getLogger(UpcsmWorker.class);
 }

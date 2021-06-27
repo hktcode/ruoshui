@@ -15,9 +15,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class UppdcWorkerArgval extends SimpleWorkerGauges //
-        implements SimpleWorkerArgval<UppdcWorkerArgval, UppdcWorkerArgval>
-                 , SimpleWkstepAction<UppdcWorkerArgval, UppdcWorkerArgval>
+public class UppdcWorker extends SimpleWorkerGauges //
+        implements SimpleWorkerArgval<UppdcWorker, UppdcWorker>
+                 , SimpleWkstepAction<UppdcWorker, UppdcWorker>
 {
     public static final ObjectNode SCHEMA;
 
@@ -34,7 +34,7 @@ public class UppdcWorkerArgval extends SimpleWorkerGauges //
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    public static UppdcWorkerArgval ofJsonObject(JsonNode json, Xqueue<UpperRecordProducer> recver, AtomicLong xidlsn)
+    public static UppdcWorker ofJsonObject(JsonNode json, Xqueue<UpperRecordProducer> recver, AtomicLong xidlsn)
     {
         if (json == null) {
             throw new ArgumentNullException("json");
@@ -46,7 +46,7 @@ public class UppdcWorkerArgval extends SimpleWorkerGauges //
             throw new ArgumentNullException("xidlsn");
         }
         UppdcSender sender = UppdcSender.of(json.path("sender"), xidlsn);
-        UppdcWorkerArgval result = new UppdcWorkerArgval(sender, recver);
+        UppdcWorker result = new UppdcWorker(sender, recver);
         result.xspins.pst(json.path("xspins"));
         return result;
     }
@@ -57,7 +57,7 @@ public class UppdcWorkerArgval extends SimpleWorkerGauges //
 
     public final Xqueue.Spins xspins = Xqueue.Spins.of();
 
-    private UppdcWorkerArgval(UppdcSender sender, Xqueue<UpperRecordProducer> recver)
+    private UppdcWorker(UppdcSender sender, Xqueue<UpperRecordProducer> recver)
     {
         this.sender = sender;
         this.recver = recver;
@@ -80,14 +80,14 @@ public class UppdcWorkerArgval extends SimpleWorkerGauges //
     }
 
     @Override
-    public UppdcWorkerArgval action()
+    public UppdcWorker action()
     {
         return this;
     }
 
 
     @Override
-    public SimpleWkstep next(UppdcWorkerArgval argval, UppdcWorkerArgval gauges, SimpleAtomic atomic) ///
+    public SimpleWkstep next(UppdcWorker argval, UppdcWorker gauges, SimpleAtomic atomic) ///
             throws Throwable
     {
         if (argval == null) {
@@ -123,5 +123,5 @@ public class UppdcWorkerArgval extends SimpleWorkerGauges //
         return SimpleWkstepTheEnd.of();
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(UppdcWorkerArgval.class);
+    private static final Logger logger = LoggerFactory.getLogger(UppdcWorker.class);
 }
