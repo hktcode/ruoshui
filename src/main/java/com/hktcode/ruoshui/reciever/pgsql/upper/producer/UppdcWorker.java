@@ -11,11 +11,12 @@ import com.hktcode.simple.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class UppdcWorker //
+public class UppdcWorker extends SimpleWorker //
         implements SimpleWorkerArgval, SimpleWkstepAction
 {
     public static final ObjectNode SCHEMA;
@@ -33,7 +34,7 @@ public class UppdcWorker //
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    public static UppdcWorker ofJsonObject(JsonNode json, Xqueue<UpperRecordProducer> recver, AtomicLong xidlsn)
+    public static UppdcWorker ofJsonObject(JsonNode json, Xqueue<UpperRecordProducer> recver, AtomicLong xidlsn, SimpleAtomic atomic)
     {
         if (json == null) {
             throw new ArgumentNullException("json");
@@ -44,8 +45,11 @@ public class UppdcWorker //
         if (xidlsn == null) {
             throw new ArgumentNullException("xidlsn");
         }
+        if (atomic == null) {
+            throw new ArgumentNullException("atomic");
+        }
         UppdcSender sender = UppdcSender.of(json.path("sender"), xidlsn);
-        UppdcWorker result = new UppdcWorker(sender, recver);
+        UppdcWorker result = new UppdcWorker(sender, recver, atomic);
         result.xspins.pst(json.path("xspins"));
         return result;
     }
@@ -56,10 +60,17 @@ public class UppdcWorker //
 
     public final Xqueue.Spins xspins = Xqueue.Spins.of();
 
-    private UppdcWorker(UppdcSender sender, Xqueue<UpperRecordProducer> recver)
+    private UppdcWorker(UppdcSender sender, Xqueue<UpperRecordProducer> recver, SimpleAtomic atomic)
     {
+        super(atomic);
         this.sender = sender;
         this.recver = recver;
+    }
+
+    @Override
+    protected void run(SimpleAtomic atomic) throws Throwable
+    {
+        this.next(atomic);
     }
 
     @Override
@@ -84,9 +95,8 @@ public class UppdcWorker //
         return this;
     }
 
-
     @Override
-    public SimpleWkstep next(SimpleAtomic atomic) ///
+    public SimpleWkstep next(SimpleAtomic atomic) //
             throws Throwable
     {
         if (atomic == null) {

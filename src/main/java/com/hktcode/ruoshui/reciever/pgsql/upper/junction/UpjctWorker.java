@@ -18,11 +18,12 @@ import com.hktcode.simple.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class UpjctWorker //
+public class UpjctWorker extends SimpleWorker //
         implements SimpleWorkerArgval, SimpleWkstepAction
 {
     public static final ObjectNode SCHEMA;
@@ -40,7 +41,7 @@ public class UpjctWorker //
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    public static UpjctWorker ofJsonObject(JsonNode json, Xqueue<UpperRecordConsumer> recver) //
+    public static UpjctWorker ofJsonObject(JsonNode json, Xqueue<UpperRecordConsumer> recver, SimpleAtomic atomic) //
     {
         if (json == null) {
             throw new ArgumentNullException("json");
@@ -48,8 +49,11 @@ public class UpjctWorker //
         if (recver == null) {
             throw new ArgumentNullException("recver");
         }
+        if (atomic == null) {
+            throw new ArgumentNullException("atomic");
+        }
         Xqueue<UpperRecordProducer> sender = Xqueue.of(json.path("sender"));
-        UpjctWorker result = new UpjctWorker(recver, sender);
+        UpjctWorker result = new UpjctWorker(recver, sender, atomic);
         result.xspins.pst(json.path("xspins"));
         return result;
     }
@@ -66,8 +70,9 @@ public class UpjctWorker //
     public long curseq = 0;
     public final LogicalTxactContext xidenv = LogicalTxactContext.of();
 
-    private UpjctWorker(Xqueue<UpperRecordConsumer> recver, Xqueue<UpperRecordProducer> sender)
+    private UpjctWorker(Xqueue<UpperRecordConsumer> recver, Xqueue<UpperRecordProducer> sender, SimpleAtomic atomic)
     {
+        super(atomic);
         this.recver = recver;
         this.sender = sender;
     }
@@ -94,6 +99,11 @@ public class UpjctWorker //
         return this;
     }
 
+    @Override
+    protected void run(SimpleAtomic atomic) throws InterruptedException
+    {
+        this.next(atomic);
+    }
 
     @Override
     public SimpleWkstep next(SimpleAtomic atomic) //

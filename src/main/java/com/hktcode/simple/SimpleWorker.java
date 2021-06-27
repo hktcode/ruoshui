@@ -7,19 +7,14 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleWorker<A extends SimpleWorkerArgval>
-        implements Runnable
+public class SimpleWorker implements Runnable
 {
-    public static <A extends SimpleWorkerArgval> //
-    SimpleWorker<A> of(A argval, SimpleAtomic atomic)
+    public static SimpleWorker of(SimpleAtomic atomic)
     {
-        if (argval == null) {
-            throw new ArgumentNullException("argval");
-        }
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
-        return new SimpleWorker<>(atomic);
+        return new SimpleWorker(atomic);
     }
 
     private final SimpleAtomic atomic;
@@ -45,7 +40,6 @@ public class SimpleWorker<A extends SimpleWorkerArgval>
                 this.run(this.atomic);
                 logger.info("triple completes");
             } catch (Throwable ex) {
-                logger.error("triple throws exception: ", ex);
                 long endMillis = System.currentTimeMillis();
                 this.errors.add(ex);
                 long deletets;
@@ -57,14 +51,15 @@ public class SimpleWorker<A extends SimpleWorkerArgval>
         } catch (InterruptedException ex) {
             logger.error("should never happen", ex);
             Thread.currentThread().interrupt();
+        } catch (Throwable ex) {
+            logger.error("triple throws exception: ", ex);
         }
         finally {
             this.finish = System.currentTimeMillis();
         }
     }
 
-    protected void run(SimpleAtomic atomic)
-    {
+    protected void run(SimpleAtomic atomic) throws Throwable {
     }
 
     private static final Logger logger = LoggerFactory.getLogger(SimpleWorker.class);

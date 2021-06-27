@@ -38,13 +38,14 @@ public class UpperHolder implements JacksonObject
         if (jsonnode == null) {
             throw new ArgumentNullException("jsonnode");
         }
+        SimpleAtomic atomic = SimpleAtomic.of();
         AtomicLong xidlsn = new AtomicLong(0L);
-        UpcsmWorker consumer = UpcsmWorker.of(jsonnode.path("consumer"), xidlsn);
+        UpcsmWorker consumer = UpcsmWorker.of(jsonnode.path("consumer"), xidlsn, atomic);
         Xqueue<UpperRecordConsumer> fetchXqueue = consumer.sender;
-        UpjctWorker junction = UpjctWorker.ofJsonObject(jsonnode.path("junction"), fetchXqueue);
+        UpjctWorker junction = UpjctWorker.ofJsonObject(jsonnode.path("junction"), fetchXqueue, atomic);
         Xqueue<UpperRecordProducer> offerXqueue = junction.sender;
-        UppdcWorker producer = UppdcWorker.ofJsonObject(jsonnode.path("producer"), offerXqueue, xidlsn);
-        return new UpperHolder(fullname, consumer, junction, producer);
+        UppdcWorker producer = UppdcWorker.ofJsonObject(jsonnode.path("producer"), offerXqueue, xidlsn, atomic);
+        return new UpperHolder(fullname, consumer, junction, producer, atomic);
     }
 
     public final long createts;
@@ -59,6 +60,7 @@ public class UpperHolder implements JacksonObject
             /* */, UpcsmWorker consumer //
             /* */, UpjctWorker junction //
             /* */, UppdcWorker producer //
+            /* */, SimpleAtomic atomic
             /* */)
     {
         this.createts = System.currentTimeMillis();
@@ -66,23 +68,23 @@ public class UpperHolder implements JacksonObject
         this.consumer = consumer;
         this.junction = junction;
         this.producer = producer;
-        this.atomic = SimpleAtomic.of();
+        this.atomic = atomic;
     }
 
-    public SimpleWorker<UpcsmWorker> consumer()
+    public SimpleWorker consumer()
     {
         // - return SimpleWorker.of(this.argval.srcprops, this.argval.consumer, this.argval.srcqueue, this.atomic);
-        return SimpleWorker.of(this.consumer, this.atomic);
+        return this.consumer;
     }
 
-    public SimpleWorker<UpjctWorker> junction()
+    public SimpleWorker junction()
     {
-        return SimpleWorker.of(this.junction, this.atomic);
+        return this.junction;
     }
 
-    public SimpleWorker<UppdcWorker> producer()
+    public SimpleWorker producer()
     {
-        return SimpleWorker.of(this.producer, this.atomic);
+        return this.producer;
     }
 
     public UpperResult modify(long finishts, JsonNode jsonnode, SimpleKeeper storeman)

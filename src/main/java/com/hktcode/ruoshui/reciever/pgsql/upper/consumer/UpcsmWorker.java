@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class UpcsmWorker //
+public class UpcsmWorker extends SimpleWorker //
         implements SimpleWorkerArgval, SimpleWkstepAction
 {
     public static final ObjectNode SCHEMA;
@@ -35,7 +35,7 @@ public class UpcsmWorker //
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    public static UpcsmWorker of(JsonNode json, AtomicLong xidlsn) //
+    public static UpcsmWorker of(JsonNode json, AtomicLong xidlsn, SimpleAtomic atomic) //
     {
         if (json == null) {
             throw new ArgumentNullException("json");
@@ -43,9 +43,12 @@ public class UpcsmWorker //
         if (xidlsn == null) {
             throw new ArgumentNullException("xidlsn");
         }
+        if (atomic == null) {
+            throw new ArgumentNullException("atomic");
+        }
         Xqueue<UpperRecordConsumer> sender = Xqueue.of(json.path("sender"));
         UpcsmRecver recver = UpcsmRecver.of(json.path("recver"), xidlsn);
-        UpcsmWorker result = new UpcsmWorker(recver, sender);
+        UpcsmWorker result = new UpcsmWorker(recver, sender, atomic);
         result.xspins.pst(json.path("xspins"));
         return result;
     }
@@ -55,6 +58,12 @@ public class UpcsmWorker //
     public final Xqueue<UpperRecordConsumer> sender;
 
     public final UpcsmRecver recver;
+
+    @Override
+    protected void run(SimpleAtomic atomic) throws SQLException, InterruptedException
+    {
+        this.next(atomic);
+    }
 
     @Override
     public SimpleWkstep next(SimpleAtomic atomic) //
@@ -103,8 +112,9 @@ public class UpcsmWorker //
         return SimpleWkstepTheEnd.of();
     }
 
-    private UpcsmWorker(UpcsmRecver recver, Xqueue<UpperRecordConsumer> sender)
+    private UpcsmWorker(UpcsmRecver recver, Xqueue<UpperRecordConsumer> sender, SimpleAtomic atomic)
     {
+        super(atomic);
         this.sender = sender;
         this.recver = recver;
     }
