@@ -97,14 +97,11 @@ public class UpjctWorker extends SimpleWorkerGauges //
 
 
     @Override
-    public SimpleWkstep next(UpjctWorker argval, UpjctWorker gauges, SimpleAtomic atomic) //
+    public SimpleWkstep next(UpjctWorker argval, SimpleAtomic atomic) //
             throws InterruptedException
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");
-        }
-        if (gauges == null) {
-            throw new ArgumentNullException("gauges");
         }
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
@@ -131,13 +128,13 @@ public class UpjctWorker extends SimpleWorkerGauges //
                 spins = 0;
                 lt = System.currentTimeMillis();
             } else if (size >= capacity) {
-                gauges.xspins.spins(spins++);
+                argval.xspins.spins(spins++);
             } else if (piter.hasNext()) {
                 plhs.add(piter.next());
                 spins = 0;
                 lt = System.currentTimeMillis();
             } else if (citer.hasNext()) {
-                piter = this.convert(gauges, citer.next()).iterator();
+                piter = this.convert(argval, citer.next()).iterator();
                 lt = System.currentTimeMillis();
             } else if ((clhs = recver.poll(crhs)) != crhs) {
                 crhs = clhs;
@@ -146,11 +143,11 @@ public class UpjctWorker extends SimpleWorkerGauges //
                 logger.info("logDuration={}", ld);
                 lt = ln;
             } else {
-                gauges.xspins.spins(spins++);
+                argval.xspins.spins(spins++);
             }
         }
         logger.info("upjct complete");
-        gauges.finish = System.currentTimeMillis();
+        argval.finish = System.currentTimeMillis();
         return SimpleWkstepTheEnd.of();
     }
 

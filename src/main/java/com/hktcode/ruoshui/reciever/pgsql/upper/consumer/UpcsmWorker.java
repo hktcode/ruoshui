@@ -58,14 +58,11 @@ public class UpcsmWorker extends SimpleWorkerGauges //
     public final UpcsmRecver recver;
 
     @Override
-    public SimpleWkstep next(UpcsmWorker argval, UpcsmWorker gauges, SimpleAtomic atomic) //
+    public SimpleWkstep next(UpcsmWorker argval, SimpleAtomic atomic) //
             throws InterruptedException, SQLException
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");
-        }
-        if (gauges == null) {
-            throw new ArgumentNullException("gauges");
         }
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
@@ -75,7 +72,7 @@ public class UpcsmWorker extends SimpleWorkerGauges //
         List<UpperRecordConsumer> rhs, lhs = new ArrayList<>(curCapacity);
         int spins = 0, spinsStatus = Xqueue.Spins.RESET;
         long now, logtime = System.currentTimeMillis();
-        final Xqueue.Offer<UpperRecordConsumer> sender = gauges.sender.offerXqueue();
+        final Xqueue.Offer<UpperRecordConsumer> sender = argval.sender.offerXqueue();
         try (UpcsmRecver.Client client = argval.recver.client()) {
             while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
                 // 未来计划：此处可以提高性能
@@ -102,12 +99,12 @@ public class UpcsmWorker extends SimpleWorkerGauges //
                     if (spinsStatus == Xqueue.Spins.SLEEP) {
                         client.forceUpdateStatus();
                     }
-                    spinsStatus = gauges.xspins.spins(spins++);
+                    spinsStatus = argval.xspins.spins(spins++);
                 }
             }
         }
         logger.info("pgsender complete");
-        gauges.finish = System.currentTimeMillis();
+        argval.finish = System.currentTimeMillis();
         return SimpleWkstepTheEnd.of();
     }
 

@@ -43,7 +43,7 @@ public class SimpleWorker<A extends SimpleWorkerArgval<A, G>, G extends SimpleWo
                 @SuppressWarnings("unchecked")
                 SimpleWkstepAction<A, G> action = (SimpleWkstepAction<A, G>) wkstep;
                 try {
-                    wkstep = action.next(this.argval, this.gauges, this.atomic);
+                    wkstep = action.next(this.argval, this.atomic);
                 } catch (InterruptedException ex) {
                     throw ex;
                 } catch (Throwable ex) {

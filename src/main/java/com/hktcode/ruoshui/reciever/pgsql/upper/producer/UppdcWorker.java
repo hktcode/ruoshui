@@ -87,14 +87,11 @@ public class UppdcWorker extends SimpleWorkerGauges //
 
 
     @Override
-    public SimpleWkstep next(UppdcWorker argval, UppdcWorker gauges, SimpleAtomic atomic) ///
+    public SimpleWkstep next(UppdcWorker argval, SimpleAtomic atomic) ///
             throws Throwable
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");
-        }
-        if (gauges == null) {
-            throw new ArgumentNullException("gauges");
         }
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
@@ -116,7 +113,7 @@ public class UppdcWorker extends SimpleWorkerGauges //
                     logger.info("write to logDuration={}", l);
                     prelog = now;
                 } else {
-                    gauges.xspins.spins(spins++);
+                    argval.xspins.spins(spins++);
                 }
             }
         }
