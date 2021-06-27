@@ -69,20 +69,20 @@ public class UpperHolder implements JacksonObject
         this.atomic = SimpleAtomic.of();
     }
 
-    public SimpleWorker<UpcsmWorker, UpcsmWorker> consumer()
+    public SimpleWorker<UpcsmWorker> consumer()
     {
         // - return SimpleWorker.of(this.argval.srcprops, this.argval.consumer, this.argval.srcqueue, this.atomic);
-        return SimpleWorker.of(this.consumer, this.consumer, this.atomic);
+        return SimpleWorker.of(this.consumer, this.atomic);
     }
 
-    public SimpleWorker<UpjctWorker, UpjctWorker> junction()
+    public SimpleWorker<UpjctWorker> junction()
     {
-        return SimpleWorker.of(this.junction, this.junction, this.atomic);
+        return SimpleWorker.of(this.junction, this.atomic);
     }
 
-    public SimpleWorker<UppdcWorker, UppdcWorker> producer()
+    public SimpleWorker<UppdcWorker> producer()
     {
-        return SimpleWorker.of(this.producer, this.producer, this.atomic);
+        return SimpleWorker.of(this.producer, this.atomic);
     }
 
     public UpperResult modify(long finishts, JsonNode jsonnode, SimpleKeeper storeman)

@@ -4,40 +4,46 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SimpleWorker<A extends SimpleWorkerArgval<A>, G extends SimpleWorkerGauges>
+import java.util.ArrayList;
+import java.util.List;
+
+public class SimpleWorker<A extends SimpleWorkerArgval<A>>
         implements Runnable
 {
-    public static <A extends SimpleWorkerArgval<A>, G extends SimpleWorkerGauges> //
-    SimpleWorker<A, G> of(A argval, G gauges, SimpleAtomic atomic)
+    public static <A extends SimpleWorkerArgval<A>> //
+    SimpleWorker<A> of(A argval, SimpleAtomic atomic)
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");
         }
-        if (gauges == null) {
-            throw new ArgumentNullException("gauges");
-        }
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
-        return new SimpleWorker<>(argval, gauges, atomic);
+        return new SimpleWorker<>(argval, atomic);
     }
 
     public final A argval;
 
-    public final G gauges;
-
     private final SimpleAtomic atomic;
 
-    protected SimpleWorker(A argval, G gauges, SimpleAtomic atomic)
+    public long starts = Long.MAX_VALUE;
+
+    public long finish = Long.MAX_VALUE;
+
+    // - public final List<SimpleWkstepGauges> wkstep = new ArrayList<>();
+
+    public final List<Throwable> errors = new ArrayList<>();
+
+    protected SimpleWorker(A argval, SimpleAtomic atomic)
     {
         this.argval = argval;
-        this.gauges = gauges;
         this.atomic = atomic;
     }
 
     public void run()
     {
         try {
+            this.starts = System.currentTimeMillis();
             SimpleWkstep wkstep = this.argval.action();
             do {
                 @SuppressWarnings("unchecked")
@@ -49,7 +55,7 @@ public class SimpleWorker<A extends SimpleWorkerArgval<A>, G extends SimpleWorke
                 } catch (Throwable ex) {
                     logger.error("triple throws exception: ", ex);
                     long endMillis = System.currentTimeMillis();
-                    gauges.errors.add(ex);
+                    this.errors.add(ex);
                     long deletets;
                     do {
                         deletets = this.atomic.call(endMillis).deletets;
@@ -62,7 +68,7 @@ public class SimpleWorker<A extends SimpleWorkerArgval<A>, G extends SimpleWorke
             logger.error("should never happen", e);
             Thread.currentThread().interrupt();
         } finally {
-            gauges.finish = System.currentTimeMillis();
+            this.finish = System.currentTimeMillis();
         }
     }
 
