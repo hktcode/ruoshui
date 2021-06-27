@@ -41,7 +41,7 @@ public class UpperHolderArgval implements JacksonObject
         Xqueue<UpperRecordConsumer> fetchXqueue = consumer.sender;
         UpjctWorkerArgval junction = UpjctWorkerArgval.ofJsonObject(jsonnode.path("junction"), fetchXqueue);
         Xqueue<UpperRecordProducer> offerXqueue = junction.sender;
-        UppdcWorkerArgval producer = UppdcWorkerArgval.ofJsonObject(jsonnode.path("producer"), offerXqueue);
+        UppdcWorkerArgval producer = UppdcWorkerArgval.ofJsonObject(jsonnode.path("producer"), offerXqueue, xidlsn);
         return new UpperHolderArgval(fullname, consumer, junction, producer);
     }
 
