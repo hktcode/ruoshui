@@ -2,7 +2,6 @@ package com.hktcode.ruoshui.reciever.pgsql.upper.consumer;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.queue.FetchTqueueGauges;
 import com.hktcode.queue.Xqueue;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
 import com.hktcode.simple.SimpleWorkerGauges;
@@ -24,6 +23,7 @@ public class UpcsmWorkerGauges extends SimpleWorkerGauges
 
     private UpcsmWorkerGauges(UpcsmWorkerArgval argval, AtomicLong xidlsn)
     {
+        this.recver = argval.recver;
         this.xspins = argval.xspins;
         this.sender = argval.sender.offerXqueue();
         this.xidlsn = xidlsn;
@@ -31,7 +31,7 @@ public class UpcsmWorkerGauges extends SimpleWorkerGauges
 
     public final Xqueue.Spins xspins;
     public final Xqueue.Offer<UpperRecordConsumer> sender;
-    public final FetchTqueueGauges recver = FetchTqueueGauges.of();
+    public final UpcsmRecverArgval recver;
     public final AtomicLong xidlsn;
 
     public ObjectNode toJsonObject(ObjectNode node)

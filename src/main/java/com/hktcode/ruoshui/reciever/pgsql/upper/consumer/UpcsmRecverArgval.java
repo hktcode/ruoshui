@@ -26,9 +26,18 @@ public class UpcsmRecverArgval
         return new UpcsmRecverArgval(srcProperty, logicalRepl);
     }
 
+    // argval
+
     public final PgConnectionProperty srcProperty;
 
     public final LogicalReplArgval logicalRepl;
+
+    // gauges
+
+    public long trycnt = 0;
+
+    public long rowcnt = 0;
+
 
     private UpcsmRecverArgval(PgConnectionProperty srcProperty, LogicalReplArgval logicalRepl)
     {
