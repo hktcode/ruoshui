@@ -24,6 +24,8 @@ public class Xqueue<E>
     public int maxCapacity;
 
     // - public long bufferCount;
+    // - public long minMessages;
+    // - public long maxMessages;
 
     private Xqueue(int maxCapacity)
     {

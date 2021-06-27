@@ -25,9 +25,9 @@ public abstract class SimpleWorker implements Runnable
 
     public void run()
     {
+        this.starts = System.currentTimeMillis();
         try {
             try {
-                this.starts = System.currentTimeMillis();
                 this.run(this.atomic);
                 logger.info("triple completes");
             } catch (Throwable ex) {

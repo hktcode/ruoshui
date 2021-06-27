@@ -50,10 +50,15 @@ public class UpperHolder implements JacksonObject
 
     public final long createts;
     public final String fullname;
+    // srcprops
     public final UpcsmWorker consumer; // laborer
+    // srcqueue
     public final UpjctWorker junction;
+    // tgtqueue
     public final UppdcWorker producer;
-    private final SimpleAtomic atomic;
+    // tgtprops
+    // txactlsn
+    private final SimpleAtomic atomic; // xbarrier
 
     private UpperHolder //
         /* */(String fullname //
@@ -73,7 +78,7 @@ public class UpperHolder implements JacksonObject
 
     public SimpleWorker consumer()
     {
-        // - return SimpleWorker.of(this.argval.srcprops, this.argval.consumer, this.argval.srcqueue, this.atomic);
+        // - return SimpleWorker.of(this.srcprops, this.consumer, this.srcqueue, this.atomic);
         return this.consumer;
     }
 
