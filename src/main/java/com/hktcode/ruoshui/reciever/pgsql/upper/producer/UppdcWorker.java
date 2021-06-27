@@ -86,22 +86,19 @@ public class UppdcWorker //
 
 
     @Override
-    public SimpleWkstep next(UppdcWorker argval, SimpleAtomic atomic) ///
+    public SimpleWkstep next(SimpleAtomic atomic) ///
             throws Throwable
     {
-        if (argval == null) {
-            throw new ArgumentNullException("argval");
-        }
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
-        List<UpperRecordProducer> lhs, rhs = argval.recver.list();
+        List<UpperRecordProducer> lhs, rhs = this.recver.list();
         long now, prelog = System.currentTimeMillis(), spins = 0;
         Iterator<UpperRecordProducer> iter = rhs.iterator();
-        Xqueue.Fetch<UpperRecordProducer> recver = argval.recver.fetchXqueue();
-        try (UppdcSender.Client client = argval.sender.client()) {
+        Xqueue.Fetch<UpperRecordProducer> recver = this.recver.fetchXqueue();
+        try (UppdcSender.Client client = this.sender.client()) {
             while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
-                long l = argval.xspins.logDuration;
+                long l = this.xspins.logDuration;
                 if (iter.hasNext()) {
                     // 未来计划：send方法支持数组，发送多个记录，提高性能
                     client.send(iter.next());
@@ -112,7 +109,7 @@ public class UppdcWorker //
                     logger.info("write to logDuration={}", l);
                     prelog = now;
                 } else {
-                    argval.xspins.spins(spins++);
+                    this.xspins.spins(spins++);
                 }
             }
         }

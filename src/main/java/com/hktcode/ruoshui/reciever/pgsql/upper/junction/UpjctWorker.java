@@ -96,27 +96,24 @@ public class UpjctWorker //
 
 
     @Override
-    public SimpleWkstep next(UpjctWorker argval, SimpleAtomic atomic) //
+    public SimpleWkstep next(SimpleAtomic atomic) //
             throws InterruptedException
     {
-        if (argval == null) {
-            throw new ArgumentNullException("argval");
-        }
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
-        List<UpperRecordConsumer> crhs = argval.recver.list(), clhs;
-        List<UpperRecordProducer> plhs = argval.sender.list(), prhs;
-        int curCapacity = argval.sender.maxCapacity;
+        List<UpperRecordConsumer> crhs = this.recver.list(), clhs;
+        List<UpperRecordProducer> plhs = this.sender.list(), prhs;
+        int curCapacity = this.sender.maxCapacity;
         int spins = 0;
         long ln, lt = System.currentTimeMillis();
         Iterator<UpperRecordProducer> piter = plhs.iterator();
         Iterator<UpperRecordConsumer> citer = crhs.iterator();
-        Xqueue.Offer<UpperRecordProducer> sender = argval.sender.offerXqueue();
-        Xqueue.Fetch<UpperRecordConsumer> recver = argval.recver.fetchXqueue();
+        Xqueue.Offer<UpperRecordProducer> sender = this.sender.offerXqueue();
+        Xqueue.Fetch<UpperRecordConsumer> recver = this.recver.fetchXqueue();
         while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
-            int size = plhs.size(), capacity = argval.sender.maxCapacity;
-            long ld = argval.xspins.logDuration;
+            int size = plhs.size(), capacity = this.sender.maxCapacity;
+            long ld = this.xspins.logDuration;
             if (    (size > 0)
                     // 未来计划：支持bufferCount和maxDuration
                     && (prhs = sender.push(plhs)) != plhs
@@ -127,13 +124,13 @@ public class UpjctWorker //
                 spins = 0;
                 lt = System.currentTimeMillis();
             } else if (size >= capacity) {
-                argval.xspins.spins(spins++);
+                this.xspins.spins(spins++);
             } else if (piter.hasNext()) {
                 plhs.add(piter.next());
                 spins = 0;
                 lt = System.currentTimeMillis();
             } else if (citer.hasNext()) {
-                piter = this.convert(argval, citer.next()).iterator();
+                piter = this.convert(this, citer.next()).iterator();
                 lt = System.currentTimeMillis();
             } else if ((clhs = recver.poll(crhs)) != crhs) {
                 crhs = clhs;
@@ -142,7 +139,7 @@ public class UpjctWorker //
                 logger.info("logDuration={}", ld);
                 lt = ln;
             } else {
-                argval.xspins.spins(spins++);
+                this.xspins.spins(spins++);
             }
         }
         logger.info("upjct complete");

@@ -57,27 +57,24 @@ public class UpcsmWorker //
     public final UpcsmRecver recver;
 
     @Override
-    public SimpleWkstep next(UpcsmWorker argval, SimpleAtomic atomic) //
+    public SimpleWkstep next(SimpleAtomic atomic) //
             throws InterruptedException, SQLException
     {
-        if (argval == null) {
-            throw new ArgumentNullException("argval");
-        }
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
         UpperRecordConsumer r;
-        int curCapacity = argval.sender.maxCapacity;
+        int curCapacity = this.sender.maxCapacity;
         List<UpperRecordConsumer> rhs, lhs = new ArrayList<>(curCapacity);
         int spins = 0, spinsStatus = Xqueue.Spins.RESET;
         long now, logtime = System.currentTimeMillis();
-        final Xqueue.Offer<UpperRecordConsumer> sender = argval.sender.offerXqueue();
-        try (UpcsmRecver.Client client = argval.recver.client()) {
+        final Xqueue.Offer<UpperRecordConsumer> sender = this.sender.offerXqueue();
+        try (UpcsmRecver.Client client = this.recver.client()) {
             while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
                 // 未来计划：此处可以提高性能
                 int size = lhs.size();
-                int capacity = argval.sender.maxCapacity;
-                long logDuration = argval.xspins.logDuration;
+                int capacity = this.sender.maxCapacity;
+                long logDuration = this.xspins.logDuration;
                 if (    (size > 0)
                         // 未来计划：支持bufferCount和maxDuration
                         && (rhs = sender.push(lhs)) != lhs
@@ -98,7 +95,7 @@ public class UpcsmWorker //
                     if (spinsStatus == Xqueue.Spins.SLEEP) {
                         client.forceUpdateStatus();
                     }
-                    spinsStatus = argval.xspins.spins(spins++);
+                    spinsStatus = this.xspins.spins(spins++);
                 }
             }
         }
