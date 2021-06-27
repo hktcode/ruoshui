@@ -126,10 +126,11 @@ public class UpcsmRecver
         @Override
         public void close() throws SQLException
         {
-            try (Connection c = this.pgrepl) {
-                try (PGReplicationStream s = this.stream) {
-                    // TODO:
-                }
+            try {
+                this.stream.close();
+            }
+            finally {
+                this.pgrepl.close();
             }
         }
     }

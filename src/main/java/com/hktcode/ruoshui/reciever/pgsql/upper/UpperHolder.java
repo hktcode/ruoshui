@@ -78,17 +78,19 @@ public class UpperHolder implements JacksonObject
 
     public SimpleWorker consumer()
     {
-        // - return SimpleWorker.of(this.srcprops, this.consumer, this.srcqueue, this.atomic);
+        // - return UpcsmWorker.of(srcprops, consumer, srcqueue, xbarrier, txactlsn);
         return this.consumer;
     }
 
     public SimpleWorker junction()
     {
+        // - return SimpleWorker.of(srcqueue, tgtqueue, xbarrier, txactlsn);
         return this.junction;
     }
 
     public SimpleWorker producer()
     {
+        // - return SimpleWorker.of(tgtqueue, tgtprops, xbarrier, txactlsn);
         return this.producer;
     }
 
