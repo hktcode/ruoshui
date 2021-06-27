@@ -1,7 +1,7 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper;
 
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorkerGauges;
+import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorkerArgval;
 import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorkerGauges;
 import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorkerGauges;
 
@@ -17,7 +17,7 @@ public class UpperHolderGauges
 
     public final long createts;
 
-    public final UpcsmWorkerGauges consumer;
+    public final UpcsmWorkerArgval consumer;
 
     public final UpjctWorkerGauges junction;
 
@@ -26,7 +26,7 @@ public class UpperHolderGauges
     private UpperHolderGauges(UpperHolderArgval argval)
     {
         this.createts = System.currentTimeMillis();
-        this.consumer = UpcsmWorkerGauges.of(argval.consumer);
+        this.consumer = argval.consumer;
         this.junction = UpjctWorkerGauges.of(argval.junction);
         this.producer = UppdcWorkerGauges.of(argval.producer);
     }

@@ -18,7 +18,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, UpcsmWorkerGauges>
+public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, UpcsmWorkerArgval>
 {
     private static final Logger logger = LoggerFactory.getLogger(UpcsmWkstepAction.class);
 
@@ -28,7 +28,7 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
     }
 
     @Override
-    public SimpleWkstep next(UpcsmWorkerArgval argval, UpcsmWorkerGauges gauges, SimpleAtomic atomic) //
+    public SimpleWkstep next(UpcsmWorkerArgval argval, UpcsmWorkerArgval gauges, SimpleAtomic atomic) //
             throws InterruptedException, SQLException
     {
         if (argval == null) {
@@ -45,6 +45,7 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
         List<UpperRecordConsumer> rhs, lhs = new ArrayList<>(curCapacity);
         int spins = 0, spinsStatus = Xqueue.Spins.RESET;
         long now, logtime = System.currentTimeMillis();
+        final Xqueue.Offer<UpperRecordConsumer> sender = gauges.sender.offerXqueue();
         try (UpcsmRecverArgval.Client client = argval.recver.client()) {
             while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
                 // 未来计划：此处可以提高性能
@@ -53,7 +54,7 @@ public class UpcsmWkstepAction implements SimpleWkstepAction<UpcsmWorkerArgval, 
                 long logDuration = argval.xspins.logDuration;
                 if (    (size > 0)
                      // 未来计划：支持bufferCount和maxDuration
-                     && (rhs = gauges.sender.push(lhs)) != lhs
+                     && (rhs = sender.push(lhs)) != lhs
                      && (curCapacity != capacity || (lhs = rhs) == null)
                 ) {
                     lhs = new ArrayList<>(capacity);

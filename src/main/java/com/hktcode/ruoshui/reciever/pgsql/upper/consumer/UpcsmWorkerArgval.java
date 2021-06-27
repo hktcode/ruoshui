@@ -14,7 +14,7 @@ import com.hktcode.simple.SimpleWorkerGauges;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class UpcsmWorkerArgval extends SimpleWorkerGauges //
-        implements SimpleWorkerArgval<UpcsmWorkerArgval, UpcsmWorkerGauges>
+        implements SimpleWorkerArgval<UpcsmWorkerArgval, UpcsmWorkerArgval>
 {
     public static final ObjectNode SCHEMA;
 

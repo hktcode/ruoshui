@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorkerArgval;
-import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorkerGauges;
 import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorkerArgval;
 import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorkerGauges;
 import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorkerArgval;
@@ -33,7 +32,7 @@ public class UpperHolder
         this.atomic = SimpleAtomic.of();
     }
 
-    public SimpleWorker<UpcsmWorkerArgval, UpcsmWorkerGauges> consumer()
+    public SimpleWorker<UpcsmWorkerArgval, UpcsmWorkerArgval> consumer()
     {
         // - return SimpleWorker.of(this.argval.srcprops, this.argval.consumer, this.argval.srcqueue, this.atomic);
         return SimpleWorker.of(this.argval.consumer, this.gauges.consumer, this.atomic);
