@@ -5,6 +5,7 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.queue.Xqueue;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
 import com.hktcode.simple.SimpleAtomic;
 import com.hktcode.simple.SimpleWkstep;
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Iterator;
 import java.util.List;
 
-public class UppdcWkstepAction implements SimpleWkstepAction<UppdcWorkerArgval, UppdcWorkerGauges>
+public class UppdcWkstepAction implements SimpleWkstepAction<UppdcWorkerArgval, UppdcWorkerArgval>
 {
     private static final Logger logger = LoggerFactory.getLogger(UppdcWkstepAction.class);
 
@@ -30,7 +31,7 @@ public class UppdcWkstepAction implements SimpleWkstepAction<UppdcWorkerArgval, 
     }
 
     @Override
-    public SimpleWkstep next(UppdcWorkerArgval argval, UppdcWorkerGauges gauges, SimpleAtomic atomic) ///
+    public SimpleWkstep next(UppdcWorkerArgval argval, UppdcWorkerArgval gauges, SimpleAtomic atomic) ///
             throws Throwable
     {
         if (argval == null) {
@@ -45,13 +46,14 @@ public class UppdcWkstepAction implements SimpleWkstepAction<UppdcWorkerArgval, 
         List<UpperRecordProducer> lhs, rhs = argval.recver.list();
         long now, prelog = System.currentTimeMillis(), spins = 0;
         Iterator<UpperRecordProducer> iter = rhs.iterator();
+        Xqueue.Fetch<UpperRecordProducer> recver = argval.recver.fetchXqueue();
         try (UppdcSender.Client client = argval.sender.client()) {
             while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
                 long l = argval.xspins.logDuration;
                 if (iter.hasNext()) {
                     // 未来计划：send方法支持数组，发送多个记录，提高性能
                     client.send(iter.next());
-                } else if ((lhs = gauges.recver.poll(rhs)) != rhs) {
+                } else if ((lhs = recver.poll(rhs)) != rhs) {
                     rhs = lhs;
                     iter = rhs.iterator();
                 } else if (prelog + l >= (now = System.currentTimeMillis())) {

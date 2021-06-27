@@ -8,10 +8,12 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Xqueue;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
 import com.hktcode.simple.SimpleWorkerArgval;
+import com.hktcode.simple.SimpleWorkerGauges;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class UppdcWorkerArgval implements SimpleWorkerArgval<UppdcWorkerArgval, UppdcWorkerGauges>
+public class UppdcWorkerArgval extends SimpleWorkerGauges //
+        implements SimpleWorkerArgval<UppdcWorkerArgval, UppdcWorkerArgval>
 {
     public static final ObjectNode SCHEMA;
 

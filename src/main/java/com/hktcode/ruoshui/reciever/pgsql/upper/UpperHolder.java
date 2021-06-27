@@ -6,7 +6,6 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorkerArgval;
 import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorkerArgval;
 import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorkerArgval;
-import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorkerGauges;
 import com.hktcode.simple.SimpleAtomic;
 import com.hktcode.simple.SimpleWorker;
 
@@ -42,7 +41,7 @@ public class UpperHolder
         return SimpleWorker.of(this.argval.junction, this.gauges.junction, this.atomic);
     }
 
-    public SimpleWorker<UppdcWorkerArgval, UppdcWorkerGauges> producer()
+    public SimpleWorker<UppdcWorkerArgval, UppdcWorkerArgval> producer()
     {
         return SimpleWorker.of(this.argval.producer, this.gauges.producer, this.atomic);
     }
