@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class UpjctWorker //
-        implements SimpleWorkerArgval<UpjctWorker>, SimpleWkstepAction<UpjctWorker>
+        implements SimpleWorkerArgval, SimpleWkstepAction
 {
     public static final ObjectNode SCHEMA;
 

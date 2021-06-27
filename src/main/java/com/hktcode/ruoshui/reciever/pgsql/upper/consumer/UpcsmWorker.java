@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class UpcsmWorker //
-        implements SimpleWorkerArgval<UpcsmWorker>, SimpleWkstepAction<UpcsmWorker>
+        implements SimpleWorkerArgval, SimpleWkstepAction
 {
     public static final ObjectNode SCHEMA;
 

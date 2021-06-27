@@ -7,10 +7,10 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleWorker<A extends SimpleWorkerArgval<A>>
+public class SimpleWorker<A extends SimpleWorkerArgval>
         implements Runnable
 {
-    public static <A extends SimpleWorkerArgval<A>> //
+    public static <A extends SimpleWorkerArgval> //
     SimpleWorker<A> of(A argval, SimpleAtomic atomic)
     {
         if (argval == null) {
@@ -46,8 +46,7 @@ public class SimpleWorker<A extends SimpleWorkerArgval<A>>
             this.starts = System.currentTimeMillis();
             SimpleWkstep wkstep = this.argval.action();
             do {
-                @SuppressWarnings("unchecked")
-                SimpleWkstepAction<A> action = (SimpleWkstepAction<A>) wkstep;
+                SimpleWkstepAction action = (SimpleWkstepAction) wkstep;
                 try {
                     wkstep = action.next(this.atomic);
                 } catch (InterruptedException ex) {

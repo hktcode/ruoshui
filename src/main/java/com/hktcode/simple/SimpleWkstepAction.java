@@ -4,8 +4,7 @@
 
 package com.hktcode.simple;
 
-public interface SimpleWkstepAction<A extends SimpleWorkerArgval<A>>
-        extends SimpleWkstep
+public interface SimpleWkstepAction extends SimpleWkstep
 {
     SimpleWkstep next(SimpleAtomic atomic) throws Throwable;
 }
