@@ -5,8 +5,6 @@ import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorkerGauges;
 import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorkerGauges;
 import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorkerGauges;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 public class UpperHolderGauges
 {
     public static UpperHolderGauges of(UpperHolderArgval argval)
@@ -28,8 +26,7 @@ public class UpperHolderGauges
     private UpperHolderGauges(UpperHolderArgval argval)
     {
         this.createts = System.currentTimeMillis();
-        AtomicLong xidlsn = argval.producer.sender.txactionLsn;
-        this.consumer = UpcsmWorkerGauges.of(argval.consumer, xidlsn);
+        this.consumer = UpcsmWorkerGauges.of(argval.consumer);
         this.junction = UpjctWorkerGauges.of(argval.junction);
         this.producer = UppdcWorkerGauges.of(argval.producer);
     }

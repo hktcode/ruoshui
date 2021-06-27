@@ -10,29 +10,24 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class UpcsmWorkerGauges extends SimpleWorkerGauges
 {
-    public static UpcsmWorkerGauges of(UpcsmWorkerArgval argval, AtomicLong xidlsn)
+    public static UpcsmWorkerGauges of(UpcsmWorkerArgval argval)
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");
         }
-        if (xidlsn == null) {
-            throw new ArgumentNullException("xidlsn");
-        }
-        return new UpcsmWorkerGauges(argval, xidlsn);
+        return new UpcsmWorkerGauges(argval);
     }
 
-    private UpcsmWorkerGauges(UpcsmWorkerArgval argval, AtomicLong xidlsn)
+    private UpcsmWorkerGauges(UpcsmWorkerArgval argval )
     {
         this.recver = argval.recver;
         this.xspins = argval.xspins;
         this.sender = argval.sender.offerXqueue();
-        this.xidlsn = xidlsn;
     }
 
     public final Xqueue.Spins xspins;
     public final Xqueue.Offer<UpperRecordConsumer> sender;
     public final UpcsmRecverArgval recver;
-    public final AtomicLong xidlsn;
 
     public ObjectNode toJsonObject(ObjectNode node)
     {
