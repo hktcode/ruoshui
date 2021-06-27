@@ -8,13 +8,18 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Xqueue;
 import com.hktcode.queue.Xqueue.Spins;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
-import com.hktcode.simple.SimpleWorkerArgval;
-import com.hktcode.simple.SimpleWorkerGauges;
+import com.hktcode.simple.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class UpcsmWorkerArgval extends SimpleWorkerGauges //
         implements SimpleWorkerArgval<UpcsmWorkerArgval, UpcsmWorkerArgval>
+        , SimpleWkstepAction<UpcsmWorkerArgval, UpcsmWorkerArgval>
 {
     public static final ObjectNode SCHEMA;
 
@@ -52,6 +57,60 @@ public class UpcsmWorkerArgval extends SimpleWorkerGauges //
 
     public final UpcsmRecverArgval recver;
 
+    @Override
+    public SimpleWkstep next(UpcsmWorkerArgval argval, UpcsmWorkerArgval gauges, SimpleAtomic atomic) //
+            throws InterruptedException, SQLException
+    {
+        if (argval == null) {
+            throw new ArgumentNullException("argval");
+        }
+        if (gauges == null) {
+            throw new ArgumentNullException("gauges");
+        }
+        if (atomic == null) {
+            throw new ArgumentNullException("atomic");
+        }
+        UpperRecordConsumer r;
+        int curCapacity = argval.sender.maxCapacity;
+        List<UpperRecordConsumer> rhs, lhs = new ArrayList<>(curCapacity);
+        int spins = 0, spinsStatus = Xqueue.Spins.RESET;
+        long now, logtime = System.currentTimeMillis();
+        final Xqueue.Offer<UpperRecordConsumer> sender = gauges.sender.offerXqueue();
+        try (UpcsmRecverArgval.Client client = argval.recver.client()) {
+            while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
+                // 未来计划：此处可以提高性能
+                int size = lhs.size();
+                int capacity = argval.sender.maxCapacity;
+                long logDuration = argval.xspins.logDuration;
+                if (    (size > 0)
+                        // 未来计划：支持bufferCount和maxDuration
+                        && (rhs = sender.push(lhs)) != lhs
+                        && (curCapacity != capacity || (lhs = rhs) == null)
+                ) {
+                    lhs = new ArrayList<>(capacity);
+                    curCapacity = capacity;
+                    spins = 0;
+                    logtime = System.currentTimeMillis();
+                } else if (size < capacity && (r = client.recv()) != null) {
+                    lhs.add(r);
+                    spins = 0;
+                    logtime = System.currentTimeMillis();
+                } else if (logtime + logDuration >= (now = System.currentTimeMillis())) {
+                    logger.info("logDuration={}", logDuration);
+                    logtime = now;
+                } else {
+                    if (spinsStatus == Xqueue.Spins.SLEEP) {
+                        client.forceUpdateStatus();
+                    }
+                    spinsStatus = gauges.xspins.spins(spins++);
+                }
+            }
+        }
+        logger.info("pgsender complete");
+        gauges.finish = System.currentTimeMillis();
+        return SimpleWkstepTheEnd.of();
+    }
+
     private UpcsmWorkerArgval(UpcsmRecverArgval recver, Xqueue<UpperRecordConsumer> sender)
     {
         this.sender = sender;
@@ -76,8 +135,10 @@ public class UpcsmWorkerArgval extends SimpleWorkerGauges //
     }
 
     @Override
-    public UpcsmWkstepAction action()
+    public UpcsmWorkerArgval action()
     {
-        return UpcsmWkstepAction.of();
+        return this;
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(UpcsmWorkerArgval.class);
 }
