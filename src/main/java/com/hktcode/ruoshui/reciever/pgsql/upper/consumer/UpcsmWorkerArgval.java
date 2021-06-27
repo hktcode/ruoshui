@@ -10,6 +10,8 @@ import com.hktcode.queue.Xqueue.Spins;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
 import com.hktcode.simple.SimpleWorkerArgval;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 public class UpcsmWorkerArgval implements SimpleWorkerArgval<UpcsmWorkerArgval, UpcsmWorkerGauges>
 {
     public static final ObjectNode SCHEMA;
@@ -27,13 +29,16 @@ public class UpcsmWorkerArgval implements SimpleWorkerArgval<UpcsmWorkerArgval, 
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    public static UpcsmWorkerArgval of(JsonNode json) //
+    public static UpcsmWorkerArgval of(JsonNode json, AtomicLong xidlsn) //
     {
         if (json == null) {
             throw new ArgumentNullException("json");
         }
+        if (xidlsn == null) {
+            throw new ArgumentNullException("xidlsn");
+        }
         Xqueue<UpperRecordConsumer> sender = Xqueue.of(json.path("sender"));
-        UpcsmRecverArgval recver = UpcsmRecverArgval.of(json.path("recver"));
+        UpcsmRecverArgval recver = UpcsmRecverArgval.of(json.path("recver"), xidlsn);
         UpcsmWorkerArgval result = new UpcsmWorkerArgval(recver, sender);
         result.xspins.pst(json.path("xspins"));
         return result;

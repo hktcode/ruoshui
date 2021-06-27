@@ -10,6 +10,8 @@ import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorkerArgval;
 import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorkerArgval;
 import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorkerArgval;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 public class UpperHolderArgval implements JacksonObject
 {
     public static final ObjectNode SCHEMA;
@@ -34,7 +36,8 @@ public class UpperHolderArgval implements JacksonObject
         if (jsonnode == null) {
             throw new ArgumentNullException("jsonnode");
         }
-        UpcsmWorkerArgval consumer = UpcsmWorkerArgval.of(jsonnode.path("consumer"));
+        AtomicLong xidlsn = new AtomicLong(0L);
+        UpcsmWorkerArgval consumer = UpcsmWorkerArgval.of(jsonnode.path("consumer"), xidlsn);
         Xqueue<UpperRecordConsumer> fetchXqueue = consumer.sender;
         UpjctWorkerArgval junction = UpjctWorkerArgval.ofJsonObject(jsonnode.path("junction"), fetchXqueue);
         Xqueue<UpperRecordProducer> offerXqueue = junction.sender;

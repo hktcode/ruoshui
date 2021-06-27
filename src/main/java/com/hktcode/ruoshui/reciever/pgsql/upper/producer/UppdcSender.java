@@ -26,18 +26,21 @@ public abstract class UppdcSender
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    public static UppdcSender of(JsonNode json)
+    public static UppdcSender of(JsonNode json, AtomicLong xidlsn)
     {
         if (json == null) {
             throw new ArgumentNullException("json");
         }
+        if (xidlsn == null) {
+            throw new ArgumentNullException("xidlsn");
+        }
         String senderClass = json.path("sender_class").asText("files");
         UppdcSender result;
         if (senderClass.equals("kafka")) {
-            result = UppdcSenderKafka.of(json);
+            result = UppdcSenderKafka.of(json, xidlsn);
         }
         else {
-            result = UppdcSenderFiles.of(json);
+            result = UppdcSenderFiles.of(json, xidlsn);
         }
         return result;
 
@@ -54,14 +57,15 @@ public abstract class UppdcSender
 
     public final AtomicReference<Throwable> callbackRef = new AtomicReference<>();
 
-    public final AtomicLong txactionLsn = new AtomicLong(0L);
+    public final AtomicLong txactionLsn;
 
     public interface Client extends AutoCloseable
     {
         void send(UpperRecordProducer record) throws Throwable;
     }
 
-    protected UppdcSender()
+    protected UppdcSender(AtomicLong xidlsn)
     {
+        this.txactionLsn = xidlsn;
     }
 }

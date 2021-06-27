@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static com.hktcode.kafka.Kafka.Serializers.BYTES;
 import static com.hktcode.ruoshui.Ruoshui.THE_NAME;
@@ -28,10 +29,13 @@ public class UppdcSenderKafka extends UppdcSender
 
     public static final int PARTITION_NO = 0;
 
-    public static UppdcSenderKafka of(JsonNode json)
+    public static UppdcSenderKafka of(JsonNode json, AtomicLong xidlsn)
     {
         if (json == null) {
             throw new ArgumentNullException("json");
+        }
+        if (xidlsn == null) {
+            throw new ArgumentNullException("xidlsn");
         }
         Map<String, String> kfkMap = createDefaultMap();
         JsonNode kfkNode = json.get("kfk_property");
@@ -41,7 +45,7 @@ public class UppdcSenderKafka extends UppdcSender
         ImmutableMap<String, String> kfkProperty = ImmutableMap.copyOf(kfkMap);
         // TODO: 检查properties
 
-        UppdcSenderKafka result =  new UppdcSenderKafka(kfkProperty);
+        UppdcSenderKafka result =  new UppdcSenderKafka(kfkProperty, xidlsn);
 
         String targetTopic = json.path("target_topic").asText(result.targetTopic);
         if (!Kafka.TOPIC_PATTERN.matcher(targetTopic).matches()) {
@@ -71,9 +75,9 @@ public class UppdcSenderKafka extends UppdcSender
         return result;
     }
 
-    private UppdcSenderKafka(ImmutableMap<String, String> kfkProperty)
+    private UppdcSenderKafka(ImmutableMap<String, String> kfkProperty, AtomicLong xidlsn)
     {
-        super();
+        super(xidlsn);
         this.kfkProperty = kfkProperty;
     }
 

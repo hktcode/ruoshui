@@ -1,8 +1,6 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.Ruoshui;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlValTxactCommit;
@@ -20,17 +18,21 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class UppdcSenderFiles extends UppdcSender
 {
-    public static UppdcSenderFiles of(JsonNode json)
+    public static UppdcSenderFiles of(JsonNode json, AtomicLong xidlsn)
     {
         if (json == null) {
             throw new ArgumentNullException("json");
         }
-        UppdcSenderFiles r = new UppdcSenderFiles();
+        if (xidlsn == null) {
+            throw new ArgumentNullException("xidlsn");
+        }
+        UppdcSenderFiles r = new UppdcSenderFiles(xidlsn);
         r.maxSynctime = json.path("max_synctime").asLong(r.maxSynctime);
         r.maxSyncsize = json.path("max_syncsize").asLong(r.maxSyncsize);
         r.maxFilesize = json.path("max_filesize").asLong(r.maxFilesize);
@@ -46,9 +48,9 @@ public class UppdcSenderFiles extends UppdcSender
 
     public static final long MAX_FILETIME = 60 * 60 * 1000;
 
-    private UppdcSenderFiles()
+    private UppdcSenderFiles(AtomicLong xidlsn)
     {
-        super();
+        super(xidlsn);
     }
 
     @Override
