@@ -5,6 +5,7 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.junction;
 
 import com.google.common.collect.ImmutableList;
+import com.hktcode.queue.Xqueue;
 import com.hktcode.ruoshui.reciever.pgsql.upper.*;
 import com.hktcode.simple.SimpleAtomic;
 import com.hktcode.simple.SimpleWkstep;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, UpjctWorkerGauges>
+public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, UpjctWorkerArgval>
 {
     private static final Logger logger = LoggerFactory.getLogger(UpjctWkstepAction.class);
 
@@ -36,7 +37,7 @@ public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, 
     }
 
     @Override
-    public SimpleWkstep next(UpjctWorkerArgval argval, UpjctWorkerGauges gauges, SimpleAtomic atomic) //
+    public SimpleWkstep next(UpjctWorkerArgval argval, UpjctWorkerArgval gauges, SimpleAtomic atomic) //
             throws InterruptedException
     {
         if (argval == null) {
@@ -55,12 +56,14 @@ public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, 
         long ln, lt = System.currentTimeMillis();
         Iterator<UpperRecordProducer> piter = plhs.iterator();
         Iterator<UpperRecordConsumer> citer = crhs.iterator();
+        Xqueue.Offer<UpperRecordProducer> sender = argval.sender.offerXqueue();
+        Xqueue.Fetch<UpperRecordConsumer> recver = argval.recver.fetchXqueue();
         while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
             int size = plhs.size(), capacity = argval.sender.maxCapacity;
             long ld = argval.xspins.logDuration;
             if (    (size > 0)
                  // 未来计划：支持bufferCount和maxDuration
-                 && (prhs = gauges.sender.push(plhs)) != plhs
+                 && (prhs = sender.push(plhs)) != plhs
                  && (curCapacity != capacity || (plhs = prhs) == null)
             ) {
                 plhs = new ArrayList<>(capacity);
@@ -76,7 +79,7 @@ public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, 
             } else if (citer.hasNext()) {
                 piter = this.convert(gauges, citer.next()).iterator();
                 lt = System.currentTimeMillis();
-            } else if ((clhs = gauges.recver.poll(crhs)) != crhs) {
+            } else if ((clhs = recver.poll(crhs)) != crhs) {
                 crhs = clhs;
                 citer = crhs.iterator();
             } else if (lt + ld >= (ln = System.currentTimeMillis())) {
@@ -91,7 +94,7 @@ public class UpjctWkstepAction implements SimpleWkstepAction<UpjctWorkerArgval, 
         return SimpleWkstepTheEnd.of();
     }
 
-    private List<UpperRecordProducer> convert(UpjctWorkerGauges gauges, UpperRecordConsumer record)
+    private List<UpperRecordProducer> convert(UpjctWorkerArgval gauges, UpperRecordConsumer record)
     {
         long lsn = record.lsn;
         LogicalMsg msg = record.msg;

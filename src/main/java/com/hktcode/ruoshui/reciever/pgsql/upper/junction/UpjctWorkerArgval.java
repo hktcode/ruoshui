@@ -6,11 +6,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Xqueue;
+import com.hktcode.ruoshui.reciever.pgsql.entity.LogicalTxactContext;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
 import com.hktcode.simple.SimpleWorkerArgval;
+import com.hktcode.simple.SimpleWorkerGauges;
 
-public class UpjctWorkerArgval implements SimpleWorkerArgval<UpjctWorkerArgval, UpjctWorkerGauges>
+public class UpjctWorkerArgval extends SimpleWorkerGauges //
+        implements SimpleWorkerArgval<UpjctWorkerArgval, UpjctWorkerArgval>
 {
     public static final ObjectNode SCHEMA;
 
@@ -41,9 +44,17 @@ public class UpjctWorkerArgval implements SimpleWorkerArgval<UpjctWorkerArgval, 
         return result;
     }
 
+    // argval
+
     public final Xqueue.Spins xspins = Xqueue.Spins.of();
     public final Xqueue<UpperRecordConsumer> recver;
     public final Xqueue<UpperRecordProducer> sender;
+
+    // gauges
+
+    public long curlsn = 0;
+    public long curseq = 0;
+    public final LogicalTxactContext xidenv = LogicalTxactContext.of();
 
     private UpjctWorkerArgval(Xqueue<UpperRecordConsumer> recver, Xqueue<UpperRecordProducer> sender)
     {
