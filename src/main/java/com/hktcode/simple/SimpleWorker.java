@@ -4,10 +4,10 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SimpleWorker<A extends SimpleWorkerArgval<A, G>, G extends SimpleWorkerGauges>
+public class SimpleWorker<A extends SimpleWorkerArgval<A>, G extends SimpleWorkerGauges>
         implements Runnable
 {
-    public static <A extends SimpleWorkerArgval<A, G>, G extends SimpleWorkerGauges> //
+    public static <A extends SimpleWorkerArgval<A>, G extends SimpleWorkerGauges> //
     SimpleWorker<A, G> of(A argval, G gauges, SimpleAtomic atomic)
     {
         if (argval == null) {
@@ -41,7 +41,7 @@ public class SimpleWorker<A extends SimpleWorkerArgval<A, G>, G extends SimpleWo
             SimpleWkstep wkstep = this.argval.action();
             do {
                 @SuppressWarnings("unchecked")
-                SimpleWkstepAction<A, G> action = (SimpleWkstepAction<A, G>) wkstep;
+                SimpleWkstepAction<A> action = (SimpleWkstepAction<A>) wkstep;
                 try {
                     wkstep = action.next(this.argval, this.atomic);
                 } catch (InterruptedException ex) {

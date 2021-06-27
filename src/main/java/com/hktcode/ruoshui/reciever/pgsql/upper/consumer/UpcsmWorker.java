@@ -18,8 +18,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class UpcsmWorker extends SimpleWorkerGauges //
-        implements SimpleWorkerArgval<UpcsmWorker, UpcsmWorker>
-        , SimpleWkstepAction<UpcsmWorker, UpcsmWorker>
+        implements SimpleWorkerArgval<UpcsmWorker>, SimpleWkstepAction<UpcsmWorker>
 {
     public static final ObjectNode SCHEMA;
 

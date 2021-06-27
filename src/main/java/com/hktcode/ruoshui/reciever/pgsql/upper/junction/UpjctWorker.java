@@ -23,8 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class UpjctWorker extends SimpleWorkerGauges //
-        implements SimpleWorkerArgval<UpjctWorker, UpjctWorker>
-                 , SimpleWkstepAction<UpjctWorker, UpjctWorker>
+        implements SimpleWorkerArgval<UpjctWorker>, SimpleWkstepAction<UpjctWorker>
 {
     public static final ObjectNode SCHEMA;
 
