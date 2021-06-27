@@ -17,8 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class UpcsmWorker extends SimpleWorker //
-        implements SimpleWorkerArgval, SimpleWkstepAction
+public class UpcsmWorker extends SimpleWorker implements JacksonObject
 {
     public static final ObjectNode SCHEMA;
 
@@ -62,13 +61,6 @@ public class UpcsmWorker extends SimpleWorker //
     @Override
     protected void run(SimpleAtomic atomic) throws SQLException, InterruptedException
     {
-        this.next(atomic);
-    }
-
-    @Override
-    public SimpleWkstep next(SimpleAtomic atomic) //
-            throws InterruptedException, SQLException
-    {
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
@@ -85,9 +77,9 @@ public class UpcsmWorker extends SimpleWorker //
                 int capacity = this.sender.maxCapacity;
                 long logDuration = this.xspins.logDuration;
                 if (    (size > 0)
-                        // 未来计划：支持bufferCount和maxDuration
-                        && (rhs = sender.push(lhs)) != lhs
-                        && (curCapacity != capacity || (lhs = rhs) == null)
+                     // 未来计划：支持bufferCount和maxDuration
+                     && (rhs = sender.push(lhs)) != lhs
+                     && (curCapacity != capacity || (lhs = rhs) == null)
                 ) {
                     lhs = new ArrayList<>(capacity);
                     curCapacity = capacity;
@@ -109,7 +101,6 @@ public class UpcsmWorker extends SimpleWorker //
             }
         }
         logger.info("pgsender complete");
-        return SimpleWkstepTheEnd.of();
     }
 
     private UpcsmWorker(UpcsmRecver recver, Xqueue<UpperRecordConsumer> sender, SimpleAtomic atomic)
@@ -134,12 +125,6 @@ public class UpcsmWorker extends SimpleWorker //
             throw new ArgumentNullException("node");
         }
         // this.actionInfos.get(0).pst(node);
-    }
-
-    @Override
-    public UpcsmWorker action()
-    {
-        return this;
     }
 
     private static final Logger logger = LoggerFactory.getLogger(UpcsmWorker.class);

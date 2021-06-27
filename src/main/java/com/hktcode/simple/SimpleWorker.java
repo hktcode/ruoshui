@@ -1,22 +1,13 @@
 package com.hktcode.simple;
 
-import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleWorker implements Runnable
+public abstract class SimpleWorker implements Runnable
 {
-    public static SimpleWorker of(SimpleAtomic atomic)
-    {
-        if (atomic == null) {
-            throw new ArgumentNullException("atomic");
-        }
-        return new SimpleWorker(atomic);
-    }
-
     private final SimpleAtomic atomic;
 
     public long starts = Long.MAX_VALUE;
@@ -59,8 +50,7 @@ public class SimpleWorker implements Runnable
         }
     }
 
-    protected void run(SimpleAtomic atomic) throws Throwable {
-    }
+    protected abstract void run(SimpleAtomic atomic) throws Throwable;
 
     private static final Logger logger = LoggerFactory.getLogger(SimpleWorker.class);
 }

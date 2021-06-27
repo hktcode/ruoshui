@@ -18,13 +18,11 @@ import com.hktcode.simple.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class UpjctWorker extends SimpleWorker //
-        implements SimpleWorkerArgval, SimpleWkstepAction
+public class UpjctWorker extends SimpleWorker implements JacksonObject
 {
     public static final ObjectNode SCHEMA;
 
@@ -94,20 +92,7 @@ public class UpjctWorker extends SimpleWorker //
     }
 
     @Override
-    public UpjctWorker action()
-    {
-        return this;
-    }
-
-    @Override
     protected void run(SimpleAtomic atomic) throws InterruptedException
-    {
-        this.next(atomic);
-    }
-
-    @Override
-    public SimpleWkstep next(SimpleAtomic atomic) //
-            throws InterruptedException
     {
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
@@ -126,8 +111,8 @@ public class UpjctWorker extends SimpleWorker //
             long ld = this.xspins.logDuration;
             if (    (size > 0)
                     // 未来计划：支持bufferCount和maxDuration
-                    && (prhs = sender.push(plhs)) != plhs
-                    && (curCapacity != capacity || (plhs = prhs) == null)
+                 && (prhs = sender.push(plhs)) != plhs
+                 && (curCapacity != capacity || (plhs = prhs) == null)
             ) {
                 plhs = new ArrayList<>(capacity);
                 curCapacity = capacity;
@@ -153,7 +138,6 @@ public class UpjctWorker extends SimpleWorker //
             }
         }
         logger.info("upjct complete");
-        return SimpleWkstepTheEnd.of();
     }
 
     private List<UpperRecordProducer> convert(UpjctWorker gauges, UpperRecordConsumer record)

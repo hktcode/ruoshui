@@ -11,13 +11,11 @@ import com.hktcode.simple.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class UppdcWorker extends SimpleWorker //
-        implements SimpleWorkerArgval, SimpleWkstepAction
+public class UppdcWorker extends SimpleWorker implements JacksonObject
 {
     public static final ObjectNode SCHEMA;
 
@@ -68,12 +66,6 @@ public class UppdcWorker extends SimpleWorker //
     }
 
     @Override
-    protected void run(SimpleAtomic atomic) throws Throwable
-    {
-        this.next(atomic);
-    }
-
-    @Override
     public ObjectNode toJsonObject(ObjectNode node)
     {
         if (node == null) {
@@ -90,14 +82,7 @@ public class UppdcWorker extends SimpleWorker //
     }
 
     @Override
-    public UppdcWorker action()
-    {
-        return this;
-    }
-
-    @Override
-    public SimpleWkstep next(SimpleAtomic atomic) //
-            throws Throwable
+    public void run(SimpleAtomic atomic) throws Throwable
     {
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
@@ -123,7 +108,6 @@ public class UppdcWorker extends SimpleWorker //
                 }
             }
         }
-        return SimpleWkstepTheEnd.of();
     }
 
     private static final Logger logger = LoggerFactory.getLogger(UppdcWorker.class);
