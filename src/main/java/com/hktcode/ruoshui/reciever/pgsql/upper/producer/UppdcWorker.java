@@ -15,7 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class UppdcWorker extends SimpleWorkerGauges //
+public class UppdcWorker //
         implements SimpleWorkerArgval<UppdcWorker>, SimpleWkstepAction<UppdcWorker>
 {
     public static final ObjectNode SCHEMA;

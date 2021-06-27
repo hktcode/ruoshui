@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class UpcsmWorker extends SimpleWorkerGauges //
+public class UpcsmWorker //
         implements SimpleWorkerArgval<UpcsmWorker>, SimpleWkstepAction<UpcsmWorker>
 {
     public static final ObjectNode SCHEMA;
@@ -103,7 +103,6 @@ public class UpcsmWorker extends SimpleWorkerGauges //
             }
         }
         logger.info("pgsender complete");
-        argval.finish = System.currentTimeMillis();
         return SimpleWkstepTheEnd.of();
     }
 

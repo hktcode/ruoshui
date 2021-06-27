@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class UpjctWorker extends SimpleWorkerGauges //
+public class UpjctWorker //
         implements SimpleWorkerArgval<UpjctWorker>, SimpleWkstepAction<UpjctWorker>
 {
     public static final ObjectNode SCHEMA;
@@ -146,7 +146,6 @@ public class UpjctWorker extends SimpleWorkerGauges //
             }
         }
         logger.info("upjct complete");
-        argval.finish = System.currentTimeMillis();
         return SimpleWkstepTheEnd.of();
     }
 
