@@ -13,18 +13,22 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class UppdcSender
 {
-    public static final ObjectNode SCHEMA;
-
-    static
+    public static final class Schema
     {
-        ObjectNode schema = new ObjectNode(JsonNodeFactory.instance);
-        schema.put("$schema", "http://json-schema.org/draft-04/schema#");
-        ObjectNode typeNode = schema.putObject("type");
-        ArrayNode oneOfNode = typeNode.putArray("oneOf");
-        oneOfNode.add(JacksonObject.getFromResource(UppdcSender.class, "UppdcSenderFiles.yml"));
-        oneOfNode.add(JacksonObject.getFromResource(UppdcSender.class, "UppdcSenderKafka.yml"));
-        SCHEMA = JacksonObject.immutableCopy(schema);
+        public static final ObjectNode SCHEMA;
+
+        static
+        {
+            ObjectNode schema = new ObjectNode(JsonNodeFactory.instance);
+            schema.put("$schema", "http://json-schema.org/draft-04/schema#");
+            ObjectNode typeNode = schema.putObject("type");
+            ArrayNode oneOfNode = typeNode.putArray("oneOf");
+            oneOfNode.add(UppdcSenderFiles.Schema.SCHEMA);
+            oneOfNode.add(UppdcSenderKafka.Schema.SCHEMA);
+            SCHEMA = JacksonObject.immutableCopy(schema);
+        }
     }
+
 
     public static UppdcSender of(JsonNode json, AtomicLong xidlsn)
     {

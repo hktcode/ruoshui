@@ -1,6 +1,10 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.Ruoshui;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlValTxactCommit;
@@ -24,6 +28,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class UppdcSenderFiles extends UppdcSender
 {
+    public static final class Schema
+    {
+        public static final ObjectNode SCHEMA = JacksonObject.getFromResource(UppdcSender.class, "UppdcSenderFiles.yml");
+    }
+
     public static UppdcSenderFiles of(JsonNode json, AtomicLong xidlsn)
     {
         if (json == null) {

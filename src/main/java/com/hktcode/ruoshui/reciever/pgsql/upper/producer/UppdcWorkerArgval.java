@@ -29,7 +29,7 @@ public class UppdcWorkerArgval extends SimpleWorkerGauges //
         ObjectNode argvalNode = schema.putObject("properties");
         ObjectNode actionInfosNode = argvalNode.putObject("action_infos");
         actionInfosNode.put("type", "array");
-        actionInfosNode.set("items", UppdcSender.SCHEMA);
+        actionInfosNode.set("items", UppdcSender.Schema.SCHEMA);
         actionInfosNode.put("maxItems", 1);
         SCHEMA = JacksonObject.immutableCopy(schema);
     }

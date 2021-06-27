@@ -1,6 +1,7 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.kafka.Kafka;
@@ -23,6 +24,11 @@ import static com.hktcode.ruoshui.Ruoshui.THE_NAME;
 
 public class UppdcSenderKafka extends UppdcSender
 {
+    public static final class Schema
+    {
+        public static final ObjectNode SCHEMA = JacksonObject.getFromResource(UppdcSender.class, "UppdcSenderKafka.yml");
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(UppdcSenderKafka.class);
 
     public static final String TARGET_TOPIC = THE_NAME;
