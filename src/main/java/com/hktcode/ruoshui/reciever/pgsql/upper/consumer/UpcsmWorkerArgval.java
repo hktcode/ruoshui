@@ -9,10 +9,12 @@ import com.hktcode.queue.Xqueue;
 import com.hktcode.queue.Xqueue.Spins;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
 import com.hktcode.simple.SimpleWorkerArgval;
+import com.hktcode.simple.SimpleWorkerGauges;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class UpcsmWorkerArgval implements SimpleWorkerArgval<UpcsmWorkerArgval, UpcsmWorkerGauges>
+public class UpcsmWorkerArgval extends SimpleWorkerGauges //
+        implements SimpleWorkerArgval<UpcsmWorkerArgval, UpcsmWorkerGauges>
 {
     public static final ObjectNode SCHEMA;
 

@@ -18,7 +18,7 @@ public class UpcsmWorkerGauges extends SimpleWorkerGauges
         return new UpcsmWorkerGauges(argval);
     }
 
-    private UpcsmWorkerGauges(UpcsmWorkerArgval argval )
+    private UpcsmWorkerGauges(UpcsmWorkerArgval argval)
     {
         this.recver = argval.recver;
         this.xspins = argval.xspins;
