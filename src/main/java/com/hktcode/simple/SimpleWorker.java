@@ -19,10 +19,8 @@ public class SimpleWorker<A extends SimpleWorkerArgval>
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
-        return new SimpleWorker<>(argval, atomic);
+        return new SimpleWorker<>(atomic);
     }
-
-    public final A argval;
 
     private final SimpleAtomic atomic;
 
@@ -34,41 +32,39 @@ public class SimpleWorker<A extends SimpleWorkerArgval>
 
     public final List<Throwable> errors = new ArrayList<>();
 
-    protected SimpleWorker(A argval, SimpleAtomic atomic)
+    protected SimpleWorker(SimpleAtomic atomic)
     {
-        this.argval = argval;
         this.atomic = atomic;
     }
 
     public void run()
     {
         try {
-            this.starts = System.currentTimeMillis();
-            SimpleWkstep wkstep = this.argval.action();
-            do {
-                SimpleWkstepAction action = (SimpleWkstepAction) wkstep;
-                try {
-                    wkstep = action.next(this.atomic);
-                } catch (InterruptedException ex) {
-                    throw ex;
-                } catch (Throwable ex) {
-                    logger.error("triple throws exception: ", ex);
-                    long endMillis = System.currentTimeMillis();
-                    this.errors.add(ex);
-                    long deletets;
-                    do {
-                        deletets = this.atomic.call(endMillis).deletets;
-                    } while (deletets == Long.MAX_VALUE);
-                    wkstep = SimpleWkstepTheEnd.of();
-                }
-            } while (wkstep instanceof SimpleWkstepAction);
-            logger.info("triple completes");
-        } catch (InterruptedException e) {
-            logger.error("should never happen", e);
+            try {
+                this.starts = System.currentTimeMillis();
+                this.run(this.atomic);
+                logger.info("triple completes");
+            } catch (Throwable ex) {
+                logger.error("triple throws exception: ", ex);
+                long endMillis = System.currentTimeMillis();
+                this.errors.add(ex);
+                long deletets;
+                do {
+                    deletets = this.atomic.call(endMillis).deletets;
+                } while (deletets == Long.MAX_VALUE);
+                throw ex;
+            }
+        } catch (InterruptedException ex) {
+            logger.error("should never happen", ex);
             Thread.currentThread().interrupt();
-        } finally {
+        }
+        finally {
             this.finish = System.currentTimeMillis();
         }
+    }
+
+    protected void run(SimpleAtomic atomic)
+    {
     }
 
     private static final Logger logger = LoggerFactory.getLogger(SimpleWorker.class);
