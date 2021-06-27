@@ -49,8 +49,7 @@ public class UpperService implements DisposableBean
         if (body == null) {
             throw new ArgumentNullException("body");
         }
-        UpperHolderArgval argval = UpperHolderArgval.ofJsonObject(name, body);
-        UpperHolder exesvc = UpperHolder.of(argval);
+        UpperHolder exesvc = UpperHolder.of(name, body);
 
         Lock lock = this.locker.readLock();
         lock.lock();

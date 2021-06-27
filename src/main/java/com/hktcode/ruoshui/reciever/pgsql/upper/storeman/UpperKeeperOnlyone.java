@@ -8,7 +8,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.lang.exception.NeverHappenAssertionError;
 import com.hktcode.ruoshui.Ruoshui;
 import com.hktcode.ruoshui.reciever.pgsql.exception.*;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperHolderArgval;
+import com.hktcode.ruoshui.reciever.pgsql.upper.UpperHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +28,14 @@ public class UpperKeeperOnlyone
 
     public final YAMLMapper mapper;
 
-    private final ImmutableMap<String, UpperHolderArgval> etcval = ImmutableMap.of();
+    private final ImmutableMap<String, UpperHolder> etcval = ImmutableMap.of();
 
     public UpperKeeperOnlyone(@Autowired YAMLMapper mapper)
     {
         this.mapper = mapper;
     }
 
-    public void deleteYml(UpperHolderArgval argval)
+    public void deleteYml(UpperHolder argval)
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");
@@ -56,7 +56,7 @@ public class UpperKeeperOnlyone
         }
     }
 
-    public void updertYml(UpperHolderArgval argval)
+    public void updertYml(UpperHolder argval)
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");

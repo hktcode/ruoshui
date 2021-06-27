@@ -1,47 +1,88 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.queue.Xqueue;
 import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorkerArgval;
 import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorkerArgval;
 import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorkerArgval;
 import com.hktcode.simple.SimpleAtomic;
 import com.hktcode.simple.SimpleWorker;
 
-public class UpperHolder
+import java.util.concurrent.atomic.AtomicLong;
+
+public class UpperHolder implements JacksonObject
 {
-    public static UpperHolder of(UpperHolderArgval argval)
+    public static final ObjectNode SCHEMA;
+
+    static
     {
-        if (argval == null) {
-            throw new ArgumentNullException("argval");
-        }
-        return new UpperHolder(argval);
+        ObjectNode schema = new ObjectNode(JsonNodeFactory.instance);
+        schema.put("$schema", "http://json-schema.org/draft-04/schema#");
+        schema.put("type", "object");
+        ObjectNode propertiesNode = schema.putObject("properties");
+        propertiesNode.set("consumer", UpcsmWorkerArgval.SCHEMA);
+        propertiesNode.set("junction", UpjctWorkerArgval.SCHEMA);
+        propertiesNode.set("producer", UppdcWorkerArgval.SCHEMA);
+        SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    private final UpperHolderArgval argval;
+    public static UpperHolder of(String fullname, JsonNode jsonnode)
+    {
+        if (fullname == null) {
+            throw new ArgumentNullException("fullname");
+        }
+        if (jsonnode == null) {
+            throw new ArgumentNullException("jsonnode");
+        }
+        AtomicLong xidlsn = new AtomicLong(0L);
+        UpcsmWorkerArgval consumer = UpcsmWorkerArgval.of(jsonnode.path("consumer"), xidlsn);
+        Xqueue<UpperRecordConsumer> fetchXqueue = consumer.sender;
+        UpjctWorkerArgval junction = UpjctWorkerArgval.ofJsonObject(jsonnode.path("junction"), fetchXqueue);
+        Xqueue<UpperRecordProducer> offerXqueue = junction.sender;
+        UppdcWorkerArgval producer = UppdcWorkerArgval.ofJsonObject(jsonnode.path("producer"), offerXqueue, xidlsn);
+        return new UpperHolder(fullname, consumer, junction, producer);
+    }
+
+    public final long createts;
+    public final String fullname;
+    public final UpcsmWorkerArgval consumer; // laborer
+    public final UpjctWorkerArgval junction;
+    public final UppdcWorkerArgval producer;
     private final SimpleAtomic atomic;
 
-    private UpperHolder(UpperHolderArgval argval)
+    private UpperHolder //
+        /* */(String fullname //
+            /* */, UpcsmWorkerArgval consumer //
+            /* */, UpjctWorkerArgval junction //
+            /* */, UppdcWorkerArgval producer //
+            /* */)
     {
-        this.argval = argval;
+        this.createts = System.currentTimeMillis();
+        this.fullname = fullname;
+        this.consumer = consumer;
+        this.junction = junction;
+        this.producer = producer;
         this.atomic = SimpleAtomic.of();
     }
 
     public SimpleWorker<UpcsmWorkerArgval, UpcsmWorkerArgval> consumer()
     {
         // - return SimpleWorker.of(this.argval.srcprops, this.argval.consumer, this.argval.srcqueue, this.atomic);
-        return SimpleWorker.of(this.argval.consumer, this.argval.consumer, this.atomic);
+        return SimpleWorker.of(this.consumer, this.consumer, this.atomic);
     }
 
     public SimpleWorker<UpjctWorkerArgval, UpjctWorkerArgval> junction()
     {
-        return SimpleWorker.of(this.argval.junction, this.argval.junction, this.atomic);
+        return SimpleWorker.of(this.junction, this.junction, this.atomic);
     }
 
     public SimpleWorker<UppdcWorkerArgval, UppdcWorkerArgval> producer()
     {
-        return SimpleWorker.of(this.argval.producer, this.argval.producer, this.atomic);
+        return SimpleWorker.of(this.producer, this.producer, this.atomic);
     }
 
     public UpperResult modify(long finishts, JsonNode jsonnode, SimpleKeeper storeman)
@@ -60,29 +101,44 @@ public class UpperHolder
     {
         JsonNode n;
         if ((n = jsonnode.get("consumer")) != null) {
-            this.argval.consumer.pst(n);
+            this.consumer.pst(n);
         }
         if ((n = jsonnode.get("junction")) != null) {
-            this.argval.junction.pst(n);
+            this.junction.pst(n);
         }
         if ((n = jsonnode.get("producer")) != null) {
-            this.argval.producer.pst(n);
+            this.producer.pst(n);
         }
         if (deletets == Long.MAX_VALUE) {
             deletets = finishts;
         }
-        storeman.call(this.argval);
-        long createts = this.argval.createts;
-        String fullname = this.argval.fullname;
-        ObjectNode consumer = this.argval.consumer.toJsonObject();
-        ObjectNode junction = this.argval.junction.toJsonObject();
-        ObjectNode producer = this.argval.producer.toJsonObject();
+        storeman.call(this);
+        long createts = this.createts;
+        String fullname = this.fullname;
+        ObjectNode consumer = this.consumer.toJsonObject();
+        ObjectNode junction = this.junction.toJsonObject();
+        ObjectNode producer = this.producer.toJsonObject();
         return UpperResult.of(createts, fullname, consumer, junction, producer, deletets);
     }
 
     @FunctionalInterface
     public interface SimpleKeeper
     {
-        void call(UpperHolderArgval argval);
+        void call(UpperHolder argval);
+    }
+
+    @Override
+    public ObjectNode toJsonObject(ObjectNode node)
+    {
+        if (node == null) {
+            throw new ArgumentNullException("node");
+        }
+        ObjectNode c = node.putObject("consumer");
+        this.consumer.toJsonObject(c);
+        ObjectNode j = node.putObject("junction");
+        this.junction.toJsonObject(j);
+        ObjectNode p = node.putObject("producer");
+        this.producer.toJsonObject(p);
+        return node;
     }
 }
