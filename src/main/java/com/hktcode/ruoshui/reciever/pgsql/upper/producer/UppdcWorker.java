@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Xqueue;
+import com.hktcode.queue.Xspins;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
 import com.hktcode.simple.*;
 import org.slf4j.Logger;
@@ -56,7 +57,7 @@ public class UppdcWorker extends SimpleWorker implements JacksonObject
 
     public final Xqueue<UpperRecordProducer> recver;
 
-    public final Xqueue.Spins xspins = Xqueue.Spins.of();
+    public final Xspins xspins = Xspins.of();
 
     private UppdcWorker(UppdcSender sender, Xqueue<UpperRecordProducer> recver, SimpleAtomic atomic)
     {

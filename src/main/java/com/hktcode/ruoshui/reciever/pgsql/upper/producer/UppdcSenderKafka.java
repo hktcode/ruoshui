@@ -43,7 +43,8 @@ public class UppdcSenderKafka extends UppdcSender
         if (xidlsn == null) {
             throw new ArgumentNullException("xidlsn");
         }
-        Map<String, String> kfkMap = createDefaultMap();
+        Map<String, String> kfkMap = new HashMap<>();
+        kfkMap.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         JsonNode kfkNode = json.get("kfk_property");
         if (kfkNode != null) {
             JacksonObject.merge(kfkMap, kfkNode);
@@ -74,11 +75,10 @@ public class UppdcSenderKafka extends UppdcSender
         return new Client(this);
     }
 
-    private static Map<String, String> createDefaultMap()
+    @Override
+    public Result toJsonResult()
     {
-        Map<String, String> result = new HashMap<>();
-        result.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        return result;
+        return new Result(new Config(this), new Metric(this));
     }
 
     private UppdcSenderKafka(ImmutableMap<String, String> kfkProperty, AtomicLong xidlsn)
@@ -97,7 +97,7 @@ public class UppdcSenderKafka extends UppdcSender
 
     public int partitionNo = PARTITION_NO;
 
-    public class Client implements UppdcSender.Client
+    public static class Client implements UppdcSender.Client
     {
         private final UppdcSenderKafka squeue;
 
@@ -106,7 +106,7 @@ public class UppdcSenderKafka extends UppdcSender
             this.squeue = squeue;
             Properties properties = new Properties();
             properties.setProperty("request.timeout.ms", "1000");
-            for (Map.Entry<String, String> e : kfkProperty.entrySet()) {
+            for (Map.Entry<String, String> e : squeue.kfkProperty.entrySet()) {
                 properties.setProperty(e.getKey(), e.getValue());
             }
             this.squeue.innerHandle.add(new KafkaProducer<>(properties, BYTES, BYTES));
@@ -168,6 +168,47 @@ public class UppdcSenderKafka extends UppdcSender
                 logger.info("kafka producer send record success: lsn={}", lsn);
                 this.squeue.txactionLsn.set(lsn);
             }
+        }
+    }
+
+    public static class Config extends UppdcSender.Config
+    {
+        public final ImmutableMap<String, String> kfkProperty;
+
+        public final String targetTopic;
+
+        public final int partitionNo;
+
+        private Config(UppdcSenderKafka sender)
+        {
+            super("kafka");
+            this.kfkProperty = sender.kfkProperty;
+            this.targetTopic = sender.targetTopic;
+            this.partitionNo = sender.partitionNo;
+        }
+
+        @Override
+        public ObjectNode toJsonObject(ObjectNode node)
+        {
+            if (node == null) {
+                throw new ArgumentNullException("node");
+            }
+            node = super.toJsonObject(node);
+            ObjectNode kfkPropertyNode = node.putObject("kfk_property");
+            for (Map.Entry<String, String> e : this.kfkProperty.entrySet()) {
+                kfkPropertyNode.put(e.getKey(), e.getValue());
+            }
+            node.put("target_topic", this.targetTopic);
+            node.put("partition_no", this.partitionNo);
+            return node;
+        }
+    }
+
+    public static class Metric extends UppdcSender.Metric
+    {
+        private Metric(UppdcSender sender)
+        {
+            super(sender);
         }
     }
 }

@@ -19,13 +19,36 @@ public class Xqueue<E>
 
     public static final int MAX_CAPACITY = 1024;
 
-    private final AtomicReference<List<E>> atomic;
+    private final AtomicReference<List<E>> atomic; // TODO: 采用数组，而不是List，自定义此对象
 
     public int maxCapacity;
 
-    // - public long bufferCount;
+    // - argval
+    // -
     // - public long minMessages;
     // - public long maxMessages;
+
+    // - gauges
+    // -
+    // - public long fetchTrycnt;
+    // - public long fetchSuccnt;
+    // - public long fetchCounts;
+
+    // - public long offerTrycnt;
+    // - public long offerSuccnt;
+    // - public long offerCounts;
+
+    public static class XList<E>
+    {
+        public final E[] list;
+
+        public int size = 0;
+
+        private XList(E[] list)
+        {
+            this.list = list;
+        }
+    }
 
     private Xqueue(int maxCapacity)
     {
@@ -111,77 +134,5 @@ public class Xqueue<E>
         // - public String toStringText();
         // - public String getConfigObj();
         // - public String getMetricObj();
-    }
-
-    public static class Spins
-    {
-        public static final long WAIT_TIMEOUT = 128;
-
-        public static final long SPINS_MAXCNT = 1024;
-
-        public static final long LOG_DURATION = 5 * 60 * 1000;
-
-        public static Spins of()
-        {
-            return new Spins();
-        }
-
-        public static final int RESET = 0;
-        public static final int SPINS = 1;
-        public static final int YIELD = 2;
-        public static final int SLEEP = 3;
-
-        // config
-        public long waitTimeout = WAIT_TIMEOUT;
-        public long spinsMaxcnt = SPINS_MAXCNT;
-        public long logDuration = LOG_DURATION;
-
-        // gauges
-        public long spinsCounts = 0;
-        public long yieldCounts = 0;
-        public long sleepCounts = 0;
-        public long yieldMillis = 0;
-        public long sleepMillis = 0;
-        public long spinsStarts = 0;
-
-        private Spins()
-        {
-        }
-
-        public void pst(JsonNode json)
-        {
-            if (json == null) {
-                throw new ArgumentNullException("json");
-            }
-            waitTimeout = json.path("wait_timeout").asLong(waitTimeout);
-            spinsMaxcnt = json.path("spins_maxcnt").asLong(spinsMaxcnt);
-            logDuration = json.path("log_duration").asLong(logDuration);
-        }
-
-        public int spins(long spins) throws InterruptedException
-        {
-            if (spins > spinsMaxcnt) {
-                long starts = System.currentTimeMillis();
-                ++sleepCounts;
-                long duration = starts - spinsStarts;
-                long millis = this.waitTimeout - duration;
-                millis = millis > 0 ? millis : 0;
-                Thread.sleep(millis);
-                long finish = System.currentTimeMillis();
-                sleepMillis += finish - starts;
-                return RESET;
-            } else if ((spinsCounts + yieldCounts) % 2 == 0) {
-                ++spinsCounts;
-                spinsStarts = spins == 0 ? System.currentTimeMillis() : spinsStarts;
-                return spins == spinsMaxcnt ? SLEEP : YIELD;
-            } else {
-                long starts = System.currentTimeMillis();
-                ++yieldCounts;
-                Thread.yield();
-                long finish = System.currentTimeMillis();
-                yieldMillis += finish + starts;
-                return spins == spinsMaxcnt ? SLEEP : SPINS;
-            }
-        }
     }
 }

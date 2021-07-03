@@ -1,8 +1,6 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
@@ -66,6 +64,12 @@ public class UppdcSenderFiles extends UppdcSender
     public Client client()
     {
         return new Client(this);
+    }
+
+    @Override
+    public Result toJsonResult()
+    {
+        return new Result(new Config(this), new Metric(this));
     }
 
     // handle
@@ -204,6 +208,86 @@ public class UppdcSenderFiles extends UppdcSender
         {
             logger.error("", exc);
             this.sender.callbackRef.compareAndSet(null, exc);
+        }
+    }
+
+    public static final class Config extends UppdcSender.Config
+    {
+        public final long maxSynctime;
+
+        public final long maxSyncsize;
+
+        public final long maxFilesize;
+
+        public final long maxFiletime;
+
+        private Config(UppdcSenderFiles sender)
+        {
+            super("files");
+            this.maxSynctime = sender.maxSynctime;
+            this.maxSyncsize = sender.maxSyncsize;
+            this.maxFilesize = sender.maxFilesize;
+            this.maxFiletime = sender.maxFiletime;
+        }
+
+        @Override
+        public ObjectNode toJsonObject(ObjectNode node)
+        {
+            if (node == null) {
+                throw new ArgumentNullException("node");
+            }
+            node = super.toJsonObject(node);
+            node.put("max_synctime", this.maxSynctime);
+            node.put("max_syncsize", this.maxSyncsize);
+            node.put("max_filetime", this.maxFiletime);
+            node.put("max_filesize", this.maxFilesize);
+            return node;
+        }
+    }
+
+    public static final class Metric extends UppdcSender.Metric
+    {
+        /**
+         * 当前打开的文件名.
+         */
+        public final String curFilename;
+
+        /**
+         * 当前要写入的文件位置，也是当前文件中写入的字节数（含尚未执行fsync的字节数）.
+         */
+        public final long curPosition;
+
+        /**
+         * 自启动开始写入了多少字节（含尚未执行fsync的字节数）.
+         */
+        public final long totalLength;
+
+        /**
+         * 尚未执行fysnc的字节数.
+         */
+        public final long bufferBytes;
+
+        private Metric(UppdcSenderFiles sender)
+        {
+            super(sender);
+            this.curFilename = sender.curFilename;
+            this.curPosition = sender.curPosition;
+            this.totalLength = sender.totalLength;
+            this.bufferBytes = sender.bufferBytes;
+        }
+
+        @Override
+        public ObjectNode toJsonObject(ObjectNode node)
+        {
+            if (node == null) {
+                throw new ArgumentNullException("node");
+            }
+            node = super.toJsonObject(node);
+            node.put("cur_filename", this.curFilename);
+            node.put("cur_position", this.curPosition);
+            node.put("total_length", this.totalLength);
+            node.put("buffer_bytes", this.bufferBytes);
+            return node;
         }
     }
 }

@@ -9,6 +9,7 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgjdbc.LogicalTxactBeginsMsg;
 import com.hktcode.queue.Xqueue;
+import com.hktcode.queue.Xspins;
 import com.hktcode.ruoshui.reciever.pgsql.entity.LogicalTxactContext;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlKey;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlVal;
@@ -58,7 +59,7 @@ public class UpjctWorker extends SimpleWorker implements JacksonObject
 
     // argval
 
-    public final Xqueue.Spins xspins = Xqueue.Spins.of();
+    public final Xspins xspins = Xspins.of();
     public final Xqueue<UpperRecordConsumer> recver;
     public final Xqueue<UpperRecordProducer> sender;
 
@@ -114,7 +115,7 @@ public class UpjctWorker extends SimpleWorker implements JacksonObject
                  && (prhs = sender.push(plhs)) != plhs
                  && (curCapacity != capacity || (plhs = prhs) == null)
             ) {
-                plhs = new ArrayList<>(capacity);
+                plhs = new ArrayList<>(capacity); // BUG: 需要替换三次
                 curCapacity = capacity;
                 spins = 0;
                 lt = System.currentTimeMillis();

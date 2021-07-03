@@ -50,14 +50,15 @@ public class UpperHolder implements JacksonObject
 
     public final long createts;
     public final String fullname;
-    // srcprops
+    // fromdest
+    //   sender_props
+    //   recver_props
+    //   txaction_lsn
     public final UpcsmWorker consumer; // laborer
     // srcqueue
     public final UpjctWorker junction;
     // tgtqueue
     public final UppdcWorker producer;
-    // tgtprops
-    // txactlsn
     private final SimpleAtomic atomic; // xbarrier
 
     private UpperHolder //
@@ -78,19 +79,19 @@ public class UpperHolder implements JacksonObject
 
     public SimpleWorker consumer()
     {
-        // - return UpcsmWorker.of(srcprops, consumer, srcqueue, xbarrier, txactlsn);
+        // - return UpcsmWorker.of(srcprops, consumer, srcqueue, xbarrier);
         return this.consumer;
     }
 
     public SimpleWorker junction()
     {
-        // - return SimpleWorker.of(srcqueue, tgtqueue, xbarrier, txactlsn);
+        // - return SimpleWorker.of(srcqueue, tgtqueue, xbarrier);
         return this.junction;
     }
 
     public SimpleWorker producer()
     {
-        // - return SimpleWorker.of(tgtqueue, tgtprops, xbarrier, txactlsn);
+        // - return SimpleWorker.of(tgtqueue, tgtprops, xbarrier);
         return this.producer;
     }
 

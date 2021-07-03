@@ -29,7 +29,6 @@ public abstract class UppdcSender
         }
     }
 
-
     public static UppdcSender of(JsonNode json, AtomicLong xidlsn)
     {
         if (json == null) {
@@ -52,6 +51,8 @@ public abstract class UppdcSender
 
     public abstract Client client();
 
+    public abstract Result toJsonResult();
+
     // gauges
     public long offerTrycnt = 0;
 
@@ -66,6 +67,85 @@ public abstract class UppdcSender
     public interface Client extends AutoCloseable
     {
         void send(UpperRecordProducer record) throws Throwable;
+    }
+
+    public static class Result implements JacksonObject
+    {
+        public final Config config;
+
+        public final Metric metric;
+
+        protected Result(Config config, Metric metric)
+        {
+            this.config = config;
+            this.metric = metric;
+        }
+
+        @Override
+        public ObjectNode toJsonObject(ObjectNode node)
+        {
+            if (node == null) {
+                throw new ArgumentNullException("node");
+            }
+            ObjectNode configNode = node.putObject("config");
+            this.config.toJsonObject(configNode);
+            ObjectNode metricNode = node.putObject("metric");
+            this.metric.toJsonObject(metricNode);
+            return node;
+        }
+    }
+
+    public static abstract class Config implements JacksonObject
+    {
+        public final String senderClass;
+
+        protected Config(String senderClass)
+        {
+            this.senderClass = senderClass;
+        }
+
+        @Override
+        public ObjectNode toJsonObject(ObjectNode node)
+        {
+            if (node == null) {
+                throw new ArgumentNullException("node");
+            }
+            node.put("sender_class", this.senderClass);
+            return node;
+        }
+    }
+
+    public static abstract class Metric implements JacksonObject
+    {
+        public final long offerTrycnt;
+
+        public final long offerRowcnt;
+
+        public final long offerCounts;
+
+        public final long txactionLsn;
+
+        protected Metric(UppdcSender sender)
+        {
+            this.offerTrycnt = sender.offerTrycnt;
+            this.offerRowcnt = sender.offerRowcnt;
+            this.offerCounts = sender.offerCounts;
+            this.txactionLsn = sender.txactionLsn.get();
+        }
+
+        @Override
+        public ObjectNode toJsonObject(ObjectNode node)
+        {
+            if (node == null) {
+                throw new ArgumentNullException("node");
+            }
+            node.put("offer_trycnt", this.offerTrycnt);
+            node.put("offer_rowcnt", this.offerRowcnt);
+            node.put("offer_counts", this.offerCounts);
+            node.put("txaction_lsn", this.txactionLsn);
+            // - node.put("last_confirm", this.txactionLsn);
+            return node;
+        }
     }
 
     protected UppdcSender(AtomicLong xidlsn)

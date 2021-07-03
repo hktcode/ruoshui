@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Xqueue;
-import com.hktcode.queue.Xqueue.Spins;
+import com.hktcode.queue.Xspins;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
 import com.hktcode.simple.*;
 import org.slf4j.Logger;
@@ -52,7 +52,7 @@ public class UpcsmWorker extends SimpleWorker implements JacksonObject
         return result;
     }
 
-    public final Spins xspins = Spins.of();
+    public final Xspins xspins = Xspins.of();
 
     public final Xqueue<UpperRecordConsumer> sender;
 
@@ -67,7 +67,7 @@ public class UpcsmWorker extends SimpleWorker implements JacksonObject
         UpperRecordConsumer r;
         int curCapacity = this.sender.maxCapacity;
         List<UpperRecordConsumer> rhs, lhs = new ArrayList<>(curCapacity);
-        int spins = 0, spinsStatus = Xqueue.Spins.RESET;
+        int spins = 0, spinsStatus = Xspins.RESET;
         long now, logtime = System.currentTimeMillis();
         final Xqueue.Offer<UpperRecordConsumer> sender = this.sender.offerXqueue();
         try (UpcsmRecver.Client client = this.recver.client()) {
@@ -93,7 +93,7 @@ public class UpcsmWorker extends SimpleWorker implements JacksonObject
                     logger.info("logDuration={}", logDuration);
                     logtime = now;
                 } else {
-                    if (spinsStatus == Xqueue.Spins.SLEEP) {
+                    if (spinsStatus == Xspins.SLEEP) {
                         client.forceUpdateStatus();
                     }
                     spinsStatus = this.xspins.spins(spins++);
