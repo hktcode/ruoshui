@@ -19,7 +19,10 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class UpcsmRecver
 {
-    public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UpcsmRecver.class, "UpcsmRecver.yml");
+    public static final class Schema
+    {
+        public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UpcsmRecver.class, "UpcsmRecver.yml");
+    }
 
     public static UpcsmRecver of(JsonNode json, AtomicLong xidlsn) //
     {

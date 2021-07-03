@@ -23,7 +23,7 @@ public class FromDest
             schema.put("$schema", "http://json-schema.org/draft-04/schema#");
             ObjectNode typeNode = schema.put("type", "object");
             ObjectNode propertiesNode = schema.putObject("properties");
-            propertiesNode.set("recver", UpcsmRecver.SCHEMA);
+            propertiesNode.set("recver", UpcsmRecver.Schema.SCHEMA);
             propertiesNode.set("sender", UppdcSender.Schema.SCHEMA);
             SCHEMA = JacksonObject.immutableCopy(schema);
         }

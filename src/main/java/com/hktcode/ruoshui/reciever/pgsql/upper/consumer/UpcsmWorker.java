@@ -29,7 +29,7 @@ public class UpcsmWorker extends SimpleWorker implements JacksonObject
         ObjectNode argvalNode = schema.putObject("properties");
         ObjectNode actionInfosNode = argvalNode.putObject("actions_info");
         actionInfosNode.put("type", "array");
-        actionInfosNode.set("items", UpcsmRecver.SCHEMA);
+        actionInfosNode.set("items", UpcsmRecver.Schema.SCHEMA);
         actionInfosNode.put("maxItems", 1);
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
