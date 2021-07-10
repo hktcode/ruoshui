@@ -21,7 +21,7 @@ import java.util.List;
 
 public class Junction extends SimpleWorker
 {
-    public static Junction of(XQueue<UpperRecordConsumer> recver, XQueue<UpperRecordProducer> sender, SimpleAtomic atomic)
+    public static Junction of(XQueue<UpperRecordConsumer> recver, XQueue<UpperRecordProducer> sender, Xspins xspins, SimpleAtomic atomic)
     {
         if (recver == null) {
             throw new ArgumentNullException("recver");
@@ -29,15 +29,18 @@ public class Junction extends SimpleWorker
         if (sender == null) {
             throw new ArgumentNullException("sender");
         }
+        if (xspins == null) {
+            throw new ArgumentNullException("xspins");
+        }
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
-        return new Junction(recver, sender, atomic);
+        return new Junction(recver, sender, xspins, atomic);
     }
 
     // argval
 
-    public final Xspins xspins = Xspins.of();
+    public final Xspins xspins;
     public final XQueue<UpperRecordConsumer> recver;
     public final XQueue<UpperRecordProducer> sender;
 
@@ -47,11 +50,12 @@ public class Junction extends SimpleWorker
     public long curseq = 0;
     public final LogicalTxactContext xidenv = LogicalTxactContext.of();
 
-    private Junction(XQueue<UpperRecordConsumer> recver, XQueue<UpperRecordProducer> sender, SimpleAtomic atomic)
+    private Junction(XQueue<UpperRecordConsumer> recver, XQueue<UpperRecordProducer> sender, Xspins xspins, SimpleAtomic atomic)
     {
         super(atomic);
         this.recver = recver;
         this.sender = sender;
+        this.xspins = xspins;
     }
 
     @Override

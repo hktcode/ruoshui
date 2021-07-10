@@ -75,17 +75,17 @@ public class UpperHolder
 
     public SimpleWorker consumer()
     {
-        return Consumer.of(rcvQueue, lhsQueue, xbarrier);
+        return Consumer.of(rcvQueue, lhsQueue, consumer, xbarrier);
     }
 
     public SimpleWorker junction()
     {
-        return Junction.of(lhsQueue, rhsQueue, xbarrier);
+        return Junction.of(lhsQueue, rhsQueue, junction, xbarrier);
     }
 
     public SimpleWorker producer()
     {
-        return Producer.of(rhsQueue, sndQueue, xbarrier);
+        return Producer.of(rhsQueue, sndQueue, producer, xbarrier);
     }
 
     public Result modify(long finishts, JsonNode jsonnode, SimpleKeeper storeman)

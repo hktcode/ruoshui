@@ -13,7 +13,7 @@ import java.sql.SQLException;
 
 public class Consumer extends SimpleWorker
 {
-    public static Consumer of(RcvQueue recver, XQueue<UpperRecordConsumer> sender, SimpleAtomic atomic)
+    public static Consumer of(RcvQueue recver, XQueue<UpperRecordConsumer> sender, Xspins xspins, SimpleAtomic atomic)
     {
         if (recver == null) {
             throw new ArgumentNullException("recver");
@@ -21,13 +21,16 @@ public class Consumer extends SimpleWorker
         if (sender == null) {
             throw new ArgumentNullException("sender");
         }
+        if (xspins == null) {
+            throw new ArgumentNullException("xspins");
+        }
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
-        return new Consumer(recver, sender, atomic);
+        return new Consumer(recver, sender, xspins, atomic);
     }
 
-    public final Xspins xspins = Xspins.of();
+    public final Xspins xspins;
 
     public final XQueue<UpperRecordConsumer> sender;
 
@@ -72,11 +75,12 @@ public class Consumer extends SimpleWorker
         logger.info("pgsender complete");
     }
 
-    private Consumer(RcvQueue recver, XQueue<UpperRecordConsumer> sender, SimpleAtomic atomic)
+    private Consumer(RcvQueue recver, XQueue<UpperRecordConsumer> sender, Xspins xspins, SimpleAtomic atomic)
     {
         super(atomic);
         this.sender = sender;
         this.recver = recver;
+        this.xspins = xspins;
     }
 
     private static final Logger logger = LoggerFactory.getLogger(Consumer.class);
