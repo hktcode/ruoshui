@@ -56,7 +56,7 @@ public class UpcsmWorker extends SimpleWorker implements JacksonObject
 
     public final Xqueue<UpperRecordConsumer> sender;
 
-    public final UpcsmRecver recver;
+    public final RcvQueue recver;
 
     @Override
     protected void run(SimpleAtomic atomic) throws SQLException, InterruptedException
@@ -70,7 +70,7 @@ public class UpcsmWorker extends SimpleWorker implements JacksonObject
         int spins = 0, spinsStatus = Xspins.RESET;
         long now, logtime = System.currentTimeMillis();
         final Xqueue.Offer<UpperRecordConsumer> sender = this.sender.offerXqueue();
-        try (UpcsmRecver.Client client = this.recver.client()) {
+        try (RcvQueue.Client client = this.recver.client()) {
             while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
                 // 未来计划：此处可以提高性能
                 int size = lhs.size();
@@ -103,7 +103,7 @@ public class UpcsmWorker extends SimpleWorker implements JacksonObject
         logger.info("pgsender complete");
     }
 
-    private UpcsmWorker(UpcsmRecver recver, Xqueue<UpperRecordConsumer> sender, SimpleAtomic atomic)
+    private UpcsmWorker(RcvQueue recver, Xqueue<UpperRecordConsumer> sender, SimpleAtomic atomic)
     {
         super(atomic);
         this.sender = sender;

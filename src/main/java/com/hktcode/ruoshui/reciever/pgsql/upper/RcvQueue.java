@@ -1,4 +1,4 @@
-package com.hktcode.ruoshui.reciever.pgsql.upper.consumer;
+package com.hktcode.ruoshui.reciever.pgsql.upper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -7,7 +7,6 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.ruoshui.reciever.pgsql.entity.LogicalReplArgval;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgConnectionProperty;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordConsumer;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
 import org.postgresql.replication.PGReplicationStream;
@@ -17,14 +16,14 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class UpcsmRecver
+public class RcvQueue
 {
     public static final class Schema
     {
-        public final static ObjectNode SCHEMA = JacksonObject.getFromResource(UpcsmRecver.class, "UpcsmRecver.yml");
+        public final static ObjectNode SCHEMA = JacksonObject.getFromResource(RcvQueue.class, "UpcsmRecver.yml");
     }
 
-    public static UpcsmRecver of(JsonNode json, AtomicLong xidlsn) //
+    public static RcvQueue of(JsonNode json, AtomicLong xidlsn) //
     {
         if (json == null) {
             throw new ArgumentNullException("json");
@@ -39,7 +38,7 @@ public class UpcsmRecver
         JsonNode logicalReplNode = json.path("logical_repl");
         LogicalReplArgval logicalRepl = LogicalReplArgval.of(logicalReplNode);
 
-        return new UpcsmRecver(srcProperty, logicalRepl, xidlsn);
+        return new RcvQueue(srcProperty, logicalRepl, xidlsn);
     }
 
     // argval
@@ -47,8 +46,6 @@ public class UpcsmRecver
     public final PgConnectionProperty srcProperty;
 
     public final LogicalReplArgval logicalRepl;
-    // - public final LogicalReplArgval senderProps;
-    // - public final LogicalReplArgval recverProps;
 
     // gauges
 
@@ -58,7 +55,7 @@ public class UpcsmRecver
 
     private final AtomicLong txactionLsn;
 
-    private UpcsmRecver(PgConnectionProperty srcProperty, LogicalReplArgval logicalRepl, AtomicLong xidlsn)
+    private RcvQueue(PgConnectionProperty srcProperty, LogicalReplArgval logicalRepl, AtomicLong xidlsn)
     {
         this.srcProperty = srcProperty;
         this.logicalRepl = logicalRepl;
@@ -77,7 +74,7 @@ public class UpcsmRecver
 
     public static class Client implements AutoCloseable
     {
-        private final UpcsmRecver recver;
+        private final RcvQueue recver;
 
         private final Connection pgrepl;
 
@@ -85,7 +82,7 @@ public class UpcsmRecver
 
         private long prelsn = 0;
 
-        private Client(UpcsmRecver recver) throws SQLException
+        private Client(RcvQueue recver) throws SQLException
         {
             this.recver = recver;
             Connection conn = recver.srcProperty.replicaConnection();
@@ -143,22 +140,11 @@ public class UpcsmRecver
         }
     }
 
-    public static final class Result implements JacksonObject
+    public static final class Result extends JsonResult<Config, Metric>
     {
-        public final Config config;
-
-        public final Metric metric;
-
-        private Result(UpcsmRecver recver)
+        private Result(RcvQueue recver)
         {
-            this.config = new Config(recver);
-            this.metric = new Metric(recver);
-        }
-
-        @Override
-        public ObjectNode toJsonObject(ObjectNode node)
-        {
-            return null;
+            super(new Config(recver), new Metric(recver));
         }
     }
 
@@ -168,7 +154,7 @@ public class UpcsmRecver
 
         public final LogicalReplArgval logicalRepl;
 
-        private Config(UpcsmRecver recver)
+        private Config(RcvQueue recver)
         {
             this.srcProperty = recver.srcProperty;
             this.logicalRepl = recver.logicalRepl;
@@ -180,6 +166,10 @@ public class UpcsmRecver
             if (node == null) {
                 throw new ArgumentNullException("node");
             }
+            ObjectNode logicalReplNode = node.putObject("logical_repl");
+            this.logicalRepl.toJsonObject(logicalReplNode);
+            ObjectNode srcPropertyNode = node.putObject("src_property");
+            this.srcProperty.toJsonObject(srcPropertyNode);
             return node;
         }
     }
@@ -190,7 +180,7 @@ public class UpcsmRecver
 
         public final long fetchRowcnt;
 
-        private Metric(UpcsmRecver recver)
+        private Metric(RcvQueue recver)
         {
             this.fetchTrycnt = recver.trycnt;
             this.fetchRowcnt = recver.rowcnt;
@@ -199,20 +189,12 @@ public class UpcsmRecver
         @Override
         public ObjectNode toJsonObject(ObjectNode node)
         {
-            return null;
+            if (node == null) {
+                throw new ArgumentNullException("node");
+            }
+            node.put("fetch_trycnt", this.fetchTrycnt);
+            node.put("fetch_rowcnt", this.fetchRowcnt);
+            return node;
         }
     }
-    // - @Override
-    // - public ObjectNode toJsonObject(ObjectNode node)
-    // - {
-    // -     if (node == null) {
-    // -         throw new ArgumentNullException("node");
-    // -     }
-    // -     node = super.toJsonObject(node);
-    // -     ObjectNode logicalReplNode = node.putObject("logical_repl");
-    // -     this.logicalRepl.toJsonObject(logicalReplNode);
-    // -     ObjectNode srcPropertyNode = node.putObject("src_property");
-    // -     this.srcProperty.toJsonObject(srcPropertyNode);
-    // -     return node;
-    // - }
 }
