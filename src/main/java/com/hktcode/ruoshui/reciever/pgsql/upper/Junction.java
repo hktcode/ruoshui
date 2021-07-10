@@ -1,6 +1,10 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
+import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.pgjdbc.LogicalTxactBeginsMsg;
@@ -20,7 +24,21 @@ import java.util.List;
 
 public class Junction extends SimpleWorker
 {
-    public static Junction of(LhsQueue recver, RhsQueue sender, Xspins xspins, SimpleAtomic atomic)
+    public static class Schema
+    {
+        public static final ObjectNode SCHEMA;
+
+        static {
+            ObjectNode schema = new ObjectNode(JsonNodeFactory.instance);
+            schema.put("type", "object");
+            ObjectNode propertiesNode = schema.putObject("properties");
+            propertiesNode.set("spins_config", Xspins.Schema.SCHEMA);
+            SCHEMA = JacksonObject.immutableCopy(schema);
+        }
+    }
+
+    public static Junction //
+    of(LhsQueue recver, RhsQueue sender, SimpleAtomic atomic)
     {
         if (recver == null) {
             throw new ArgumentNullException("recver");
@@ -28,18 +46,15 @@ public class Junction extends SimpleWorker
         if (sender == null) {
             throw new ArgumentNullException("sender");
         }
-        if (xspins == null) {
-            throw new ArgumentNullException("xspins");
-        }
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
-        return new Junction(recver, sender, xspins, atomic);
+        return new Junction(recver, sender, atomic);
     }
 
     // argval
 
-    public final Xspins xspins;
+    public final Xspins xspins = Xspins.of();
     public final LhsQueue recver;
     public final RhsQueue sender;
 
@@ -49,12 +64,11 @@ public class Junction extends SimpleWorker
     public long curseq = 0;
     public final LogicalTxactContext xidenv = LogicalTxactContext.of();
 
-    private Junction(LhsQueue recver, RhsQueue sender, Xspins xspins, SimpleAtomic atomic)
+    private Junction(LhsQueue recver, RhsQueue sender, SimpleAtomic atomic)
     {
         super(atomic);
         this.recver = recver;
         this.sender = sender;
-        this.xspins = xspins;
     }
 
     @Override
@@ -119,12 +133,103 @@ public class Junction extends SimpleWorker
         ImmutableList<PgsqlVal> vallist = PgsqlVal.of(lsn, msg, this.xidenv);
         List<RhsQueue.Record> result = new ArrayList<>();
         for (PgsqlVal val : vallist) {
-            PgsqlKey key = PgsqlKey.of(this.curlsn, this.curseq++, this.xidenv.committs);
+            PgsqlKey key = PgsqlKey.of(curlsn, curseq++, xidenv.committs);
             RhsQueue.Record d = RhsQueue.Record.of(key, val);
             result.add(d);
         }
         return ImmutableList.copyOf(result);
     }
 
+    public Result toJsonResult()
+    {
+        Xspins.Result spinsResult = this.xspins.toJsonResult();
+        Config config = new Config(spinsResult);
+        Metric metric = new Metric(spinsResult, this);
+        return new Result(config, metric);
+    }
+
+    public void pst(JsonNode node)
+    {
+        if (node == null) {
+            throw new ArgumentNullException("node");
+        }
+        this.xspins.pst(node.path("spins_config"));
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(Junction.class);
+
+    public static class Result extends JsonResult<Config, Metric>
+    {
+        private Result(Config config, Metric metric)
+        {
+            super(config, metric);
+        }
+    }
+
+    public static class Config implements JacksonObject
+    {
+        public final Xspins.Config spinsConfig;
+
+        private Config(Xspins.Result spinsResult)
+        {
+            this.spinsConfig = spinsResult.config;
+        }
+
+        @Override
+        public ObjectNode toJsonObject(ObjectNode node)
+        {
+            if (node == null) {
+                throw new ArgumentNullException("node");
+            }
+            this.spinsConfig.toJsonObject(node.putObject("spins_config"));
+            return node;
+        }
+    }
+
+    public static class AmendRecordMetric implements JacksonObject
+    {
+        public final long curlsn;
+        public final long curseq;
+
+        private AmendRecordMetric(Junction junction)
+        {
+            this.curlsn = junction.curlsn;
+            this.curseq = junction.curseq;
+        }
+
+        @Override
+        public ObjectNode toJsonObject(ObjectNode node)
+        {
+            if (node == null) {
+                throw new ArgumentNullException("node");
+            }
+            node.put("curlsn", this.curlsn);
+            node.put("curseq", this.curseq);
+            return node;
+        }
+    }
+
+    public static class Metric implements JacksonObject
+    {
+        public final Xspins.Metric spinsMetric;
+
+        public final AmendRecordMetric amendRecord;
+
+        private Metric(Xspins.Result spinsResult, Junction junction)
+        {
+            this.spinsMetric = spinsResult.metric;
+            this.amendRecord = new AmendRecordMetric(junction);
+        }
+
+        @Override
+        public ObjectNode toJsonObject(ObjectNode node)
+        {
+            if (node == null) {
+                throw new ArgumentNullException("node");
+            }
+            this.spinsMetric.toJsonObject(node.putObject("spins_metric"));
+            this.amendRecord.toJsonObject(node.putObject("amend_record"));
+            return node;
+        }
+    }
 }

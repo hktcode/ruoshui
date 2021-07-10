@@ -33,6 +33,8 @@ import static com.hktcode.ruoshui.reciever.pgsql.upper.Entity.Schema.SCHEMA;
 @RequestMapping("api/recievers/upper")
 public class Controller implements DisposableBean
 {
+    private static final MissingNode MISSING_NODE = MissingNode.getInstance();
+
     private static final Pattern NAME_PATTERN //
             = Pattern.compile("^[a-z][a-z_0-9]*(\\.[a-z][a-z_0-9]*)*$");
 
@@ -87,13 +89,13 @@ public class Controller implements DisposableBean
         try {
             Entity status = this.repmap.putIfAbsent(name, exesvc);
             if (status != null) {
-                Entity.Result result = status.modify(Long.MAX_VALUE, MissingNode.getInstance(), this.keeper::updertYml);
+                Entity.Result result = status.modify(Long.MAX_VALUE, MISSING_NODE, this.keeper::updertYml);
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Entity.Result[]{ result });
             }
             this.exesvc.submit(exesvc.producer());
             this.exesvc.submit(exesvc.junction());
             this.exesvc.submit(exesvc.consumer());
-            Entity.Result result = exesvc.modify(Long.MAX_VALUE, MissingNode.getInstance(), this.keeper::updertYml);
+            Entity.Result result = exesvc.modify(Long.MAX_VALUE, MISSING_NODE, this.keeper::updertYml);
             return ResponseEntity.ok(new Entity.Result[] { result });
         }
         finally {
@@ -123,7 +125,7 @@ public class Controller implements DisposableBean
                 return ResponseEntity.notFound().build();
             }
             long finishts = System.currentTimeMillis();
-            Entity.Result result = exesvc.modify(finishts, MissingNode.getInstance(), this.keeper::deleteYml);
+            Entity.Result result = exesvc.modify(finishts, MISSING_NODE, this.keeper::deleteYml);
             return ResponseEntity.ok(new Entity.Result[]{result});
         }
         finally {
@@ -153,7 +155,7 @@ public class Controller implements DisposableBean
                 return ResponseEntity.notFound().build();
             }
             long finishts = Long.MAX_VALUE;
-            Entity.Result result = exesvc.modify(finishts, MissingNode.getInstance(), this.keeper::updertYml);
+            Entity.Result result = exesvc.modify(finishts, MISSING_NODE, this.keeper::updertYml);
             return ResponseEntity.ok(new Entity.Result[] { result });
         }
         finally {

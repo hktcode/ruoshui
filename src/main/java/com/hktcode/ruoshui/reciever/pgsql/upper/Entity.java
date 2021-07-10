@@ -25,11 +25,11 @@ public class Entity
             schema.put("type", "object");
             ObjectNode propertiesNode = schema.putObject("properties");
             propertiesNode.set("rcvqueue", RcvQueue.Schema.SCHEMA);
-            propertiesNode.set("consumer", Xspins.Schema.SCHEMA);
-            propertiesNode.set("lhsqueue", XQueue.Schema.SCHEMA);
-            propertiesNode.set("junction", Xspins.Schema.SCHEMA);
-            propertiesNode.set("rhsqueue", XQueue.Schema.SCHEMA);
-            propertiesNode.set("producer", Xspins.Schema.SCHEMA);
+            propertiesNode.set("consumer", Consumer.Schema.SCHEMA);
+            propertiesNode.set("lhsqueue", LhsQueue.Schema.SCHEMA);
+            propertiesNode.set("junction", Junction.Schema.SCHEMA);
+            propertiesNode.set("rhsqueue", RhsQueue.Schema.SCHEMA);
+            propertiesNode.set("producer", Producer.Schema.SCHEMA);
             propertiesNode.set("sndqueue", SndQueue.Schema.SCHEMA);
             SCHEMA = JacksonObject.immutableCopy(schema);
         }
@@ -49,11 +49,11 @@ public class Entity
     public final long createts;
     public final String fullname;
     public final RcvQueue rcvQueue;
-    public final Xspins consumer;
+    public final Consumer consumer;
     public final LhsQueue lhsQueue;
-    public final Xspins junction;
+    public final Junction junction;
     public final RhsQueue rhsQueue;
-    public final Xspins producer;
+    public final Producer producer;
     public final SndQueue sndQueue;
     private final SimpleAtomic xbarrier;
 
@@ -63,13 +63,13 @@ public class Entity
         this.createts = System.currentTimeMillis();
         this.fullname = fullname;
         this.rcvQueue = RcvQueue.of(jsonnode.path("rcvqueue"), xidlsn);
-        this.consumer = Xspins.of();
         this.lhsQueue = LhsQueue.of(jsonnode.path("lhsqueue"));
-        this.junction = Xspins.of();
         this.rhsQueue = RhsQueue.of(jsonnode.path("rhsqueue"));
-        this.producer = Xspins.of();
         this.sndQueue = SndQueue.of(jsonnode.path("sndqueue"), xidlsn);
         this.xbarrier = SimpleAtomic.of();
+        this.consumer = Consumer.of(rcvQueue, lhsQueue, xbarrier);
+        this.junction = Junction.of(lhsQueue, rhsQueue, xbarrier);
+        this.producer = Producer.of(rhsQueue, sndQueue, xbarrier);
         this.consumer.pst(jsonnode.path("consumer"));
         this.junction.pst(jsonnode.path("junction"));
         this.producer.pst(jsonnode.path("producer"));
@@ -77,50 +77,50 @@ public class Entity
 
     public SimpleWorker consumer()
     {
-        return Consumer.of(rcvQueue, lhsQueue, consumer, xbarrier);
+        return this.consumer;
     }
 
     public SimpleWorker junction()
     {
-        return Junction.of(lhsQueue, rhsQueue, junction, xbarrier);
+        return this.junction;
     }
 
     public SimpleWorker producer()
     {
-        return Producer.of(rhsQueue, sndQueue, producer, xbarrier);
+        return this.producer;
     }
 
-    public Result modify(long finishts, JsonNode jsonnode, SimpleKeeper storeman)
+    public Result modify(long finish, JsonNode newval, Keeper keeper) //
             throws InterruptedException
     {
-        if (jsonnode == null) {
-            throw new ArgumentNullException("jsonnode");
+        if (newval == null) {
+            throw new ArgumentNullException("newval");
         }
-        if (storeman == null) {
-            throw new ArgumentNullException("storeman");
+        if (keeper == null) {
+            throw new ArgumentNullException("keeper");
         }
-        return xbarrier.call((d)->this.modify(d, finishts, jsonnode, storeman));
+        return xbarrier.call((d)->this.pst(d, finish, newval, keeper));
     }
 
-    private Result modify(long deletets, long finishts, JsonNode jsonnode, SimpleKeeper storeman)
+    private Result pst(long delete, long finish, JsonNode newval, Keeper keeper)
     {
-        this.rcvQueue.pst(jsonnode.path("rcvqueue"));
-        this.consumer.pst(jsonnode.path("consumer"));
-        this.lhsQueue.pst(jsonnode.path("lhsqueue"));
-        this.junction.pst(jsonnode.path("junction"));
-        this.rhsQueue.pst(jsonnode.path("rhsqueue"));
-        this.producer.pst(jsonnode.path("producer"));
-        this.sndQueue.pst(jsonnode.path("sndqueue"));
-        if (deletets == Long.MAX_VALUE) {
-            deletets = finishts;
+        this.rcvQueue.pst(newval.path("rcvqueue"));
+        this.consumer.pst(newval.path("consumer"));
+        this.lhsQueue.pst(newval.path("lhsqueue"));
+        this.junction.pst(newval.path("junction"));
+        this.rhsQueue.pst(newval.path("rhsqueue"));
+        this.producer.pst(newval.path("producer"));
+        this.sndQueue.pst(newval.path("sndqueue"));
+        if (delete == Long.MAX_VALUE) {
+            delete = finish;
         }
-        Result result = new Result(this, deletets);
-        storeman.call(result);
+        Result result = new Result(this, delete);
+        keeper.call(result);
         return result;
     }
 
     @FunctionalInterface
-    public interface SimpleKeeper
+    public interface Keeper
     {
         void call(Entity.Result argval);
     }
@@ -128,11 +128,11 @@ public class Entity
     public static class Result extends SimpleResult
     {
         public final RcvQueue.Result rcvqueue;
-        public final Xspins.Result consumer;
-        public final XQueue.Result lhsqueue;
-        public final Xspins.Result junction;
-        public final XQueue.Result rhsqueue;
-        public final Xspins.Result producer;
+        public final Consumer.Result consumer;
+        public final LhsQueue.Result lhsqueue;
+        public final Junction.Result junction;
+        public final RhsQueue.Result rhsqueue;
+        public final Producer.Result producer;
         public final SndQueue.Result sndqueue;
 
         private Result(Entity holder, long deletets)

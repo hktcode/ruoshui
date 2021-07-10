@@ -1,8 +1,12 @@
 package com.hktcode.ruoshui.reciever.pgsql.upper;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.queue.Xspins;
 import com.hktcode.queue.XArray;
+import com.hktcode.queue.Xspins;
 import com.hktcode.simple.SimpleAtomic;
 import com.hktcode.simple.SimpleWorker;
 import org.slf4j.Logger;
@@ -10,9 +14,25 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 
+import static java.lang.System.currentTimeMillis;
+
 public class Consumer extends SimpleWorker
 {
-    public static Consumer of(RcvQueue recver, LhsQueue sender, Xspins xspins, SimpleAtomic atomic)
+    public static class Schema
+    {
+        public static final ObjectNode SCHEMA;
+
+        static {
+            ObjectNode schema = new ObjectNode(JsonNodeFactory.instance);
+            schema.put("type", "object");
+            ObjectNode propertiesNode = schema.putObject("properties");
+            propertiesNode.set("spins_config", Xspins.Schema.SCHEMA);
+            SCHEMA = JacksonObject.immutableCopy(schema);
+        }
+    }
+
+    public static Consumer //
+    of(RcvQueue recver, LhsQueue sender, SimpleAtomic atomic)
     {
         if (recver == null) {
             throw new ArgumentNullException("recver");
@@ -20,23 +40,21 @@ public class Consumer extends SimpleWorker
         if (sender == null) {
             throw new ArgumentNullException("sender");
         }
-        if (xspins == null) {
-            throw new ArgumentNullException("xspins");
-        }
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
-        return new Consumer(recver, sender, xspins, atomic);
+        return new Consumer(recver, sender, atomic);
     }
 
-    public final Xspins xspins;
+    public final Xspins xspins = Xspins.of();
 
     public final LhsQueue sender;
 
     public final RcvQueue recver;
 
     @Override
-    protected void run(SimpleAtomic atomic) throws SQLException, InterruptedException
+    protected void run(SimpleAtomic atomic) //
+            throws SQLException, InterruptedException
     {
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
@@ -44,7 +62,7 @@ public class Consumer extends SimpleWorker
         LhsQueue.Record r = null;
         XArray<LhsQueue.Record> rhs, lhs = this.sender.newArray();
         int spins = 0, spinsStatus = Xspins.RESET;
-        long now, logtime = System.currentTimeMillis();
+        long now, logms = currentTimeMillis();
         try (RcvQueue.Client client = this.recver.client()) {
             while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
                 // 未来计划：此处可以提高性能
@@ -52,15 +70,15 @@ public class Consumer extends SimpleWorker
                 if (lhs.getSize() > 0 && (rhs = sender.push(lhs)) != lhs) {
                     lhs = rhs;
                     spins = 0;
-                    logtime = System.currentTimeMillis();
+                    logms = currentTimeMillis();
                 } else if (r == null) {
                     r = client.recv();
                 } else if (lhs.add(r)) {
                     spins = 0;
-                    logtime = System.currentTimeMillis();
-                } else if (logtime + logDuration >= (now = System.currentTimeMillis())) {
+                    logms = currentTimeMillis();
+                } else if (logms + logDuration >= (now = currentTimeMillis())) {
                     logger.info("logDuration={}", logDuration);
-                    logtime = now;
+                    logms = now;
                 } else {
                     if (spinsStatus == Xspins.SLEEP) {
                         client.forceUpdateStatus();
@@ -72,13 +90,74 @@ public class Consumer extends SimpleWorker
         logger.info("pgsender complete");
     }
 
-    private Consumer(RcvQueue recver, LhsQueue sender, Xspins xspins, SimpleAtomic atomic)
+    public Result toJsonResult()
+    {
+        Xspins.Result spinsResult = this.xspins.toJsonResult();
+        return new Result(new Config(spinsResult), new Metric(spinsResult));
+    }
+
+    public void pst(JsonNode node)
+    {
+        if (node == null) {
+            throw new ArgumentNullException("node");
+        }
+        this.xspins.pst(node.path("spins_config"));
+    }
+
+    private Consumer(RcvQueue recver, LhsQueue sender, SimpleAtomic atomic)
     {
         super(atomic);
         this.sender = sender;
         this.recver = recver;
-        this.xspins = xspins;
     }
 
     private static final Logger logger = LoggerFactory.getLogger(Consumer.class);
+
+    public static class Result extends JsonResult<Config, Metric>
+    {
+        private Result(Config config, Metric metric)
+        {
+            super(config, metric);
+        }
+    }
+
+    public static class Config implements JacksonObject
+    {
+        public final Xspins.Config spinsConfig;
+
+        private Config(Xspins.Result spinsResult)
+        {
+            this.spinsConfig = spinsResult.config;
+        }
+
+        @Override
+        public ObjectNode toJsonObject(ObjectNode node)
+        {
+            if (node == null) {
+                throw new ArgumentNullException("node");
+            }
+            this.spinsConfig.toJsonObject(node.putObject("spins_config"));
+            return node;
+        }
+    }
+
+    public static class Metric implements JacksonObject
+    {
+        public final Xspins.Metric spinsMetric;
+
+        private Metric(Xspins.Result spinsResult)
+        {
+            this.spinsMetric = spinsResult.metric;
+        }
+
+        @Override
+        public ObjectNode toJsonObject(ObjectNode node)
+        {
+            if (node == null) {
+                throw new ArgumentNullException("node");
+            }
+            this.spinsMetric.toJsonObject(node.putObject("spins_metric"));
+            return node;
+        }
+    }
 }
