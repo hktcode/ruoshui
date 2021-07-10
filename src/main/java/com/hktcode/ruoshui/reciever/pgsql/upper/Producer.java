@@ -13,7 +13,7 @@ import java.util.Iterator;
 
 public class Producer extends SimpleWorker
 {
-    public static Producer of(SndQueue sender, XQueue<UpperRecordProducer> recver, SimpleAtomic atomic)
+    public static Producer of(XQueue<UpperRecordProducer> recver, SndQueue sender, SimpleAtomic atomic)
     {
         if (recver == null) {
             throw new ArgumentNullException("recver");
@@ -24,7 +24,7 @@ public class Producer extends SimpleWorker
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
-        return new Producer(sender, recver, atomic);
+        return new Producer(recver, sender, atomic);
     }
 
     public final SndQueue sender;
@@ -33,7 +33,7 @@ public class Producer extends SimpleWorker
 
     public final Xspins xspins = Xspins.of();
 
-    private Producer(SndQueue sender, XQueue<UpperRecordProducer> recver, SimpleAtomic atomic)
+    private Producer(XQueue<UpperRecordProducer> recver, SndQueue sender, SimpleAtomic atomic)
     {
         super(atomic);
         this.sender = sender;
