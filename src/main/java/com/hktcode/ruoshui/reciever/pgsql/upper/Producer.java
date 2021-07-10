@@ -60,8 +60,7 @@ public class Producer extends SimpleWorker
                     // 未来计划：send方法支持数组，发送多个记录，提高性能
                     client.send(iter.next());
                 } else if ((lhs = recver.poll(rhs)) != rhs) {
-                    rhs = lhs;
-                    iter = rhs.iterator();
+                    iter = (rhs = lhs).iterator();
                 } else if (prelog + l >= (now = System.currentTimeMillis())) {
                     logger.info("write to logDuration={}", l);
                     prelog = now;

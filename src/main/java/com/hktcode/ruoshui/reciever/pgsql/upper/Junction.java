@@ -73,10 +73,7 @@ public class Junction extends SimpleWorker
         UpperRecordProducer r = null;
         while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
             long ld = this.xspins.logDuration;
-            if (    (plhs.getSize() > 0)
-                    // 未来计划：支持bufferCount和maxDuration
-                 && (prhs = sender.push(plhs)) != plhs
-            ) {
+            if (plhs.getSize() > 0 && (prhs = sender.push(plhs)) != plhs) {
                 plhs = prhs;
                 spins = 0;
                 lt = System.currentTimeMillis();
@@ -88,8 +85,7 @@ public class Junction extends SimpleWorker
                 piter = this.convert(citer.next()).iterator();
                 lt = System.currentTimeMillis();
             } else if ((clhs = recver.poll(crhs)) != crhs) {
-                crhs = clhs;
-                citer = crhs.iterator();
+                citer = (crhs = clhs).iterator();
             } else if (lt + ld >= (ln = System.currentTimeMillis())) {
                 logger.info("logDuration={}", ld);
                 lt = ln;

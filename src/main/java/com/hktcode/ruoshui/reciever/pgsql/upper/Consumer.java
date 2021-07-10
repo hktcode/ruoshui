@@ -50,9 +50,7 @@ public class Consumer extends SimpleWorker
             while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
                 // 未来计划：此处可以提高性能
                 long logDuration = this.xspins.logDuration;
-                if (    (lhs.getSize() > 0)
-                     && (rhs = sender.push(lhs)) != lhs
-                ) {
+                if (lhs.getSize() > 0 && (rhs = sender.push(lhs)) != lhs) {
                     lhs = rhs;
                     spins = 0;
                     logtime = System.currentTimeMillis();
