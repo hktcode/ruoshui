@@ -1,4 +1,4 @@
-package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
+package com.hktcode.ruoshui.reciever.pgsql.upper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -6,12 +6,11 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class UppdcSender
+public abstract class SndQueue
 {
     public static final class Schema
     {
@@ -23,13 +22,13 @@ public abstract class UppdcSender
             schema.put("$schema", "http://json-schema.org/draft-04/schema#");
             ObjectNode typeNode = schema.putObject("type");
             ArrayNode oneOfNode = typeNode.putArray("oneOf");
-            oneOfNode.add(UppdcSenderFiles.Schema.SCHEMA);
-            oneOfNode.add(UppdcSenderKafka.Schema.SCHEMA);
+            oneOfNode.add(SndQueueFiles.Schema.SCHEMA);
+            oneOfNode.add(SndQueueKafka.Schema.SCHEMA);
             SCHEMA = JacksonObject.immutableCopy(schema);
         }
     }
 
-    public static UppdcSender of(JsonNode json, AtomicLong xidlsn)
+    public static SndQueue of(JsonNode json, AtomicLong xidlsn)
     {
         if (json == null) {
             throw new ArgumentNullException("json");
@@ -38,15 +37,17 @@ public abstract class UppdcSender
             throw new ArgumentNullException("xidlsn");
         }
         String senderClass = json.path("sender_class").asText("files");
-        UppdcSender result;
-        if (senderClass.equals("kafka")) {
-            result = UppdcSenderKafka.of(json, xidlsn);
+        SndQueue result;
+        if ("kafka".equals(senderClass)) {
+            result = SndQueueKafka.of(json, xidlsn);
+        }
+        else if ("files".equals(senderClass)) {
+            result = SndQueueFiles.of(json, xidlsn);
         }
         else {
-            result = UppdcSenderFiles.of(json, xidlsn);
+            throw new RuntimeException(); // 未来计划：自定义异常
         }
         return result;
-
     }
 
     public abstract Client client();
@@ -69,29 +70,11 @@ public abstract class UppdcSender
         void send(UpperRecordProducer record) throws Throwable;
     }
 
-    public static class Result implements JacksonObject
+    public static class Result extends JsonResult<Config, Metric>
     {
-        public final Config config;
-
-        public final Metric metric;
-
         protected Result(Config config, Metric metric)
         {
-            this.config = config;
-            this.metric = metric;
-        }
-
-        @Override
-        public ObjectNode toJsonObject(ObjectNode node)
-        {
-            if (node == null) {
-                throw new ArgumentNullException("node");
-            }
-            ObjectNode configNode = node.putObject("config");
-            this.config.toJsonObject(configNode);
-            ObjectNode metricNode = node.putObject("metric");
-            this.metric.toJsonObject(metricNode);
-            return node;
+            super(config, metric);
         }
     }
 
@@ -125,7 +108,7 @@ public abstract class UppdcSender
 
         public final long txactionLsn;
 
-        protected Metric(UppdcSender sender)
+        protected Metric(SndQueue sender)
         {
             this.offerTrycnt = sender.offerTrycnt;
             this.offerRowcnt = sender.offerRowcnt;
@@ -148,7 +131,7 @@ public abstract class UppdcSender
         }
     }
 
-    protected UppdcSender(AtomicLong xidlsn)
+    protected SndQueue(AtomicLong xidlsn)
     {
         this.txactionLsn = xidlsn;
     }

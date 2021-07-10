@@ -1,4 +1,4 @@
-package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
+package com.hktcode.ruoshui.reciever.pgsql.upper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -6,7 +6,6 @@ import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.Ruoshui;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlValTxactCommit;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,14 +23,14 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class UppdcSenderFiles extends UppdcSender
+public class SndQueueFiles extends SndQueue
 {
     public static final class Schema
     {
-        public static final ObjectNode SCHEMA = JacksonObject.getFromResource(UppdcSender.class, "UppdcSenderFiles.yml");
+        public static final ObjectNode SCHEMA = JacksonObject.getFromResource(SndQueue.class, "UppdcSenderFiles.yml");
     }
 
-    public static UppdcSenderFiles of(JsonNode json, AtomicLong xidlsn)
+    public static SndQueueFiles of(JsonNode json, AtomicLong xidlsn)
     {
         if (json == null) {
             throw new ArgumentNullException("json");
@@ -39,7 +38,7 @@ public class UppdcSenderFiles extends UppdcSender
         if (xidlsn == null) {
             throw new ArgumentNullException("xidlsn");
         }
-        UppdcSenderFiles r = new UppdcSenderFiles(xidlsn);
+        SndQueueFiles r = new SndQueueFiles(xidlsn);
         r.maxSynctime = json.path("max_synctime").asLong(r.maxSynctime);
         r.maxSyncsize = json.path("max_syncsize").asLong(r.maxSyncsize);
         r.maxFilesize = json.path("max_filesize").asLong(r.maxFilesize);
@@ -55,7 +54,7 @@ public class UppdcSenderFiles extends UppdcSender
 
     public static final long MAX_FILETIME = 60 * 60 * 1000;
 
-    private UppdcSenderFiles(AtomicLong xidlsn)
+    private SndQueueFiles(AtomicLong xidlsn)
     {
         super(xidlsn);
     }
@@ -113,13 +112,13 @@ public class UppdcSenderFiles extends UppdcSender
      */
     public long bufferBytes = 0;
 
-    public static class Client implements UppdcSender.Client, CompletionHandler<Integer, UpperRecordProducer>
+    public static class Client implements SndQueue.Client, CompletionHandler<Integer, UpperRecordProducer>
     {
         private static final Logger logger = LoggerFactory.getLogger(Client.class);
 
-        private final UppdcSenderFiles sender;
+        private final SndQueueFiles sender;
 
-        private Client(UppdcSenderFiles sender)
+        private Client(SndQueueFiles sender)
         {
             this.sender = sender;
         }
@@ -211,7 +210,7 @@ public class UppdcSenderFiles extends UppdcSender
         }
     }
 
-    public static final class Config extends UppdcSender.Config
+    public static final class Config extends SndQueue.Config
     {
         public final long maxSynctime;
 
@@ -221,7 +220,7 @@ public class UppdcSenderFiles extends UppdcSender
 
         public final long maxFiletime;
 
-        private Config(UppdcSenderFiles sender)
+        private Config(SndQueueFiles sender)
         {
             super("files");
             this.maxSynctime = sender.maxSynctime;
@@ -245,7 +244,7 @@ public class UppdcSenderFiles extends UppdcSender
         }
     }
 
-    public static final class Metric extends UppdcSender.Metric
+    public static final class Metric extends SndQueue.Metric
     {
         /**
          * 当前打开的文件名.
@@ -267,7 +266,7 @@ public class UppdcSenderFiles extends UppdcSender
          */
         public final long bufferBytes;
 
-        private Metric(UppdcSenderFiles sender)
+        private Metric(SndQueueFiles sender)
         {
             super(sender);
             this.curFilename = sender.curFilename;

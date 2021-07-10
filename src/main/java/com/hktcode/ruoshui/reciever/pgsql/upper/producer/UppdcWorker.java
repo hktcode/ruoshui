@@ -7,6 +7,7 @@ import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Xqueue;
 import com.hktcode.queue.Xspins;
+import com.hktcode.ruoshui.reciever.pgsql.upper.SndQueue;
 import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
 import com.hktcode.simple.*;
 import org.slf4j.Logger;
@@ -53,13 +54,13 @@ public class UppdcWorker extends SimpleWorker implements JacksonObject
         return result;
     }
 
-    public final UppdcSender sender;
+    public final SndQueue sender;
 
     public final Xqueue<UpperRecordProducer> recver;
 
     public final Xspins xspins = Xspins.of();
 
-    private UppdcWorker(UppdcSender sender, Xqueue<UpperRecordProducer> recver, SimpleAtomic atomic)
+    private UppdcWorker(SndQueue sender, Xqueue<UpperRecordProducer> recver, SimpleAtomic atomic)
     {
         super(atomic);
         this.sender = sender;
@@ -92,7 +93,7 @@ public class UppdcWorker extends SimpleWorker implements JacksonObject
         long now, prelog = System.currentTimeMillis(), spins = 0;
         Iterator<UpperRecordProducer> iter = rhs.iterator();
         Xqueue.Fetch<UpperRecordProducer> recver = this.recver.fetchXqueue();
-        try (UppdcSender.Client client = this.sender.client()) {
+        try (SndQueue.Client client = this.sender.client()) {
             while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
                 long l = this.xspins.logDuration;
                 if (iter.hasNext()) {

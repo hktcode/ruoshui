@@ -1,4 +1,4 @@
-package com.hktcode.ruoshui.reciever.pgsql.upper.producer;
+package com.hktcode.ruoshui.reciever.pgsql.upper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -9,8 +9,10 @@ import com.hktcode.lang.exception.ArgumentIllegalException;
 import com.hktcode.lang.exception.ArgumentNegativeException;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlValTxactCommit;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperRecordProducer;
-import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,20 +24,20 @@ import java.util.concurrent.atomic.AtomicLong;
 import static com.hktcode.kafka.Kafka.Serializers.BYTES;
 import static com.hktcode.ruoshui.Ruoshui.THE_NAME;
 
-public class UppdcSenderKafka extends UppdcSender
+public class SndQueueKafka extends SndQueue
 {
     public static final class Schema
     {
-        public static final ObjectNode SCHEMA = JacksonObject.getFromResource(UppdcSender.class, "UppdcSenderKafka.yml");
+        public static final ObjectNode SCHEMA = JacksonObject.getFromResource(SndQueue.class, "UppdcSenderKafka.yml");
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(UppdcSenderKafka.class);
+    private static final Logger logger = LoggerFactory.getLogger(SndQueueKafka.class);
 
     public static final String TARGET_TOPIC = THE_NAME;
 
     public static final int PARTITION_NO = 0;
 
-    public static UppdcSenderKafka of(JsonNode json, AtomicLong xidlsn)
+    public static SndQueueKafka of(JsonNode json, AtomicLong xidlsn)
     {
         if (json == null) {
             throw new ArgumentNullException("json");
@@ -52,7 +54,7 @@ public class UppdcSenderKafka extends UppdcSender
         ImmutableMap<String, String> kfkProperty = ImmutableMap.copyOf(kfkMap);
         // TODO: 检查properties
 
-        UppdcSenderKafka result =  new UppdcSenderKafka(kfkProperty, xidlsn);
+        SndQueueKafka result =  new SndQueueKafka(kfkProperty, xidlsn);
 
         String targetTopic = json.path("target_topic").asText(result.targetTopic);
         if (!Kafka.TOPIC_PATTERN.matcher(targetTopic).matches()) {
@@ -81,7 +83,7 @@ public class UppdcSenderKafka extends UppdcSender
         return new Result(new Config(this), new Metric(this));
     }
 
-    private UppdcSenderKafka(ImmutableMap<String, String> kfkProperty, AtomicLong xidlsn)
+    private SndQueueKafka(ImmutableMap<String, String> kfkProperty, AtomicLong xidlsn)
     {
         super(xidlsn);
         this.kfkProperty = kfkProperty;
@@ -97,11 +99,11 @@ public class UppdcSenderKafka extends UppdcSender
 
     public int partitionNo = PARTITION_NO;
 
-    public static class Client implements UppdcSender.Client
+    public static class Client implements SndQueue.Client
     {
-        private final UppdcSenderKafka squeue;
+        private final SndQueueKafka squeue;
 
-        private Client(UppdcSenderKafka squeue)
+        private Client(SndQueueKafka squeue)
         {
             this.squeue = squeue;
             Properties properties = new Properties();
@@ -171,7 +173,7 @@ public class UppdcSenderKafka extends UppdcSender
         }
     }
 
-    public static class Config extends UppdcSender.Config
+    public static class Config extends SndQueue.Config
     {
         public final ImmutableMap<String, String> kfkProperty;
 
@@ -179,7 +181,7 @@ public class UppdcSenderKafka extends UppdcSender
 
         public final int partitionNo;
 
-        private Config(UppdcSenderKafka sender)
+        private Config(SndQueueKafka sender)
         {
             super("kafka");
             this.kfkProperty = sender.kfkProperty;
@@ -204,9 +206,9 @@ public class UppdcSenderKafka extends UppdcSender
         }
     }
 
-    public static class Metric extends UppdcSender.Metric
+    public static class Metric extends SndQueue.Metric
     {
-        private Metric(UppdcSender sender)
+        private Metric(SndQueue sender)
         {
             super(sender);
         }
