@@ -27,7 +27,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
 
-import static com.hktcode.ruoshui.reciever.pgsql.upper.Entity.SCHEMA;
+import static com.hktcode.ruoshui.reciever.pgsql.upper.Entity.Schema.SCHEMA;
 
 @RestController("upperController")
 @RequestMapping("api/recievers/upper")

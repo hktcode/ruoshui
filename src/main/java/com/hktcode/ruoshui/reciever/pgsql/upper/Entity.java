@@ -15,22 +15,24 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class Entity
 {
-    public static final ObjectNode SCHEMA;
-
-    static
+    public static class Schema
     {
-        ObjectNode schema = new ObjectNode(JsonNodeFactory.instance);
-        schema.put("$schema", "http://json-schema.org/draft-04/schema#");
-        schema.put("type", "object");
-        ObjectNode propertiesNode = schema.putObject("properties");
-        propertiesNode.set("rcvqueue", RcvQueue.Schema.SCHEMA);
-        propertiesNode.set("consumer", Xspins.Schema.SCHEMA);
-        propertiesNode.set("lhsqueue", XQueue.Schema.SCHEMA);
-        propertiesNode.set("junction", Xspins.Schema.SCHEMA);
-        propertiesNode.set("rhsqueue", XQueue.Schema.SCHEMA);
-        propertiesNode.set("producer", Xspins.Schema.SCHEMA);
-        propertiesNode.set("sndqueue", SndQueue.Schema.SCHEMA);
-        SCHEMA = JacksonObject.immutableCopy(schema);
+        public static final ObjectNode SCHEMA;
+
+        static {
+            ObjectNode schema = new ObjectNode(JsonNodeFactory.instance);
+            schema.put("$schema", "http://json-schema.org/draft-04/schema#");
+            schema.put("type", "object");
+            ObjectNode propertiesNode = schema.putObject("properties");
+            propertiesNode.set("rcvqueue", RcvQueue.Schema.SCHEMA);
+            propertiesNode.set("consumer", Xspins.Schema.SCHEMA);
+            propertiesNode.set("lhsqueue", XQueue.Schema.SCHEMA);
+            propertiesNode.set("junction", Xspins.Schema.SCHEMA);
+            propertiesNode.set("rhsqueue", XQueue.Schema.SCHEMA);
+            propertiesNode.set("producer", Xspins.Schema.SCHEMA);
+            propertiesNode.set("sndqueue", SndQueue.Schema.SCHEMA);
+            SCHEMA = JacksonObject.immutableCopy(schema);
+        }
     }
 
     public static Entity of(String fullname, JsonNode jsonnode)
