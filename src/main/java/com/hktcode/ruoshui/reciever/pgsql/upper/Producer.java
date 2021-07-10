@@ -29,7 +29,8 @@ public class Producer extends SimpleWorker
         }
     }
 
-    public static Producer of(RhsQueue recver, SndQueue sender, SimpleAtomic atomic)
+    public static Producer //
+    of(RhsQueue recver, SndQueue sender, SimpleAtomic atomic)
     {
         if (recver == null) {
             throw new ArgumentNullException("recver");

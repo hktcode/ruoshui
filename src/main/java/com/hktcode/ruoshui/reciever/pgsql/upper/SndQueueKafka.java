@@ -105,13 +105,13 @@ public class SndQueueKafka extends SndQueue
 
         private Client(SndQueueKafka squeue)
         {
-            this.squeue = squeue;
-            Properties properties = new Properties();
-            properties.setProperty("request.timeout.ms", "1000");
+            Properties props = new Properties();
+            props.setProperty("request.timeout.ms", "1000");
             for (Map.Entry<String, String> e : squeue.kfkProperty.entrySet()) {
-                properties.setProperty(e.getKey(), e.getValue());
+                props.setProperty(e.getKey(), e.getValue());
             }
-            this.squeue.innerHandle.add(new KafkaProducer<>(properties, BYTES, BYTES));
+            squeue.innerHandle.add(new KafkaProducer<>(props, BYTES, BYTES));
+            this.squeue = squeue;
         }
 
         @Override
@@ -145,7 +145,7 @@ public class SndQueueKafka extends SndQueue
         private void onCompletion(RhsQueue.Record record, Exception ex)
         {
             if (ex != null) {
-                logger.error("kafka producer send record fail: lsn={}", record, ex);
+                logger.error("kafka producer send fail: record={}", record, ex);
                 if (this.squeue.callbackRef.compareAndSet(null, ex)) {
                     // kafka客户端的行为好奇怪，不符合一般的Java类调用约定：
                     // 1. 通常Java类中，应该是谁创建谁关闭。

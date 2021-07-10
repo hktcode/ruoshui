@@ -19,7 +19,6 @@ public abstract class SndQueue
         static
         {
             ObjectNode schema = new ObjectNode(JsonNodeFactory.instance);
-            schema.put("$schema", "http://json-schema.org/draft-04/schema#");
             ObjectNode typeNode = schema.putObject("type");
             ArrayNode oneOfNode = typeNode.putArray("oneOf");
             oneOfNode.add(SndQueueFiles.Schema.SCHEMA);

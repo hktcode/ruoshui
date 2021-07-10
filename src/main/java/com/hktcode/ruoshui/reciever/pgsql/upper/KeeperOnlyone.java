@@ -11,6 +11,7 @@ import com.hktcode.ruoshui.reciever.pgsql.exception.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
@@ -80,23 +81,24 @@ public class KeeperOnlyone
 
     private static Path getPath(String name, String fext)
     {
-        return Paths.get("var", "auto", "recievers.pgsql.upper", name + "." + fext);
+        String filename = name + "." + fext;
+        return Paths.get("var", "auto", "recievers.pgsql.upper", filename);
     }
 
     private static void deleteConfFile(String name, String fext)
     {
-        Path path = getPath(name, fext);
+        String path = getPath(name, fext).toString();
         try {
-            Files.deleteIfExists(Paths.get(Ruoshui.HOME, path.toString()));
+            Files.deleteIfExists(Paths.get(Ruoshui.HOME, path));
         } catch (FileSystemLoopException ex) {
-            logger.error("file system loop when deleting file: path={}", path, ex);
-            throw new ConfFileFileSystemLoopException(name, path.toString(), ex);
+            logger.error("file system loop: delete_path={}", path, ex);
+            throw new ConfFileFileSystemLoopException(name, path, ex);
         } catch (DirectoryNotEmptyException ex) {
-            logger.error(".del file is a directory and not empty: path={}", path, ex);
-            throw new ConfFileIsNotEmptyDirectoryException(name, path.toString(), ex);
+            logger.error("a none empty directory: delete_path={}", path, ex);
+            throw new ConfFileIsNotEmptyDirectoryException(name, path, ex);
         } catch (AccessDeniedException ex) {
-            logger.error("delete file access denied: path={}", path, ex);
-            throw new ConfFileAccessDeniedException(name, path.toString(), ex);
+            logger.error("access denied: delete_path={}", path, ex);
+            throw new ConfFileAccessDeniedException(name, path, ex);
         } catch (FileSystemException ex) {
             // 不可能抛出以下异常，因此统一当作FileSystemException处理
             // NotSuchFileException
@@ -106,18 +108,20 @@ public class KeeperOnlyone
             // FileAlreadyExistsException
             // 如果上级目录不是一个目录（例如：$RUOSHUI_HOME/var是一个文件）
             // 会抛出这个FileSystemException，并带有消息：.../var: 不是目录
-            logger.error("file system error when deleting file: path={}", path, ex);
-            throw new ConfFileFileSystemException(name, path.toString(), ConfFileIOException.CODE, ex);
+            logger.error("file system error: delete_path={}", path, ex);
+            HttpStatus code = ConfFileIOException.CODE;
+            throw new ConfFileFileSystemException(name, path, code, ex);
         } catch (IOException ex) {
-            logger.error("io error when deleting file: path={}", path, ex);
-            throw new ConfFileIOException(name, path.toString(), ConfFileIOException.CODE, ex);
+            logger.error("io error: delete_path={}", path, ex);
+            HttpStatus code = ConfFileIOException.CODE;
+            throw new ConfFileIOException(name, path, code, ex);
         }
     }
 
     private static void updertConfFile(String name, String fext, String yaml)
     {
-        Path path = getPath(name, fext);
-        Path full = Paths.get(Ruoshui.HOME, path.toString());
+        String path = getPath(name, fext).toString();
+        Path full = Paths.get(Ruoshui.HOME, path);
         OpenOption[] opts = new OpenOption[] {
                 StandardOpenOption.TRUNCATE_EXISTING,
                 StandardOpenOption.WRITE,
@@ -129,17 +133,18 @@ public class KeeperOnlyone
                 try (FileLock lock = channel.tryLock()) {
                     if (lock == null) {
                         logger.warn("lock file fail: path={}", path);
-                        throw new ConfFileLockFailureException(name, path.toString());
+                        throw new ConfFileLockFailureException(name, path);
                     }
-                    channel.write(ByteBuffer.wrap(yaml.getBytes(StandardCharsets.UTF_8)));
+                    byte[] bytes = yaml.getBytes(StandardCharsets.UTF_8);
+                    channel.write(ByteBuffer.wrap(bytes));
                 }
             }
         } catch (FileSystemLoopException ex) {
-            logger.error("file system loop when deleting file: path={}", path, ex);
-            throw new ConfFileFileSystemLoopException(name, path.toString(), ex);
+            logger.error("file system loop: read_path={}", path, ex);
+            throw new ConfFileFileSystemLoopException(name, path, ex);
         } catch (AccessDeniedException ex) {
-            logger.error("delete file access denied: path={}", path, ex);
-            throw new ConfFileAccessDeniedException(name, path.toString(), ex);
+            logger.error("access denied: read_path={}", path, ex);
+            throw new ConfFileAccessDeniedException(name, path, ex);
         } catch (FileSystemException ex) {
             // 不可能抛出以下异常，因此统一当作FileSystemException处理
             // NotSuchFileException
@@ -150,20 +155,22 @@ public class KeeperOnlyone
             // FileAlreadyExistsException
             // 如果上级目录不是一个目录（例如：$RUOSHUI_HOME/var是一个文件）
             // 会抛出这个FileSystemException，并带有消息：.../var: 不是目录
-            logger.error("file system error when deleting file: path={}", path, ex);
-            throw new ConfFileFileSystemException(name, path.toString(), ConfFileFileSystemException.CODE, ex);
+            logger.error("file system error: read_path={}", path, ex);
+            HttpStatus code = ConfFileFileSystemException.CODE;
+            throw new ConfFileFileSystemException(name, path, code, ex);
         } catch (IOException ex) {
-            logger.error("io error when deleting file: path={}", path, ex);
-            throw new ConfFileIOException(name, path.toString(), ConfFileIOException.CODE, ex);
+            logger.error("io error: read_path={}", path, ex);
+            HttpStatus code = ConfFileIOException.CODE;
+            throw new ConfFileIOException(name, path, code, ex);
         }
     }
 
     private static void renameConfFile(String name, String srct, String tgtt)
     {
-        Path source = getPath(name, srct);
-        Path target = getPath(name, tgtt);
-        Path fullsrc = Paths.get(Ruoshui.HOME, source.toString());
-        Path fulltgt = Paths.get(Ruoshui.HOME, target.toString());
+        String source = getPath(name, srct).toString();
+        String target = getPath(name, tgtt).toString();
+        Path fullsrc = Paths.get(Ruoshui.HOME, source);
+        Path fulltgt = Paths.get(Ruoshui.HOME, target);
         CopyOption[] opts = new CopyOption[] {
                 StandardCopyOption.ATOMIC_MOVE,
                 StandardCopyOption.REPLACE_EXISTING,
@@ -175,11 +182,11 @@ public class KeeperOnlyone
         } catch (NoSuchFileException ex) {
             // TODO:
         } catch (FileSystemLoopException ex) {
-            logger.error("file system loop when move file: source={}, target={}", source, target, ex);
-            throw new ConfFileFileSystemLoopException(name, source.toString(), ex);
+            logger.error("file system loop: move={}->{}", source, target, ex);
+            throw new ConfFileFileSystemLoopException(name, source, ex);
         } catch (AccessDeniedException ex) {
-            logger.error("delete file access denied: source={}, target={}", source, target, ex);
-            throw new ConfFileAccessDeniedException(name, source.toString(), ex);
+            logger.error("access denied: move={}->{}", source, target, ex);
+            throw new ConfFileAccessDeniedException(name, source, ex);
         } catch (FileSystemException ex) {
             // 不可能抛出以下异常，因此统一当作FileSystemException处理
             // NotDirectoryException
@@ -188,11 +195,13 @@ public class KeeperOnlyone
             // FileAlreadyExistsException
             // 如果上级目录不是一个目录（例如：$RUOSHUI_HOME/var是一个文件）
             // 会抛出这个FileSystemException，并带有消息：.../var: 不是目录
-            logger.error("file system error when deleting file: source={}, target={}", source, target, ex);
-            throw new ConfFileFileSystemException(name, source.toString(), ConfFileFileSystemException.CODE, ex);
+            logger.error("file system error: move={}->{}", source, target, ex);
+            HttpStatus code = ConfFileFileSystemException.CODE;
+            throw new ConfFileFileSystemException(name, source, code, ex);
         } catch (IOException ex) {
-            logger.error("io error when move file: source={}, target={}", source, target, ex);
-            throw new ConfFileIOException(name, source.toString(), ConfFileIOException.CODE, ex);
+            logger.error("io error: move={}->{}", source, target, ex);
+            HttpStatus code = ConfFileIOException.CODE;
+            throw new ConfFileIOException(name, source, code, ex);
         }
     }
 }
