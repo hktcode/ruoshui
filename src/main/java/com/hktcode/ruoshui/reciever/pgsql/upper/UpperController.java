@@ -39,7 +39,7 @@ public class UpperController
     }
 
     @PutMapping("{name}")
-    public ResponseEntity<UpperResult[]> put(@PathVariable("name") String name, @RequestBody JsonNode body) //
+    public ResponseEntity<UpperHolder.Result[]> put(@PathVariable("name") String name, @RequestBody JsonNode body) //
             throws InterruptedException, ProcessingException, IOException
     {
         if (name == null) {
@@ -62,7 +62,7 @@ public class UpperController
     }
 
     @DeleteMapping("{name}")
-    public ResponseEntity<UpperResult[]> del(@PathVariable("name") String name) //
+    public ResponseEntity<UpperHolder.Result[]> del(@PathVariable("name") String name) //
             throws InterruptedException
     {
         if (name == null) {
@@ -78,7 +78,7 @@ public class UpperController
     }
 
     @GetMapping("{name}")
-    public ResponseEntity<UpperResult[]> get(@PathVariable("name") String name) //
+    public ResponseEntity<UpperHolder.Result[]> get(@PathVariable("name") String name) //
             throws InterruptedException
     {
         if (name == null) {
@@ -94,7 +94,7 @@ public class UpperController
     }
 
     @GetMapping
-    public ResponseEntity<UpperResult[]> get() throws InterruptedException
+    public ResponseEntity<UpperHolder.Result[]> get() throws InterruptedException
     {
         return this.service.get();
     }

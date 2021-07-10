@@ -40,7 +40,7 @@ public class UpperService implements DisposableBean
         this.repmap = new ConcurrentHashMap<>();
     }
 
-    public ResponseEntity<UpperResult[]> put(String name, ObjectNode body) //
+    public ResponseEntity<UpperHolder.Result[]> put(String name, ObjectNode body) //
             throws InterruptedException, IOException
     {
         if (name == null) {
@@ -56,21 +56,21 @@ public class UpperService implements DisposableBean
         try {
             UpperHolder status = this.repmap.putIfAbsent(name, exesvc);
             if (status != null) {
-                UpperResult result = status.modify(Long.MAX_VALUE, MissingNode.getInstance(), this.keeper::updertYml);
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new UpperResult[]{ result });
+                UpperHolder.Result result = status.modify(Long.MAX_VALUE, MissingNode.getInstance(), this.keeper::updertYml);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new UpperHolder.Result[]{ result });
             }
             this.exesvc.submit(exesvc.producer());
             this.exesvc.submit(exesvc.junction());
             this.exesvc.submit(exesvc.consumer());
-            UpperResult result = exesvc.modify(Long.MAX_VALUE, MissingNode.getInstance(), this.keeper::updertYml);
-            return ResponseEntity.ok(new UpperResult[] { result });
+            UpperHolder.Result result = exesvc.modify(Long.MAX_VALUE, MissingNode.getInstance(), this.keeper::updertYml);
+            return ResponseEntity.ok(new UpperHolder.Result[] { result });
         }
         finally {
             lock.unlock();
         }
     }
 
-    public ResponseEntity<UpperResult[]> del(String name) throws InterruptedException
+    public ResponseEntity<UpperHolder.Result[]> del(String name) throws InterruptedException
     {
         if (name == null) {
             throw new ArgumentNullException("name");
@@ -83,15 +83,15 @@ public class UpperService implements DisposableBean
                 return ResponseEntity.notFound().build();
             }
             long finishts = System.currentTimeMillis();
-            UpperResult result = exesvc.modify(finishts, MissingNode.getInstance(), this.keeper::deleteYml);
-            return ResponseEntity.ok(new UpperResult[]{result});
+            UpperHolder.Result result = exesvc.modify(finishts, MissingNode.getInstance(), this.keeper::deleteYml);
+            return ResponseEntity.ok(new UpperHolder.Result[]{result});
         }
         finally {
             lock.unlock();
         }
     }
 
-    public ResponseEntity<UpperResult[]> get(String name) throws InterruptedException
+    public ResponseEntity<UpperHolder.Result[]> get(String name) throws InterruptedException
     {
         if (name == null) {
             throw new ArgumentNullException("name");
@@ -104,15 +104,15 @@ public class UpperService implements DisposableBean
                 return ResponseEntity.notFound().build();
             }
             long finishts = Long.MAX_VALUE;
-            UpperResult result = exesvc.modify(finishts, MissingNode.getInstance(), this.keeper::updertYml);
-            return ResponseEntity.ok(new UpperResult[] { result });
+            UpperHolder.Result result = exesvc.modify(finishts, MissingNode.getInstance(), this.keeper::updertYml);
+            return ResponseEntity.ok(new UpperHolder.Result[] { result });
         }
         finally {
             lock.unlock();
         }
     }
 
-    public ResponseEntity<UpperResult[]> pst(String name, JsonNode json)
+    public ResponseEntity<UpperHolder.Result[]> pst(String name, JsonNode json)
             throws InterruptedException
     {
         if (name == null) {
@@ -129,25 +129,25 @@ public class UpperService implements DisposableBean
                 return ResponseEntity.notFound().build();
             }
             long finishts = Long.MAX_VALUE;
-            UpperResult result = exesvc.modify(finishts, json, this.keeper::updertYml);
-            return ResponseEntity.ok(new UpperResult[] { result });
+            UpperHolder.Result result = exesvc.modify(finishts, json, this.keeper::updertYml);
+            return ResponseEntity.ok(new UpperHolder.Result[] { result });
         }
         finally {
             lock.unlock();
         }
     }
 
-    public ResponseEntity<UpperResult[]> get() throws InterruptedException
+    public ResponseEntity<UpperHolder.Result[]> get() throws InterruptedException
     {
         Lock lock = this.locker.writeLock();
         lock.lock();
         try {
-            UpperResult[] result = new UpperResult[this.repmap.size()];
+            UpperHolder.Result[] result = new UpperHolder.Result[this.repmap.size()];
             int index = 0;
             long finishts = Long.MAX_VALUE;
             for (Map.Entry<String, UpperHolder> entry : this.repmap.entrySet()) {
                 final UpperHolder exesvc = entry.getValue();
-                UpperResult r = exesvc.modify(finishts, MissingNode.getInstance(), this.keeper::updertYml);
+                UpperHolder.Result r = exesvc.modify(finishts, MissingNode.getInstance(), this.keeper::updertYml);
                 result[index++] = r;
             }
             return ResponseEntity.ok(result);
