@@ -9,7 +9,7 @@ import com.hktcode.ruoshui.reciever.pgsql.upper.JsonResult;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class Xqueue<E>
+public class XQueue<E>
 {
     public static class Schema
     {
@@ -43,12 +43,12 @@ public class Xqueue<E>
         }
     }
 
-    public static <E> Xqueue<E> of(JsonNode node)
+    public static <E> XQueue<E> of(JsonNode node)
     {
         if (node == null) {
             throw new ArgumentNullException("node");
         }
-        Xqueue<E> result = new Xqueue<>();
+        XQueue<E> result = new XQueue<>();
         result.pst(node);
         return result;
     }
@@ -59,7 +59,7 @@ public class Xqueue<E>
 
     public static final int DEFAULT_MAX_DURATION = 8;
 
-    private Xqueue()
+    private XQueue()
     {
         this.atomicInner = new AtomicReference<>(XArray.of(0));
     }
@@ -165,7 +165,7 @@ public class Xqueue<E>
 
         // - public final long minDuration;
 
-        private <E> Config(Xqueue<E> sender)
+        private <E> Config(XQueue<E> sender)
         {
             this.maxMessages = sender.maxMessages;
             this.minMessages = sender.minMessages;
@@ -203,7 +203,7 @@ public class Xqueue<E>
 
         public final long curCapacity;
 
-        private <E> Metric(Xqueue<E> sender)
+        private <E> Metric(XQueue<E> sender)
         {
             this.fetchTrycnt = sender.fetchTrycnt;
             this.fetchRowcnt = sender.fetchRowcnt;
