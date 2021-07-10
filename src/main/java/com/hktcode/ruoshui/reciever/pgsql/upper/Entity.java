@@ -13,7 +13,7 @@ import com.hktcode.simple.SimpleWorker;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class UpperHolder
+public class Entity
 {
     public static final ObjectNode SCHEMA;
 
@@ -33,7 +33,7 @@ public class UpperHolder
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
-    public static UpperHolder of(String fullname, JsonNode jsonnode)
+    public static Entity of(String fullname, JsonNode jsonnode)
     {
         if (fullname == null) {
             throw new ArgumentNullException("fullname");
@@ -41,7 +41,7 @@ public class UpperHolder
         if (jsonnode == null) {
             throw new ArgumentNullException("jsonnode");
         }
-        return new UpperHolder(fullname, jsonnode);
+        return new Entity(fullname, jsonnode);
     }
 
     public final long createts;
@@ -55,7 +55,7 @@ public class UpperHolder
     public final SndQueue sndQueue;
     private final SimpleAtomic xbarrier;
 
-    private UpperHolder(String fullname, JsonNode jsonnode)
+    private Entity(String fullname, JsonNode jsonnode)
     {
         AtomicLong xidlsn = new AtomicLong(0L);
         this.createts = System.currentTimeMillis();
@@ -120,7 +120,7 @@ public class UpperHolder
     @FunctionalInterface
     public interface SimpleKeeper
     {
-        void call(UpperHolder.Result argval);
+        void call(Entity.Result argval);
     }
 
     public static class Result extends SimpleResult
@@ -133,7 +133,7 @@ public class UpperHolder
         public final Xspins.Result producer;
         public final SndQueue.Result sndqueue;
 
-        private Result(UpperHolder holder, long deletets)
+        private Result(Entity holder, long deletets)
         {
             super(holder.fullname, holder.createts, deletets);
             this.rcvqueue = holder.rcvQueue.toJsonResult();

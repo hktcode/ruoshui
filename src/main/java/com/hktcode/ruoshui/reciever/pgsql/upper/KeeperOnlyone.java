@@ -20,21 +20,21 @@ import java.nio.channels.FileLock;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 
-@Repository
-public class UpperKeeperOnlyone
+@Repository("upperKeeper")
+public class KeeperOnlyone
 {
-    private static final Logger logger = LoggerFactory.getLogger(UpperKeeperOnlyone.class);
+    private static final Logger logger = LoggerFactory.getLogger(KeeperOnlyone.class);
 
     public final YAMLMapper mapper;
 
-    private final ImmutableMap<String, UpperHolder> etcval = ImmutableMap.of();
+    private final ImmutableMap<String, Entity> etcval = ImmutableMap.of();
 
-    public UpperKeeperOnlyone(@Autowired YAMLMapper mapper)
+    public KeeperOnlyone(@Autowired YAMLMapper mapper)
     {
         this.mapper = mapper;
     }
 
-    public void deleteYml(UpperHolder.Result argval)
+    public void deleteYml(Entity.Result argval)
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");
@@ -55,7 +55,7 @@ public class UpperKeeperOnlyone
         }
     }
 
-    public void updertYml(UpperHolder.Result argval)
+    public void updertYml(Entity.Result argval)
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");
