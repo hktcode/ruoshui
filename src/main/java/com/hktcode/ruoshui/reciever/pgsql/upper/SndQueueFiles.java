@@ -112,7 +112,7 @@ public class SndQueueFiles extends SndQueue
      */
     public long bufferBytes = 0;
 
-    public static class Client implements SndQueue.Client, CompletionHandler<Integer, UpperRecordProducer>
+    public static class Client implements SndQueue.Client, CompletionHandler<Integer, RhsQueue.Record>
     {
         private static final Logger logger = LoggerFactory.getLogger(Client.class);
 
@@ -124,7 +124,7 @@ public class SndQueueFiles extends SndQueue
         }
 
         @Override
-        public void send(UpperRecordProducer record) throws Throwable
+        public void send(RhsQueue.Record record) throws Throwable
         {
             if (record == null) {
                 throw new ArgumentNullException("record");
@@ -153,7 +153,7 @@ public class SndQueueFiles extends SndQueue
             }
         }
 
-        private void fopen(UpperRecordProducer record) throws IOException
+        private void fopen(RhsQueue.Record record) throws IOException
         {
             OpenOption[] options = {
                     StandardOpenOption.CREATE_NEW,
@@ -193,7 +193,7 @@ public class SndQueueFiles extends SndQueue
         }
 
         @Override
-        public void completed(Integer result, UpperRecordProducer attachment)
+        public void completed(Integer result, RhsQueue.Record attachment)
         {
             if (!(attachment.val instanceof PgsqlValTxactCommit)) {
                 return;
@@ -203,7 +203,7 @@ public class SndQueueFiles extends SndQueue
         }
 
         @Override
-        public void failed(Throwable exc, UpperRecordProducer attachment)
+        public void failed(Throwable exc, RhsQueue.Record attachment)
         {
             logger.error("", exc);
             this.sender.callbackRef.compareAndSet(null, exc);

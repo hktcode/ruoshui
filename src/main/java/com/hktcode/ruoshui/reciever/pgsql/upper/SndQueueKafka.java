@@ -115,7 +115,7 @@ public class SndQueueKafka extends SndQueue
         }
 
         @Override
-        public void send(UpperRecordProducer record) throws Throwable
+        public void send(RhsQueue.Record record) throws Throwable
         {
             Throwable ex = this.squeue.callbackRef.get();
             if (ex != null) {
@@ -142,7 +142,7 @@ public class SndQueueKafka extends SndQueue
             this.squeue.innerHandle.clear();
         }
 
-        private void onCompletion(UpperRecordProducer record, Exception ex)
+        private void onCompletion(RhsQueue.Record record, Exception ex)
         {
             if (ex != null) {
                 logger.error("kafka producer send record fail: lsn={}", record, ex);

@@ -52,9 +52,9 @@ public class XQueue<E>
 
     public static final int DEFAULT_MAX_DURATION = 8;
 
-    private XQueue()
+    protected XQueue()
     {
-        this.atomicInner = new AtomicReference<>(XArray.of(0));
+        this.atomicInner = new AtomicReference<>(this.newArray());
     }
 
     // - argval

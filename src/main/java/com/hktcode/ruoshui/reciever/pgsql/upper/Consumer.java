@@ -3,7 +3,6 @@ package com.hktcode.ruoshui.reciever.pgsql.upper;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.Xspins;
 import com.hktcode.queue.XArray;
-import com.hktcode.queue.XQueue;
 import com.hktcode.simple.SimpleAtomic;
 import com.hktcode.simple.SimpleWorker;
 import org.slf4j.Logger;
@@ -13,7 +12,7 @@ import java.sql.SQLException;
 
 public class Consumer extends SimpleWorker
 {
-    public static Consumer of(RcvQueue recver, XQueue<UpperRecordConsumer> sender, Xspins xspins, SimpleAtomic atomic)
+    public static Consumer of(RcvQueue recver, LhsQueue sender, Xspins xspins, SimpleAtomic atomic)
     {
         if (recver == null) {
             throw new ArgumentNullException("recver");
@@ -32,7 +31,7 @@ public class Consumer extends SimpleWorker
 
     public final Xspins xspins;
 
-    public final XQueue<UpperRecordConsumer> sender;
+    public final LhsQueue sender;
 
     public final RcvQueue recver;
 
@@ -42,8 +41,8 @@ public class Consumer extends SimpleWorker
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
-        UpperRecordConsumer r = null;
-        XArray<UpperRecordConsumer> rhs, lhs = this.sender.newArray();
+        LhsQueue.Record r = null;
+        XArray<LhsQueue.Record> rhs, lhs = this.sender.newArray();
         int spins = 0, spinsStatus = Xspins.RESET;
         long now, logtime = System.currentTimeMillis();
         try (RcvQueue.Client client = this.recver.client()) {
@@ -73,7 +72,7 @@ public class Consumer extends SimpleWorker
         logger.info("pgsender complete");
     }
 
-    private Consumer(RcvQueue recver, XQueue<UpperRecordConsumer> sender, Xspins xspins, SimpleAtomic atomic)
+    private Consumer(RcvQueue recver, LhsQueue sender, Xspins xspins, SimpleAtomic atomic)
     {
         super(atomic);
         this.sender = sender;

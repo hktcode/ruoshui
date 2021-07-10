@@ -9,7 +9,6 @@ import com.hktcode.ruoshui.reciever.pgsql.entity.LogicalTxactContext;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlKey;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlVal;
 import com.hktcode.queue.XArray;
-import com.hktcode.queue.XQueue;
 import com.hktcode.simple.SimpleAtomic;
 import com.hktcode.simple.SimpleWorker;
 import org.slf4j.Logger;
@@ -21,7 +20,7 @@ import java.util.List;
 
 public class Junction extends SimpleWorker
 {
-    public static Junction of(XQueue<UpperRecordConsumer> recver, XQueue<UpperRecordProducer> sender, Xspins xspins, SimpleAtomic atomic)
+    public static Junction of(LhsQueue recver, RhsQueue sender, Xspins xspins, SimpleAtomic atomic)
     {
         if (recver == null) {
             throw new ArgumentNullException("recver");
@@ -41,8 +40,8 @@ public class Junction extends SimpleWorker
     // argval
 
     public final Xspins xspins;
-    public final XQueue<UpperRecordConsumer> recver;
-    public final XQueue<UpperRecordProducer> sender;
+    public final LhsQueue recver;
+    public final RhsQueue sender;
 
     // gauges
 
@@ -50,7 +49,7 @@ public class Junction extends SimpleWorker
     public long curseq = 0;
     public final LogicalTxactContext xidenv = LogicalTxactContext.of();
 
-    private Junction(XQueue<UpperRecordConsumer> recver, XQueue<UpperRecordProducer> sender, Xspins xspins, SimpleAtomic atomic)
+    private Junction(LhsQueue recver, RhsQueue sender, Xspins xspins, SimpleAtomic atomic)
     {
         super(atomic);
         this.recver = recver;
@@ -64,13 +63,13 @@ public class Junction extends SimpleWorker
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
-        XArray<UpperRecordConsumer> crhs = recver.newArray(), clhs;
-        XArray<UpperRecordProducer> plhs = sender.newArray(), prhs;
+        XArray<LhsQueue.Record> crhs = recver.newArray(), clhs;
+        XArray<RhsQueue.Record> plhs = sender.newArray(), prhs;
         long spins = 0;
         long ln, lt = System.currentTimeMillis();
-        Iterator<UpperRecordProducer> piter = plhs.iterator();
-        Iterator<UpperRecordConsumer> citer = crhs.iterator();
-        UpperRecordProducer r = null;
+        Iterator<LhsQueue.Record> citer = crhs.iterator();
+        Iterator<RhsQueue.Record> piter = plhs.iterator();
+        RhsQueue.Record r = null;
         while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
             long ld = this.xspins.logDuration;
             if (plhs.getSize() > 0 && (prhs = sender.push(plhs)) != plhs) {
@@ -96,7 +95,7 @@ public class Junction extends SimpleWorker
         logger.info("upjct complete");
     }
 
-    private List<UpperRecordProducer> convert(UpperRecordConsumer record)
+    private List<RhsQueue.Record> convert(LhsQueue.Record record)
     {
         long lsn = record.lsn;
         LogicalMsg msg = record.msg;
@@ -118,10 +117,10 @@ public class Junction extends SimpleWorker
         }
 
         ImmutableList<PgsqlVal> vallist = PgsqlVal.of(lsn, msg, this.xidenv);
-        List<UpperRecordProducer> result = new ArrayList<>();
+        List<RhsQueue.Record> result = new ArrayList<>();
         for (PgsqlVal val : vallist) {
             PgsqlKey key = PgsqlKey.of(this.curlsn, this.curseq++, this.xidenv.committs);
-            UpperRecordProducer d = UpperRecordProducer.of(key, val);
+            RhsQueue.Record d = RhsQueue.Record.of(key, val);
             result.add(d);
         }
         return ImmutableList.copyOf(result);

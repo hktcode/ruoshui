@@ -48,9 +48,9 @@ public class UpperHolder
     public final String fullname;
     public final RcvQueue rcvQueue;
     public final Xspins consumer;
-    public final XQueue<UpperRecordConsumer> lhsQueue;
+    public final LhsQueue lhsQueue;
     public final Xspins junction;
-    public final XQueue<UpperRecordProducer> rhsQueue;
+    public final RhsQueue rhsQueue;
     public final Xspins producer;
     public final SndQueue sndQueue;
     private final SimpleAtomic xbarrier;
@@ -62,9 +62,9 @@ public class UpperHolder
         this.fullname = fullname;
         this.rcvQueue = RcvQueue.of(jsonnode.path("rcvqueue"), xidlsn);
         this.consumer = Xspins.of();
-        this.lhsQueue = XQueue.of(jsonnode.path("lhsqueue"));
+        this.lhsQueue = LhsQueue.of(jsonnode.path("lhsqueue"));
         this.junction = Xspins.of();
-        this.rhsQueue = XQueue.of(jsonnode.path("rhsqueue"));
+        this.rhsQueue = RhsQueue.of(jsonnode.path("rhsqueue"));
         this.producer = Xspins.of();
         this.sndQueue = SndQueue.of(jsonnode.path("sndqueue"), xidlsn);
         this.xbarrier = SimpleAtomic.of();

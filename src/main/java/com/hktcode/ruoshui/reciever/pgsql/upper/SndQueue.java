@@ -67,7 +67,7 @@ public abstract class SndQueue
 
     public interface Client extends AutoCloseable
     {
-        void send(UpperRecordProducer record) throws Throwable;
+        void send(RhsQueue.Record record) throws Throwable;
     }
 
     public static class Result extends JsonResult<Config, Metric>

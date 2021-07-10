@@ -103,7 +103,7 @@ public class RcvQueue
             }
         }
 
-        public UpperRecordConsumer recv() throws SQLException
+        public LhsQueue.Record recv() throws SQLException
         {
             this.updateReportLSN();
             ByteBuffer msg = this.stream.readPending();
@@ -114,7 +114,7 @@ public class RcvQueue
             long key = this.stream.getLastReceiveLSN().asLong();
             LogicalMsg val = LogicalMsg.ofLogicalWal(msg);
             ++this.recver.rowcnt;
-            return UpperRecordConsumer.of(key, val);
+            return LhsQueue.Record.of(key, val);
         }
 
         public void forceUpdateStatus() throws SQLException

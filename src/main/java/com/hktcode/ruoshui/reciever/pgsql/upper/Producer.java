@@ -13,7 +13,7 @@ import java.util.Iterator;
 
 public class Producer extends SimpleWorker
 {
-    public static Producer of(XQueue<UpperRecordProducer> recver, SndQueue sender, Xspins xspins, SimpleAtomic atomic)
+    public static Producer of(RhsQueue recver, SndQueue sender, Xspins xspins, SimpleAtomic atomic)
     {
         if (recver == null) {
             throw new ArgumentNullException("recver");
@@ -32,11 +32,11 @@ public class Producer extends SimpleWorker
 
     public final SndQueue sender;
 
-    public final XQueue<UpperRecordProducer> recver;
+    public final RhsQueue recver;
 
     public final Xspins xspins;
 
-    private Producer(XQueue<UpperRecordProducer> recver, SndQueue sender, Xspins xspins, SimpleAtomic atomic)
+    private Producer(RhsQueue recver, SndQueue sender, Xspins xspins, SimpleAtomic atomic)
     {
         super(atomic);
         this.sender = sender;
@@ -50,9 +50,9 @@ public class Producer extends SimpleWorker
         if (atomic == null) {
             throw new ArgumentNullException("atomic");
         }
-        XArray<UpperRecordProducer> lhs, rhs = recver.newArray();
+        XArray<RhsQueue.Record> lhs, rhs = recver.newArray();
         long now, prelog = System.currentTimeMillis(), spins = 0;
-        Iterator<UpperRecordProducer> iter = rhs.iterator();
+        Iterator<RhsQueue.Record> iter = rhs.iterator();
         try (SndQueue.Client client = this.sender.client()) {
             while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
                 long l = this.xspins.logDuration;
