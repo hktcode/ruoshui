@@ -21,6 +21,20 @@ import java.util.List;
 
 public class Junction extends SimpleWorker
 {
+    public static Junction of(XQueue<UpperRecordConsumer> recver, XQueue<UpperRecordProducer> sender, SimpleAtomic atomic)
+    {
+        if (recver == null) {
+            throw new ArgumentNullException("recver");
+        }
+        if (sender == null) {
+            throw new ArgumentNullException("sender");
+        }
+        if (atomic == null) {
+            throw new ArgumentNullException("atomic");
+        }
+        return new Junction(recver, sender, atomic);
+    }
+
     // argval
 
     public final Xspins xspins = Xspins.of();

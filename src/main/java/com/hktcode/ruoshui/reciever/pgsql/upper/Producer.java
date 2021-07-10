@@ -13,6 +13,20 @@ import java.util.Iterator;
 
 public class Producer extends SimpleWorker
 {
+    public static Producer of(SndQueue sender, XQueue<UpperRecordProducer> recver, SimpleAtomic atomic)
+    {
+        if (recver == null) {
+            throw new ArgumentNullException("recver");
+        }
+        if (sender == null) {
+            throw new ArgumentNullException("sender");
+        }
+        if (atomic == null) {
+            throw new ArgumentNullException("atomic");
+        }
+        return new Producer(sender, recver, atomic);
+    }
+
     public final SndQueue sender;
 
     public final XQueue<UpperRecordProducer> recver;
