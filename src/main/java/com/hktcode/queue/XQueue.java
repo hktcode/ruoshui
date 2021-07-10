@@ -9,6 +9,8 @@ import com.hktcode.ruoshui.reciever.pgsql.upper.JsonResult;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.hktcode.jackson.JacksonObject.putInteger;
+
 public class XQueue<E>
 {
     public static class Schema
@@ -31,15 +33,6 @@ public class XQueue<E>
             putInteger(argvalNode, "min_messages", DEFAULT_MIN_MESSAGES, 1, Integer.MAX_VALUE);
             putInteger(argvalNode, "max_duration", DEFAULT_MAX_DURATION, 0, Long.MAX_VALUE);
             SCHEMA = JacksonObject.immutableCopy(schema);
-        }
-
-        private static void putInteger(ObjectNode node, String name, long defval, long minimum, long maximum)
-        {
-            ObjectNode result = node.putObject(name);
-            result.put("type", "integer");
-            result.put("default", defval);
-            result.put("minimum", minimum);
-            result.put("maximum", maximum);
         }
     }
 

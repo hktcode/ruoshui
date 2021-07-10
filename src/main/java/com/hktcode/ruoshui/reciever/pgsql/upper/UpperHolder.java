@@ -6,12 +6,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.queue.XQueue;
+import com.hktcode.queue.Xspins;
 import com.hktcode.simple.SimpleAtomic;
+import com.hktcode.simple.SimpleResult;
 import com.hktcode.simple.SimpleWorker;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class UpperHolder implements JacksonObject
+public class UpperHolder
 {
     public static final ObjectNode SCHEMA;
 
@@ -21,9 +23,13 @@ public class UpperHolder implements JacksonObject
         schema.put("$schema", "http://json-schema.org/draft-04/schema#");
         schema.put("type", "object");
         ObjectNode propertiesNode = schema.putObject("properties");
-        propertiesNode.set("consumer", Consumer.SCHEMA);
-        propertiesNode.set("junction", Junction.SCHEMA);
-        propertiesNode.set("producer", Producer.SCHEMA);
+        propertiesNode.set("rcvqueue", RcvQueue.Schema.SCHEMA);
+        propertiesNode.set("consumer", Xspins.Schema.SCHEMA);
+        propertiesNode.set("lhsqueue", XQueue.Schema.SCHEMA);
+        propertiesNode.set("junction", Xspins.Schema.SCHEMA);
+        propertiesNode.set("rhsqueue", XQueue.Schema.SCHEMA);
+        propertiesNode.set("producer", Xspins.Schema.SCHEMA);
+        propertiesNode.set("sndqueue", SndQueue.Schema.SCHEMA);
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
@@ -35,64 +41,54 @@ public class UpperHolder implements JacksonObject
         if (jsonnode == null) {
             throw new ArgumentNullException("jsonnode");
         }
-        SimpleAtomic atomic = SimpleAtomic.of();
-        AtomicLong xidlsn = new AtomicLong(0L);
-        Consumer consumer = Consumer.of(jsonnode.path("consumer"), xidlsn, atomic);
-        XQueue<UpperRecordConsumer> fetchXqueue = consumer.sender;
-        Junction junction = Junction.ofJsonObject(jsonnode.path("junction"), fetchXqueue, atomic);
-        XQueue<UpperRecordProducer> offerXqueue = junction.sender;
-        Producer producer = Producer.ofJsonObject(jsonnode.path("producer"), offerXqueue, xidlsn, atomic);
-        return new UpperHolder(fullname, consumer, junction, producer, atomic);
+        return new UpperHolder(fullname, jsonnode);
     }
 
     public final long createts;
     public final String fullname;
-    // fromdest
-    //   sender_props
-    //   recver_props
-    //   txaction_lsn
-    public final Consumer consumer; // laborer
-    // srcqueue
-    public final Junction junction;
-    // tgtqueue
-    public final Producer producer;
-    private final SimpleAtomic atomic; // xbarrier
+    public final RcvQueue rcvQueue;
+    public final Xspins consumer;
+    public final XQueue<UpperRecordConsumer> lhsQueue;
+    public final Xspins junction;
+    public final XQueue<UpperRecordProducer> rhsQueue;
+    public final Xspins producer;
+    public final SndQueue sndQueue;
+    private final SimpleAtomic xbarrier;
 
-    private UpperHolder //
-        /* */(String fullname //
-            /* */, Consumer consumer //
-            /* */, Junction junction //
-            /* */, Producer producer //
-            /* */, SimpleAtomic atomic
-            /* */)
+    private UpperHolder(String fullname, JsonNode jsonnode)
     {
+        AtomicLong xidlsn = new AtomicLong(0L);
         this.createts = System.currentTimeMillis();
         this.fullname = fullname;
-        this.consumer = consumer;
-        this.junction = junction;
-        this.producer = producer;
-        this.atomic = atomic;
+        this.rcvQueue = RcvQueue.of(jsonnode.path("rcvqueue"), xidlsn);
+        this.consumer = Xspins.of();
+        this.lhsQueue = XQueue.of(jsonnode.path("lhsqueue"));
+        this.junction = Xspins.of();
+        this.rhsQueue = XQueue.of(jsonnode.path("rhsqueue"));
+        this.producer = Xspins.of();
+        this.sndQueue = SndQueue.of(jsonnode.path("sndqueue"), xidlsn);
+        this.xbarrier = SimpleAtomic.of();
+        this.consumer.pst(jsonnode.path("consumer"));
+        this.junction.pst(jsonnode.path("junction"));
+        this.producer.pst(jsonnode.path("producer"));
     }
 
     public SimpleWorker consumer()
     {
-        // - return UpcsmWorker.of(srcprops, consumer, srcqueue, xbarrier);
-        return this.consumer;
+        return Consumer.of(rcvQueue, lhsQueue, xbarrier);
     }
 
     public SimpleWorker junction()
     {
-        // - return SimpleWorker.of(srcqueue, tgtqueue, xbarrier);
-        return this.junction;
+        return Junction.of(lhsQueue, rhsQueue, xbarrier);
     }
 
     public SimpleWorker producer()
     {
-        // - return SimpleWorker.of(tgtqueue, tgtprops, xbarrier);
-        return this.producer;
+        return Producer.of(rhsQueue, sndQueue, xbarrier);
     }
 
-    public UpperResult modify(long finishts, JsonNode jsonnode, SimpleKeeper storeman)
+    public Result modify(long finishts, JsonNode jsonnode, SimpleKeeper storeman)
             throws InterruptedException
     {
         if (jsonnode == null) {
@@ -101,31 +97,38 @@ public class UpperHolder implements JacksonObject
         if (storeman == null) {
             throw new ArgumentNullException("storeman");
         }
-        return this.atomic.call((d)->this.modify(d, finishts, jsonnode, storeman));
+        return this.xbarrier.call((d)->this.modify(d, finishts, jsonnode, storeman));
     }
 
-    private UpperResult modify(long deletets, long finishts, JsonNode jsonnode, SimpleKeeper storeman)
+    private Result modify(long deletets, long finishts, JsonNode jsonnode, SimpleKeeper storeman)
     {
         JsonNode n;
+        if ((n = jsonnode.get("rcvqueue")) != null) {
+            this.rcvQueue.pst(n);
+        }
         if ((n = jsonnode.get("consumer")) != null) {
             this.consumer.pst(n);
+        }
+        if ((n = jsonnode.get("lhsqueue")) != null) {
+            this.lhsQueue.pst(n);
         }
         if ((n = jsonnode.get("junction")) != null) {
             this.junction.pst(n);
         }
+        if ((n = jsonnode.get("rhsqueue")) != null) {
+            this.rhsQueue.pst(n);
+        }
         if ((n = jsonnode.get("producer")) != null) {
             this.producer.pst(n);
+        }
+        if ((n = jsonnode.get("sndqueue")) != null) {
+            this.sndQueue.pst(n);
         }
         if (deletets == Long.MAX_VALUE) {
             deletets = finishts;
         }
         storeman.call(this);
-        long createts = this.createts;
-        String fullname = this.fullname;
-        ObjectNode consumer = this.consumer.toJsonObject();
-        ObjectNode junction = this.junction.toJsonObject();
-        ObjectNode producer = this.producer.toJsonObject();
-        return UpperResult.of(createts, fullname, consumer, junction, producer, deletets);
+        return new Result(this, deletets);
     }
 
     @FunctionalInterface
@@ -134,18 +137,44 @@ public class UpperHolder implements JacksonObject
         void call(UpperHolder argval);
     }
 
-    @Override
-    public ObjectNode toJsonObject(ObjectNode node)
+    public static class Result extends SimpleResult
     {
-        if (node == null) {
-            throw new ArgumentNullException("node");
+        public final RcvQueue.Result rcvqueue;
+        public final Xspins.Result consumer;
+        public final XQueue.Result lhsqueue;
+        public final Xspins.Result junction;
+        public final XQueue.Result rhsqueue;
+        public final Xspins.Result producer;
+        public final SndQueue.Result sndqueue;
+
+        private Result(UpperHolder holder, long deletets)
+        {
+            super(holder.fullname, holder.createts, deletets);
+            this.rcvqueue = holder.rcvQueue.toJsonResult();
+            this.consumer = holder.consumer.toJsonResult();
+            this.lhsqueue = holder.lhsQueue.toJsonResult();
+            this.junction = holder.junction.toJsonResult();
+            this.rhsqueue = holder.rhsQueue.toJsonResult();
+            this.producer = holder.producer.toJsonResult();
+            this.sndqueue = holder.sndQueue.toJsonResult();
         }
-        ObjectNode c = node.putObject("consumer");
-        this.consumer.toJsonObject(c);
-        ObjectNode j = node.putObject("junction");
-        this.junction.toJsonObject(j);
-        ObjectNode p = node.putObject("producer");
-        this.producer.toJsonObject(p);
-        return node;
+
+        @Override
+        public ObjectNode toJsonObject(ObjectNode node)
+        {
+            if (node == null) {
+                throw new ArgumentNullException("node");
+            }
+            node.put("fullname", this.fullname);
+            node.put("createts", this.createts);
+            this.rcvqueue.toJsonObject(node.putObject("rcvqueue"));
+            this.consumer.toJsonObject(node.putObject("consumer"));
+            this.lhsqueue.toJsonObject(node.putObject("lhsqueue"));
+            this.junction.toJsonObject(node.putObject("junction"));
+            this.rhsqueue.toJsonObject(node.putObject("rhsqueue"));
+            this.producer.toJsonObject(node.putObject("producer"));
+            this.sndqueue.toJsonObject(node.putObject("sndqueue"));
+            return node;
+        }
     }
 }

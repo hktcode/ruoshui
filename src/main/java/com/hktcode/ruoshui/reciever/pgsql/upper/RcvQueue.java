@@ -67,6 +67,13 @@ public class RcvQueue
         return new Client(this);
     }
 
+    public void pst(JsonNode node)
+    {
+        if (node == null) {
+            throw new ArgumentNullException("node");
+        }
+    }
+
     public Result toJsonResult()
     {
         return new Result(this);

@@ -135,4 +135,11 @@ public abstract class SndQueue
     {
         this.txactionLsn = xidlsn;
     }
+
+    public void pst(JsonNode node)
+    {
+        if (node == null) {
+            throw new ArgumentNullException("node");
+        }
+    }
 }

@@ -190,4 +190,13 @@ public interface JacksonObject
         node.put("localized_message", ex.getLocalizedMessage());
         return node;
     }
+
+    public static void putInteger(ObjectNode node, String name, long defval, long minimum, long maximum)
+    {
+        ObjectNode result = node.putObject(name);
+        result.put("type", "integer");
+        result.put("default", defval);
+        result.put("minimum", minimum);
+        result.put("maximum", maximum);
+    }
 }
