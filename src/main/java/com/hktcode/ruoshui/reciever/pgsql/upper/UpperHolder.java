@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.queue.Xqueue;
-import com.hktcode.ruoshui.reciever.pgsql.upper.consumer.UpcsmWorker;
-import com.hktcode.ruoshui.reciever.pgsql.upper.junction.UpjctWorker;
-import com.hktcode.ruoshui.reciever.pgsql.upper.producer.UppdcWorker;
+import com.hktcode.queue.XQueue;
 import com.hktcode.simple.SimpleAtomic;
 import com.hktcode.simple.SimpleWorker;
 
@@ -24,9 +21,9 @@ public class UpperHolder implements JacksonObject
         schema.put("$schema", "http://json-schema.org/draft-04/schema#");
         schema.put("type", "object");
         ObjectNode propertiesNode = schema.putObject("properties");
-        propertiesNode.set("consumer", UpcsmWorker.SCHEMA);
-        propertiesNode.set("junction", UpjctWorker.SCHEMA);
-        propertiesNode.set("producer", UppdcWorker.SCHEMA);
+        propertiesNode.set("consumer", Consumer.SCHEMA);
+        propertiesNode.set("junction", Junction.SCHEMA);
+        propertiesNode.set("producer", Producer.SCHEMA);
         SCHEMA = JacksonObject.immutableCopy(schema);
     }
 
@@ -40,11 +37,11 @@ public class UpperHolder implements JacksonObject
         }
         SimpleAtomic atomic = SimpleAtomic.of();
         AtomicLong xidlsn = new AtomicLong(0L);
-        UpcsmWorker consumer = UpcsmWorker.of(jsonnode.path("consumer"), xidlsn, atomic);
-        Xqueue<UpperRecordConsumer> fetchXqueue = consumer.sender;
-        UpjctWorker junction = UpjctWorker.ofJsonObject(jsonnode.path("junction"), fetchXqueue, atomic);
-        Xqueue<UpperRecordProducer> offerXqueue = junction.sender;
-        UppdcWorker producer = UppdcWorker.ofJsonObject(jsonnode.path("producer"), offerXqueue, xidlsn, atomic);
+        Consumer consumer = Consumer.of(jsonnode.path("consumer"), xidlsn, atomic);
+        XQueue<UpperRecordConsumer> fetchXqueue = consumer.sender;
+        Junction junction = Junction.ofJsonObject(jsonnode.path("junction"), fetchXqueue, atomic);
+        XQueue<UpperRecordProducer> offerXqueue = junction.sender;
+        Producer producer = Producer.ofJsonObject(jsonnode.path("producer"), offerXqueue, xidlsn, atomic);
         return new UpperHolder(fullname, consumer, junction, producer, atomic);
     }
 
@@ -54,18 +51,18 @@ public class UpperHolder implements JacksonObject
     //   sender_props
     //   recver_props
     //   txaction_lsn
-    public final UpcsmWorker consumer; // laborer
+    public final Consumer consumer; // laborer
     // srcqueue
-    public final UpjctWorker junction;
+    public final Junction junction;
     // tgtqueue
-    public final UppdcWorker producer;
+    public final Producer producer;
     private final SimpleAtomic atomic; // xbarrier
 
     private UpperHolder //
         /* */(String fullname //
-            /* */, UpcsmWorker consumer //
-            /* */, UpjctWorker junction //
-            /* */, UppdcWorker producer //
+            /* */, Consumer consumer //
+            /* */, Junction junction //
+            /* */, Producer producer //
             /* */, SimpleAtomic atomic
             /* */)
     {
