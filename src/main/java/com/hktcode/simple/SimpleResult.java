@@ -12,8 +12,6 @@ public class SimpleResult implements JacksonObject
 
     public final long deletets;
 
-    // - public final ImmutableList<ObjectNode> laborers;
-
     protected SimpleResult(String fullname, long createts, long deletets)
     {
         this.fullname = fullname;

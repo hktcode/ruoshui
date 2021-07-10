@@ -165,8 +165,7 @@ public class UpperHolder
             if (node == null) {
                 throw new ArgumentNullException("node");
             }
-            node.put("fullname", this.fullname);
-            node.put("createts", this.createts);
+            node = super.toJsonObject(node);
             this.rcvqueue.toJsonObject(node.putObject("rcvqueue"));
             this.consumer.toJsonObject(node.putObject("consumer"));
             this.lhsqueue.toJsonObject(node.putObject("lhsqueue"));
