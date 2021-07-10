@@ -1,4 +1,4 @@
-package com.hktcode.ruoshui.reciever.pgsql.upper.storeman;
+package com.hktcode.ruoshui.reciever.pgsql.upper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -8,7 +8,6 @@ import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.lang.exception.NeverHappenAssertionError;
 import com.hktcode.ruoshui.Ruoshui;
 import com.hktcode.ruoshui.reciever.pgsql.exception.*;
-import com.hktcode.ruoshui.reciever.pgsql.upper.UpperHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,7 @@ public class UpperKeeperOnlyone
         this.mapper = mapper;
     }
 
-    public void deleteYml(UpperHolder argval)
+    public void deleteYml(UpperHolder.Result argval)
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");
@@ -56,7 +55,7 @@ public class UpperKeeperOnlyone
         }
     }
 
-    public void updertYml(UpperHolder argval)
+    public void updertYml(UpperHolder.Result argval)
     {
         if (argval == null) {
             throw new ArgumentNullException("argval");

@@ -92,49 +92,35 @@ public class UpperHolder
             throws InterruptedException
     {
         if (jsonnode == null) {
-            throw new ArgumentNullException("node");
+            throw new ArgumentNullException("jsonnode");
         }
         if (storeman == null) {
             throw new ArgumentNullException("storeman");
         }
-        return this.xbarrier.call((d)->this.modify(d, finishts, jsonnode, storeman));
+        return xbarrier.call((d)->this.modify(d, finishts, jsonnode, storeman));
     }
 
     private Result modify(long deletets, long finishts, JsonNode jsonnode, SimpleKeeper storeman)
     {
-        JsonNode n;
-        if ((n = jsonnode.get("rcvqueue")) != null) {
-            this.rcvQueue.pst(n);
-        }
-        if ((n = jsonnode.get("consumer")) != null) {
-            this.consumer.pst(n);
-        }
-        if ((n = jsonnode.get("lhsqueue")) != null) {
-            this.lhsQueue.pst(n);
-        }
-        if ((n = jsonnode.get("junction")) != null) {
-            this.junction.pst(n);
-        }
-        if ((n = jsonnode.get("rhsqueue")) != null) {
-            this.rhsQueue.pst(n);
-        }
-        if ((n = jsonnode.get("producer")) != null) {
-            this.producer.pst(n);
-        }
-        if ((n = jsonnode.get("sndqueue")) != null) {
-            this.sndQueue.pst(n);
-        }
+        this.rcvQueue.pst(jsonnode.path("rcvqueue"));
+        this.consumer.pst(jsonnode.path("consumer"));
+        this.lhsQueue.pst(jsonnode.path("lhsqueue"));
+        this.junction.pst(jsonnode.path("junction"));
+        this.rhsQueue.pst(jsonnode.path("rhsqueue"));
+        this.producer.pst(jsonnode.path("producer"));
+        this.sndQueue.pst(jsonnode.path("sndqueue"));
         if (deletets == Long.MAX_VALUE) {
             deletets = finishts;
         }
-        storeman.call(this);
-        return new Result(this, deletets);
+        Result result = new Result(this, deletets);
+        storeman.call(result);
+        return result;
     }
 
     @FunctionalInterface
     public interface SimpleKeeper
     {
-        void call(UpperHolder argval);
+        void call(UpperHolder.Result argval);
     }
 
     public static class Result extends SimpleResult
