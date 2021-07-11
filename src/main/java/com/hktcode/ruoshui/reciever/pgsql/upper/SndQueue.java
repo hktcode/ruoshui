@@ -19,8 +19,7 @@ public abstract class SndQueue
         static
         {
             ObjectNode schema = new ObjectNode(JsonNodeFactory.instance);
-            ObjectNode typeNode = schema.putObject("type");
-            ArrayNode oneOfNode = typeNode.putArray("oneOf");
+            ArrayNode oneOfNode = schema.putArray("oneOf");
             oneOfNode.add(SndQueueFiles.Schema.SCHEMA);
             oneOfNode.add(SndQueueKafka.Schema.SCHEMA);
             SCHEMA = JacksonObject.immutableCopy(schema);
