@@ -12,8 +12,11 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.hktcode.jackson.exception.JsonSchemaValidationImplException;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.exception.RuoshuiNameFormatException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -27,14 +30,14 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
 
+import static com.hktcode.ruoshui.reciever.pgsql.upper.Entity.Result;
 import static com.hktcode.ruoshui.reciever.pgsql.upper.Entity.Schema.SCHEMA;
+import static java.lang.System.currentTimeMillis;
 
 @RestController("upperController")
 @RequestMapping("api/recievers/upper")
 public class Controller implements DisposableBean
 {
-    private static final MissingNode MISSING_NODE = MissingNode.getInstance();
-
     private static final Pattern NAME_PATTERN //
             = Pattern.compile("^[a-z][a-z_0-9]*(\\.[a-z][a-z_0-9]*)*$");
 
@@ -62,7 +65,7 @@ public class Controller implements DisposableBean
     }
 
     @PutMapping("{name}")
-    public ResponseEntity<Entity.Result[]> //
+    public ResponseEntity<Result[]> //
     put(@PathVariable("name") String name, @RequestBody JsonNode body) //
             throws InterruptedException, ProcessingException, IOException
     {
@@ -72,99 +75,33 @@ public class Controller implements DisposableBean
         if (body == null) {
             throw new ArgumentNullException("body");
         }
-        if (name.length() > NAME_MAXLENGTH) {
-            throw new RuoshuiNameFormatException(name);
-        }
-        if (!NAME_PATTERN.matcher(name).matches()) {
-            throw new RuoshuiNameFormatException(name);
-        }
-        ProcessingReport report = schema.validate(body);
-        if (!report.isSuccess()) {
-            throw new JsonSchemaValidationImplException(report);
-        }
-        Entity exesvc = Entity.of(name, body);
-
-        Lock lock = this.locker.readLock();
-        lock.lock();
-        try {
-            Entity status = this.repmap.putIfAbsent(name, exesvc);
-            if (status != null) {
-                Entity.Result result = status.modify(Long.MAX_VALUE, MISSING_NODE, this.keeper::updertYml);
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Entity.Result[]{ result });
-            }
-            this.exesvc.submit(exesvc.producer());
-            this.exesvc.submit(exesvc.junction());
-            this.exesvc.submit(exesvc.consumer());
-            Entity.Result result = exesvc.modify(Long.MAX_VALUE, MISSING_NODE, this.keeper::updertYml);
-            return ResponseEntity.ok(new Entity.Result[] { result });
-        }
-        finally {
-            lock.unlock();
-        }
+        return this.pst(HttpMethod.PUT, name, body);
     }
 
     @DeleteMapping("{name}")
-    public ResponseEntity<Entity.Result[]> //
-    del(@PathVariable("name") String name) //
-            throws InterruptedException
+    public ResponseEntity<Result[]> del(@PathVariable("name") String name) //
+            throws InterruptedException, ProcessingException
     {
         if (name == null) {
             throw new ArgumentNullException("name");
         }
-        if (name.length() > NAME_MAXLENGTH) {
-            throw new RuoshuiNameFormatException(name);
-        }
-        if (!NAME_PATTERN.matcher(name).matches()) {
-            throw new RuoshuiNameFormatException(name);
-        }
-        Lock lock = this.locker.readLock();
-        lock.lock();
-        try {
-            Entity exesvc = this.repmap.remove(name);
-            if (exesvc == null) {
-                return ResponseEntity.notFound().build();
-            }
-            long finishts = System.currentTimeMillis();
-            Entity.Result result = exesvc.modify(finishts, MISSING_NODE, this.keeper::deleteYml);
-            return ResponseEntity.ok(new Entity.Result[]{result});
-        }
-        finally {
-            lock.unlock();
-        }
+        JsonNode body = MissingNode.getInstance();
+        return this.pst(HttpMethod.DELETE, name, body);
     }
 
     @GetMapping("{name}")
-    public ResponseEntity<Entity.Result[]> //
-    get(@PathVariable("name") String name) //
-            throws InterruptedException
+    public ResponseEntity<Result[]> get(@PathVariable("name") String name) //
+            throws InterruptedException, ProcessingException
     {
         if (name == null) {
             throw new ArgumentNullException("name");
         }
-        if (name.length() > NAME_MAXLENGTH) {
-            throw new RuoshuiNameFormatException(name);
-        }
-        if (!NAME_PATTERN.matcher(name).matches()) {
-            throw new RuoshuiNameFormatException(name);
-        }
-        Lock lock = this.locker.readLock();
-        lock.lock();
-        try {
-            Entity exesvc = this.repmap.get(name);
-            if (exesvc == null) {
-                return ResponseEntity.notFound().build();
-            }
-            long finishts = Long.MAX_VALUE;
-            Entity.Result result = exesvc.modify(finishts, MISSING_NODE, this.keeper::updertYml);
-            return ResponseEntity.ok(new Entity.Result[] { result });
-        }
-        finally {
-            lock.unlock();
-        }
+        JsonNode body = MissingNode.getInstance();
+        return this.pst(HttpMethod.GET, name, body);
     }
 
     @PostMapping("{name}")
-    public ResponseEntity<Entity.Result[]> //
+    public ResponseEntity<Result[]> //
     pst(@PathVariable("name") String name, @RequestBody JsonNode body) //
             throws InterruptedException, ProcessingException
     {
@@ -174,42 +111,22 @@ public class Controller implements DisposableBean
         if (body == null) {
             throw new ArgumentNullException("body");
         }
-        if (!NAME_PATTERN.matcher(name).matches()) {
-            throw new RuoshuiNameFormatException(name);
-        }
-        ProcessingReport report = schema.validate(body);
-        if (!report.isSuccess()) {
-            throw new JsonSchemaValidationImplException(report);
-        }
-        Lock lock = this.locker.readLock();
-        lock.lock();
-        try {
-            Entity exesvc = this.repmap.get(name);
-            if (exesvc == null) {
-                return ResponseEntity.notFound().build();
-            }
-            long finishts = Long.MAX_VALUE;
-            Entity.Result result = exesvc.modify(finishts, body, this.keeper::updertYml);
-            return ResponseEntity.ok(new Entity.Result[] { result });
-        }
-        finally {
-            lock.unlock();
-        }
+        return this.pst(HttpMethod.POST, name, body);
     }
 
     @GetMapping
-    public ResponseEntity<Entity.Result[]> get() //
-            throws InterruptedException
+    public ResponseEntity<Result[]> get() throws InterruptedException
     {
+        long finishts = Long.MAX_VALUE;
+        JsonNode body = MissingNode.getInstance();
         Lock lock = this.locker.writeLock();
         lock.lock();
         try {
-            Entity.Result[] result = new Entity.Result[this.repmap.size()];
+            Result[] result = new Result[this.repmap.size()];
             int index = 0;
-            long finishts = Long.MAX_VALUE;
             for (Map.Entry<String, Entity> entry : this.repmap.entrySet()) {
                 final Entity exesvc = entry.getValue();
-                Entity.Result r = exesvc.modify(finishts, MissingNode.getInstance(), this.keeper::updertYml);
+                Result r = exesvc.modify(finishts, body, keeper::updertYml);
                 result[index++] = r;
             }
             return ResponseEntity.ok(result);
@@ -225,14 +142,71 @@ public class Controller implements DisposableBean
         Lock lock = this.locker.writeLock();
         lock.lock();
         try {
+            JsonNode body = MissingNode.getInstance();
             for (Map.Entry<String, Entity> entry : this.repmap.entrySet()) {
-                long finishts = System.currentTimeMillis();
+                long finishts = currentTimeMillis();
                 Entity exesvc = entry.getValue();
-                exesvc.modify(finishts, MissingNode.getInstance(), this.keeper::updertYml);
+                exesvc.modify(finishts, body, keeper::updertYml);
             }
         }
         finally {
             lock.unlock();
         }
     }
+
+    private ResponseEntity<Result[]> //
+    pst(HttpMethod method, String name, JsonNode body) //
+            throws InterruptedException, ProcessingException
+    {
+        if (name.length() > NAME_MAXLENGTH) {
+            throw new RuoshuiNameFormatException(name);
+        }
+        if (!NAME_PATTERN.matcher(name).matches()) {
+            throw new RuoshuiNameFormatException(name);
+        }
+        ProcessingReport r;
+        if (!body.isMissingNode() && !(r = schema.validate(body)).isSuccess()) {
+            throw new JsonSchemaValidationImplException(r);
+        }
+        Lock lock = this.locker.readLock();
+        lock.lock();
+        try {
+            Entity entity, temp;
+            long finish = Long.MAX_VALUE;
+            Entity.Keeper keeper = this.keeper::updertYml;
+            HttpStatus attends = HttpStatus.OK;
+            if (method == HttpMethod.DELETE) {
+                finish = currentTimeMillis();
+                keeper = this.keeper::deleteYml;
+                entity = this.repmap.remove(name);
+                temp = entity;
+            }
+            else if (method == HttpMethod.PUT) {
+                entity = Entity.of(name, body);
+                temp = this.repmap.putIfAbsent(name, entity);
+                body = MissingNode.getInstance();
+                attends = HttpStatus.FORBIDDEN;
+            } else {
+                entity = this.repmap.get(name);
+                temp = entity;
+            }
+            if (temp != null) {
+                Result result = entity.modify(finish, body, keeper);
+                Result[] rspbody = new Result[] { result };
+                return ResponseEntity.status(attends).body(rspbody);
+            } else if (method == HttpMethod.PUT) {
+                this.exesvc.submit(entity.producer());
+                this.exesvc.submit(entity.junction());
+                this.exesvc.submit(entity.consumer());
+                Result result = entity.modify(finish, body, keeper);
+                return ResponseEntity.ok(new Result[] { result });
+            }
+            return ResponseEntity.notFound().build();
+        }
+        finally {
+            lock.unlock();
+        }
+    }
+
+    private static final Logger logger = LoggerFactory.getLogger(Controller.class);
 }
