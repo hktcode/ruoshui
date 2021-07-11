@@ -209,7 +209,7 @@ public class Junction extends SimpleWorker
         }
     }
 
-    public static class Metric implements JacksonObject
+    public static class Metric extends SimpleWorker.Metric
     {
         public final Xspins.Metric spinsMetric;
 
@@ -217,6 +217,7 @@ public class Junction extends SimpleWorker
 
         private Metric(Xspins.Result spinsResult, Junction junction)
         {
+            super(junction);
             this.spinsMetric = spinsResult.metric;
             this.amendRecord = new AmendRecordMetric(junction);
         }
@@ -227,6 +228,7 @@ public class Junction extends SimpleWorker
             if (node == null) {
                 throw new ArgumentNullException("node");
             }
+            super.toJsonObject(node);
             this.spinsMetric.toJsonObject(node.putObject("spins_metric"));
             this.amendRecord.toJsonObject(node.putObject("amend_record"));
             return node;
