@@ -75,7 +75,28 @@ public class Controller implements DisposableBean
         if (body == null) {
             throw new ArgumentNullException("body");
         }
-        return this.pst(HttpMethod.PUT, name, body);
+        check(name, body);
+        Entity exesvc = Entity.of(name, body);
+
+        long finish = Long.MAX_VALUE;
+        body = MissingNode.getInstance();
+        Lock lock = this.locker.readLock();
+        lock.lock();
+        try {
+            HttpStatus status = HttpStatus.FORBIDDEN;
+            Entity entity = this.repmap.putIfAbsent(name, exesvc);
+            if (entity == null) {
+                this.exesvc.submit(exesvc.producer());
+                this.exesvc.submit(exesvc.junction());
+                this.exesvc.submit(exesvc.consumer());
+                status = HttpStatus.OK;
+            }
+            Result result = exesvc.modify(finish, body, keeper::updertYml);
+            return ResponseEntity.status(status).body(new Result[]{ result });
+        }
+        finally {
+            lock.unlock();
+        }
     }
 
     @DeleteMapping("{name}")
@@ -86,6 +107,7 @@ public class Controller implements DisposableBean
             throw new ArgumentNullException("name");
         }
         JsonNode body = MissingNode.getInstance();
+        check(name, body);
         return this.pst(HttpMethod.DELETE, name, body);
     }
 
@@ -97,6 +119,7 @@ public class Controller implements DisposableBean
             throw new ArgumentNullException("name");
         }
         JsonNode body = MissingNode.getInstance();
+        check(name, body);
         return this.pst(HttpMethod.GET, name, body);
     }
 
@@ -111,6 +134,7 @@ public class Controller implements DisposableBean
         if (body == null) {
             throw new ArgumentNullException("body");
         }
+        check(name, body);
         return this.pst(HttpMethod.POST, name, body);
     }
 
@@ -154,9 +178,7 @@ public class Controller implements DisposableBean
         }
     }
 
-    private ResponseEntity<Result[]> //
-    pst(HttpMethod method, String name, JsonNode body) //
-            throws InterruptedException, ProcessingException
+    private void check(String name, JsonNode body) throws ProcessingException
     {
         if (name.length() > NAME_MAXLENGTH) {
             throw new RuoshuiNameFormatException(name);
@@ -164,49 +186,45 @@ public class Controller implements DisposableBean
         if (!NAME_PATTERN.matcher(name).matches()) {
             throw new RuoshuiNameFormatException(name);
         }
-        ProcessingReport r;
-        if (!body.isMissingNode() && !(r = schema.validate(body)).isSuccess()) {
-            throw new JsonSchemaValidationImplException(r);
+        if (body.isMissingNode()) {
+            return;
         }
+        ProcessingReport r = schema.validate(body);
+        if (r.isSuccess()) {
+            return;
+        }
+        throw new JsonSchemaValidationImplException(r);
+    }
+
+    private ResponseEntity<Result[]> //
+    pst(HttpMethod method, String name, JsonNode body) //
+            throws InterruptedException
+    {
         Lock lock = this.locker.readLock();
         lock.lock();
         try {
-            Entity entity, temp;
-            long finish = Long.MAX_VALUE;
-            Entity.Keeper keeper = this.keeper::updertYml;
-            HttpStatus attends = HttpStatus.OK;
+            Entity entity;
+            long finish;
+            Entity.Keeper keeper;
             if (method == HttpMethod.DELETE) {
                 finish = currentTimeMillis();
                 keeper = this.keeper::deleteYml;
                 entity = this.repmap.remove(name);
-                temp = entity;
-            }
-            else if (method == HttpMethod.PUT) {
-                entity = Entity.of(name, body);
-                temp = this.repmap.putIfAbsent(name, entity);
-                body = MissingNode.getInstance();
-                attends = HttpStatus.FORBIDDEN;
             } else {
+                finish = Long.MAX_VALUE;
+                keeper = this.keeper::updertYml;
                 entity = this.repmap.get(name);
-                temp = entity;
             }
-            if (temp != null) {
-                Result result = entity.modify(finish, body, keeper);
-                Result[] rspbody = new Result[] { result };
-                return ResponseEntity.status(attends).body(rspbody);
-            } else if (method == HttpMethod.PUT) {
-                this.exesvc.submit(entity.producer());
-                this.exesvc.submit(entity.junction());
-                this.exesvc.submit(entity.consumer());
-                Result result = entity.modify(finish, body, keeper);
-                return ResponseEntity.ok(new Result[] { result });
+            if (entity == null) {
+                return ResponseEntity.notFound().build();
             }
-            return ResponseEntity.notFound().build();
+            Result result = entity.modify(finish, body, keeper);
+            return ResponseEntity.ok(new Result[] { result });
         }
         finally {
             lock.unlock();
         }
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(Controller.class);
+    private static final Logger logger = LoggerFactory.getLogger(Consumer.class);
 }
