@@ -10,6 +10,8 @@ import com.hktcode.ruoshui.reciever.pgsql.entity.PgConnectionProperty;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
 import org.postgresql.replication.PGReplicationStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 import java.sql.Connection;
@@ -20,7 +22,12 @@ public class RcvQueue
 {
     public static final class Schema
     {
-        public final static ObjectNode SCHEMA = JacksonObject.getFromResource(RcvQueue.class, "UpcsmRecver.yml");
+        public final static ObjectNode SCHEMA;
+
+        static {
+            String filename = "UpcsmRecver.yml";
+            SCHEMA = JacksonObject.getFromResource(RcvQueue.class, filename);
+        }
     }
 
     public static RcvQueue of(JsonNode json, AtomicLong xidlsn) //
@@ -31,7 +38,6 @@ public class RcvQueue
         if (xidlsn == null) {
             throw new ArgumentNullException("xidlsn");
         }
-        // - JsonNode srcPropertyNode = json.path("sender_class");
         JsonNode srcPropertyNode = json.path("src_property");
         PgConnectionProperty srcProperty = PgConnectionProperty.ofJsonObject(srcPropertyNode);
 
@@ -55,7 +61,11 @@ public class RcvQueue
 
     private final AtomicLong txactionLsn;
 
-    private RcvQueue(PgConnectionProperty srcProperty, LogicalReplArgval logicalRepl, AtomicLong xidlsn)
+    private RcvQueue //
+        /**/( PgConnectionProperty srcProperty
+            , LogicalReplArgval logicalRepl
+            , AtomicLong xidlsn
+            )
     {
         this.srcProperty = srcProperty;
         this.logicalRepl = logicalRepl;
@@ -204,4 +214,6 @@ public class RcvQueue
             return node;
         }
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(RcvQueue.class);
 }

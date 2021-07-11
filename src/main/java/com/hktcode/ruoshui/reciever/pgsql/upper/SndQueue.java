@@ -60,7 +60,7 @@ public abstract class SndQueue
 
     public long offerCounts = 0;
 
-    public final AtomicReference<Throwable> callbackRef = new AtomicReference<>();
+    public final AtomicReference<Throwable> callbackRef;
 
     public final AtomicLong txactionLsn;
 
@@ -133,6 +133,7 @@ public abstract class SndQueue
     protected SndQueue(AtomicLong xidlsn)
     {
         this.txactionLsn = xidlsn;
+        this.callbackRef = new AtomicReference<>();
     }
 
     public void pst(JsonNode node)

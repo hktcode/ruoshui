@@ -24,8 +24,6 @@ import java.nio.file.*;
 @Repository("upperKeeper")
 public class KeeperOnlyone
 {
-    private static final Logger logger = LoggerFactory.getLogger(KeeperOnlyone.class);
-
     public final YAMLMapper mapper;
 
     private final ImmutableMap<String, Entity> etcval = ImmutableMap.of();
@@ -204,4 +202,6 @@ public class KeeperOnlyone
             throw new ConfFileIOException(name, source, code, ex);
         }
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(KeeperOnlyone.class);
 }

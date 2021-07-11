@@ -114,8 +114,6 @@ public class SndQueueFiles extends SndQueue
 
     public static class Client implements SndQueue.Client, CompletionHandler<Integer, RhsQueue.Record>
     {
-        private static final Logger logger = LoggerFactory.getLogger(Client.class);
-
         private final SndQueueFiles sender;
 
         private Client(SndQueueFiles sender)
@@ -289,4 +287,6 @@ public class SndQueueFiles extends SndQueue
             return node;
         }
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(SndQueueFiles.class);
 }

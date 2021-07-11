@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
-import com.hktcode.queue.XQueue;
-import com.hktcode.queue.Xspins;
 import com.hktcode.simple.SimpleAtomic;
 import com.hktcode.simple.SimpleResult;
 import com.hktcode.simple.SimpleWorker;

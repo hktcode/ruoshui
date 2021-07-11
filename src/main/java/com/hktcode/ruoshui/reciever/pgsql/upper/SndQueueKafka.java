@@ -31,8 +31,6 @@ public class SndQueueKafka extends SndQueue
         public static final ObjectNode SCHEMA = JacksonObject.getFromResource(SndQueue.class, "UppdcSenderKafka.yml");
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(SndQueueKafka.class);
-
     public static final String TARGET_TOPIC = THE_NAME;
 
     public static final int PARTITION_NO = 0;
@@ -213,4 +211,6 @@ public class SndQueueKafka extends SndQueue
             super(sender);
         }
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(SndQueueKafka.class);
 }
