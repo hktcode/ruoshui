@@ -207,7 +207,7 @@ public class SndQueueFiles extends SndQueue
                 return;
             }
             PgsqlValTxactCommit val = (PgsqlValTxactCommit)attachment.val;
-            this.sender.txactionLsn.set(val.lsnofmsg);
+            this.sender.lastConfirm.set(val.lsnofmsg);
         }
 
         @Override

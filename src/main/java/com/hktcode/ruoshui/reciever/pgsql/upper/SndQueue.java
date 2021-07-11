@@ -62,7 +62,7 @@ public abstract class SndQueue
 
     public final AtomicReference<Throwable> callbackRef;
 
-    public final AtomicLong txactionLsn;
+    public final AtomicLong lastConfirm;
 
     public interface Client extends AutoCloseable
     {
@@ -105,14 +105,14 @@ public abstract class SndQueue
 
         public final long offerCounts;
 
-        public final long txactionLsn;
+        public final long lastConfirm;
 
         protected Metric(SndQueue sender)
         {
             this.offerTrycnt = sender.offerTrycnt;
             this.offerRowcnt = sender.offerRowcnt;
             this.offerCounts = sender.offerCounts;
-            this.txactionLsn = sender.txactionLsn.get();
+            this.lastConfirm = sender.lastConfirm.get();
         }
 
         @Override
@@ -124,15 +124,14 @@ public abstract class SndQueue
             node.put("offer_trycnt", this.offerTrycnt);
             node.put("offer_rowcnt", this.offerRowcnt);
             node.put("offer_counts", this.offerCounts);
-            node.put("txaction_lsn", this.txactionLsn);
-            // - node.put("last_confirm", this.txactionLsn);
+            node.put("last_confirm", this.lastConfirm);
             return node;
         }
     }
 
     protected SndQueue(AtomicLong xidlsn)
     {
-        this.txactionLsn = xidlsn;
+        this.lastConfirm = xidlsn;
         this.callbackRef = new AtomicReference<>();
     }
 

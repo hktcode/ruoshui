@@ -180,7 +180,7 @@ public class SndQueueKafka extends SndQueue
             else if (record.val instanceof PgsqlValTxactCommit) {
                 long lsn = ((PgsqlValTxactCommit)record.val).lsnofmsg;
                 logger.info("kafka producer send record success: lsn={}", lsn);
-                this.squeue.txactionLsn.set(lsn);
+                this.squeue.lastConfirm.set(lsn);
             }
         }
     }

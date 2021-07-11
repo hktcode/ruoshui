@@ -59,7 +59,7 @@ public class RcvQueue
 
     public long rowcnt = 0;
 
-    private final AtomicLong txactionLsn;
+    private final AtomicLong lastConfirm;
 
     private RcvQueue //
         /**/( PgProps srcProperty
@@ -69,7 +69,7 @@ public class RcvQueue
     {
         this.srcProperty = srcProperty;
         this.logicalRepl = logicalRepl;
-        this.txactionLsn = xidlsn;
+        this.lastConfirm = xidlsn;
     }
 
     public Client client() throws SQLException
@@ -135,7 +135,7 @@ public class RcvQueue
 
         public void updateReportLSN()
         {
-            long n = this.recver.txactionLsn.get();
+            long n = this.recver.lastConfirm.get();
             if (n == this.prelsn) {
                 return;
             }
