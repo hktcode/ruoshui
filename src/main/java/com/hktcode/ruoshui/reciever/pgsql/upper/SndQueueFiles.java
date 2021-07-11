@@ -31,7 +31,7 @@ public class SndQueueFiles extends SndQueue
         public static final ObjectNode SCHEMA;
 
         static {
-            String filename = "UppdcSenderFiles.yml";
+            String filename = "SndQueueFiles.yml";
             SCHEMA = JacksonObject.getFromResource(SndQueue.class, filename);
         }
     }

@@ -25,7 +25,7 @@ public class RcvQueue
         public final static ObjectNode SCHEMA;
 
         static {
-            String filename = "UpcsmRecver.yml";
+            String filename = "RcvQueue.yml";
             SCHEMA = JacksonObject.getFromResource(RcvQueue.class, filename);
         }
     }

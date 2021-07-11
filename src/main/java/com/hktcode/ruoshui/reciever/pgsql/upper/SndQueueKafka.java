@@ -28,7 +28,7 @@ public class SndQueueKafka extends SndQueue
         public static final ObjectNode SCHEMA;
 
         static {
-            String filename = "UppdcSenderKafka.yml";
+            String filename = "SndQueueKafka.yml";
             SCHEMA=JacksonObject.getFromResource(SndQueue.class, filename);
         }
     }
