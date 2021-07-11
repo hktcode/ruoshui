@@ -1,5 +1,10 @@
 package com.hktcode.simple;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableList;
+import com.hktcode.jackson.JacksonObject;
+import com.hktcode.lang.exception.ArgumentNullException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,4 +58,33 @@ public abstract class SimpleWorker implements Runnable
     protected abstract void run(SimpleAtomic atomic) throws Throwable;
 
     private static final Logger logger = LoggerFactory.getLogger(SimpleWorker.class);
+
+    public static class Metric implements JacksonObject
+    {
+        public final long starts;
+        public final long finish;
+        public final ImmutableList<Throwable> errors;
+
+        protected Metric(SimpleWorker worker)
+        {
+            this.starts = worker.starts;
+            this.finish = worker.finish;
+            this.errors = ImmutableList.copyOf(worker.errors);
+        }
+
+        @Override
+        public ObjectNode toJsonObject(ObjectNode node)
+        {
+            if (node == null) {
+                throw new ArgumentNullException("node");
+            }
+            node.put("starts", this.starts);
+            node.put("finish", this.finish);
+            ArrayNode errorsNode = node.putArray("errors");
+            for (Throwable t : this.errors) {
+                errorsNode.addPOJO(t);
+            }
+            return node;
+        }
+    }
 }

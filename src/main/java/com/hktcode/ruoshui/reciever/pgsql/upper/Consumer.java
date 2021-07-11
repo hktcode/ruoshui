@@ -93,7 +93,9 @@ public class Consumer extends SimpleWorker
     public Result toJsonResult()
     {
         Xspins.Result spinsResult = this.xspins.toJsonResult();
-        return new Result(new Config(spinsResult), new Metric(spinsResult));
+        Config config = new Config(spinsResult);
+        Metric metric = new Metric(spinsResult, this);
+        return new Result(config, metric);
     }
 
     public void pst(JsonNode node)
@@ -141,12 +143,13 @@ public class Consumer extends SimpleWorker
         }
     }
 
-    public static class Metric implements JacksonObject
+    public static class Metric extends SimpleWorker.Metric
     {
         public final Xspins.Metric spinsMetric;
 
-        private Metric(Xspins.Result spinsResult)
+        private Metric(Xspins.Result spinsResult, Consumer consumer)
         {
+            super(consumer);
             this.spinsMetric = spinsResult.metric;
         }
 
@@ -156,6 +159,7 @@ public class Consumer extends SimpleWorker
             if (node == null) {
                 throw new ArgumentNullException("node");
             }
+            node = super.toJsonObject(node);
             this.spinsMetric.toJsonObject(node.putObject("spins_metric"));
             return node;
         }
