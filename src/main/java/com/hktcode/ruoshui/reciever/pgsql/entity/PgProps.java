@@ -24,26 +24,26 @@ import java.util.Properties;
 /**
  * the property for PgConnection.
  */
-public class PgConnectionProperty implements JacksonObject
+public class PgProps implements JacksonObject
 {
-    public static final Logger logger = LoggerFactory.getLogger(PgConnectionProperty.class);
+    public static final Logger logger = LoggerFactory.getLogger(PgProps.class);
 
-    public static PgConnectionProperty of(ImmutableMap<String, String> propertyMap)
+    public static PgProps of(ImmutableMap<String, String> propertyMap)
     {
         if (propertyMap == null) {
             throw new ArgumentNullException("propertyMap");
         }
-        return new PgConnectionProperty(propertyMap);
+        return new PgProps(propertyMap);
     }
 
     /**
-     * Obtain a {@link PgConnectionProperty} from a {@link JsonNode}.
+     * Obtain a {@link PgProps} from a {@link JsonNode}.
      *
      * @param json the {@link JsonNode} from a JSON string.
-     * @return a {@link PgConnectionProperty} Object.
+     * @return a {@link PgProps} Object.
      * @throws ArgumentNullException if {@code json} is {@code null}.
      */
-    public static PgConnectionProperty ofJsonObject(JsonNode json)
+    public static PgProps ofJsonObject(JsonNode json)
     {
         if (json == null) {
             throw new ArgumentNullException("json");
@@ -55,7 +55,7 @@ public class PgConnectionProperty implements JacksonObject
             map.put(e.getKey(), e.getValue().asText());
         }
         // TODO: 检查srcProperty
-        return new PgConnectionProperty(ImmutableMap.copyOf(map));
+        return new PgProps(ImmutableMap.copyOf(map));
     }
 
     /**
@@ -85,7 +85,7 @@ public class PgConnectionProperty implements JacksonObject
      *
      * @param propertyMap the properties map.
      */
-    private PgConnectionProperty(ImmutableMap<String, String> propertyMap)
+    private PgProps(ImmutableMap<String, String> propertyMap)
     {
         this.propertyMap = propertyMap;
     }

@@ -1,6 +1,0 @@
-$schema: http://json-schema.org/draft-04/schema#
-type: object
-properties:
-  max_capacity: { type: integer, default: 1024, minimum: 0, maximum: 2147483647 }
-  wait_timeout: { type: integer, default: 100, minimum: 10, maximum: 9223372036854775807 }
-  log_duration: { type: integer, default: 30000, minimum: 0, maximum: 9223372036854775807 }

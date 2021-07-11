@@ -6,7 +6,7 @@ import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.pgjdbc.LogicalMsg;
 import com.hktcode.ruoshui.reciever.pgsql.entity.LogicalReplArgval;
-import com.hktcode.ruoshui.reciever.pgsql.entity.PgConnectionProperty;
+import com.hktcode.ruoshui.reciever.pgsql.entity.PgProps;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
 import org.postgresql.replication.PGReplicationStream;
@@ -39,7 +39,7 @@ public class RcvQueue
             throw new ArgumentNullException("xidlsn");
         }
         JsonNode srcPropertyNode = json.path("src_property");
-        PgConnectionProperty srcProperty = PgConnectionProperty.ofJsonObject(srcPropertyNode);
+        PgProps srcProperty = PgProps.ofJsonObject(srcPropertyNode);
 
         JsonNode logicalReplNode = json.path("logical_repl");
         LogicalReplArgval logicalRepl = LogicalReplArgval.of(logicalReplNode);
@@ -49,7 +49,7 @@ public class RcvQueue
 
     // argval
 
-    public final PgConnectionProperty srcProperty;
+    public final PgProps srcProperty;
 
     public final LogicalReplArgval logicalRepl;
 
@@ -62,7 +62,7 @@ public class RcvQueue
     private final AtomicLong txactionLsn;
 
     private RcvQueue //
-        /**/( PgConnectionProperty srcProperty
+        /**/( PgProps srcProperty
             , LogicalReplArgval logicalRepl
             , AtomicLong xidlsn
             )
@@ -167,7 +167,7 @@ public class RcvQueue
 
     public static final class Config implements JacksonObject
     {
-        public final PgConnectionProperty srcProperty;
+        public final PgProps srcProperty;
 
         public final LogicalReplArgval logicalRepl;
 
