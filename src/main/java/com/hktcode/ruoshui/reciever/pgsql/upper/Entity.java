@@ -44,15 +44,15 @@ public class Entity
         return new Entity(fullname, jsonnode);
     }
 
-    public final long createts;
-    public final String fullname;
-    public final RcvQueue rcvQueue;
-    public final Consumer consumer;
-    public final LhsQueue lhsQueue;
-    public final Junction junction;
-    public final RhsQueue rhsQueue;
-    public final Producer producer;
-    public final SndQueue sndQueue;
+    private final long createts;
+    private final String fullname;
+    private final RcvQueue rcvQueue;
+    private final Consumer consumer;
+    private final LhsQueue lhsQueue;
+    private final Junction junction;
+    private final RhsQueue rhsQueue;
+    private final Producer producer;
+    private final SndQueue sndQueue;
     private final SimpleAtomic xbarrier;
 
     private Entity(String fullname, JsonNode jsonnode)

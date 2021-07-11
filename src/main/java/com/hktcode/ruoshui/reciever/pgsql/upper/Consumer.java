@@ -46,11 +46,11 @@ public class Consumer extends SimpleWorker
         return new Consumer(recver, sender, atomic);
     }
 
-    public final Xspins xspins = Xspins.of();
+    private final Xspins xspins = Xspins.of();
 
-    public final LhsQueue sender;
+    private final LhsQueue sender;
 
-    public final RcvQueue recver;
+    private final RcvQueue recver;
 
     @Override
     protected void run(SimpleAtomic atomic) //

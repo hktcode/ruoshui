@@ -49,15 +49,15 @@ public class RcvQueue
 
     // argval
 
-    public final PgProps srcProperty;
+    private final PgProps srcProperty;
 
-    public final LogicalReplArgval logicalRepl;
+    private final LogicalReplArgval logicalRepl;
 
     // gauges
 
-    public long trycnt = 0;
+    private long trycnt = 0;
 
-    public long rowcnt = 0;
+    private long rowcnt = 0;
 
     private final AtomicLong lastConfirm;
 

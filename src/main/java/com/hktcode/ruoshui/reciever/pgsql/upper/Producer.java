@@ -44,11 +44,11 @@ public class Producer extends SimpleWorker
         return new Producer(recver, sender, atomic);
     }
 
-    public final SndQueue sender;
+    private final SndQueue sender;
 
-    public final RhsQueue recver;
+    private final RhsQueue recver;
 
-    public final Xspins xspins = Xspins.of();
+    private final Xspins xspins = Xspins.of();
 
     private Producer(RhsQueue recver, SndQueue sender, SimpleAtomic atomic)
     {

@@ -54,15 +54,15 @@ public abstract class SndQueue
     public abstract Result toJsonResult();
 
     // gauges
-    public long offerTrycnt = 0;
+    protected long offerTrycnt = 0;
 
-    public long offerRowcnt = 0;
+    protected long offerRowcnt = 0;
 
-    public long offerCounts = 0;
+    protected long offerCounts = 0;
 
-    public final AtomicReference<Throwable> callbackRef;
+    protected final AtomicReference<Throwable> callbackRef;
 
-    public final AtomicLong lastConfirm;
+    protected final AtomicLong lastConfirm;
 
     public interface Client extends AutoCloseable
     {

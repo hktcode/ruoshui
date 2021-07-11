@@ -54,15 +54,15 @@ public class Junction extends SimpleWorker
 
     // argval
 
-    public final Xspins xspins = Xspins.of();
-    public final LhsQueue recver;
-    public final RhsQueue sender;
+    private final Xspins xspins = Xspins.of();
+    private final LhsQueue recver;
+    private final RhsQueue sender;
 
     // gauges
 
-    public long curlsn = 0;
-    public long curseq = 0;
-    public final LogicalTxactContext xidenv = LogicalTxactContext.of();
+    private long curlsn = 0;
+    private long curseq = 0;
+    private final LogicalTxactContext xidenv = LogicalTxactContext.of();
 
     private Junction(LhsQueue recver, RhsQueue sender, SimpleAtomic atomic)
     {

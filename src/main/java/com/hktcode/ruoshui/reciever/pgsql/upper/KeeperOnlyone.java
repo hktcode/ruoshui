@@ -24,7 +24,7 @@ import java.nio.file.*;
 @Repository("upperKeeper")
 public class KeeperOnlyone
 {
-    public final YAMLMapper mapper;
+    private final YAMLMapper mapper;
 
     private final ImmutableMap<String, Entity> etcval = ImmutableMap.of();
 

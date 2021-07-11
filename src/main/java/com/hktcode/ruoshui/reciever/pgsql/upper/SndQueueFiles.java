@@ -86,13 +86,13 @@ public class SndQueueFiles extends SndQueue
             = Paths.get(Ruoshui.HOME, "var", "data", "revievers.pgsql.upper");
 
     // - public long senderClass = MAX_SYNCTIME;
-    public long maxSynctime = MAX_SYNCTIME;
+    private long maxSynctime = MAX_SYNCTIME;
 
-    public long maxSyncsize = MAX_SYNCSIZE;
+    private long maxSyncsize = MAX_SYNCSIZE;
 
-    public long maxFilesize = MAX_FILESIZE;
+    private long maxFilesize = MAX_FILESIZE;
 
-    public long maxFiletime = MAX_FILETIME;
+    private long maxFiletime = MAX_FILETIME;
 
     // gauges
     // - public long fopenMillis = 0; 文件最近打开的时间
@@ -103,22 +103,22 @@ public class SndQueueFiles extends SndQueue
     /**
      * 当前打开的文件名.
      */
-    public String curFilename = "";
+    private String curFilename = "";
 
     /**
      * 当前要写入的文件位置，也是当前文件中写入的字节数（含尚未执行fsync的字节数）.
      */
-    public long curPosition = 0;
+    private long curPosition = 0;
 
     /**
      * 自启动开始写入了多少字节（含尚未执行fsync的字节数）.
      */
-    public long totalLength = 0;
+    private long totalLength = 0;
 
     /**
      * 尚未执行fysnc的字节数.
      */
-    public long bufferBytes = 0;
+    private long bufferBytes = 0;
 
     public static class Client //
             implements SndQueue.Client, CompletionHandler<Integer, Record>

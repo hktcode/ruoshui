@@ -82,11 +82,11 @@ public class SndQueueKafka extends SndQueue
     private final List<Producer<byte[], byte[]>> innerHandle;
 
     // argval
-    public final ImmutableMap<String, String> kfkProperty;
+    private final ImmutableMap<String, String> kfkProperty;
 
-    public String targetTopic = TARGET_TOPIC;
+    private String targetTopic = TARGET_TOPIC;
 
-    public int partitionNo = PARTITION_NO;
+    private int partitionNo = PARTITION_NO;
 
     @Override
     public void pst(JsonNode node)
