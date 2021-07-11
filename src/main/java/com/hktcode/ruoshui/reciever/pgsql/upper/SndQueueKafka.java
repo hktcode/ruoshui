@@ -4,9 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.hktcode.jackson.JacksonObject;
-import com.hktcode.kafka.Kafka;
-import com.hktcode.lang.exception.ArgumentIllegalException;
-import com.hktcode.lang.exception.ArgumentNegativeException;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlValTxactCommit;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -28,7 +25,12 @@ public class SndQueueKafka extends SndQueue
 {
     public static final class Schema
     {
-        public static final ObjectNode SCHEMA = JacksonObject.getFromResource(SndQueue.class, "UppdcSenderKafka.yml");
+        public static final ObjectNode SCHEMA;
+
+        static {
+            String filename = "UppdcSenderKafka.yml";
+            SCHEMA=JacksonObject.getFromResource(SndQueue.class, filename);
+        }
     }
 
     public static final String TARGET_TOPIC = THE_NAME;
@@ -50,22 +52,9 @@ public class SndQueueKafka extends SndQueue
             JacksonObject.merge(kfkMap, kfkNode);
         }
         ImmutableMap<String, String> kfkProperty = ImmutableMap.copyOf(kfkMap);
-        // TODO: 检查properties
-
+        // 未来计划: 检查properties
         SndQueueKafka result =  new SndQueueKafka(kfkProperty, xidlsn);
-
-        String targetTopic = json.path("target_topic").asText(result.targetTopic);
-        if (!Kafka.TOPIC_PATTERN.matcher(targetTopic).matches()) {
-            throw new ArgumentIllegalException("topic name is not match the pattern", "targetTopic", targetTopic); // TODO:
-        }
-        result.targetTopic = targetTopic;
-
-        int partitionNo = json.path("partition_no").asInt(result.partitionNo);
-        if (partitionNo < 0) {
-            // TODO:
-            throw new ArgumentNegativeException("partitionNo", partitionNo);
-        }
-        result.partitionNo = partitionNo;
+        result.pst(json);
         return result;
     }
 
@@ -81,14 +70,16 @@ public class SndQueueKafka extends SndQueue
         return new Result(new Config(this), new Metric(this));
     }
 
-    private SndQueueKafka(ImmutableMap<String, String> kfkProperty, AtomicLong xidlsn)
+    private SndQueueKafka //
+            (ImmutableMap<String, String> kfkProperty, AtomicLong xidlsn)
     {
         super(xidlsn);
         this.kfkProperty = kfkProperty;
+        this.innerHandle = new ArrayList<>(1);
     }
 
     // handle
-    private final List<Producer<byte[], byte[]>> innerHandle = new ArrayList<>(1);
+    private final List<Producer<byte[], byte[]>> innerHandle;
 
     // argval
     public final ImmutableMap<String, String> kfkProperty;
@@ -96,6 +87,28 @@ public class SndQueueKafka extends SndQueue
     public String targetTopic = TARGET_TOPIC;
 
     public int partitionNo = PARTITION_NO;
+
+    @Override
+    public void pst(JsonNode node)
+    {
+        if (node == null) {
+            throw new ArgumentNullException("node");
+        }
+        this.targetTopic = node.path("target_topic").asText(this.targetTopic);
+        this.partitionNo = node.path("partition_no").asInt(this.partitionNo);
+        // - 未来计划：检查相关信息
+        // - String targetTopic = json.path("target_topic").asText(result.targetTopic);
+        // - if (!Kafka.TOPIC_PATTERN.matcher(targetTopic).matches()) {
+        // -     throw new ArgumentIllegalException("topic name is not match the pattern", "targetTopic", targetTopic);
+        // - }
+        // - result.targetTopic = targetTopic;
+
+        // - int partitionNo = json.path("partition_no").asInt(result.partitionNo);
+        // - if (partitionNo < 0) {
+        // -     throw new ArgumentNegativeException("partitionNo", partitionNo);
+        // - }
+        // - result.partitionNo = partitionNo;
+    }
 
     public static class Client implements SndQueue.Client
     {
@@ -126,7 +139,6 @@ public class SndQueueKafka extends SndQueue
             byte[] k = keyText.getBytes(StandardCharsets.UTF_8);
             byte[] v = valText.getBytes(StandardCharsets.UTF_8);
             ProducerRecord<byte[], byte[]> r = new ProducerRecord<>(t, p, k, v);
-            // TODO: kafka生产者的行为好奇怪
             Producer<byte[], byte[]> d = this.squeue.innerHandle.get(0);
             d.send(r, (m, e)->this.onCompletion(record, e));
         }
@@ -142,24 +154,26 @@ public class SndQueueKafka extends SndQueue
 
         private void onCompletion(RhsQueue.Record record, Exception ex)
         {
+            // kafka生产者的行为好奇怪，不符合的Java的资源管理调用约定：
+            // 1. 通常Java类中，应该是谁创建谁关闭。
+            //    Kafka的Producer虽然也满足这个条件。
+            //    但是如果此处ex不是null，必须在此方法中调用close。
+            // 2. Kafka后端批量发送记录。
+            //    如果发送失败，其实是多条发送失败。
+            //    此时如果简单的执行close，则会调用close多次。
+            //    显得不是那么优雅。
+            //    通过设置callbackRef成功为条件调用close，保证仅一次调用。
+            //    如果已经关闭了，再次调用close不会抛出异常：
+            //    但是ex的值固定为：
+            //    java.lang.IllegalStateException: Producer is closed forcefully.
+            //	     at org.apache.kafka.clients.producer.internals.RecordAccumulator.abortBatches(RecordAccumulator.java:696) [kafka-clients-1.1.0.jar:na]
+            //	     at org.apache.kafka.clients.producer.internals.RecordAccumulator.abortIncompleteBatches(RecordAccumulator.java:683) [kafka-clients-1.1.0.jar:na]
+            //	     at org.apache.kafka.clients.producer.internals.Sender.run(Sender.java:185) [kafka-clients-1.1.0.jar:na]
+            //	     at java.lang.Thread.run(Thread.java:745) [na:1.8.0_121]
+            // 从这两方面来看，Kafka客户端的设计并不合理
             if (ex != null) {
                 logger.error("kafka producer send fail: record={}", record, ex);
                 if (this.squeue.callbackRef.compareAndSet(null, ex)) {
-                    // kafka客户端的行为好奇怪，不符合一般的Java类调用约定：
-                    // 1. 通常Java类中，应该是谁创建谁关闭。
-                    //    Kafka的Producer虽然也满足这个条件，但是如果此处ex不是null，必须在此方法中调用close。
-                    // 2. Kafka后端是批量发送的，所以一旦发送失败，其实是多条发送失败，此方法会被调用多次。
-                    //    如果简单的执行close，则会关闭producer.close()多次，虽然producer.close确实可以多次调用。
-                    //    但每次执行close感觉不是那么优雅。
-                    //    我采用了设置callbackRef成功才关闭producer，这样子就只会调用producer.close()一次。
-                    //    如果已经关闭了，再次调用close不会抛出异常：
-                    //    但是ex的值固定为：
-                    //    java.lang.IllegalStateException: Producer is closed forcefully.
-                    //	     at org.apache.kafka.clients.producer.internals.RecordAccumulator.abortBatches(RecordAccumulator.java:696) [kafka-clients-1.1.0.jar:na]
-                    //	     at org.apache.kafka.clients.producer.internals.RecordAccumulator.abortIncompleteBatches(RecordAccumulator.java:683) [kafka-clients-1.1.0.jar:na]
-                    //	     at org.apache.kafka.clients.producer.internals.Sender.run(Sender.java:185) [kafka-clients-1.1.0.jar:na]
-                    //	     at java.lang.Thread.run(Thread.java:745) [na:1.8.0_121]
-                    // 从这两方面来看，Kafka客户端的设计并不合理
                     this.close();
                 }
             }

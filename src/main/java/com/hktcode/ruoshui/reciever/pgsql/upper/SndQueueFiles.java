@@ -22,12 +22,18 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static com.hktcode.ruoshui.reciever.pgsql.upper.RhsQueue.Record;
 
 public class SndQueueFiles extends SndQueue
 {
     public static final class Schema
     {
-        public static final ObjectNode SCHEMA = JacksonObject.getFromResource(SndQueue.class, "UppdcSenderFiles.yml");
+        public static final ObjectNode SCHEMA;
+
+        static {
+            String filename = "UppdcSenderFiles.yml";
+            SCHEMA = JacksonObject.getFromResource(SndQueue.class, filename);
+        }
     }
 
     public static SndQueueFiles of(JsonNode json, AtomicLong xidlsn)
@@ -57,6 +63,7 @@ public class SndQueueFiles extends SndQueue
     private SndQueueFiles(AtomicLong xidlsn)
     {
         super(xidlsn);
+        this.innerHandle = new ArrayList<>(1);
     }
 
     @Override
@@ -72,10 +79,11 @@ public class SndQueueFiles extends SndQueue
     }
 
     // handle
-    private final List<AsynchronousFileChannel> innerHandle = new ArrayList<>(1);
+    private final List<AsynchronousFileChannel> innerHandle;
 
     // argval
-    public static final Path WALDATA_PATH = Paths.get(Ruoshui.HOME, "var", "data", "revievers.pgsql.upper");
+    private static final Path WALDATA_PATH //
+            = Paths.get(Ruoshui.HOME, "var", "data", "revievers.pgsql.upper");
 
     // - public long senderClass = MAX_SYNCTIME;
     public long maxSynctime = MAX_SYNCTIME;
@@ -112,7 +120,8 @@ public class SndQueueFiles extends SndQueue
      */
     public long bufferBytes = 0;
 
-    public static class Client implements SndQueue.Client, CompletionHandler<Integer, RhsQueue.Record>
+    public static class Client //
+            implements SndQueue.Client, CompletionHandler<Integer, Record>
     {
         private final SndQueueFiles sender;
 
@@ -122,7 +131,7 @@ public class SndQueueFiles extends SndQueue
         }
 
         @Override
-        public void send(RhsQueue.Record record) throws Throwable
+        public void send(Record record) throws Throwable
         {
             if (record == null) {
                 throw new ArgumentNullException("record");
@@ -151,19 +160,20 @@ public class SndQueueFiles extends SndQueue
             }
         }
 
-        private void fopen(RhsQueue.Record record) throws IOException
+        private void fopen(Record record) throws IOException
         {
-            OpenOption[] options = {
+            OpenOption[] opts = {
                     StandardOpenOption.CREATE_NEW,
                     StandardOpenOption.WRITE
             };
-            long timeline = record.key.timeline;
-            long lsnofcmt = record.key.lsnofcmt;
-            long sequence = record.key.sequence;
-            String curFilename = String.format("%08x%016x%016x.jwal", timeline, lsnofcmt, sequence).toUpperCase();
-            Path file = Paths.get(WALDATA_PATH.toString(), curFilename);
+            long t = record.key.timeline;
+            long l = record.key.lsnofcmt;
+            long s = record.key.sequence;
+            String filename = String.format("%08x%016x%016x", t, l, s);
+            String curFilename = filename.toUpperCase() + ".jwal";
+            Path p = Paths.get(WALDATA_PATH.toString(), curFilename);
             logger.info("fopen : curFilename={}", this.sender.curFilename);
-            this.sender.innerHandle.add(AsynchronousFileChannel.open(file, options));
+            this.sender.innerHandle.add(AsynchronousFileChannel.open(p, opts));
             this.sender.curPosition = 0;
             this.sender.bufferBytes = 0;
             this.sender.curFilename = curFilename;
@@ -191,7 +201,7 @@ public class SndQueueFiles extends SndQueue
         }
 
         @Override
-        public void completed(Integer result, RhsQueue.Record attachment)
+        public void completed(Integer result, Record attachment)
         {
             if (!(attachment.val instanceof PgsqlValTxactCommit)) {
                 return;
@@ -201,7 +211,7 @@ public class SndQueueFiles extends SndQueue
         }
 
         @Override
-        public void failed(Throwable exc, RhsQueue.Record attachment)
+        public void failed(Throwable exc, Record attachment)
         {
             logger.error("", exc);
             this.sender.callbackRef.compareAndSet(null, exc);
