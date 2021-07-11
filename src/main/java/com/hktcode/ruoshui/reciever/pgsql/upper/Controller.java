@@ -226,5 +226,5 @@ public class Controller implements DisposableBean
         }
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(Consumer.class);
+    private static final Logger logger = LoggerFactory.getLogger(Controller.class);
 }
