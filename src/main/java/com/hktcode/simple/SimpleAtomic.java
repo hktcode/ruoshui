@@ -10,7 +10,8 @@ public class SimpleAtomic
 {
     public static SimpleAtomic of()
     {
-        AtomicReference<SimplePhaser> atomic = new AtomicReference<>(SimplePhaserInner.of(Long.MAX_VALUE));
+        SimplePhaserInner phaser = SimplePhaserInner.of(Long.MAX_VALUE);
+        AtomicReference<SimplePhaser> atomic = new AtomicReference<>(phaser);
         return new SimpleAtomic(atomic);
     }
 
