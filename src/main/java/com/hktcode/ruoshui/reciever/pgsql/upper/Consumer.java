@@ -70,9 +70,8 @@ public class Consumer extends SimpleWorker
                     lhs = rhs;
                     spins = 0;
                     logms = currentTimeMillis();
-                } else if (r == null) {
-                    r = client.recv();
-                } else if (lhs.add(r)) {
+                } else if ((r != null || (r = client.recv()) != null) && lhs.add(r)) {
+                    r = null;
                     spins = 0;
                     logms = currentTimeMillis();
                 } else if (logms + logDuration < (now = currentTimeMillis())) {
