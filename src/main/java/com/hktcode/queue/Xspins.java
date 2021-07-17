@@ -151,7 +151,7 @@ public class Xspins
             this.yieldCounts = xspins.yieldCounts;
             this.sleepCounts = xspins.sleepCounts;
             this.yieldMillis = xspins.yieldMillis;
-            this.sleepMillis = xspins.sleepCounts;
+            this.sleepMillis = xspins.sleepMillis;
         }
 
         @Override
