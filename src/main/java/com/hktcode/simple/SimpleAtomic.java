@@ -32,22 +32,23 @@ public class SimpleAtomic
         if (newval == cmdval && !this.atomic.compareAndSet(oldval, newval)) {
             throw new SimpleLockedException();
         }
+        newval.acquire();
         try {
-            newval.acquire();
+            R result = method.call(delete);
+            if (result.deletets != oldval.deletets) {
+                oldval = SimplePhaserInner.of(result.deletets);
+            }
+            return result;
+        } finally {
+            boolean cas;
             try {
-                R result = method.call(delete);
-                if (result.deletets != oldval.deletets) {
-                    oldval = SimplePhaserInner.of(result.deletets);
-                }
-                return result;
+                cas = this.atomic.compareAndSet(newval, oldval);
             } finally {
                 newval.release();
             }
-        } finally {
-            boolean result = atomic.compareAndSet(newval, oldval);
-            if (!result) {
-                logger.debug("cas(future, origin): delete={}", delete);
-            }
+           if (!cas) {
+               logger.debug("cas(future, origin): delete={}", delete);
+           }
         }
     }
 
