@@ -19,12 +19,6 @@ public class XQueue<E>
     {
         public static final ObjectNode SCHEMA;
 
-        // - $schema: http://json-schema.org/draft-04/schema#
-        // - type: object
-        // - properties:
-        // -   max_messages: { type: integer, default: 1024, minimum: 0, maximum: 2147483647 }
-        // -   min_messages: { type: integer, default: 1024, minimum: 0, maximum: 2147483647 }
-        // -   max_duration: { type: integer, default: 1024, minimum: 0, maximum: 2147483647 }
         static
         {
             ObjectNode schema = new ObjectNode(JsonNodeFactory.instance);
@@ -33,6 +27,9 @@ public class XQueue<E>
             putInt4(props, "max_messages", DEFAULT_MAX_MESSAGES, 1);
             putInt4(props, "min_messages", DEFAULT_MIN_MESSAGES, 1);
             putInt8(props, "max_duration", DEFAULT_MAX_DURATION, 0);
+            ObjectNode setNullable = props.putObject("set_nullable");
+            setNullable.put("type", "boolean");
+            setNullable.put("default", DEFAULT_SET_NULLABLE);
             SCHEMA = JacksonObject.immutableCopy(schema);
         }
     }
@@ -53,6 +50,8 @@ public class XQueue<E>
 
     public static final int DEFAULT_MAX_DURATION = 8;
 
+    public static final boolean DEFAULT_SET_NULLABLE = false;
+
     protected XQueue()
     {
         this.atomicInner = new AtomicReference<>(this.newArray());
@@ -65,6 +64,8 @@ public class XQueue<E>
     private int minMessages = DEFAULT_MIN_MESSAGES;
 
     private long maxDuration = DEFAULT_MAX_DURATION;
+
+    private boolean setNullable = DEFAULT_SET_NULLABLE;
 
     // - gauges
 
@@ -124,7 +125,7 @@ public class XQueue<E>
         if (rhs == null) {
             throw new ArgumentNullException("rhs");
         }
-        rhs.clear();
+        rhs.clear(this.setNullable);
         ++this.fetchTrycnt;
         XArray<E> lhs = this.atomicInner.get();
         int size = lhs.getSize();
@@ -145,6 +146,7 @@ public class XQueue<E>
         this.maxMessages = node.path("max_messages").asInt(this.maxMessages);
         this.minMessages = node.path("min_messages").asInt(this.minMessages);
         this.maxDuration = node.path("max_duration").asLong(this.maxDuration);
+        this.setNullable = node.path("set_nullable").asBoolean(this.setNullable);
         this.atomicInner.get().setCapacity(this.maxMessages);
     }
 
@@ -174,6 +176,8 @@ public class XQueue<E>
 
         public final long maxDuration;
 
+        public final boolean setNullable;
+
         // - public final long minDuration;
 
         private <E> Config(XQueue<E> sender)
@@ -181,6 +185,7 @@ public class XQueue<E>
             this.maxMessages = sender.maxMessages;
             this.minMessages = sender.minMessages;
             this.maxDuration = sender.maxDuration;
+            this.setNullable = sender.setNullable;
         }
 
         @Override
@@ -192,6 +197,7 @@ public class XQueue<E>
             node.put("max_messages", this.maxMessages);
             node.put("min_messages", this.minMessages);
             node.put("max_duration", this.maxDuration);
+            node.put("set_nullable", this.setNullable);
             return node;
         }
     }

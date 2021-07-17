@@ -1,5 +1,6 @@
 package com.hktcode.queue;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 public class XArray<E>
@@ -9,9 +10,9 @@ public class XArray<E>
         return new XArray<>(maxCapacity);
     }
 
-    private Object[] list; // 修改为private
+    private Object[] list;
 
-    private int size = 0; // 修改为private，并提供size()方法
+    private int size = 0;
 
     private XArray(int maxCapacity)
     {
@@ -27,12 +28,13 @@ public class XArray<E>
         return true;
     }
 
-    public void clear()
+    public void clear(boolean setNullable)
     {
-        // 赋值为null，减少内存泄露。
-        while (size > 0) {
-            this.list[--size] = null;
+        if (setNullable) {
+            // 赋值为null，减少内存泄露。
+            Arrays.fill(this.list, null);
         }
+        this.size = 0;
     }
 
     public Iterator<E> iterator()
