@@ -29,15 +29,15 @@ public class SimplePhaserOuter implements SimplePhaser
     {
         int phase = this.phaser.arriveAndDeregister();
         if (phase < 0) {
-            logger.error("phaser.arriveAndDeregister: phaser={}", phase);
+            logger.error("wait arriveAndDeregister: phaser={}", phaser);
         }
         phase = this.phaser.awaitAdvanceInterruptibly(phase);
         if (phase < 0) {
-            logger.error("phaser.awaitAdvanceInterruptibly: phaser={}", phase);
+            logger.error("wait awaitAdvanceInterruptibly 0: phaser={}", phaser);
         }
         phase = this.phaser.awaitAdvanceInterruptibly(phase);
         if (phase >= 0) {
-            logger.error("phaser.awaitAdvanceInterruptibly: phaser={}", phase);
+            logger.error("wait awaitAdvanceInterruptibly 1: phaser={}", phaser);
         }
     }
 
@@ -45,11 +45,11 @@ public class SimplePhaserOuter implements SimplePhaser
     {
         int phase = this.phaser.arrive();
         if (phase < 0) {
-            logger.error("phaser.arrive: phaser={}", phase);
+            logger.error("acq arrive: phaser={}", phase);
         }
         phase = this.phaser.awaitAdvanceInterruptibly(phase);
         if (phase < 0) {
-            logger.error("phaser.awaitAdvanceInterruptibly: phaser={}", phase);
+            logger.error("acq awaitAdvanceInterruptibly: phaser={}", phase);
         }
     }
 
@@ -57,11 +57,11 @@ public class SimplePhaserOuter implements SimplePhaser
     {
         int phase = this.phaser.arriveAndDeregister();
         if (phase < 0) {
-            logger.error("phaser.arriveAndDeregister: phaser={}", phase);
+            logger.error("release arriveAndDeregister: phaser={}", phase);
         }
         phase = this.phaser.awaitAdvanceInterruptibly(phase);
         if (phase < 0) {
-            logger.error("phaser.awaitAdvanceInterruptibly: phaser={}", phase);
+            logger.error("release awaitAdvanceInterruptibly: phaser={}", phase);
         }
     }
 }
