@@ -76,7 +76,7 @@ public class Consumer extends SimpleWorker
                 } else if (lhs.add(r)) {
                     spins = 0;
                     logms = currentTimeMillis();
-                } else if (logms + logDuration >= (now = currentTimeMillis())) {
+                } else if (logms + logDuration < (now = currentTimeMillis())) {
                     logger.info("logDuration={}", logDuration);
                     logms = now;
                 } else {
