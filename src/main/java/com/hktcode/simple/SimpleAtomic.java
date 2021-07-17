@@ -23,13 +23,13 @@ public class SimpleAtomic
         SimplePhaserOuter cmdval = SimplePhaserOuter.of(4);
         SimplePhaser curval = this.atomic.get();
         if (!(curval instanceof SimplePhaserInner)) {
-            throw new RuntimeException(); //  未来计划：
+            throw new SimpleLockedException();
         }
         SimplePhaserInner oldval = (SimplePhaserInner)curval;
         long delete = oldval.deletets;
         SimplePhaserOuter newval = oldval.cmd(cmdval);
         if (newval == cmdval && !this.atomic.compareAndSet(oldval, newval)) {
-            throw new RuntimeException(); //  未来计划：
+            throw new SimpleLockedException();
         }
         try {
             newval.acquire();

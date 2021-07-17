@@ -1,14 +1,14 @@
-package com.hktcode.ruoshui.reciever.pgsql.exception;
+package com.hktcode.simple;
 
 import com.hktcode.jackson.HttpStatusJacksonObjectException;
 import com.hktcode.jackson.JacksonObjectException;
 import org.springframework.http.HttpStatus;
 
-public class RuoshuiLockedException extends HttpStatusJacksonObjectException
+public class SimpleLockedException extends HttpStatusJacksonObjectException
 {
     public static final HttpStatus CODE = HttpStatus.LOCKED;
 
-    public RuoshuiLockedException()
+    public SimpleLockedException()
     {
         super(CODE);
     }

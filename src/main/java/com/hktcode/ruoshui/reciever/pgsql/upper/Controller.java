@@ -12,6 +12,7 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.hktcode.jackson.exception.JsonSchemaValidationImplException;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.exception.RuoshuiNameFormatException;
+import com.hktcode.simple.SimpleLockedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -150,8 +151,15 @@ public class Controller implements DisposableBean
             int index = 0;
             for (Map.Entry<String, Entity> entry : this.repmap.entrySet()) {
                 final Entity exesvc = entry.getValue();
-                Result r = exesvc.modify(finishts, body, keeper::updertYml);
-                result[index++] = r;
+                do {
+                    try {
+                        Result r = exesvc.modify(finishts, body, keeper::updertYml);
+                        result[index++] = r;
+                        break;
+                    }
+                    catch (SimpleLockedException ignored) {
+                    }
+                } while (true);
             }
             return ResponseEntity.ok(result);
         }
@@ -170,7 +178,14 @@ public class Controller implements DisposableBean
             for (Map.Entry<String, Entity> entry : this.repmap.entrySet()) {
                 long finishts = currentTimeMillis();
                 Entity exesvc = entry.getValue();
-                exesvc.modify(finishts, body, keeper::updertYml);
+                do {
+                    try {
+                        exesvc.modify(finishts, body, keeper::updertYml);
+                        break;
+                    }
+                    catch (SimpleLockedException ignored) {
+                    }
+                } while (true);
             }
         }
         finally {
