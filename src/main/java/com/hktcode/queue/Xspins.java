@@ -75,8 +75,8 @@ public class Xspins
     public int spins(long spins) throws InterruptedException
     {
         if (spins > spinsMaxcnt) {
-            long starts = System.currentTimeMillis();
             ++sleepCounts;
+            long starts = System.currentTimeMillis();
             long duration = starts - spinsStarts;
             long millis = this.waitTimeout - duration;
             millis = millis > 0 ? millis : 0;
@@ -89,11 +89,11 @@ public class Xspins
             spinsStarts = spins == 0 ? System.currentTimeMillis() : spinsStarts;
             return spins == spinsMaxcnt ? SLEEP : YIELD;
         } else {
-            long starts = System.currentTimeMillis();
             ++yieldCounts;
+            long starts = System.currentTimeMillis();
             Thread.yield();
             long finish = System.currentTimeMillis();
-            yieldMillis += finish + starts;
+            yieldMillis += finish - starts;
             return spins == spinsMaxcnt ? SLEEP : SPINS;
         }
     }
