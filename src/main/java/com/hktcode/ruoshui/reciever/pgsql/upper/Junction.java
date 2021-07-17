@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static java.lang.System.currentTimeMillis;
+
 public class Junction extends SimpleWorker
 {
     public static class Schema
@@ -80,7 +82,7 @@ public class Junction extends SimpleWorker
         XArray<LhsQueue.Record> crhs = recver.newArray(), clhs;
         XArray<RhsQueue.Record> plhs = sender.newArray(), prhs;
         long spins = 0;
-        long ln, lt = System.currentTimeMillis();
+        long ln, lt = currentTimeMillis();
         Iterator<LhsQueue.Record> citer = crhs.iterator();
         Iterator<RhsQueue.Record> piter = plhs.iterator();
         RhsQueue.Record r = null;
@@ -89,17 +91,17 @@ public class Junction extends SimpleWorker
             if (plhs.getSize() > 0 && (prhs = sender.push(plhs)) != plhs) {
                 plhs = prhs;
                 spins = 0;
-                lt = System.currentTimeMillis();
+                lt = currentTimeMillis();
             } else if (r != null) {
                 r = plhs.add(r) ? null : r;
             } else if (piter.hasNext()) {
                 r = piter.next();
             } else if (citer.hasNext()) {
                 piter = this.convert(citer.next()).iterator();
-                lt = System.currentTimeMillis();
+                lt = currentTimeMillis();
             } else if ((clhs = recver.poll(crhs)) != crhs) {
                 citer = (crhs = clhs).iterator();
-            } else if (lt + ld >= (ln = System.currentTimeMillis())) {
+            } else if (lt + ld < (ln = currentTimeMillis())) {
                 logger.info("logDuration={}", ld);
                 lt = ln;
             } else if (this.xspins.spins(spins++) == Xspins.RESET) {
