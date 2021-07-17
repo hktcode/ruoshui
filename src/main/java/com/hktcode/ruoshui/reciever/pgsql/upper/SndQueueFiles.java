@@ -163,8 +163,9 @@ public class SndQueueFiles extends SndQueue
         private void fopen(Record record) throws IOException
         {
             OpenOption[] opts = {
-                    StandardOpenOption.CREATE_NEW,
-                    StandardOpenOption.WRITE
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING,
+                    StandardOpenOption.WRITE,
             };
             long t = record.key.timeline;
             long l = record.key.lsnofcmt;
