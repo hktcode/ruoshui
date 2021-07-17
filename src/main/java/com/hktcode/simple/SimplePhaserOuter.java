@@ -60,7 +60,7 @@ public class SimplePhaserOuter implements SimplePhaser
             logger.error("release arriveAndDeregister: phaser={}", phase);
         }
         phase = this.phaser.awaitAdvanceInterruptibly(phase);
-        if (phase < 0) {
+        if (phase >= 0) {
             logger.error("release awaitAdvanceInterruptibly: phaser={}", phase);
         }
     }
