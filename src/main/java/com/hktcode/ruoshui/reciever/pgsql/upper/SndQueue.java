@@ -22,6 +22,7 @@ public abstract class SndQueue
             ArrayNode oneOfNode = schema.putArray("oneOf");
             oneOfNode.add(SndQueueFiles.Schema.SCHEMA);
             oneOfNode.add(SndQueueKafka.Schema.SCHEMA);
+            oneOfNode.add(SndQueueDevnull.Schema.SCHEMA);
             SCHEMA = JacksonObject.immutableCopy(schema);
         }
     }
@@ -41,6 +42,9 @@ public abstract class SndQueue
         }
         else if ("files".equals(senderClass)) {
             result = SndQueueFiles.of(json, xidlsn);
+        }
+        else if ("devnull".equals(senderClass)) {
+            result = SndQueueDevnull.of(json, xidlsn);
         }
         else {
             throw new RuntimeException(); // 未来计划：自定义异常
