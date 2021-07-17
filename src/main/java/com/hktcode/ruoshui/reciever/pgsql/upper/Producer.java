@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 
+import static java.lang.System.currentTimeMillis;
+
 public class Producer extends SimpleWorker
 {
     public static class Schema
@@ -64,7 +66,7 @@ public class Producer extends SimpleWorker
             throw new ArgumentNullException("atomic");
         }
         XArray<RhsQueue.Record> lhs, rhs = recver.newArray();
-        long now, prelog = System.currentTimeMillis(), spins = 0;
+        long now, prelog = currentTimeMillis(), spins = 0;
         Iterator<RhsQueue.Record> iter = rhs.iterator();
         try (SndQueue.Client client = this.sender.client()) {
             while (atomic.call(Long.MAX_VALUE).deletets == Long.MAX_VALUE) {
@@ -74,7 +76,7 @@ public class Producer extends SimpleWorker
                     client.send(iter.next());
                 } else if ((lhs = recver.poll(rhs)) != rhs) {
                     iter = (rhs = lhs).iterator();
-                } else if (prelog + l >= (now = System.currentTimeMillis())) {
+                } else if (prelog + l < (now = currentTimeMillis())) {
                     logger.info("write to logDuration={}", l);
                     prelog = now;
                 } else {
