@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
+import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlValTxactBegins;
 import com.hktcode.ruoshui.reciever.pgsql.entity.PgsqlValTxactCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,10 +73,12 @@ public class SndQueueDevnull extends SndQueue
         @Override
         public void send(RhsQueue.Record record)
         {
-            if (record.val instanceof PgsqlValTxactCommit) {
-                long lsn = ((PgsqlValTxactCommit)record.val).lsnofmsg;
+            if (record.val instanceof PgsqlValTxactBegins) {
+                logger.info("begins msg: val={}", record.val);
+            } else if (record.val instanceof PgsqlValTxactCommit) {
+                long lsn = ((PgsqlValTxactCommit) record.val).lsnofmsg;
                 this.squeue.lastConfirm.set(lsn);
-                logger.info("commit msg: lsn={}", lsn);
+                logger.info("commit msg: val={}", record.val);
             }
         }
 
