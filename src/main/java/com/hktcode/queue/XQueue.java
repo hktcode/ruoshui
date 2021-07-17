@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.hktcode.jackson.JacksonObject.putInt4;
 import static com.hktcode.jackson.JacksonObject.putInt8;
+import static java.lang.System.currentTimeMillis;
 
 public class XQueue<E>
 {
@@ -69,7 +70,11 @@ public class XQueue<E>
 
     private final AtomicReference<XArray<E>> atomicInner;
 
-    private long offerMillis = 0;
+    private long nextOfferms = 0;
+
+    private long maxPushsize = 0;
+
+    private long fullFailure = 0;
 
     private long offerTrycnt = 0;
 
@@ -90,13 +95,26 @@ public class XQueue<E>
         }
         ++this.offerTrycnt;
         XArray<E> rhs = this.atomicInner.get();
+        int size = rhs.getSize();
         // 未来计划：支持bufferCount和maxDuration
-        if (rhs.getSize() != 0) {
+        int pushsize = lhs.getSize();
+        if (size != 0) {
+            if (pushsize == lhs.getCapacity()) {
+                ++this.fullFailure;
+            }
             return lhs;
         }
-        this.offerRowcnt += lhs.getSize();
+        long now = currentTimeMillis();
+        if (now < this.nextOfferms && size < minMessages) {
+            return lhs;
+        }
+        if (pushsize > this.maxPushsize) {
+            this.maxPushsize = pushsize;
+        }
+        this.offerRowcnt += pushsize;
         this.atomicInner.set(lhs);
         ++this.offerCounts;
+        this.nextOfferms = now + this.maxDuration;
         rhs.setCapacity(this.maxMessages);
         return rhs;
     }
@@ -180,6 +198,8 @@ public class XQueue<E>
 
     public static class Metric implements JacksonObject
     {
+        public final long maxPushsize;
+
         public final long fetchTrycnt;
 
         public final long fetchRowcnt;
@@ -196,6 +216,8 @@ public class XQueue<E>
 
         public final long curCapacity;
 
+        public final long fullFailure;
+
         private <E> Metric(XQueue<E> sender)
         {
             this.fetchTrycnt = sender.fetchTrycnt;
@@ -207,6 +229,8 @@ public class XQueue<E>
             XArray<E> list = sender.atomicInner.get();
             this.curCapacity = list.getCapacity();
             this.curMessages = list.getSize();
+            this.maxPushsize = sender.maxPushsize;
+            this.fullFailure = sender.fullFailure;
         }
 
         @Override
@@ -223,6 +247,8 @@ public class XQueue<E>
             node.put("fetch_counts", this.fetchCounts);
             node.put("cur_capacity", this.curCapacity);
             node.put("cur_messages", this.curMessages);
+            node.put("max_pushsize", this.maxPushsize);
+            node.put("full_failure", this.fullFailure);
             return node;
         }
     }
