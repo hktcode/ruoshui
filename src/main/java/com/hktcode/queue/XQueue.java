@@ -44,7 +44,7 @@ public class XQueue<E>
         return result;
     }
 
-    public static final int DEFAULT_MAX_MESSAGES = 1024;
+    public static final int DEFAULT_MAX_MESSAGES = 1024 * 8;
 
     public static final int DEFAULT_MIN_MESSAGES = 16;
 
