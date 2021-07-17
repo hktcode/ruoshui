@@ -84,6 +84,9 @@ public class Consumer extends SimpleWorker
                         client.forceUpdateStatus();
                     }
                     spinsStatus = this.xspins.spins(spins++);
+                    if (spinsStatus == Xspins.RESET) {
+                        spins = 0;
+                    }
                 }
             }
         }

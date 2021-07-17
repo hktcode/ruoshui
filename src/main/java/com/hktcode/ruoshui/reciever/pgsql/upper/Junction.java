@@ -102,8 +102,8 @@ public class Junction extends SimpleWorker
             } else if (lt + ld >= (ln = System.currentTimeMillis())) {
                 logger.info("logDuration={}", ld);
                 lt = ln;
-            } else {
-                this.xspins.spins(spins++);
+            } else if (this.xspins.spins(spins++) == Xspins.RESET) {
+                spins = 0;
             }
         }
         logger.info("upjct complete");

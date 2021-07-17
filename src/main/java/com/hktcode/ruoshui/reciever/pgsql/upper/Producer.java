@@ -79,8 +79,8 @@ public class Producer extends SimpleWorker
                 } else if (prelog + l < (now = currentTimeMillis())) {
                     logger.info("write to logDuration={}", l);
                     prelog = now;
-                } else {
-                    this.xspins.spins(spins++);
+                } else if (this.xspins.spins(spins++) == Xspins.RESET) {
+                    spins = 0;
                 }
             }
         }
