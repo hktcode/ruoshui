@@ -27,7 +27,6 @@ public class XQueue<E>
         static
         {
             ObjectNode schema = new ObjectNode(JsonNodeFactory.instance);
-            schema.put("$schema", "http://json-schema.org/draft-04/schema#");
             schema.put("type", "object");
             ObjectNode props = schema.putObject("properties");
             putInt4(props, "max_messages", DEFAULT_MAX_MESSAGES, 1);
