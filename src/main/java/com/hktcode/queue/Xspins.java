@@ -29,7 +29,7 @@ public class Xspins
         }
     }
 
-    public static final long DEFAULT_WAIT_TIMEOUT = 128;
+    public static final long DEFAULT_WAIT_TIMEOUT = 32;
 
     public static final long DEFAULT_SPINS_MAXCNT = 1024;
 
