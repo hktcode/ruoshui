@@ -28,6 +28,7 @@ public abstract class SimpleWorker implements Runnable
         this.atomic = atomic;
     }
 
+    @Override
     public void run()
     {
         this.starts = System.currentTimeMillis();

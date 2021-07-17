@@ -19,6 +19,7 @@ public class SimpleResult implements JacksonObject
         this.deletets = deletets;
     }
 
+    @Override
     public ObjectNode toJsonObject(ObjectNode node)
     {
         if (node == null) {
