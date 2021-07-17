@@ -191,12 +191,23 @@ public interface JacksonObject
         return node;
     }
 
-    public static void putInteger(ObjectNode node, String name, long defval, long minimum, long maximum)
+    // - 未来计划：对JsonSchema采用对象方式构建
+
+    static void putInt4(ObjectNode node, String name, long defval, long minimum)
     {
         ObjectNode result = node.putObject(name);
         result.put("type", "integer");
         result.put("default", defval);
         result.put("minimum", minimum);
-        result.put("maximum", maximum);
+        result.put("maximum", Integer.MAX_VALUE);
+    }
+
+    static void putInt8(ObjectNode node, String name, long defval, long minimum)
+    {
+        ObjectNode result = node.putObject(name);
+        result.put("type", "integer");
+        result.put("default", defval);
+        result.put("minimum", minimum);
+        result.put("maximum", Long.MAX_VALUE);
     }
 }

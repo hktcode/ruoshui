@@ -9,7 +9,8 @@ import com.hktcode.ruoshui.reciever.pgsql.upper.JsonResult;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.hktcode.jackson.JacksonObject.putInteger;
+import static com.hktcode.jackson.JacksonObject.putInt4;
+import static com.hktcode.jackson.JacksonObject.putInt8;
 
 public class XQueue<E>
 {
@@ -28,10 +29,10 @@ public class XQueue<E>
             ObjectNode schema = new ObjectNode(JsonNodeFactory.instance);
             schema.put("$schema", "http://json-schema.org/draft-04/schema#");
             schema.put("type", "object");
-            ObjectNode argvalNode = schema.putObject("properties");
-            putInteger(argvalNode, "max_messages", DEFAULT_MAX_MESSAGES, 1, Integer.MAX_VALUE);
-            putInteger(argvalNode, "min_messages", DEFAULT_MIN_MESSAGES, 1, Integer.MAX_VALUE);
-            putInteger(argvalNode, "max_duration", DEFAULT_MAX_DURATION, 0, Long.MAX_VALUE);
+            ObjectNode props = schema.putObject("properties");
+            putInt4(props, "max_messages", DEFAULT_MAX_MESSAGES, 1);
+            putInt4(props, "min_messages", DEFAULT_MIN_MESSAGES, 1);
+            putInt8(props, "max_duration", DEFAULT_MAX_DURATION, 0);
             SCHEMA = JacksonObject.immutableCopy(schema);
         }
     }

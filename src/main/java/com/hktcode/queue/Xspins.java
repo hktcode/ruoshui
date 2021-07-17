@@ -7,7 +7,8 @@ import com.hktcode.jackson.JacksonObject;
 import com.hktcode.lang.exception.ArgumentNullException;
 import com.hktcode.ruoshui.reciever.pgsql.upper.JsonResult;
 
-import static com.hktcode.jackson.JacksonObject.putInteger;
+import static com.hktcode.jackson.JacksonObject.putInt4;
+import static com.hktcode.jackson.JacksonObject.putInt8;
 
 public class Xspins
 {
@@ -21,9 +22,9 @@ public class Xspins
             schema.put("$schema", "http://json-schema.org/draft-04/schema#");
             schema.put("type", "object");
             ObjectNode argvalNode = schema.putObject("properties");
-            putInteger(argvalNode, "wait_timeout", DEFAULT_WAIT_TIMEOUT, 0, Integer.MAX_VALUE);
-            putInteger(argvalNode, "spins_maxcnt", DEFAULT_SPINS_MAXCNT, 0, Integer.MAX_VALUE);
-            putInteger(argvalNode, "log_duration", DEFAULT_LOG_DURATION, 0, Long.MAX_VALUE);
+            putInt4(argvalNode, "wait_timeout", DEFAULT_WAIT_TIMEOUT, 0);
+            putInt4(argvalNode, "spins_maxcnt", DEFAULT_SPINS_MAXCNT, 0);
+            putInt8(argvalNode, "log_duration", DEFAULT_LOG_DURATION, 0);
             SCHEMA = JacksonObject.immutableCopy(schema);
         }
     }
