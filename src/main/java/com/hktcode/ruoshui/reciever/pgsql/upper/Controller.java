@@ -77,7 +77,7 @@ public class Controller implements DisposableBean
             throw new ArgumentNullException("body");
         }
         check(name, body);
-        Entity exesvc = Entity.of(name, body);
+        Entity newval = Entity.of(name, body);
 
         long finish = Long.MAX_VALUE;
         body = MissingNode.getInstance();
@@ -85,14 +85,15 @@ public class Controller implements DisposableBean
         lock.lock();
         try {
             HttpStatus status = HttpStatus.FORBIDDEN;
-            Entity entity = this.repmap.putIfAbsent(name, exesvc);
+            Entity entity = this.repmap.putIfAbsent(name, newval);
             if (entity == null) {
-                this.exesvc.submit(exesvc.producer());
-                this.exesvc.submit(exesvc.junction());
-                this.exesvc.submit(exesvc.consumer());
+                this.exesvc.submit(newval.producer());
+                this.exesvc.submit(newval.junction());
+                this.exesvc.submit(newval.consumer());
+                entity = newval;
                 status = HttpStatus.OK;
             }
-            Result result = exesvc.modify(finish, body, keeper::updertYml);
+            Result result = entity.modify(finish, body, keeper::updertYml);
             return ResponseEntity.status(status).body(new Result[]{ result });
         }
         finally {
